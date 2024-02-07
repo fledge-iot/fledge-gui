@@ -179,7 +179,7 @@ export class CustomNodeComponent implements OnChanges {
       this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: true, showFilterConfiguration: false, showLogs: false, serviceName: this.service.name });
     }
     else {
-      this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: false, showFilterConfiguration: true, showLogs: false, serviceName: this.source });
+      this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: false, showFilterConfiguration: true, showLogs: false, serviceName: this.source, filterName: this.filter.name });
     }
   }
 

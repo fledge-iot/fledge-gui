@@ -23,6 +23,7 @@ export class NodeEditorComponent implements OnInit {
   public updatedFilterPipeline = [];
   public filterConfigurations: any[] = [];
   public category: any;
+  public filterCategory: any;
   private subscription: Subscription;
   private filterSubscription: Subscription;
   private connectionSubscription: Subscription;
@@ -40,15 +41,17 @@ export class NodeEditorComponent implements OnInit {
   isfilterPipelineFetched = false;
   selectedConnectionId = "";
   changedConfig: any;
+  changedFilterConfig: any;
   pluginConfiguration;
+  filterPluginConfiguration;
   advancedConfiguration = [];
-  public unsavedChangesInFilterForm = false;
   public reenableButton = new EventEmitter<boolean>(false);
   apiCallsStack = [];
   initialApiCallsStack = [];
   filterConfigApiCallsStack = [];
   validConfigurationForm = true;
-  @ViewChild('filtersListComponent') filtersListComponent: FilterListComponent;
+  validFilterConfigForm = true;
+  quickviewFilterName = "";
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -91,11 +94,13 @@ export class NodeEditorComponent implements OnInit {
       this.showLogs = data.showLogs;
       this.serviceName = data.serviceName;
       if (this.showPluginConfiguration) {
-        this.unsavedChangesInFilterForm = false;
         this.getCategory();
       }
       if (this.showLogs) {
-        this.unsavedChangesInFilterForm = false;
+      }
+      if(this.showFilterConfiguration) {
+        this.quickviewFilterName = data.filterName;
+        this.getFilterCategory()
       }
     })
     this.filterSubscription = this.flowEditorService.filterInfo.pipe(skip(1)).subscribe(data => {
@@ -209,6 +214,23 @@ export class NodeEditorComponent implements OnInit {
           }
         }
       );
+  }
+
+  getFilterCategory() {
+    let catName = `${this.source}_${this.quickviewFilterName}`
+    this.filterService.getFilterConfiguration(catName).subscribe((data: any) => {
+      this.changedFilterConfig = [];
+      this.filterCategory = { key: catName, config: data, plugin: data.plugin.value };
+      this.filterPluginConfiguration = cloneDeep({ key: catName, config: data, plugin: data.plugin.value });
+    },
+      error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.toastService.error(error.statusText);
+        }
+      }
+    )
   }
 
   getFilterConfiguration(filterName: string) {
@@ -365,9 +387,28 @@ export class NodeEditorComponent implements OnInit {
   }
 
   saveFilterConfiguration() {
-    if (this.unsavedChangesInFilterForm) {
-      this.filtersListComponent.update();
-      this.unsavedChangesInFilterForm = false;
+    if (!isEmpty(this.changedFilterConfig) && this.quickviewFilterName) {
+      let catName = `${this.source}_${this.quickviewFilterName}`
+      this.updateConfiguration(catName, this.changedFilterConfig, 'plugin-config');
+    }
+
+    if (this.apiCallsStack.length > 0) {
+      forkJoin(this.apiCallsStack).subscribe((result) => {
+        result.forEach((r: any) => {
+          this.reenableButton.emit(false);
+          if (r.failed) {
+            if (r.error.status === 0) {
+              console.log('service down ', r.error);
+            } else {
+              this.toastService.error(r.error.statusText);
+            }
+          } else {
+            this.response.handleResponseMessage(r.type);
+          }
+        });
+        this.apiCallsStack = [];
+        this.getFilterCategory();
+      });
     }
   }
 
@@ -377,7 +418,7 @@ export class NodeEditorComponent implements OnInit {
   }
 
   checkFilterFormState() {
-    const noChange = !this.unsavedChangesInFilterForm;
+    const noChange = isEmpty(this.changedFilterConfig);
     return noChange;
   }
 
@@ -418,10 +459,6 @@ export class NodeEditorComponent implements OnInit {
 
   public uploadScript(categoryName: string, files: any[]) {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
-  }
-
-  filterFormStatus(status: boolean) {
-    this.unsavedChangesInFilterForm = status;
   }
 
   isFilterPipelineComplex(updatedPipeline) {
@@ -476,6 +513,10 @@ export class NodeEditorComponent implements OnInit {
             this.toastService.error(error.statusText);
           }
         });
+  }
+
+  getChangedFilterConfig(changedConfiguration: any) {
+    this.changedFilterConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.filterPluginConfiguration);
   }
 
   ngOnDestroy() {

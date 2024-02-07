@@ -33,8 +33,10 @@
             </div>
         </ng-container>
         <ng-container *ngIf="showFilterConfiguration">
-            <app-filter-list #filtersListComponent [service]="serviceName" [sourceName]="serviceName"
-                [filterPipeline]="filterPipeline" (formStatus)="filterFormStatus($event)"></app-filter-list>
+            <app-configuration-group *ngIf="filterCategory" [category]="filterCategory" [sourceName]="quickviewFilterName"
+                (changedConfigEvent)="getChangedFilterConfig($event)"
+                (formStatusEvent)="validFilterConfigForm = $event">
+            </app-configuration-group>
             <div class="columns" *ngIf="rolesService.hasEditPermissions()">
                 <div class="column">
                     <div class="field is-grouped is-pulled-right">
