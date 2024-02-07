@@ -6,7 +6,6 @@ import { ConnectionPlugin, Presets as ConnectionPresets, ClassicFlow, BidirectFl
 import { AutoArrangePlugin, Presets as ArrangePresets, ArrangeAppliers } from "rete-auto-arrange-plugin";
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from "rete-context-menu-plugin";
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
-// import { ScopesPlugin, Presets as ScopesPresets } from "rete-scopes-plugin";
 import { CustomNodeComponent } from "./custom-node/custom-node.component";
 import { HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
 import { addCustomBackground } from "./custom-background";
@@ -17,13 +16,12 @@ import { CustomSocketComponent } from "./custom-socket/custom-socket.component";
 import { South } from "./south";
 import { Storage } from "./storage";
 import { Filter } from "./filter";
-import { Applications } from "./applications";
 import { AddService } from "./add-service";
 import { MinimapExtra, MinimapPlugin } from "rete-minimap-plugin";
 import { curveStep, curveMonotoneX, curveLinear, CurveFactory } from "d3-shape";
 import { ConnectionPathPlugin } from "rete-connection-path-plugin";
 
-type Node = South | Filter | Applications;
+type Node = South | Filter;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 type AreaExtra = AngularArea2D<Schemes> | MinimapExtra | ContextMenuExtra;
 
@@ -105,7 +103,6 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     })
 
     const dock = new DockPlugin<Schemes>();
-    // const scopes = new ScopesPlugin<Schemes>();
 
     render.addPreset(Presets.classic.setup(
         {
@@ -137,7 +134,6 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     area.use(render);
     area.use(arrange);
     area.use(dock);
-    // area.use(scopes);
     area.use(history);
 
     if (source !== '' && source !== "nodelist") {
@@ -172,7 +168,6 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
 
     if (source !== "nodelist") {
         const southPlugin = new South(socket, service);
-        const filterBranch = new Applications(socket);
         const db = new Storage(socket);
 
         await editor.addNode(southPlugin);

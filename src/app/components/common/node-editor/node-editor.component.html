@@ -1,11 +1,11 @@
 <div>
-    <div class="navbar-item" *ngIf="source!=='nodelist'">
+    <div class="navbar-item">
         <nav class="breadcrumb" aria-label="breadcrumbs">
             <ul>
                 <li><a [routerLink]="['/south/flow']" [queryParams]="{ source: 'nodelist' }">South</a></li>
                 <li class="is-active">
                     <a href="#" aria-current="page">
-                        {{source ? source : 'Add'}}
+                        {{source === 'nodelist' ? "" : source ? source : 'Add'}}
                     </a>
                 </li>
             </ul>
