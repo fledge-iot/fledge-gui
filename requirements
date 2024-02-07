@@ -7,17 +7,23 @@ cd $(dirname $0)
 echo "Setting up the prerequisites..."
 echo
 
-if [[ -f /etc/os-release ]]; then
-   OS_NAME=`(grep -o '^NAME=.*' /etc/os-release | cut -f2 -d\" | sed 's/"//g')`
-elif [[ -f /System/Library/CoreServices/SystemVersion.plist ]]; then
-   # MacOSX
-   OS_NAME=`uname`
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        if [[ -f /etc/os-release ]]; then
+        OS_NAME=`(grep -o '^NAME=.*' /etc/os-release | cut -f2 -d\" | sed 's/"//g')`
+        fi
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+        # Mac OSX
+        OS_NAME=`uname`
 fi
 
 PKG_TYPE="deb"
 # Check if OS is RHEL/CentOS
 # In case we have yum and apt-get installed on same machine then set PKG_MANAGER based on OS
-if [[ ${OS_NAME} == *"Red Hat"* || ${OS_NAME} == *"CentOS"* ]]; then PKG_MANAGER="yum"; PKG_TYPE="rpm" ; fi
+if [[ ${OS_NAME} == *"Red Hat"* || ${OS_NAME} == *"CentOS"* ]]; then
+      PKG_MANAGER="yum"; PKG_TYPE="rpm" ;
+elif [[ "$OS_NAME" == "Darwin" ]]; then
+      PKG_MANAGER="brew"
+fi
 echo
 
 install_nodejs () {
@@ -25,8 +31,14 @@ install_nodejs () {
    requiredNodeVer="v16.14.0"
   # Check if Node.js is not installed or the installed version is lesser than the ${requiredNodeVer}
   if [[ "$isNodeInstalled" = "" ]] || [[ "$(printf '%s\n' "$requiredNodeVer" "$currentNodeVer" | sort -V | head -n1)" != "$requiredNodeVer" ]]; then
-      curl -L https://${PKG_TYPE}.nodesource.com/setup_16.x | sudo -E bash -
-      sudo $1 install -y nodejs
+      if [[ "$PKG_MANAGER" == "brew" ]]; then
+        $1 install node@16
+        $1 unlink node
+        $1 link --overwrite node@16
+      else
+       curl -L https://${PKG_TYPE}.nodesource.com/setup_16.x | sudo -E bash -
+       sudo $1 install -y nodejs
+      fi
   fi
 }
 
@@ -40,7 +52,7 @@ install_yarn () {
 }
 
 case $PKG_MANAGER in
-  
+
   *yum*)
     sudo yum install -y curl
     install_nodejs "yum"
@@ -50,6 +62,11 @@ case $PKG_MANAGER in
   *apt*)
     sudo apt install -y curl
     install_nodejs "apt"
+    install_yarn
+    ;;
+
+  *brew*)
+    install_nodejs "brew"
     install_yarn
     ;;
 
