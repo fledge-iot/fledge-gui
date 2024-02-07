@@ -2,38 +2,35 @@
 
 set -e
 
-PKG_MANAGER=$( command -v yum || command -v apt-get || command -v brew ) ||{ echo "Platform not supported, check README and Prerequisite docs."; exit 1; }
+if [[ -f /System/Library/CoreServices/SystemVersion.plist ]]; then
+  # macOS
+  PKG_MANAGER=$(command -v brew) || { echo "Homebrew is not installed. https://brew.sh/"; exit 1; }
+else
+  PKG_MANAGER=$(command -v yum || command -v apt) || { echo "Platform not supported, check README and Prerequisite docs."; exit 1; }
+fi
+
 cd $(dirname $0)
 echo "Setting up the prerequisites..."
 echo
 
 if [[ -f /etc/os-release ]]; then
    OS_NAME=`(grep -o '^NAME=.*' /etc/os-release | cut -f2 -d\" | sed 's/"//g')`
-elif [[ -f /System/Library/CoreServices/SystemVersion.plist ]]; then
-   # macOS
-   OS_NAME=`uname`
+   PKG_MANAGER="apt";
+   PKG_TYPE="deb";
+   # Check if OS is RHEL/CentOS
+   # In case we have yum and apt-get installed on same machine then set PKG_MANAGER based on OS
+   if [[ ${OS_NAME} == *"Red Hat"* || ${OS_NAME} == *"CentOS"* ]]; then
+      PKG_MANAGER="yum";
+      PKG_TYPE="rpm";
+   fi
 fi
-
-PKG_TYPE="deb"
-# Check if OS is RHEL/CentOS
-# In case we have yum and apt-get installed on same machine then set PKG_MANAGER based on OS
-if [[ ${OS_NAME} == *"Red Hat"* || ${OS_NAME} == *"CentOS"* ]]; then
-      PKG_MANAGER="yum"; PKG_TYPE="rpm" ;
-elif [[ "$OS_NAME" == "Darwin" ]]; then
-      if [[ ${PKG_MANAGER} == "" ]]; then
-          echo "Hombrew not installed."
-      else
-          PKG_MANAGER="brew"
-      fi
-fi
-echo
 
 install_nodejs () {
   isNodeInstalled=`which node` && currentNodeVer=`node -v` || echo ''
    requiredNodeVer="v16.14.0"
   # Check if Node.js is not installed or the installed version is lesser than the ${requiredNodeVer}
   if [[ "$isNodeInstalled" = "" ]] || [[ "$(printf '%s\n' "$requiredNodeVer" "$currentNodeVer" | sort -V | head -n1)" != "$requiredNodeVer" ]]; then
-      if [[ "$PKG_MANAGER" == "brew" ]]; then
+      if [[ "$PKG_MANAGER" == *"brew"* ]]; then
         $1 install node@16
         $1 unlink node
         $1 link --overwrite node@16
