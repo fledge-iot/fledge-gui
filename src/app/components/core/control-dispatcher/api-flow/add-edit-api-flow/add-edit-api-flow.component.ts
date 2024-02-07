@@ -7,6 +7,7 @@ import { Validators, UntypedFormGroup, UntypedFormBuilder, AbstractControl, Unty
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { ControlUtilsService } from '../../control-utils.service';
+import { DocService } from '../../../../../services/doc.service';
 
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -72,6 +73,7 @@ export class AddEditAPIFlowComponent implements OnInit {
         private fb: UntypedFormBuilder,
         public rolesService: RolesService,
         private dialogService: DialogService,
+        public docService: DocService,
         public sharedService: SharedService,
         private userService: UserService,
         private controlUtilsService: ControlUtilsService,
@@ -502,5 +504,9 @@ export class AddEditAPIFlowComponent implements OnInit {
     closeModal(id: string) {
         this.reenableButton.emit(false);
         this.dialogService.close(id);
+    }
+
+    goToLink(urlSlug: string) {
+      this.docService.goToSetPointControlDocLink(urlSlug);
     }
 }

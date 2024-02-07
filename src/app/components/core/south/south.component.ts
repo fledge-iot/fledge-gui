@@ -12,6 +12,7 @@ import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.comp
 import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 import { DialogService } from '../../common/confirmation-dialog/dialog.service';
 import { Service } from './south-service';
+import { FlowEditorService } from '../../common/node-editor/flow-editor.service';
 
 
 @Component({
@@ -45,7 +46,13 @@ export class SouthComponent implements OnInit, OnDestroy {
     private ping: PingService,
     private dialogService: DialogService,
     private sharedService: SharedService,
-    public rolesService: RolesService) {
+    public rolesService: RolesService,
+    public flowEditorService: FlowEditorService) {
+    if(flowEditorService.getFlowEditorStatus()){
+      setTimeout(() => {
+        this.navToFlowEditor();
+      }, 1);
+    }
     this.isAlive = true;
     this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))
@@ -201,5 +208,13 @@ export class SouthComponent implements OnInit, OnDestroy {
     this.viewPortSubscription.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
+  }
+
+  navToFlowEditorAddPage(){
+    this.router.navigate(['/south/flow']);
+  }
+
+  navToFlowEditor(){
+    this.router.navigate(['/south/flow'], { queryParams: { source: 'nodelist' } });
   }
 }

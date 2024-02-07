@@ -11,8 +11,18 @@
   border-top-left-radius: 0 !important;
   border-top-right-radius: 0 !important;
   position: relative;
-  padding: 1rem;
+  padding: 1rem 1rem 0 1rem;
   overflow: visible;
+}
+
+.custom-quickview-configuration {
+  border: none !important;
+}
+
+.breadcrumb {
+  margin-left: 1.5rem;
+  padding-top: 0.85rem;
+  margin-top: 10px;
 }
 
 .tabs {
@@ -35,7 +45,8 @@
 .groupNav {
   overflow-x: hidden;
   overflow-y: hidden;
-  -webkit-overflow-scrolling: touch; /* For WebKit implementations, provide inertia scrolling */
+  -webkit-overflow-scrolling: touch;
+  /* For WebKit implementations, provide inertia scrolling */
   white-space: nowrap;
   position: relative;
 }
@@ -79,7 +90,8 @@
   opacity: 1;
 }
 
-.invalid-tab, .tabs.is-boxed li.is-active a.invalid-tab {
+.invalid-tab,
+.tabs.is-boxed li.is-active a.invalid-tab {
   border-bottom-color: #f14668 !important;
 }
 

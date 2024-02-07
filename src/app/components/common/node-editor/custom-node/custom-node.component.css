@@ -1,0 +1,166 @@
+:host {
+  display: block;
+  background: white;
+  border: 4px solid silver;
+  border-radius: 10px;
+  cursor: pointer;
+  box-sizing: border-box;
+  width: 200px;
+  height: auto;
+  padding-bottom: 6px;
+  position: relative;
+  user-select: none;
+}
+
+:host:hover {
+  background: whitesmoke;
+}
+:host:hover .reading, :host:hover .asset{
+  visibility: visible;
+}
+
+:host.selected {
+  border-color: aqua;
+}
+
+:host .title {
+  color: black;
+  font-family: sans-serif;
+  font-size: 18px;
+  padding: 4px 4px 0px 4px;
+  margin-bottom: 0px;
+}
+
+:host .output {
+  text-align: right;
+  display: inline-block;
+}
+
+:host .input {
+  text-align: left;
+  display: inline-block;
+  box-shadow: none !important;
+  background-color: inherit !important;
+  border: none !important;
+  width: inherit;
+}
+
+:host .output-socket {
+  text-align: right;
+  margin-right: -1px;
+  display: inline-block;
+}
+
+:host .input-socket {
+  text-align: left;
+  margin-left: -1px;
+  display: inline-block;
+}
+
+:host .input-title,
+:host .output-title {
+  vertical-align: middle;
+  color: white;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 14px;
+  margin: 6px;
+  line-height: 16px;
+}
+
+:host .input-control {
+  z-index: 1;
+  width: calc(100% - 28px);
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.config-gear {
+  vertical-align: top;
+  background: none;
+  border: none;
+  padding-bottom: 0px !important;
+  font-size: 14px;
+  z-index: 999;
+}
+
+.add-btn {
+  vertical-align: top;
+  background: none;
+  border: none;
+  padding-top: 3px !important;
+  padding-bottom: 0px !important;
+  font-size: 14px;
+  z-index: 999;
+}
+
+.help-text {
+  display: block;
+  color: grey;
+  font-size: 0.85rem;
+}
+
+.service-details{
+  display: flex;
+  justify-content: center;
+  padding: 0px 4px 4px 4px;
+}
+
+.reading-details{
+  display: flex;
+  justify-content: center;
+}
+
+.reading{
+  font-size: 21px;
+  font-weight: bolder;
+  visibility: hidden;
+}
+
+.asset{
+  font-size: 14px;
+  color: grey;
+  padding-top: 12px;
+  padding-left: 4px;
+  visibility: hidden;
+}
+
+.output-container {
+  margin-top: -30px;
+}
+
+.node-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.storage {
+  width: 45px;
+  margin-left: 3px;
+}
+
+.storage-input {
+  margin-top: 2px;
+}
+
+.health-icon {
+  margin-left: -5px;
+}
+
+.add-service {
+  height: 107px;
+  width: 198px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.input-container {
+  padding: 0px !important;
+  height: auto;
+}
+
+.service-name:hover{
+  color: #485fc7 !important;
+}

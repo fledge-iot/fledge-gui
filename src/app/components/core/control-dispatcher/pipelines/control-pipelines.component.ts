@@ -6,6 +6,8 @@ import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.
 import { Router } from '@angular/router';
 import { DocService } from '../../../../services/doc.service';
 import { AlertService, ControlPipelinesService, ProgressBarService, RolesService } from '../../../../services';
+import { ListAdditionalServicesComponent } from '../../developer/additional-services/list-additional-services.component';
+import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
   selector: 'app-control-pipelines',
@@ -14,13 +16,18 @@ import { AlertService, ControlPipelinesService, ProgressBarService, RolesService
 })
 export class ControlPipelinesComponent implements OnInit, OnDestroy {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
+  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
+  @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
+
   pipelines = [];
   public showSpinner = false;
   public childData = {};
+  isServiceAvailable = false;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   public reenableButton = new EventEmitter<boolean>(false);
+  showConfigureModal: boolean = false;
 
   constructor(private controlPipelinesService: ControlPipelinesService,
     private alertService: AlertService,
@@ -162,6 +169,22 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
 
   public hideLoadingSpinner() {
     this.showSpinner = false;
+  }
+
+  /**
+ * Open Configure Service modal
+ */
+  openServiceConfigureModal() {
+    this.showConfigureModal = true;
+    this.listAdditionalServicesComponent.showServices('dispatcher');
+  }
+
+  onNotify(event) {
+    if (event?.isCancelEvent) {
+      return;
+    } else {
+      this.addDispatcherServiceComponent.getInstalledServicesList();
+    }
   }
 
   public ngOnDestroy(): void {

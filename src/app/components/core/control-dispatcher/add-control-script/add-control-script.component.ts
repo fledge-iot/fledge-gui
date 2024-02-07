@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { cloneDeep, isEmpty } from 'lodash';
+import { cloneDeep, isEmpty, pickBy } from 'lodash';
 import { AclService } from '../../../../services/acl.service';
 import { AlertService, ProgressBarService, RolesService, SharedService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
@@ -152,18 +152,21 @@ export class AddControlScriptComponent implements OnInit {
     this.scriptForm.form.markAsDirty();
   }
 
-  flattenPayload(steps: any) {
-    Object.values(steps).map((val: any) => {
-      let values;
-      for (const key in val) {
-        const element = val[key];
-        if ('condition' in element) {
-          if (isEmpty(element['condition'].key) || element['condition'].value == null) {
-            delete element['condition'];
+
+  flattenPayload(steps: any[]) {
+    steps.forEach((val: any) => {
+      const keys = Object.keys(val);
+      keys.forEach(key => {
+        // remove invalid(null, undefined) values from object 
+        val[key] = pickBy(val[key]);
+        if ('condition' in val[key]) {
+          if (isEmpty(val[key]['condition'].key) || val[key]['condition'].value == null) {
+            delete val[key]['condition'];
           }
         }
-      }
+      });
 
+      let values;
       if ('configure' in val || 'delay' in val) {
         values = val;
       } else if ('write' in val) {
@@ -173,6 +176,7 @@ export class AddControlScriptComponent implements OnInit {
       } else if ('script' in val) {
         values = val['script'].parameters;
       }
+
       if (values) {
         values = Object.values(values).reduce((acc: any, obj: any) => {
           let found = false;
@@ -190,15 +194,33 @@ export class AddControlScriptComponent implements OnInit {
 
         values = Object.values(values)
           .map((v: any) => {
-            return { [v.key]: v.value };
-          }).reduce((r, c) => ({ ...r, ...c }), {})
+            return {
+              ...(v.key?.trim() && { [v.key?.trim()]: v.value?.trim() })
+            };
+          }).reduce((r, c) => ({ ...r, ...c }), {});
 
-        if ('write' in val) {
+        // update write step object
+        if (val.hasOwnProperty('write')) {
           val['write'].values = values;
-        } else if ('operation' in val) {
+          if (this.isEmptyObject(values)) {
+            delete val['write']?.values;
+          }
+        }
+
+        // update operation step object
+        if (val.hasOwnProperty('operation')) {
           val['operation'].parameters = values;
-        } else if ('script' in val) {
+          if (this.isEmptyObject(values)) {
+            delete val['operation']?.parameters;
+          }
+        }
+
+        // update scripts step object
+        if (val.hasOwnProperty('script')) {
           val['script'].parameters = values;
+          if (this.isEmptyObject(values)) {
+            delete val['script']?.parameters;
+          }
         }
       }
       return val;
@@ -207,9 +229,14 @@ export class AddControlScriptComponent implements OnInit {
     steps = steps.filter(s => Object.keys(s).length !== 0);
     steps.forEach(step => {
       const index = this.stepControlsList.findIndex(s => s.order === Object.values(step)[0]['order']);
-      Object.values(step)[0]['order'] = index;
+      Object.values(step)[0]['order'] = index + 1;
     });
     return steps;
+  }
+
+  isEmptyObject(values = {}) {
+    // check if object = {}
+    return Object.keys(values).length == 0 ? true : false;
   }
 
   updatedStepList(list) {
@@ -250,12 +277,12 @@ export class AddControlScriptComponent implements OnInit {
           this.scriptForm.form.markAsUntouched();
           this.scriptForm.form.markAsPristine();
           setTimeout(() => {
-            this.reenableButton.emit(false); 
+            this.reenableButton.emit(false);
             this.router.navigate(['control-dispatcher', 'script']);
           }, 1000);
         }, error => {
           this.ngProgress.done();
-          this.reenableButton.emit(false); 
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -270,7 +297,7 @@ export class AddControlScriptComponent implements OnInit {
     this.ngProgress.start();
     this.controlService.updateScript(this.scriptName, payload)
       .subscribe((data: any) => {
-        this.reenableButton.emit(false); 
+        this.reenableButton.emit(false);
         this.scriptName = payload.name;
         this.router.navigate(['control-dispatcher', 'script']);
         this.alertService.success(data.message, true);
@@ -280,7 +307,7 @@ export class AddControlScriptComponent implements OnInit {
       }, error => {
         /** request completed */
         this.ngProgress.done();
-        this.reenableButton.emit(false); 
+        this.reenableButton.emit(false);
         if (error.status === 0) {
           console.log('service down ', error);
         } else {

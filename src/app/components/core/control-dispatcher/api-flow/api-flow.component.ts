@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter } from '@angular/core';
+import { Component, OnInit, EventEmitter, ViewChild } from '@angular/core';
 import { ControlAPIFlowService, ProgressBarService, RolesService, SharedService, AlertService } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
@@ -10,6 +10,8 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { APIFlow, User } from '../../../../../../src/app/models';
+import { ListAdditionalServicesComponent } from '../../developer/additional-services/list-additional-services.component';
+import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
     selector: 'app-api-flow',
@@ -18,13 +20,17 @@ import { APIFlow, User } from '../../../../../../src/app/models';
 })
 
 export class APIFlowComponent implements OnInit {
+  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
+  @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
+
     apiFlows = [];
 
     // To show Entry point name and description on modal, we need these variables
     epName: string = '';
     description: string = '';
 
-
+    isServiceAvailable = false;
+    
     loggedInUsername: string;
     allUsers: User[];
   
@@ -36,6 +42,8 @@ export class APIFlowComponent implements OnInit {
     destroy$: Subject<boolean> = new Subject<boolean>();
 
     public reenableButton = new EventEmitter<boolean>(false);
+
+    showConfigureModal: boolean = false;
 
     constructor(
         private alertService: AlertService,
@@ -241,6 +249,21 @@ export class APIFlowComponent implements OnInit {
       this.description = af.description;
       this.reenableButton.emit(false);
       this.dialogService.open(id);
+    }
+
+    onNotify(event) {
+      if (event?.isCancelEvent) {
+        return;
+      }
+      this.addDispatcherServiceComponent.getInstalledServicesList();
+    }
+
+    /**
+     * Open Configure Service modal
+     */
+    openServiceConfigureModal() {
+      this.showConfigureModal = true;
+      this.listAdditionalServicesComponent.showServices('dispatcher');
     }
 
     closeModal(id: string) {

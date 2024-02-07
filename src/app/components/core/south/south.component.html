@@ -8,6 +8,11 @@
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
+      <!-- <button class="btn small-btn flow-editor" (click)="navToFlowEditorAddPage()">
+        <span class="ml-2 has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Flow editor">
+          <i class="bi bi-diagram-3 bi-md"></i>
+        </span>
+      </button> -->
       <a *ngIf="rolesService?.hasEditPermissions()" id="add_south_service" class="fix-pad button is-light"
         (click)="addSouthService()">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>

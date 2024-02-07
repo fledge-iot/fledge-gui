@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fromEvent, interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -33,6 +33,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   keyword = "";
   showConfigButton:boolean = false;
   routePath: string = '';
+
+  @Input() sourceName: string;
 
   constructor(private systemLogService: SystemLogService,
     private schedulesService: SchedulesService,
@@ -75,6 +77,13 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         this.keyword = this.search.nativeElement.value;
         this.getSysLogs();
       })
+      
+  }
+
+  ngOnChanges(){
+    if(this.sourceName){
+      this.source = this.sourceName;
+    }
   }
 
   public getSchedules(): void {

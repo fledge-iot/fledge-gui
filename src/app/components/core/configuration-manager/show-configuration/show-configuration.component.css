@@ -71,10 +71,6 @@
   outline: none;
 }
 
-[hidden] {
-  display: none !important;
-}
-
 .is-margin {
   margin-bottom: 0.5rem;
 }

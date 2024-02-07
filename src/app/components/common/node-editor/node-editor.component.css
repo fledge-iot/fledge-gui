@@ -1,0 +1,9 @@
+.rete {
+  width: 82vw;
+  height: 85vh;
+}
+
+.navbar-item {
+  justify-content: space-between;
+  align-items: normal;
+}

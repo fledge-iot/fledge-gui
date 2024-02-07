@@ -265,6 +265,6 @@ export class NotificationModalComponent implements OnInit {
 
   goToLink() {
     const urlSlug = 'editing-notifications';
-    this.docService.goToNotificationDocLink(urlSlug);
+    this.docService.goToServiceDocLink(urlSlug, 'fledge-service-notification');
   }
 }

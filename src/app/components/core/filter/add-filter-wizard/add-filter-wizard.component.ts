@@ -13,6 +13,8 @@ import { of, Subscription, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FlowEditorService } from '../../../common/node-editor/flow-editor.service';
 
 
 @Component({
@@ -51,6 +53,9 @@ export class AddFilterWizardComponent implements OnInit {
 
   validChildConfigurationForm = true;
   pluginConfiguration: any;
+  public source = '';
+  private subscription: Subscription;
+  updatedFilterPipeline: any;
 
   public reenableButton = new EventEmitter<boolean>(false);
 
@@ -61,10 +66,19 @@ export class AddFilterWizardComponent implements OnInit {
     private alertService: AlertService,
     private toast: ToastService,
     private service: ServicesApiService,
+    public flowEditorService: FlowEditorService,
     private docService: DocService,
     private configurationControlService: ConfigurationControlService,
     private ngProgress: ProgressBarService,
-    private cdRef: ChangeDetectorRef) { }
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
+    private cdRef: ChangeDetectorRef) {
+      this.activatedRoute.queryParams.subscribe(params => {
+        if (params['source']) {
+          this.source = params['source'];
+        }
+      });
+    }
 
   ngOnInit() {
     this.getCategories();
@@ -74,6 +88,9 @@ export class AddFilterWizardComponent implements OnInit {
       pluginToInstall: [{ value: null, disabled: false }, [Validators.required]],
       config: [null]
     });
+    this.subscription = this.flowEditorService.pipelineInfo.subscribe((data:any) =>{
+      this.updatedFilterPipeline = data;
+    })
     this.getInstalledFilterPlugins();
   }
 
@@ -189,10 +206,6 @@ export class AddFilterWizardComponent implements OnInit {
 
     switch (+id) {
       case 1:
-
-        nxtButton.textContent = 'Next';
-        previousButton.textContent = 'Previous';
-
         // To verify if category (or filter itself) with this name already exists
         // hence filter can not be created with that name
         const isFilterExist = this.categories.some(item => {
@@ -200,8 +213,11 @@ export class AddFilterWizardComponent implements OnInit {
         });
         if (isFilterExist) {
           this.alertService.error('A filter (or category) with this name already exists.');
+          this.reenableButton.emit(false);
           return;
         }
+        nxtButton.textContent = 'Next';
+        previousButton.textContent = 'Previous';
         let pluginValue = '';
         if (formValues['name']?.trim() !== '' && (formValues['plugin']?.length > 0 || formValues['pluginToInstall']?.length > 0)) {
           if (formValues['pluginToInstall']) {
@@ -412,7 +428,15 @@ export class AddFilterWizardComponent implements OnInit {
             }
             this.notify.emit({ 'filter': payload.name, files });
           } else {
-            this.addFilterPipeline({ 'pipeline': [payload.name], files });
+            if(this.source === 'flowEditorFilter'){
+              this.replaceFilterNameInPipeline(data.filter);
+              this.updateFilterPipeline({ 'pipeline': this.updatedFilterPipeline, files }, data.filter);
+              console.log(this.updatedFilterPipeline)
+              // this.router.navigate(['/south/flow'], { queryParams: { source: this.serviceName } });
+            }
+            else{
+              this.addFilterPipeline({ 'pipeline': [payload.name], files });
+            }
           }
         },
         (error) => {
@@ -521,5 +545,42 @@ export class AddFilterWizardComponent implements OnInit {
       type: 'filter'
     };
     this.docService.goToPluginLink(pluginInfo);
+  }
+
+  replaceFilterNameInPipeline(filterName) {
+    for (let i = 0; i < this.updatedFilterPipeline.length; i++) {
+      if (typeof (this.updatedFilterPipeline[i]) === "string") {
+        if (this.updatedFilterPipeline[i] === "Filter") {
+          this.updatedFilterPipeline[i] = filterName;
+          return;
+        }
+      }
+      else {
+        let index = this.updatedFilterPipeline[i].indexOf("Filter");
+        if (index !== -1) {
+          this.updatedFilterPipeline[i].splice(index, 1, filterName);
+          return;
+        }
+      }
+    }
+  }
+
+  public updateFilterPipeline(payload, filterName) {
+    this.filterService.updateFilterPipeline(payload, this.serviceName)
+      .subscribe(() => {
+        if (payload?.files.length > 0) {
+          const name = this.serviceName + '_' + filterName
+          this.uploadScript(name, payload?.files);
+        }
+        console.log("pipeline updated");
+        this.router.navigate(['/south/flow'], { queryParams: { source: this.serviceName } });
+      },
+        (error) => {
+          console.log('service down ', error);
+        });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

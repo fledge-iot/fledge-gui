@@ -1,0 +1,42 @@
+.btn-delete {
+    border-color: transparent !important;
+    opacity: 0;
+}
+
+tr:hover .btn-delete {
+    opacity: 1;
+}
+
+.context-menu {
+    border: none;
+}
+
+.cog-icon {
+    background: none;
+    border: none;
+    font-size: 0.85rem;
+}
+
+.service-table {
+    width: 50%;
+}
+
+#refresh-check {
+    margin-left: 3px;
+}
+  
+.breadcrumb {
+    margin-bottom: 0px !important;
+}
+
+.dashed-border td {
+    border-top: 1px dashed silver;
+}
+
+.change-overflow {
+    overflow: visible;
+}
+
+.remove-border td {
+    border-bottom: 0px;
+}
