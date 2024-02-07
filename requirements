@@ -7,13 +7,11 @@ cd $(dirname $0)
 echo "Setting up the prerequisites..."
 echo
 
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        if [[ -f /etc/os-release ]]; then
-        OS_NAME=`(grep -o '^NAME=.*' /etc/os-release | cut -f2 -d\" | sed 's/"//g')`
-        fi
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-        # Mac OSX
-        OS_NAME=`uname`
+if [[ -f /etc/os-release ]]; then
+   OS_NAME=`(grep -o '^NAME=.*' /etc/os-release | cut -f2 -d\" | sed 's/"//g')`
+elif [[ -f /System/Library/CoreServices/SystemVersion.plist ]]; then
+   # macOS
+   OS_NAME=`uname`
 fi
 
 PKG_TYPE="deb"
