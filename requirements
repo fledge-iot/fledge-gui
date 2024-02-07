@@ -20,7 +20,11 @@ PKG_TYPE="deb"
 if [[ ${OS_NAME} == *"Red Hat"* || ${OS_NAME} == *"CentOS"* ]]; then
       PKG_MANAGER="yum"; PKG_TYPE="rpm" ;
 elif [[ "$OS_NAME" == "Darwin" ]]; then
-      PKG_MANAGER="brew"
+      if [[ ${PKG_MANAGER} == "" ]]; then
+          echo "Hombrew not installed."
+      else
+          PKG_MANAGER="brew"
+      fi
 fi
 echo
 
