@@ -428,7 +428,7 @@ export class AddFilterWizardComponent implements OnInit {
             }
             this.notify.emit({ 'filter': payload.name, files });
           } else {
-            if(this.source === 'flowEditorFilter'){
+            if(this.source){
               this.replaceFilterNameInPipeline(data.filter);
               this.updateFilterPipeline({ 'pipeline': this.updatedFilterPipeline, files }, data.filter);
               console.log(this.updatedFilterPipeline)

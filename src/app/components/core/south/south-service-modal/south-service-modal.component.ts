@@ -96,11 +96,6 @@ export class SouthServiceModalComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe(params => {
       if (params['source']) {
         this.source = params['source'];
-        if(this.source === 'flowEditorFilter'){
-          setTimeout(() => {
-            this.openAddFilterModal(true);
-          }, 500);
-        }
       }
     });
   }
@@ -525,7 +520,7 @@ export class SouthServiceModalComponent implements OnInit {
   }
 
   navToSouth(){
-    if(this.source === 'flowEditor' || this.source === 'flowEditorFilter'){
+    if(this.source === 'flowEditor'){
       this.router.navigate(['/south/flow'], { queryParams: { source: this.serviceName } });
     }
     else{

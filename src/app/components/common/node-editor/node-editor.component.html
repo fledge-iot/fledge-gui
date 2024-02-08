@@ -10,11 +10,18 @@
                 </li>
             </ul>
         </nav>
-        <ng-container *ngIf="source && rolesService.hasEditPermissions()">
+        <ng-container *ngIf="source && rolesService.hasEditPermissions() && !isAddFilterWizard">
             <button class="button is-small is-link" (click)="save()">Save</button>
         </ng-container>
     </div>
-    <div class="rete" #rete></div>
+    <ng-container *ngIf="!isAddFilterWizard">
+        <div class="rete" #rete></div>
+    </ng-container>
+    <ng-container *ngIf="source && source!=='nodelist' && isAddFilterWizard">
+        <div class="box animated slideInRight">
+          <app-add-filter-wizard (notify)="onNotify($event)" [serviceName]="source"></app-add-filter-wizard>
+        </div>
+    </ng-container>
     <app-quickview>
         <ng-container *ngIf="showPluginConfiguration">
             <app-configuration-group *ngIf="category" [category]="category" [from]="'south'" [sourceName]="serviceName"

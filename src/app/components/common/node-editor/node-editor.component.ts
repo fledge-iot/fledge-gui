@@ -52,6 +52,7 @@ export class NodeEditorComponent implements OnInit {
   validConfigurationForm = true;
   validFilterConfigForm = true;
   quickviewFilterName = "";
+  isAddFilterWizard: boolean = false;
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -115,7 +116,7 @@ export class NodeEditorComponent implements OnInit {
             this.updatedFilterPipeline = updatedPipeline;
             console.log(this.updatedFilterPipeline);
             this.flowEditorService.pipelineInfo.next(this.updatedFilterPipeline);
-            this.router.navigate(['/south', this.source, 'details'], { queryParams: { source: 'flowEditorFilter' } });
+            this.isAddFilterWizard = true;
           }
         }
       }
@@ -517,6 +518,11 @@ export class NodeEditorComponent implements OnInit {
 
   getChangedFilterConfig(changedConfiguration: any) {
     this.changedFilterConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.filterPluginConfiguration);
+  }
+
+  onNotify() {
+    this.isAddFilterWizard = false;
+    this.router.navigate(['/south/flow'], { queryParams: { source: this.source } });
   }
 
   ngOnDestroy() {
