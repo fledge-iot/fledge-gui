@@ -18,6 +18,7 @@ import { Router } from '@angular/router';
 import { ConfigurationGroupComponent } from '../../../configuration-manager/configuration-group/configuration-group.component';
 import {QUOTATION_VALIDATION_PATTERN} from '../../../../../utils';
 import { Service } from '../../../../../models';
+import { AdditionalServicesUtils } from '../additional-services-utils.service';
 
 @Component({
   selector: 'app-additional-service-modal',
@@ -32,7 +33,7 @@ export class AdditionalServiceModalComponent {
   serviceProcessName = '';
   serviceType = '';
   serviceName = '';
-  availableServices = [];
+  isInstalled: boolean;
   packageName = '';
   btnText = 'Add';
   showDeleteBtn = true;
@@ -49,6 +50,7 @@ export class AdditionalServiceModalComponent {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild('configComponent') configComponent: ConfigurationGroupComponent;
   @Output() notifyService: EventEmitter<any> = new EventEmitter<any>();
+  @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   changedConfig: any;
   categoryCopy: { name: string; config: Object; };
@@ -56,6 +58,7 @@ export class AdditionalServiceModalComponent {
   validForm = true;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
   pollingScheduleID: string;
+  navigateFromParent: string;
   public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(
@@ -70,18 +73,20 @@ export class AdditionalServiceModalComponent {
     private dialogService: DialogService,
     private fileUploaderService: FileUploaderService,
     private configurationControlService: ConfigurationControlService,
+    private additionalServicesUtils: AdditionalServicesUtils,
     public rolesService: RolesService) { }
 
   ngOnInit() { }
 
-  getServiceInfo(serviceInfo, availableServicePkgs, pollingScheduleID) {
+  getServiceInfo(serviceInfo, pollingScheduleID, from = null) {
+    this.navigateFromParent = from;
     this.serviceName = serviceInfo.name ? serviceInfo.name : '';
-    this.isServiceEnabled = ["shutdown", "disabled", "installed", ""].includes(serviceInfo.state) ? false : true;
+    this.isServiceEnabled = serviceInfo.isEnabled;   
     this.isServiceAvailable = serviceInfo.added;
     this.serviceProcessName = serviceInfo.process;
     this.serviceType = serviceInfo.type;
     this.packageName = serviceInfo.package;
-    this.availableServices = availableServicePkgs;  
+    this.isInstalled = serviceInfo.isInstalled;  
     if (pollingScheduleID) {
       this.pollingScheduleID = pollingScheduleID;
     }
@@ -99,11 +104,11 @@ export class AdditionalServiceModalComponent {
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     if (!this.serviceInstallationState) {
-      this.toggleModal(false, {isCancelEvent: true});
+      this.toggleModal(false);
     }
   }
 
-  public toggleModal(isOpen: Boolean, emitData = null) {
+  public toggleModal(isOpen: Boolean) {
     this.serviceInstallationState = false;
     this.reenableButton.emit(false);
     const serviceModal = <HTMLDivElement>document.getElementById('additional-service-modal');
@@ -119,7 +124,11 @@ export class AdditionalServiceModalComponent {
         serviceModal.classList.add('is-active');
         return;
       }
-      this.notifyService.emit(emitData);
+      if (!this.navigateFromParent) {
+        this.notifyService.emit();
+      } else {
+        this.notify.emit();
+      } 
       serviceModal.classList.remove('is-active');
       this.category = '';
       this.service = <Service>{};
@@ -159,11 +168,11 @@ export class AdditionalServiceModalComponent {
           this.alertService.success('Service added successfully.', true);
           this.isServiceAvailable = true;
           this.btnText = 'Save';
-          this.toggleModal(false, {isCancelEvent: false});
+          this.toggleModal(false);
         },
         (error) => {
           this.ngProgress.done();
-          this.toggleModal(false, {isCancelEvent: false});
+          this.toggleModal(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -207,7 +216,7 @@ export class AdditionalServiceModalComponent {
               if (this.increment > this.maxRetry) {
                 this.serviceInstallationState = false;
                 this.ngProgress.done();
-                this.toggleModal(false, { isCancelEvent: false});
+                this.toggleModal(false);
                 this.alertService.closeMessage();
                 // tslint:disable-next-line: max-line-length
                 return throwError(`Failed to get expected results in ${this.maxRetry} attempts, tried with incremental time delay starting with 2s, for installing plugin ${pluginName}`);
@@ -252,7 +261,7 @@ export class AdditionalServiceModalComponent {
         error => {
           /** request done */
           this.serviceInstallationState = false;
-          this.toggleModal(false, {isCancelEvent: false});
+          this.toggleModal(false);
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
@@ -298,21 +307,25 @@ export class AdditionalServiceModalComponent {
     if (name != null) {
       serviceName = name;
     }
-    this.toggleModal(false, {service: serviceName, state: 'enable', isCancelEvent: false});
+    this.additionalServicesUtils.enableService(serviceName);
+    this.toggleModal(false);
     this.isServiceEnabled = true;
   }
 
   disableService() {
-    this.toggleModal(false, {service: this.serviceName, state: 'disable', isCancelEvent: false});
+    this.additionalServicesUtils.disableService(this.serviceName);
+    this.toggleModal(false);
     this.isServiceEnabled = false;
   }
 
+  deleteService(serviceName) {
+    this.additionalServicesUtils.deleteService(serviceName);
+    this.closeDeleteModal("dialog-delete-confirmation");
+    this.toggleModal(false);
+  }
+
   public async addServiceEvent() {
-    let availableServicesProcessName = []
-    this.availableServices.forEach(function(s) {
-      availableServicesProcessName.push(s["process"]);
-    });
-    if (availableServicesProcessName.includes(this.serviceProcessName)) {
+    if (!this.isInstalled) {
       this.installService();
     } else {
       this.addService(false);
@@ -363,13 +376,13 @@ export class AdditionalServiceModalComponent {
     this.stateUpdate();
     if (!isEmpty(this.changedConfig) && this.categoryCopy?.name) {
       this.updateConfiguration(this.categoryCopy?.name, this.changedConfig);
-      this.toggleModal(false, {isCancelEvent: false});
+      this.toggleModal(false);
     }
     if (!isEmpty(this.advancedConfiguration)) {
       this.advancedConfiguration.forEach(element => {
         this.updateConfiguration(element.key, element.config);
       });
-      this.toggleModal(false, {isCancelEvent: false});
+      this.toggleModal(false);
     }
   }
 

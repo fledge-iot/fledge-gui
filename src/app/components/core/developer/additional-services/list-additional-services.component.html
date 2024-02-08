@@ -1,4 +1,4 @@
-<div *ngIf="!navigateFromParent" class="container is-fluid">
+<div class="container is-fluid">
   <div class="navbar-item">
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
@@ -20,6 +20,9 @@
           Loading...
         </div>
         <ng-container *ngIf="!showLoading">
+          <div class="has-text-centered" *ngIf="availableServicePkgs.length === 0 && installedServicePkgs.length === 0">
+            <small class="no-rec">No service is available for the given repository</small>
+          </div>
           <table class="table is-responsive service-table is-hoverable mb-0">
             <tbody>
               <ng-container *ngFor="let s of installedServicePkgs; let i = index;">
@@ -68,7 +71,7 @@
       </div>
     </div>
 </div>
-<app-additional-service-modal (notifyService)="onNotifyEvent($event)"></app-additional-service-modal>
+<app-additional-service-modal (notifyService)="getData()"></app-additional-service-modal>
 
 <app-confirmation-dialog id="delete-confirmation-dialog">
   <header class="modal-card-head">

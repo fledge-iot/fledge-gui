@@ -1,5 +1,5 @@
 <div class="container is-fluid">
-  <app-add-dispatcher-service (serviceStatusEvent)="isServiceAvailable = $event" (serviceConfigureModal)="openServiceConfigureModal()"></app-add-dispatcher-service>
+  <app-add-dispatcher-service (serviceStatusEvent)="isServiceAvailable = $event" (serviceConfigureModal)="getServiceDetail($event)"></app-add-dispatcher-service>
   <div class="card">
     <header class="card-header">
       <div id="control-acl" class="card-header-title">
@@ -115,4 +115,4 @@
     </div>
   </div>
 </div>
-<app-list-additional-services [hidden]="!showConfigureModal" [navigateFromParent]="'dispatcher'" (notify)="onNotify($event)"></app-list-additional-services>
+<app-additional-service-modal (notify)="onNotify($event)"></app-additional-service-modal>

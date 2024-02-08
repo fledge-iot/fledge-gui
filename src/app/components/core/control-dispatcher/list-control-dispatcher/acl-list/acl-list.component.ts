@@ -6,7 +6,7 @@ import { DialogService } from '../../../../common/confirmation-dialog/dialog.ser
 import { orderBy } from 'lodash';
 import { AclService } from '../../../../../services/acl.service';
 import { DocService } from '../../../../../services/doc.service';
-import { ListAdditionalServicesComponent } from '../../../developer/additional-services/list-additional-services.component';
+import { AdditionalServiceModalComponent } from '../../../developer/additional-services/additional-service-modal/additional-service-modal.component';
 import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
@@ -16,7 +16,7 @@ import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/ad
 })
 export class AclListComponent implements OnInit {
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
-  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
+  @ViewChild(AdditionalServiceModalComponent, { static: true }) additionalServiceModalComponent: AdditionalServiceModalComponent;
   @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
 
   controlAcls: any = [];
@@ -27,6 +27,7 @@ export class AclListComponent implements OnInit {
 
   public reenableButton = new EventEmitter<boolean>(false);
   showConfigureModal: boolean = false;
+  serviceInfo;
 
   constructor(
     private aclService: AclService,
@@ -133,12 +134,21 @@ export class AclListComponent implements OnInit {
       });
   }
 
+  getServiceDetail(event) {
+    this.showConfigureModal = event.isOpen;
+    delete event.isOpen;
+    this.serviceInfo = event;
+    if (this.showConfigureModal) {
+      this.openServiceConfigureModal();
+    }
+  }
+
   /**
    * Open Configure Service modal
    */
   openServiceConfigureModal() {
-    this.showConfigureModal = true;
-    this.listAdditionalServicesComponent.showServices('dispatcher');
+    this.additionalServiceModalComponent.toggleModal(true);
+    this.additionalServiceModalComponent.getServiceInfo(this.serviceInfo, null, 'dispatcher');
   }
 
   goToLink(urlSlug: string) {

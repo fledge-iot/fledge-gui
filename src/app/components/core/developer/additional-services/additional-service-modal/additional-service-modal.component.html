@@ -10,7 +10,7 @@
       </span>
       <span *ngIf="!isServiceAvailable" class="modal-card-title is-size-6">{{serviceType !== 'BucketStorage' ? serviceType : 'Bucket Storage'}} Service
       </span>
-      <button class="delete" aria-label="close" (click)="toggleModal(false, {isCancelEvent: true})"></button>
+      <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
       <form name="additional-service-form" id="serviceForm" #fg="ngForm">
@@ -107,7 +107,7 @@
           </div>
           <div class="field is-grouped is-pulled-right" *ngIf="rolesService.hasEditPermissions()">
             <p class="buttons">
-              <button (click)="openDeleteModal('delete-confirmation-dialog')" class="button is-small">
+              <button (click)="openDeleteModal('dialog-delete-confirmation')" class="button is-small">
                 Delete Service
               </button>
             </p>
@@ -117,3 +117,16 @@
     </section>
   </div>
 </div>
+<app-confirmation-dialog id="dialog-delete-confirmation">
+  <header class="modal-card-head">
+    <p class="modal-card-title is-size-6">Delete</p>
+    <button type="button" class="delete" aria-label="close" (click)="closeDeleteModal('dialog-delete-confirmation')"></button>
+  </header>
+  <section class="modal-card-body">
+    Deleting {{service?.name}} service can not be undone. Continue?
+  </section>
+  <footer class="modal-card-foot">
+    <button type="button" class="button is-small" (click)="closeDeleteModal('dialog-delete-confirmation')">Cancel</button>
+    <button type="button" class="button is-small is-danger" (click)="deleteService(service?.name)" [appDisableUntilResponse]="reenableButton">Delete</button>
+  </footer>
+</app-confirmation-dialog>
