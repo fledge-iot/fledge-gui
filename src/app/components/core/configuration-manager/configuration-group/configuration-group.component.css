@@ -15,6 +15,15 @@
   overflow: visible;
 }
 
+.custom-quickview-configuration {
+  border: none !important;
+}
+
+.breadcrumb {
+  padding-top: 0.85rem;
+  margin-top: 10px;
+}
+
 .tabs {
   margin-right: auto !important;
   margin-left: auto !important;
@@ -22,7 +31,6 @@
 }
 
 #group_navigation .nav {
-  display: flex;
   flex-wrap: inherit;
   margin-bottom: inherit;
 }
@@ -42,6 +50,7 @@
 }
 
 .groupNav_contents {
+  display: flex;
   float: left;
   padding-right: 20px;
 }

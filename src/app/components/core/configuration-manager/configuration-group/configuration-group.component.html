@@ -1,8 +1,16 @@
-<div class="container">
+<div class="container" [ngClass]="{'is-fluid': sourceName}">
+  <nav *ngIf="sourceName" class="breadcrumb" aria-label="breadcrumbs">
+    <ul>
+      <li class="is-active"><a>{{sourceName}}</a></li>
+      <li class="is-active">
+        <a href="#" aria-current="page">Configuration</a>
+      </li>
+    </ul>
+  </nav>
   <div class="configuration_group_wrapper">
     <nav id="group_navigation" class="groupNav dragscroll mouse-scroll" role="tablist">
-      <div id="groupNavContents" class="nav groupNav_contents">
-        <div class="tabs is-boxed" *ngIf="from !== 'config-manager'">
+      <div id="groupNavContents" class="nav" [ngClass]="{'groupNav_contents': !sourceName}">
+        <div class="tabs" *ngIf="from !== 'config-manager'" [ngClass]="{'is-fullwidth': sourceName, 'is-boxed': !sourceName}">
           <ul>
             <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
               <h6 class="is-6 is-small-font">
@@ -45,7 +53,7 @@
   </ng-container>
   <ng-template #group>
     <!-- if user coming from config-manager component don't show the group border -->
-    <div [ngClass]="{'highlight': from !== 'config-manager'}">
+    <div [ngClass]="{'highlight': from !== 'config-manager', 'custom-quickview-configuration': sourceName}">
       <ng-container *ngFor="let g of groups">
         <ng-container *ngIf="from == 'config-manager';else showGroup">
           <app-bucket-configuration *ngIf="g.type == 'bucket'" [dataModel]="g.config"

@@ -237,6 +237,25 @@
               [checked]="rangeSliderService.getAlphControlStatus()">
           </div>
         </div>
+        <ng-container *ngIf="!rolesService.hasEditPermissions() && !rolesService.hasDataViewRole()">
+          <div class="column is-2"></div>
+          <div class="column is-3">
+            <label class="label">Flow Editor</label>
+            <div class="control">
+              <input type="checkbox" (click)="setFlowEditorStatus($event.target.checked)"
+              [checked]="flowEditorService.getFlowEditorStatus()">
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      <div class="columns" *ngIf="rolesService.hasEditPermissions()">
+        <div class="column is-3">
+          <label class="label">Flow Editor</label>
+          <div class="control">
+            <input type="checkbox" (click)="setFlowEditorStatus($event.target.checked)"
+            [checked]="flowEditorService.getFlowEditorStatus()">
+          </div>
+        </div>
       </div>
     </div>
   </div>
