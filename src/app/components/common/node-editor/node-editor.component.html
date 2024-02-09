@@ -3,9 +3,14 @@
         <nav class="breadcrumb" aria-label="breadcrumbs">
             <ul>
                 <li><a [routerLink]="['/south/flow']" [queryParams]="{ source: 'nodelist' }">South</a></li>
-                <li class="is-active">
+                <li [ngClass]="{'is-active' : !source || !isAddFilterWizard}" *ngIf="source!=='nodelist'">
+                    <a [routerLink]="['/south/flow']" [queryParams]="{ source: source }">
+                        {{source ? source : 'Add'}}
+                    </a>
+                </li>
+                <li class="is-active" *ngIf="source && source!=='nodelist' && isAddFilterWizard">
                     <a href="#" aria-current="page">
-                        {{source === 'nodelist' ? "" : source ? source : 'Add'}}
+                        Add Filter
                     </a>
                 </li>
             </ul>
