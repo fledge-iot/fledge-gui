@@ -399,6 +399,10 @@ span.tooltip {
   font-size: 1rem;
 }
 
+.bi-xl {
+  font-size: 1.5rem;
+}
+
 .bi:hover {
   color: rgb(91, 89, 89);
 }
