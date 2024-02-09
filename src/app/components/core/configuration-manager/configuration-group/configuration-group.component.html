@@ -9,8 +9,8 @@
   </nav>
   <div class="configuration_group_wrapper">
     <nav id="group_navigation" class="groupNav dragscroll mouse-scroll" role="tablist">
-      <div id="groupNavContents" class="nav groupNav_contents">
-        <div class="tabs is-boxed" *ngIf="from !== 'config-manager'">
+      <div id="groupNavContents" class="nav" [ngClass]="{'groupNav_contents': !sourceName}">
+        <div class="tabs" *ngIf="from !== 'config-manager'" [ngClass]="{'is-fullwidth': sourceName, 'is-boxed': !sourceName}">
           <ul>
             <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
               <h6 class="is-6 is-small-font">

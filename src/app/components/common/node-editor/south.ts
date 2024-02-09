@@ -19,6 +19,7 @@ export class South extends ClassicPreset.Node {
             this.addControl("asc" + assetCount, new ClassicPreset.InputControl("text"));
             this.addControl("rdc" + readingCount, new ClassicPreset.InputControl("text"));
             this.addControl(service.status, new ClassicPreset.InputControl("text"));
+            this.addControl(service.schedule_enabled, new ClassicPreset.InputControl("text"));
         }
         this.addOutput("port", new ClassicPreset.Output(socket));
     }

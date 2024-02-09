@@ -10,7 +10,7 @@ export class CustomSocketComponent implements OnChanges {
   @Input() data!: any;
   @Input() rendered!: any;
 
-  constructor(private cdr: ChangeDetectorRef)  {
+  constructor(private cdr: ChangeDetectorRef) {
     this.cdr.detach()
   }
 
