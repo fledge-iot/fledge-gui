@@ -6,7 +6,6 @@ import { ConnectionPlugin, Presets as ConnectionPresets, ClassicFlow, BidirectFl
 import { AutoArrangePlugin, Presets as ArrangePresets, ArrangeAppliers } from "rete-auto-arrange-plugin";
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from "rete-context-menu-plugin";
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
-// import { ScopesPlugin, Presets as ScopesPresets } from "rete-scopes-plugin";
 import { CustomNodeComponent } from "./custom-node/custom-node.component";
 import { HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
 import { addCustomBackground } from "./custom-background";
@@ -17,17 +16,16 @@ import { CustomSocketComponent } from "./custom-socket/custom-socket.component";
 import { South } from "./south";
 import { Storage } from "./storage";
 import { Filter } from "./filter";
-import { Applications } from "./applications";
 import { AddService } from "./add-service";
 import { MinimapExtra, MinimapPlugin } from "rete-minimap-plugin";
 import { curveStep, curveMonotoneX, curveLinear, CurveFactory } from "d3-shape";
 import { ConnectionPathPlugin } from "rete-connection-path-plugin";
 
-type Node = South | Filter | Applications;
+type Node = South | Filter;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 type AreaExtra = AngularArea2D<Schemes> | MinimapExtra | ContextMenuExtra;
 
-class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> {curve?: CurveFactory; }
+class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> { curve?: CurveFactory; }
 
 let editor = new NodeEditor<Schemes>();
 export async function createEditor(container: HTMLElement, injector: Injector, source: string, filterPipeline, service, services, filterConfigurations, flowEditorService, rolesService) {
@@ -94,7 +92,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
                     list: [
                         {
                             label: 'Filter', key: '1', handler: () => {
-                                let filter = new Filter(socket, {pluginName: '', enabled: 'false', filterName: 'Filter'});
+                                let filter = new Filter(socket, { pluginName: '', enabled: 'false', filterName: 'Filter' });
                                 editor.addNode(filter);
                             }
                         }
@@ -105,7 +103,6 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     })
 
     const dock = new DockPlugin<Schemes>();
-    // const scopes = new ScopesPlugin<Schemes>();
 
     render.addPreset(Presets.classic.setup(
         {
@@ -137,12 +134,11 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     area.use(render);
     area.use(arrange);
     area.use(dock);
-    // area.use(scopes);
     area.use(history);
-    
+
     if (source !== '' && source !== "nodelist") {
         area.use(minimap);
-        if(rolesService.hasEditPermissions()){
+        if (rolesService.hasEditPermissions()) {
             // area.use(contextMenu);
             let newDockFilter = () => {
                 setTimeout(() => {
@@ -159,7 +155,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
                         flowEditorService.showAddFilterIcon.next({ addedFiltersIdColl: addedFiltersIdColl });
                     }
                 }, 10);
-                return new Filter(socket, { pluginName: '', enabled: 'false', filterName: 'Filter', color: "#EA9999" })
+                return new Filter(socket, { pluginName: '', enabled: 'false', filterName: 'Filter', color: "#F9CB9C" })
             }
             dock.add(newDockFilter);
         }
@@ -170,11 +166,10 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
 
 async function createNodesAndConnections(socket, service, editor, filterPipeline, arrange, area, source, services, filterConfigurations, rolesService) {
 
-    if(source !== "nodelist"){
+    if (source !== "nodelist") {
         const southPlugin = new South(socket, service);
-        const filterBranch = new Applications(socket);
         const db = new Storage(socket);
-    
+
         await editor.addNode(southPlugin);
         await editor.addNode(db);
 
@@ -197,7 +192,7 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
         }
         else {
             let previousNode = southPlugin;
-            let colorCount=0;
+            let colorCount = 0;
             for (let i = 0; i < fpLen; i++) {
                 let pipelineItem = filterPipeline[i];
                 if (typeof (pipelineItem) === "string") {
@@ -214,7 +209,7 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
                     let tempNode = previousNode;
                     for (let j = 0; j < piLen; j++) {
                         let nextNodeConfig = filterConfigurations.find((f: any) => f.filterName === pipelineItem[j])
-                        nextNodeConfig.color = rgbToHex(235-(10*colorCount), 235, 235);
+                        nextNodeConfig.color = rgbToHex(235 - (10 * colorCount), 235, 235);
                         let nextNode = new Filter(socket, nextNodeConfig);
                         await editor.addNode(nextNode);
                         await editor.addConnection(
@@ -237,24 +232,24 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
         await arrange.layout();
         AreaExtensions.zoomAt(area, editor.getNodes());
     }
-    else{
-        let j=0;
-        let k=0;
-        for (let i=0; i<services.length; i++){
+    else {
+        let j = 0;
+        let k = 0;
+        for (let i = 0; i < services.length; i++) {
             const southPlugin = new South(socket, services[i]);
             await editor.addNode(southPlugin);
-            if(j<4){
-                await area.translate(southPlugin.id, { x: 250*j, y: 250*k });
+            if (j < 4) {
+                await area.translate(southPlugin.id, { x: 250 * j, y: 250 * k });
                 j++;
-                if(j==4){
-                    j=0; k++;
+                if (j == 4) {
+                    j = 0; k++;
                 }
             }
         }
-        if(rolesService.hasEditPermissions()){
+        if (rolesService.hasEditPermissions()) {
             const addService = new AddService();
             await editor.addNode(addService);
-            await area.translate(addService.id, { x: 250*j, y: 250*k });
+            await area.translate(addService.id, { x: 250 * j, y: 250 * k });
         }
     }
 
@@ -267,61 +262,61 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
     AreaExtensions.restrictor(area, {
         scaling: () => ({ min: 0.5, max: 2 }),
     });
-    }
+}
 
 export function getUpdatedFilterPipeline() {
     let nodes = editor.getNodes();
     let connections = editor.getConnections();
 
-    for(let i=0; i<nodes.length; i++){
-        if(i==0){
-            if(!connections.find(c => c.source === nodes[i].id)){
+    for (let i = 0; i < nodes.length; i++) {
+        if (i == 0) {
+            if (!connections.find(c => c.source === nodes[i].id)) {
                 console.log("Dangling connection");
                 return false;
             }
         }
-        else if(i==1){
-            if(!connections.find(c => c.target === nodes[i].id)){
+        else if (i == 1) {
+            if (!connections.find(c => c.target === nodes[i].id)) {
                 console.log("Dangling connection");
                 return false;
             }
         }
-        else{
-            if(!connections.find(c => c.source === nodes[i].id) || !connections.find(c => c.target === nodes[i].id)){
-                                    console.log("Dangling connection");
-                    return false;
-                            }
+        else {
+            if (!connections.find(c => c.source === nodes[i].id) || !connections.find(c => c.target === nodes[i].id)) {
+                console.log("Dangling connection");
+                return false;
+            }
         }
     }
 
     let updatedFilterPipeline = [];
     let sourceNode = nodes[0];
-    while(connections.find(c => c.source === sourceNode.id)){
+    while (connections.find(c => c.source === sourceNode.id)) {
         let previousSourceNode = sourceNode;
         let connlist = connections.filter(c => c.source === sourceNode.id);
-        if(connlist.length === 1){
+        if (connlist.length === 1) {
             let filterNode = editor.getNode(connlist[0].target);
-            if(filterNode.label !== "Storage"){
+            if (filterNode.label !== "Storage") {
                 updatedFilterPipeline.push(filterNode.label);
             }
             sourceNode = filterNode;
         }
-        else{
-            for(let i=0; i<connlist.length; i++){
+        else {
+            for (let i = 0; i < connlist.length; i++) {
                 let node = editor.getNode(connlist[i].target);
                 let branch = getBranchNodes(connections, node);
-                if(branch){
+                if (branch) {
                     updatedFilterPipeline.push(branch);
                 }
-                else{
-                    if(node.label !== "Storage"){
+                else {
+                    if (node.label !== "Storage") {
                         updatedFilterPipeline.push(node.label);
                     }
                     sourceNode = node;
                 }
             }
         }
-        if(previousSourceNode === sourceNode){
+        if (previousSourceNode === sourceNode) {
             break;
         }
     }
@@ -349,10 +344,10 @@ function getBranchNodes(connections, node) {
     return branchNodes;
 }
 
-export function deleteConnection(connectionId){
+export function deleteConnection(connectionId) {
     editor.removeConnection(connectionId);
 }
 
-function rgbToHex(r, g, b){
+function rgbToHex(r, g, b) {
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }

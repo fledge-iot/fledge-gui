@@ -15,7 +15,9 @@
 :host:hover {
   background: whitesmoke;
 }
-:host:hover .reading, :host:hover .asset{
+
+:host:hover .reading,
+:host:hover .asset {
   visibility: visible;
 }
 
@@ -100,24 +102,24 @@
   font-size: 0.85rem;
 }
 
-.service-details{
+.service-details {
   display: flex;
   justify-content: center;
   padding: 0px 4px 4px 4px;
 }
 
-.reading-details{
+.reading-details {
   display: flex;
   justify-content: center;
 }
 
-.reading{
+.reading {
   font-size: 21px;
   font-weight: bolder;
   visibility: hidden;
 }
 
-.asset{
+.asset {
   font-size: 14px;
   color: grey;
   padding-top: 12px;
@@ -161,6 +163,10 @@
   height: auto;
 }
 
-.service-name:hover{
+.service-name:hover {
   color: #485fc7 !important;
+}
+
+.custom-margin {
+  margin-top: -25px;
 }
