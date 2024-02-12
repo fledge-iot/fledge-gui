@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
 import { createEditor, getUpdatedFilterPipeline, deleteConnection } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfigurationControlService, ConfigurationService, FileUploaderService, FilterService, ProgressBarService, ResponseHandler, RolesService, ServicesApiService, ToastService } from './../../../services';
+import { ConfigurationControlService, ConfigurationService, FileUploaderService, FilterService, NorthService, ProgressBarService, ResponseHandler, RolesService, ServicesApiService, ToastService } from './../../../services';
 import { catchError, map, skip, takeUntil } from 'rxjs/operators';
 import { Service } from '../../core/south/south-service';
 import { Subject, Subscription, forkJoin, of } from 'rxjs';
@@ -9,6 +9,7 @@ import { FlowEditorService } from './flow-editor.service';
 import { cloneDeep, isEmpty } from 'lodash';
 import { FilterListComponent } from '../../core/filter/filter-list/filter-list.component';
 import { DialogService } from '../confirmation-dialog/dialog.service';
+import { NorthTask } from '../../core/north/north-task';
 
 @Component({
   selector: 'app-node-editor',
@@ -19,6 +20,7 @@ export class NodeEditorComponent implements OnInit {
 
   @ViewChild("rete") container!: ElementRef;
   public source = '';
+  public from = '';
   public filterPipeline = [];
   public updatedFilterPipeline = [];
   public filterConfigurations: any[] = [];
@@ -33,7 +35,9 @@ export class NodeEditorComponent implements OnInit {
   showFilterConfiguration: boolean = false;
   showLogs: boolean = false;
   service: Service;
-  services: Service[];
+  task: NorthTask;
+  services: Service[] = [];
+  tasks: NorthTask[] = [];
   destroy$: Subject<boolean> = new Subject<boolean>();
   serviceName = '';
   filterName = '';
@@ -67,15 +71,29 @@ export class NodeEditorComponent implements OnInit {
     private response: ResponseHandler,
     public ngProgress: ProgressBarService,
     private dialogService: DialogService,
+    private northService: NorthService,
     private router: Router) {
     this.route.queryParams.subscribe(params => {
-      if (params['source']) {
-        this.source = params['source'];
+      console.log('param', params);
+      this.from = params.from;
+      this.source = params.source;
+      if (this?.from === 'south') {
         this.getSouthboundServices();
-        if (this.source !== "nodelist") {
-          this.getFilterPipeline();
-        }
+      } else {
+        this.getNorthboundServices();
       }
+
+      if (this?.source !== "nodelist") {
+        this.getFilterPipeline();
+      }
+
+      // if (params['source']) {
+      //   this.source = params['source'];
+      //   this.getSouthboundServices();
+      //   if (this.source !== "nodelist") {
+      //     this.getFilterPipeline();
+      //   }
+      // }
     });
   }
 
@@ -99,7 +117,7 @@ export class NodeEditorComponent implements OnInit {
       }
       if (this.showLogs) {
       }
-      if(this.showFilterConfiguration) {
+      if (this.showFilterConfiguration) {
         this.quickviewFilterName = data.filterName;
         this.getFilterCategory()
       }
@@ -139,9 +157,21 @@ export class NodeEditorComponent implements OnInit {
     const el = this.container.nativeElement;
 
     if (el) {
+      const data = {
+        from: this.from,
+        source: this.source,
+        filterPipeline: this.filterPipeline,
+        service: this.service,
+        services: this.services,
+        task: this.task,
+        tasks: this.tasks,
+        filterConfigurations: this.filterConfigurations,
+      }
       if (this.initialApiCallsStack.length > 0) {
         this.ngProgress.start();
         forkJoin(this.initialApiCallsStack).subscribe((result) => {
+          console.log('node reuslt', result);
+
           this.ngProgress.done();
           result.forEach((r: any) => {
             if (r.status) {
@@ -152,14 +182,26 @@ export class NodeEditorComponent implements OnInit {
                 this.toastService.error(r.statusText);
               }
             } else {
-              if (r.services) {
-                const services = r.services as Service[];
-                this.services = services;
-                this.service = services.find(service => (service.name == this.source));
+              if (r.tasks) {
+
+                const tasks = r.tasks as NorthTask[];
+                this.tasks = tasks;
+                this.task = tasks.find(t => (t.name == this.source));
+                data.tasks = tasks;
+                data.task = this.task;
+              } else {
+                if (r.services) {
+                  const services = r.services as Service[];
+                  this.services = services;
+                  this.service = services.find(service => (service.name == this.source));
+                  data.services = services;
+                  data.service = this.service;
+                }
               }
               if (r.result) {
                 this.filterPipeline = r.result.pipeline as string[];
                 this.isfilterPipelineFetched = true;
+                data.filterPipeline = this.filterPipeline;
                 this.createFilterConfigurationsArray();
               }
             }
@@ -171,16 +213,16 @@ export class NodeEditorComponent implements OnInit {
                 let filterConfig = { pluginName: r.plugin.value, enabled: r.enable.value, filterName: r.filterName, color: "#F9CB9C" };
                 this.filterConfigurations.push(filterConfig);
               })
-              createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations, this.flowEditorService, this.rolesService);
+              createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
             })
           }
           else {
-            createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations, this.flowEditorService, this.rolesService);
+            createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
           }
         });
       }
       else {
-        createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations, this.flowEditorService, this.rolesService);
+        createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
       }
     }
   }
@@ -194,6 +236,12 @@ export class NodeEditorComponent implements OnInit {
   getSouthboundServices() {
     this.initialApiCallsStack.push(this.servicesApiService.getSouthServices(true)
       .pipe(takeUntil(this.destroy$))
+    )
+  }
+
+  getNorthboundServices() {
+    this.initialApiCallsStack.push(this.northService.getNorthTasks(true)
+      .pipe(map(response => ({ tasks: response })), takeUntil(this.destroy$))
     )
   }
 
@@ -256,7 +304,8 @@ export class NodeEditorComponent implements OnInit {
         this.filterService.deleteFilter(this.filterName).subscribe((data: any) => {
           this.toastService.success(data.result);
           setTimeout(() => {
-            this.router.navigate(['/south/flow'], { queryParams: { source: this.source } });
+            // this.router.navigate(['/south/flow'], { queryParams: { source: this.source } });
+            this.router.navigate(['/', this.from, 'flow'], { queryParams: { from: this.from, source: this.source } });
           }, 1000);
         },
           (error) => {
@@ -293,7 +342,8 @@ export class NodeEditorComponent implements OnInit {
       .subscribe((data: any) => {
         this.toastService.success(data.result);
         setTimeout(() => {
-          this.router.navigate(['/south/flow'], { queryParams: { source: this.source } });
+          //this.router.navigate(['/south/flow'], { queryParams: { source: this.source } });
+          this.router.navigate(['/', this.from, 'flow'], { queryParams: { from: this.from, source: this.service.name } });
         }, 1000);
       },
         (error) => {
@@ -505,7 +555,8 @@ export class NodeEditorComponent implements OnInit {
     this.servicesApiService.deleteService(this.deleteServiceName)
       .subscribe((data: any) => {
         this.toastService.success(data['result']);
-        this.router.navigate(['/south/flow'], { queryParams: { source: 'nodelist' } });
+        //this.router.navigate(['/south/flow'], { queryParams: { source: 'nodelist' } });
+        this.router.navigate(['/', this.from, 'flow'], { queryParams: { from: this.from, source: 'nodelist' } });
       },
         (error) => {
           if (error.status === 0) {
@@ -521,8 +572,11 @@ export class NodeEditorComponent implements OnInit {
   }
 
   onNotify() {
+    console.log('notify');
+
     this.isAddFilterWizard = false;
-    this.router.navigate(['/south/flow'], { queryParams: { source: this.source } });
+    //this.router.navigate(['/south/flow'], { queryParams: { source: this.source } });
+    this.router.navigate(['/', this.from, 'flow'], { queryParams: { from: this.from, source: this.service.name } });
   }
 
   ngOnDestroy() {

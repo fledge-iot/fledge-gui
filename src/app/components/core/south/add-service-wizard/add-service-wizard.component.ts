@@ -256,14 +256,15 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
             const name = payload.name
             this.uploadScript(name, files);
           }
-          if(this.source === 'flowEditor'){
+          if (this.source === 'flowEditor') {
             this.ngProgress.start();
             setTimeout(() => {
-              this.router.navigate(['/south/flow'], { queryParams: { source: response['name'] } });
+              // this.router.navigate(['/south/flow'], { queryParams: { source: response['name'] } });
+              this.router.navigate(['/south/flow'], { queryParams: { from: 'south', source: response['name'] } })
               this.ngProgress.done();
             }, 3000);
           }
-          else{
+          else {
             this.router.navigate(['/south']);
           }
         },

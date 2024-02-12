@@ -8,6 +8,7 @@ import { AlertService, NorthService, PingService, ProgressBarService, RolesServi
 import { POLLING_INTERVAL } from '../../../utils';
 import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.component';
 import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
+import { FlowEditorService } from '../../common/node-editor/flow-editor.service';
 
 @Component({
   selector: 'app-north',
@@ -26,13 +27,21 @@ export class NorthComponent implements OnInit, OnDestroy {
   public isAlive: boolean;
   private subscription: Subscription;
   destroy$: Subject<boolean> = new Subject<boolean>();
-  constructor(private northService: NorthService,
+  constructor(
+    private northService: NorthService,
     private ping: PingService,
     private alertService: AlertService,
     private router: Router,
     public ngProgress: ProgressBarService,
     private sharedService: SharedService,
-    public rolesService: RolesService) {
+    public rolesService: RolesService,
+    public flowEditorService: FlowEditorService) {
+    if (flowEditorService.getFlowEditorStatus()) {
+      setTimeout(() => {
+        this.navToFlowEditor();
+      }, 1);
+    }
+
     this.isAlive = true;
     this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))
@@ -67,6 +76,10 @@ export class NorthComponent implements OnInit, OnDestroy {
     this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
       this.viewPort = viewport;
     });
+  }
+
+  navToFlowEditor() {
+    this.router.navigate(['/north/flow'], { queryParams: { from: 'north', source: 'nodelist' } });
   }
 
   addNorthInstance() {

@@ -2,13 +2,14 @@ import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
-import { ConfigurationService, PingService, RolesService, SchedulesService, ServicesApiService, ToastService } from "./../../../../services";
+import { ConfigurationService, NorthService, PingService, RolesService, SchedulesService, ServicesApiService, ToastService } from "./../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
 import { Subject, Subscription, interval } from "rxjs";
 import { POLLING_INTERVAL } from "./../../../../utils";
 import { takeUntil, takeWhile } from "rxjs/operators";
 import { Service } from "./../../../core/south/south-service";
+import { NorthTask } from "../../../core/north/north-task";
 
 @Component({
   selector: 'app-custom-node',
@@ -26,9 +27,23 @@ export class CustomNodeComponent implements OnChanges {
 
   seed = 0;
   source = '';
+  from = '';
   helpText = '';
   isEnabled: boolean = false;
   service = { name: "", status: "", protocol: "", address: "", management_port: "", pluginName: "", assetCount: "", readingCount: "", schedule_enabled: 'false' }
+  task = {
+    name: "",
+    day: "",
+    enabled: "",
+    exclusive: "",
+    execution: "",
+    id: "",
+    plugin: { name: "", version: "" },
+    processName: "",
+    repeat: "",
+    sent: "",
+    taskStatus: {}
+  }
   filter = { pluginName: '', enabled: 'false', name: '', color: '' }
   isServiceNode: boolean = false;
   subscription: Subscription;
@@ -36,6 +51,7 @@ export class CustomNodeComponent implements OnChanges {
   pluginName = '';
   isFilterNode: boolean = false;
   destroy$: Subject<boolean> = new Subject<boolean>();
+  fetchedTask;
   fetchedService;
   isAlive: boolean;
   showPlusIcon = false;
@@ -47,6 +63,7 @@ export class CustomNodeComponent implements OnChanges {
 
   constructor(private cdr: ChangeDetectorRef,
     private schedulesService: SchedulesService,
+    private northService: NorthService,
     private docService: DocService,
     private router: Router,
     private route: ActivatedRoute,
@@ -58,8 +75,11 @@ export class CustomNodeComponent implements OnChanges {
     private elRef: ElementRef,
     private ping: PingService) {
     this.route.queryParams.subscribe(params => {
-      if (params['source']) {
-        this.source = params['source'];
+      if (params.source) {
+        this.source = params.source;
+      }
+      if (params.from) {
+        this.from = params.from;
       }
     });
     this.router.routeReuseStrategy.shouldReuseRoute = function () {
@@ -82,33 +102,65 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   ngOnChanges(): void {
+    console.log('custom data', this.data);
+    console.log('source', this.source);
     this.nodeId = this.data.id;
-    if (this.data.label === 'South') {
+    console.log('id', this.nodeId);
+
+    if (this.data.label === 'South' || this.data.label === 'North') {
       if (this.source !== '') {
         this.elRef.nativeElement.style.borderColor = "#B6D7A8";
         interval(POLLING_INTERVAL)
           .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
           .subscribe(() => {
-            this.getSouthboundServices();
+            if (this.from == 'north') {
+              this.getNorthboundTasks();
+            } else {
+              this.getSouthboundServices();
+            }
           });
+
         this.isServiceNode = true;
+        if (this.from == 'north') {
+          console.log('controls', Object.keys(this.data.controls)[0]);
 
-        this.service.name = Object.keys(this.data.controls)[0];
-        this.service.pluginName = Object.keys(this.data.controls)[1].slice(6);
-        this.service.assetCount = Object.keys(this.data.controls)[2].slice(3);
-        this.service.readingCount = Object.keys(this.data.controls)[3].slice(3);
-        this.service.status = Object.keys(this.data.controls)[4];
-        this.service.schedule_enabled = Object.keys(this.data.controls)[5];
-        if (this.service.status === '') {
-          this.service.status = 'shutdown';
+          this.service.name = Object.keys(this.data.controls)[0];
+          this.service.pluginName = Object.keys(this.data.controls)[1].slice(6);
+          this.service.assetCount = Object.keys(this.data.controls)[2].slice(3);
+          this.service.readingCount = Object.keys(this.data.controls)[3].slice(3);
+          this.service.status = Object.keys(this.data.controls)[4];
+          this.service.schedule_enabled = Object.keys(this.data.controls)[5];
+          if (this.service.status === '') {
+            this.service.status = 'shutdown';
+          }
+
+          this.data.label = this.service.name;
+          if (this.service.schedule_enabled === 'true') {
+            this.isEnabled = true;
+          }
+          this.helpText = this.service.pluginName;
+          this.pluginName = this.service.pluginName;
+
+        } else {
+          console.log('south controls', this.data.controls);
+          this.service.name = Object.keys(this.data.controls)[0];
+          this.service.pluginName = Object.keys(this.data.controls)[1].slice(6);
+          this.service.assetCount = Object.keys(this.data.controls)[2].slice(3);
+          this.service.readingCount = Object.keys(this.data.controls)[3].slice(3);
+          this.service.status = Object.keys(this.data.controls)[4];
+          this.service.schedule_enabled = Object.keys(this.data.controls)[5];
+          if (this.service.status === '') {
+            this.service.status = 'shutdown';
+          }
+
+          this.data.label = this.service.name;
+          if (this.service.schedule_enabled === 'true') {
+            this.isEnabled = true;
+          }
+          this.helpText = this.service.pluginName;
+          this.pluginName = this.service.pluginName;
         }
 
-        this.data.label = this.service.name;
-        if (this.service.schedule_enabled === 'true') {
-          this.isEnabled = true;
-        }
-        this.helpText = this.service.pluginName;
-        this.pluginName = this.service.pluginName;
       }
       else {
         this.elRef.nativeElement.style.borderColor = "#EA9999";
@@ -148,6 +200,9 @@ export class CustomNodeComponent implements OnChanges {
     if (this.data.label === 'AddService') {
       this.data.label = "";
     }
+    if (this.data.label === 'AddTask') {
+      this.data.label = "";
+    }
     if (this.data.label === 'Storage') {
       this.elRef.nativeElement.style.borderColor = "#999999";
     }
@@ -166,8 +221,8 @@ export class CustomNodeComponent implements OnChanges {
     return ai - bi;
   }
 
-  addSouthService() {
-    this.router.navigate(['/south/add'], { queryParams: { source: 'flowEditor' } });
+  addService() {
+    this.router.navigate(['/', this.from, 'add'], { queryParams: { source: 'flowEditor' } });
   }
 
   navToSouthService() {
@@ -252,16 +307,16 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   applyServiceStatusCustomCss(serviceStatus: string) {
-    if (serviceStatus.toLowerCase() === 'running') {
+    if (serviceStatus?.toLowerCase() === 'running') {
       return 'has-text-success';
     }
-    if (serviceStatus.toLowerCase() === 'unresponsive') {
+    if (serviceStatus?.toLowerCase() === 'unresponsive') {
       return 'has-text-warning';
     }
-    if (serviceStatus.toLowerCase() === 'shutdown') {
+    if (serviceStatus?.toLowerCase() === 'shutdown') {
       return 'has-text-grey-lighter';
     }
-    if (serviceStatus.toLowerCase() === 'failed') {
+    if (serviceStatus?.toLowerCase() === 'failed') {
       return 'has-text-danger';
     }
   }
@@ -276,11 +331,12 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   openServiceDetails() {
-    this.router.navigate(['/south/flow'], { queryParams: { source: this.service.name } });
+    this.router.navigate(['/', this.from, 'flow'], { queryParams: { from: this.from, source: this.service.name } });
+    // this.router.navigate(['/south/flow'], { queryParams: { source: this.service.name } });
   }
 
   navToAddServicePage() {
-    this.router.navigate(['/south/flow']);
+    this.router.navigate(['/', this.from, 'flow'], { queryParams: { from: this.from } });
   }
 
   updateFilterConfiguration() {
@@ -296,6 +352,43 @@ export class CustomNodeComponent implements OnChanges {
         }
       },
         (error) => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.toastService.error(error.statusText);
+          }
+        });
+  }
+
+  getNorthboundTasks() {
+    this.northService.getNorthTasks(true)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: any) => {
+        console.log('north data', data);
+        console.log('north service', this.service);
+
+        const tasks = data as NorthTask[];
+        this.fetchedTask = tasks.find(task => (task.name == this.service.name));
+        console.log('this.fetchedTask ', this.fetchedTask);
+
+        if (this.fetchedTask) {
+          this.service.status = this.fetchedTask?.status;
+          // let assetCount = this.fetchedTask.assets.length;
+          // let readingCount = this.fetchedTask.assets.reduce((total, asset) => {
+          //   return total + asset.count;
+          // }, 0)
+          // this.service.assetCount = assetCount;
+          // this.service.readingCount = readingCount;
+          this.service.schedule_enabled = String(this.fetchedTask.enabled);
+          if (this.service.schedule_enabled === 'true') {
+            this.isEnabled = true;
+          }
+          else {
+            this.isEnabled = false;
+          }
+        }
+      },
+        error => {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
