@@ -30,6 +30,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   pages = ['south', 'north', 'notification', 'additional-services'];
   @Input() from;
   @Input() sourceName;
+  @Input() categoryType;
   categoryKey = '';
 
   advanceConfiguration: any
@@ -38,6 +39,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   changedSecurityConfiguration: any;
   dynamicCategoriesGroup = [];
   groupTabs = [];
+  showGroupInLeft: boolean = false;
 
   constructor(
     public developerFeaturesService: DeveloperFeaturesService,
@@ -119,6 +121,10 @@ export class ConfigurationGroupComponent implements AfterViewInit {
       }, []);
 
     this.getGroups();
+    this.showGroupInLeft = false;
+    if(this.groups.length === 1 && this.categoryType === "filter"){
+      this.showGroupInLeft = true;
+    }
     // set initial group
     this.selectedGroup = this.groups[0]?.group;
   }
