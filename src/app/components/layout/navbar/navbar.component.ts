@@ -52,9 +52,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(ShutdownModalComponent, { static: true }) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent, { static: true }) childRestart: RestartModalComponent;
-
+  
   destroy$: Subject<boolean> = new Subject<boolean>();
-
+  
   constructor(private servicesApiService: ServicesApiService,
     private status: ConnectedServiceStatus,
     private alertService: AlertService,
@@ -426,9 +426,46 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate(['logs/syslog'], { queryParams: { source: service.name } });
   }
 
-  navToServiceConfiguration(service){
-    let routePath = service.type === 'Northbound' ? 'north' : 'south';
-    this.router.navigate([routePath, service.name, 'details'])
+  navToServiceConfiguration(service) {
+    let serviceInfo = {
+      name: service.name,
+      isEnabled: service.status === 'running' ? true : false,
+      added: true,
+      isInstalled: true
+    }
+    switch (service.type) {
+      case 'Northbound':
+        this.router.navigate(['north', service.name, 'details']);
+        break;
+      case 'Southbound':
+        this.router.navigate(['south', service.name, 'details']);
+        break;
+      case 'BucketStorage':
+        serviceInfo['process'] = 'bucket';
+        serviceInfo['type'] = 'BucketStorage';
+        serviceInfo['package'] = 'fledge-service-bucket';
+        this.router.navigate(['/developer/options/additional-services/config'], { queryParams: { ...serviceInfo },  skipLocationChange: true });
+        break;
+      case 'Management':
+        serviceInfo['process'] = 'management';
+        serviceInfo['type'] = 'Management';
+        serviceInfo['package'] = 'fledge-service-management';
+        this.router.navigate(['/developer/options/additional-services/config'], { queryParams: { ...serviceInfo },  skipLocationChange: true });
+        break;
+      case 'Dispatcher':
+        serviceInfo['process'] = 'dispatcher';
+        serviceInfo['type'] = 'Dispatcher';
+        serviceInfo['package'] = 'fledge-service-dispatcher';
+        this.router.navigate(['/developer/options/additional-services/config'], { queryParams: { ...serviceInfo },  skipLocationChange: true });
+        break;
+      case 'Notification':
+        serviceInfo['process'] = 'notification';
+        serviceInfo['type'] = 'Notification';
+        serviceInfo['package'] = 'fledge-service-notification';
+        this.router.navigate(['/developer/options/additional-services/config'], { queryParams: { ...serviceInfo },  skipLocationChange: true });
+        break;
+      default:
+        break;
+      }
   }
 }
-

@@ -244,7 +244,7 @@
                                 <i class="fa fa-sm fa-circle child-icon"></i>
                               </span>
                               <ng-container
-                                *ngIf="['northbound', 'southbound'].includes(s.type.toLowerCase()); else elseServiceTemplate">
+                                *ngIf="['northbound', 'southbound', 'dispatcher', 'notification', 'management', 'bucketstorage'].includes(s.type.toLowerCase()); else elseServiceTemplate">
                                 <a class="ghost" (click)="navToServiceConfiguration(s)">{{s.name}}</a>
                               </ng-container>
                               <ng-template #elseServiceTemplate>

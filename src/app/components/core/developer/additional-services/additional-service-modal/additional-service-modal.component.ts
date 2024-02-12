@@ -1,5 +1,6 @@
 import { Component, ViewChild, Output, HostListener, EventEmitter } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   ProgressBarService, AlertService, ServicesApiService, SchedulesService,
   ConfigurationService,
@@ -14,7 +15,6 @@ import { isEmpty, cloneDeep } from 'lodash';
 import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { BehaviorSubject, of, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../../services/doc.service';
-import { Router } from '@angular/router';
 import { ConfigurationGroupComponent } from '../../../configuration-manager/configuration-group/configuration-group.component';
 import {QUOTATION_VALIDATION_PATTERN} from '../../../../../utils';
 import { Service } from '../../../../../models';
@@ -59,9 +59,11 @@ export class AdditionalServiceModalComponent {
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
   pollingScheduleID: string;
   navigateFromParent: string;
+  fromNavbar: boolean;
   public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(
+    public activatedRoute: ActivatedRoute,
     private router: Router,
     public fb: FormBuilder,
     public ngProgress: ProgressBarService,
@@ -74,7 +76,18 @@ export class AdditionalServiceModalComponent {
     private fileUploaderService: FileUploaderService,
     private configurationControlService: ConfigurationControlService,
     private additionalServicesUtils: AdditionalServicesUtils,
-    public rolesService: RolesService) { }
+    public rolesService: RolesService) {
+      this.activatedRoute.queryParams.subscribe(params => {
+        if (params?.name) {
+            this.fromNavbar = true;
+            this.getServiceInfo(params, null, params?.process);
+            // Wait to get html page loaded
+            setTimeout(() => {
+              this.toggleModal(true);
+            }, 1000);
+        }
+      });
+    }
 
   ngOnInit() { }
 
@@ -128,7 +141,10 @@ export class AdditionalServiceModalComponent {
         this.notifyService.emit();
       } else {
         this.notify.emit();
-      } 
+      }
+      if (this.fromNavbar){
+        this.router.navigate(['/developer/options/additional-services']);
+      }
       serviceModal.classList.remove('is-active');
       this.category = '';
       this.service = <Service>{};
