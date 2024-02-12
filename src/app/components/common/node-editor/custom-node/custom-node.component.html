@@ -89,7 +89,7 @@
         </div>
         <div>
             <ng-container *ngIf="data.label!=='Applications' && data.label!=='South' && data.label!=='Filter'">
-                <div class="is-pulled-left ml-2 mt-2">
+                <div class="is-pulled-left ml-2 icon-margin">
                     <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered"
                         data-tooltip="Help" (click)="goToLink()">
                         <i class="far fa-xs fa-question-circle"></i>
@@ -101,10 +101,10 @@
                         <i class="far fa-xs fa-file-alt"></i>
                     </span>
                 </div>
-                <div class="is-pulled-right mr-1">
+                <div class="is-pulled-right">
                     <div class="dropdown is-hoverable" *ngIf="source=='nodelist' || rolesService.hasEditPermissions()">
                         <div class="dropdown-trigger">
-                            <button class="button is-white is-small" aria-haspopup="true"
+                            <button class="button is-white is-small pt-0 pb-0 dropdown-button" aria-haspopup="true"
                                 aria-controls="dropdown-menu3">
                                 <span class="icon is-small">
                                     <i class="fas fa-ellipsis-v fa-xs fa-fw" aria-hidden="true"></i>
