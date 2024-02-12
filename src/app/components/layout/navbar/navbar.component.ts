@@ -15,7 +15,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import {
   AlertService, AuthService, ConnectedServiceStatus, PingService,
-  ProgressBarService, ServicesApiService, RolesService
+  ProgressBarService, ServicesApiService, RolesService, SchedulesService
 } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
 import Utils from '../../../utils';
@@ -49,6 +49,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   viewPort: any = '';
   public showSpinner = false;
   isManualRefresh = false;
+  pollingScheduleID: string;
 
   @ViewChild(ShutdownModalComponent, { static: true }) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent, { static: true }) childRestart: RestartModalComponent;
@@ -64,6 +65,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef,
     private ping: PingService,
     private router: Router,
+    private schedulesService: SchedulesService,
     public rolesService: RolesService) {
     // Subscribe to automatically update
     // "isUserLoggedIn" whenever a change to the subject is made.
@@ -426,6 +428,23 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate(['logs/syslog'], { queryParams: { source: service.name } });
   }
 
+  public getSchedules(): void {
+    this.ngProgress.start();
+    this.schedulesService.getSchedules().
+      subscribe(
+        (data: any) => {
+          this.pollingScheduleID = data.schedules.find(s => s.processName === 'manage')?.id;
+        },
+        error => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
   navToServiceConfiguration(service) {
     let serviceInfo = {
       name: service.name,
@@ -447,9 +466,11 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         this.router.navigate(['/developer/options/additional-services/config'], { queryParams: { ...serviceInfo },  skipLocationChange: true });
         break;
       case 'Management':
+        this.getSchedules();
         serviceInfo['process'] = 'management';
         serviceInfo['type'] = 'Management';
         serviceInfo['package'] = 'fledge-service-management';
+        serviceInfo['pollingScheduleID'] = this.pollingScheduleID;
         this.router.navigate(['/developer/options/additional-services/config'], { queryParams: { ...serviceInfo },  skipLocationChange: true });
         break;
       case 'Dispatcher':

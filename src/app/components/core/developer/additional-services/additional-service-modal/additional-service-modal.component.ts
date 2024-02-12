@@ -80,7 +80,7 @@ export class AdditionalServiceModalComponent {
       this.activatedRoute.queryParams.subscribe(params => {
         if (params?.name) {
             this.fromNavbar = true;
-            this.getServiceInfo(params, null, params?.process);
+            this.getServiceInfo(params, params?.pollingScheduleID);
             // Wait to get html page loaded
             setTimeout(() => {
               this.toggleModal(true);
@@ -92,6 +92,7 @@ export class AdditionalServiceModalComponent {
   ngOnInit() { }
 
   getServiceInfo(serviceInfo, pollingScheduleID, from = null) {
+
     this.navigateFromParent = from;
     this.serviceName = serviceInfo.name ? serviceInfo.name : '';
     this.isServiceEnabled = serviceInfo.isEnabled;   
