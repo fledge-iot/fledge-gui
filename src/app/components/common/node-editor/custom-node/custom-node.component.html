@@ -1,0 +1,155 @@
+<div class="node-container" *ngIf="data.label!=='Storage'; else storageTemplate">
+    <ng-container *ngIf="data.label!==''; else addServiceTemplate">
+        <div class="title" data-testid="title">
+            <span *ngIf="isServiceNode" class="icon health-icon"
+                [ngClass]="applyServiceStatusCustomCss(service.status)">
+                <i class="fa fa-2xs fa-circle child-icon"></i>
+            </span>
+            <span *ngIf="source!=='nodelist'; else serviceNameTemplate">{{data.label}}</span>
+            <ng-template #serviceNameTemplate>
+                <span (click)="openServiceDetails()" class="service-name">{{data.label}}</span>
+            </ng-template>
+            <ng-container *ngIf="data.label!=='Applications'">
+                <ng-container *ngIf="data.label!=='South' && data.label!=='Filter'; else southServiceTemplate">
+                    <span class="is-pulled-right">
+                        <input class="checkbox" type="checkbox" [checked]='isEnabled'
+                            (click)="toggleEnabled($event.target.checked)"
+                            [disabled]="!rolesService.hasEditPermissions()">
+                        <button class="btn small-btn config-gear" data-show="quickview" data-target="quickviewDefault"
+                            data-toggle="quickview" (click)="showConfigurationInQuickview()">
+                            <span class="ml-2 has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
+                                data-tooltip="Configuration">
+                                <i class="bi bi-gear-wide-connected"></i>
+                            </span>
+                        </button>
+                    </span>
+                </ng-container>
+                <ng-template #southServiceTemplate>
+                    <ng-container *ngIf="data.label==='South'">
+                        <button *ngIf="rolesService.hasEditPermissions()" class="btn small-btn add-btn is-pulled-right"
+                            (click)="addSouthService()">
+                            <span class="ml-2 has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
+                                data-tooltip="Choose plugin">
+                                <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                    </ng-container>
+                    <ng-container *ngIf="data.label==='Filter' && showPlusIcon">
+                        <button class="btn small-btn add-btn is-pulled-right" (click)="addFilter()">
+                            <span class="ml-2 has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
+                                data-tooltip="Choose plugin">
+                                <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                    </ng-container>
+                </ng-template>
+            </ng-container>
+            <span *ngIf="data.label!=='Filter'" class="help-text">{{helpText}}</span>
+        </div>
+        <div>
+            <ng-container *ngIf="isServiceNode">
+                <div class="reading-details">
+                    <small class="reading has-tooltip-right has-tooltip-arrow"
+                        data-tooltip="Reading count">{{service.readingCount}}</small>
+                    <small class="asset has-tooltip-right has-tooltip-arrow"
+                        data-tooltip="Asset count">{{service.assetCount}}</small>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="isFilterNode">
+                <div class="is-flex is-justify-content-center">
+                    <span class="has-text-grey-light">
+                        <i class="bi bi-funnel bi-xl"></i>
+                    </span>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="source!=='nodelist'">
+                <div class="output is-pulled-right" *ngFor="let output of data.outputs | keyvalue: sortByIndex"
+                    [attr.data-testid]="'output-'+output.key" [ngClass]="{'output-container': isServiceNode, 'custom-margin': isFilterNode && data.label!=='Filter'}">
+                    <div class="output-title" data-testid="output-title">
+                        {{output.value?.label}}
+                    </div>
+                    <div class="output-socket" refComponent
+                        [data]="{type: 'socket', side: 'output', key: output.key, nodeId: data.id, payload: output.value?.socket, seed: seed }"
+                        [emit]="emit" data-testid="output-socket" title="Source"></div>
+                </div>
+            </ng-container>
+            <div class="input is-pulled-left input-container" *ngFor="let input of data.inputs | keyvalue: sortByIndex"
+                [attr.data-testid]="'input-'+input.key" [ngClass]="{'custom-margin': data.label!=='Filter'}">
+                <div class="input-socket" refComponent
+                    [data]="{type: 'socket', side: 'input', key: input.key, nodeId: data.id, payload: input.value?.socket, seed: seed }"
+                    [emit]="emit" data-testid="input-socket" title="Destination"></div>
+                <div class="input-title" data-testid="input-title"
+                    *ngIf="!input.value?.control || !input.value?.showControl">
+                    {{input.value?.label}}
+                </div>
+                <!-- <div class="input-control" [style.display]="input.value?.control && input.value?.showControl ? '' : 'none'"
+                    refComponent [data]="{type: 'control', payload: input.value?.control }" [emit]="emit"
+                    data-testid="input-control"></div> -->
+            </div>
+        </div>
+        <div>
+            <ng-container *ngIf="data.label!=='Applications' && data.label!=='South' && data.label!=='Filter'">
+                <div class="is-pulled-left ml-2 mt-2">
+                    <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered"
+                        data-tooltip="Help" (click)="goToLink()">
+                        <i class="far fa-xs fa-question-circle"></i>
+                    </span>
+                    <span *ngIf="isServiceNode"
+                        class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon ml-3"
+                        data-tooltip="Show logs" data-show="quickview" data-target="quickviewDefault"
+                        (click)="showLogsInQuickview()">
+                        <i class="far fa-xs fa-file-alt"></i>
+                    </span>
+                </div>
+                <div class="is-pulled-right mr-1">
+                    <div class="dropdown is-hoverable" *ngIf="source=='nodelist' || rolesService.hasEditPermissions()">
+                        <div class="dropdown-trigger">
+                            <button class="button is-white is-small" aria-haspopup="true"
+                                aria-controls="dropdown-menu3">
+                                <span class="icon is-small">
+                                    <i class="fas fa-ellipsis-v fa-xs fa-fw" aria-hidden="true"></i>
+                                </span>
+                            </button>
+                        </div>
+                        <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+                            <div class="dropdown-content">
+                                <ng-container *ngIf="source=='nodelist'">
+                                    <a class="dropdown-item" (click)="openServiceDetails()">
+                                        <span>Details</span>
+                                    </a>
+                                </ng-container>
+                                <a *ngIf="rolesService.hasEditPermissions()" class="dropdown-item"
+                                    (click)="deleteFilterOrService()">
+                                    <span>Delete</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </ng-container>
+    <ng-template #addServiceTemplate>
+        <div class="add-service">
+            <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Add Service"
+                (click)="navToAddServicePage()">
+                <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
+            </span>
+        </div>
+    </ng-template>
+</div>
+<ng-template #storageTemplate>
+    <div class="input is-pulled-left storage-input input-container"
+        *ngFor="let input of data.inputs | keyvalue: sortByIndex" [attr.data-testid]="'input-'+input.key">
+        <div class="input-socket" refComponent
+            [data]="{type: 'socket', side: 'input', key: input.key, nodeId: data.id, payload: input.value?.socket, seed: seed }"
+            [emit]="emit" data-testid="input-socket" title="Destination"></div>
+        <div class="input-title" data-testid="input-title" *ngIf="!input.value?.control || !input.value?.showControl">
+            {{input.value?.label}}
+        </div>
+        <div class="input-control" [style.display]="input.value?.control && input.value?.showControl ? '' : 'none'"
+            refComponent [data]="{type: 'control', payload: input.value?.control }" [emit]="emit"
+            data-testid="input-control"></div>
+    </div>
+    <img src="assets/storage.png" alt="" class="storage ml-5">
+</ng-template>

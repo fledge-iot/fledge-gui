@@ -4,7 +4,7 @@ import { isEmpty, cloneDeep } from 'lodash';
 
 import {
   AlertService, ConfigurationControlService, ConfigurationService,
-  FileUploaderService, ProgressBarService, RolesService
+  FileUploaderService, ProgressBarService, RolesService, SchedulesService
 } from '../../../services';
 
 @Component({
@@ -18,6 +18,7 @@ export class ConfigurationManagerComponent implements OnInit {
   public isChild = true;
   validConfigForm = false;
   selectedNode = { id: '', description: '' };
+  scheduleNames = [];
 
   nodes: any[] = [];
   options = {};
@@ -34,9 +35,11 @@ export class ConfigurationManagerComponent implements OnInit {
     public ngProgress: ProgressBarService,
     private configurationControlService: ConfigurationControlService,
     private fileUploaderService: FileUploaderService,
+    public schedulesService: SchedulesService
   ) { }
 
   ngOnInit() {
+    this.getSchedules();
     this.getTreeStructure();
   }
 
@@ -47,11 +50,13 @@ export class ConfigurationManagerComponent implements OnInit {
       subscribe(
         (data: any) => {
           this.categoryData = data.categories;
-
-          // filter south, north & notification categories
+          const excludeCategories = this.scheduleNames.concat(["SOUTH", "NORTH", "NOTIFICATIONS"]);
+          
+          // filter south, north, notification, management, bucket, dispatcher categories
           this.categoryData = this.categoryData.filter((n: any) => {
-            return !["SOUTH", "NORTH", "NOTIFICATIONS"].includes(n.key.toUpperCase());
+            return !excludeCategories.includes(n.key.toUpperCase());
           });
+
           this.nodes = this.updateIdAndNameInTreeObject(this.categoryData);
           /** request completed */
           this.ngProgress.done();
@@ -132,6 +137,7 @@ export class ConfigurationManagerComponent implements OnInit {
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
+          this.categoryData = [];
           if (!isEmpty(data)) {
             this.categoryData = [{ name: categoryKey, config: data, description: categoryDesc }];
             this.categoryDataCopy = cloneDeep(this.categoryData);
@@ -204,6 +210,26 @@ export class ConfigurationManagerComponent implements OnInit {
             console.log('service down ', error);
           } else {
             this.alertService.error(error.statusText, true);
+          }
+        });
+  }
+
+  public getSchedules(): void {
+    this.schedulesService.getSchedules().
+      subscribe(
+        (data: any) => {
+          this.scheduleNames = [];
+          data.schedules.forEach(sch => {
+            if (['notification_c', 'dispatcher_c', 'bucket_storage_c', 'management'].includes(sch.processName)) {
+              this.scheduleNames.push(sch.name.toUpperCase());
+            }
+          });
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
           }
         });
   }

@@ -36,7 +36,7 @@
           <div class="dropdown is-left" id="fledge-info" (click)="toggleInfoDropdown()">
             <div class="dropdown-trigger">
               <a id="hover-link" (click)="getServiceStatus()">
-                <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
+                <span id="service-status" class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
                   <i class="fa fa-sm fa-circle parent-icon"> </i>
                 </span>
                 <b
@@ -50,19 +50,19 @@
               <div class="dropdown-content">
                 <div class="dropdown-item">
                   <table>
-                    <tr>
+                    <tr id="received-reading">
                       <td class="has-text-left">Received:&nbsp;</td>
                       <td>
                         <b>{{pingData['dataRead'] | number}}</b>
                       </td>
                     </tr>
-                    <tr>
+                    <tr id="sent-reading">
                       <td class="has-text-left">Sent: </td>
                       <td>
                         <b>{{pingData['dataSent'] | number}}</b>
                       </td>
                     </tr>
-                    <tr>
+                    <tr id="uptime">
                       <td class="has-text-left">Uptime: </td>
                       <td>
                         <b>{{uptime}}</b>
@@ -122,7 +122,7 @@
             <div class="dropdown is-left" id="fledge-info" (click)="toggleInfoDropdown()">
               <div class="dropdown-trigger">
                 <a id="hover-link" (click)="getServiceStatus()">
-                  <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
+                  <span id="service-status" class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
                     <i class="fa fa-sm fa-circle parent-icon"> </i>
                   </span>
                   <b *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName.substr(0,
@@ -138,19 +138,19 @@
                     <b>{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
                     <hr class="dropdown-divider">
                     <table>
-                      <tr>
+                      <tr id="received-reading">
                         <td class="has-text-left">Received:&nbsp;</td>
                         <td>
                           <b>{{pingData['dataRead'] | number}}</b>
                         </td>
                       </tr>
-                      <tr>
+                      <tr id="sent-reading">
                         <td class="has-text-left">Sent: </td>
                         <td>
                           <b>{{pingData['dataSent'] | number}}</b>
                         </td>
                       </tr>
-                      <tr>
+                      <tr id="uptime">
                         <td class="has-text-left">Uptime: </td>
                         <td>
                           <b>{{uptime}}</b>
@@ -217,7 +217,7 @@
                   <a id="hover-link" (mouseover)="getServiceStatus()"
                     [ngClass]="{'default-cursor': this.servicesRecord.length === 0}">
                     <div>
-                      <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
+                      <span id="service-status" class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
                         <i class="fa fa-sm fa-circle parent-icon"> </i>
                       </span>
                       <b *ngIf="pingData['hostName']  && pingData['serviceName']">
@@ -277,16 +277,16 @@
             &nbsp;&nbsp;&nbsp;&nbsp;
             <span *ngIf="pingInfo.isSafeMode" class="tag is-dark is-rounded">SAFE MODE</span>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <div *ngIf='pingInfo.isAlive' class="control">
+            <div id="received-reading" *ngIf='pingInfo.isAlive' class="control">
               Received:
               <b>{{pingData['dataRead'] | number}}</b>
             </div>
-            <div *ngIf='pingInfo.isAlive' class="control">
+            <div id="sent-reading" *ngIf='pingInfo.isAlive' class="control">
               Sent:
               <b>{{pingData['dataSent'] | number}}</b>
             </div>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <div *ngIf='pingInfo.isAlive' class="control">
+            <div id="uptime" *ngIf='pingInfo.isAlive' class="control">
               Uptime:
               <b>{{uptime}}</b>
             </div>

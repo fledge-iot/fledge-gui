@@ -66,8 +66,9 @@ export class GenerateCsvService {
     }
 
     const uniqueKeys = uniq(keys);
+    const headers = uniqueKeys.map(string => string === null ? '' : `\"${string}\"`);
     const csvContent =
-      uniqueKeys.join(',') +
+      headers.join(',') +
       '\n' +
       assetData.map(asset => {
         return uniqueKeys.map(k => {

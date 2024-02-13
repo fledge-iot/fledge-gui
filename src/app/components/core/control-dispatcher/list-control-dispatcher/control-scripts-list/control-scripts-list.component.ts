@@ -6,6 +6,8 @@ import { ControlDispatcherService } from '../../../../../services/control-dispat
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import { DocService } from '../../../../../services/doc.service';
+import { ListAdditionalServicesComponent } from '../../../developer/additional-services/list-additional-services.component';
+import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
   selector: 'app-control-scripts-list',
@@ -15,9 +17,14 @@ import { DocService } from '../../../../../services/doc.service';
 export class ControlScriptsListComponent implements OnInit {
   controlScripts: any = [];
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
+  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
+  @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
+
   script;
   private subscription: Subscription;
+  isServiceAvailable = false;
   public reenableButton = new EventEmitter<boolean>(false);
+  showConfigureModal: boolean = false;
 
   constructor(
     private controlService: ControlDispatcherService,
@@ -94,6 +101,21 @@ export class ControlScriptsListComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  /**
+   * Open Configure Service modal
+   */
+  openServiceConfigureModal() {
+    this.showConfigureModal = true;
+    this.listAdditionalServicesComponent.showServices('dispatcher');
+  }
+
+  onNotify(event) {
+    if (event?.isCancelEvent) {
+      return;
+    }
+    this.addDispatcherServiceComponent.getInstalledServicesList();
   }
 
   public ngOnDestroy(): void {

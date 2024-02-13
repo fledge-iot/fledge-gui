@@ -291,7 +291,8 @@ a.dropdown-item:hover {
 }
 
 #refresh-check,
-#refresh-tree {
+#refresh-tree,
+#config-icon {
   vertical-align: middle;
   background: none;
   border: none;
@@ -398,6 +399,10 @@ span.tooltip {
   font-size: 1rem;
 }
 
+.bi-xl {
+  font-size: 1.5rem;
+}
+
 .bi:hover {
   color: rgb(91, 89, 89);
 }
@@ -432,4 +437,15 @@ span.tooltip {
   font-weight: 500;
 }
 
+.cog-icon {
+  margin: auto;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.required-field {
+  border-color: red;
+}
 /*****************/

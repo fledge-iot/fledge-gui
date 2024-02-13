@@ -19,10 +19,6 @@
   vertical-align: middle;
 }
 
-[hidden] {
-  display: none !important;
-}
-
 a {
   color: black;
 }
