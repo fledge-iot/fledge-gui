@@ -118,6 +118,7 @@ export class AdditionalServiceModalComponent {
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     if (!this.serviceInstallationState) {
       this.toggleModal(false);
+      this.navToAdditionalServicePage();
     }
   }
 
@@ -321,7 +322,11 @@ export class AdditionalServiceModalComponent {
       serviceName = name;
     }
     this.additionalServicesUtils.enableService(serviceName, this.fromNavbar);
-    this.toggleModal(false);
+    // added some delay to close the modal because 
+    // enabling service takes time to get the updated state from API
+    setTimeout(() => {
+      this.toggleModal(false);             
+    }, 1000);
     this.isServiceEnabled = true;
   }
 
@@ -451,6 +456,13 @@ export class AdditionalServiceModalComponent {
 
   navToSyslogs(name: string) {
     this.router.navigate(['logs/syslog'], { queryParams: { source: name } });
+  }
+
+  navToAdditionalServicePage() {
+    if (this.fromNavbar) {
+      this.router.navigate(['/developer/options/additional-services']);
+    }
+    return;
   }
 
   goToLink() {

@@ -445,7 +445,16 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         });
   }
 
+  public isDeveloperFeatureOn(): boolean {
+    const devFeature: boolean = JSON.parse(localStorage.getItem('DEV_FEATURES'));
+    return devFeature ? devFeature : false;
+  }
+
   navToServiceConfiguration(service) {
+    if (!this.isDeveloperFeatureOn() && ['dispatcher', 'notification', 'management', 'bucketstorage'].includes(service.type.toLowerCase())) {
+      this.alertService.warning('Please enable Developer Feature from Settings page first.');
+      return;
+    }
     let serviceInfo = {
       name: service.name,
       isEnabled: service.status === 'running' ? true : false,

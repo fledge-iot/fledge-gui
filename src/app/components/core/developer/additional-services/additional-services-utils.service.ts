@@ -24,7 +24,10 @@ export class AdditionalServicesUtils {
             this.ngProgress.done();
             this.reenableButton.emit(false);         
             if (fromNavbar){
-              this.router.navigate(['/developer/options/additional-services']);
+              // enabling service takes time to get the updated state from API
+              setTimeout(() => {
+                this.router.navigate(['/developer/options/additional-services']);             
+              }, 2000);
             }
             this.alertService.success(data["message"], true);
           },
