@@ -84,7 +84,7 @@ export class AdditionalServiceModalComponent {
             // Wait to get html page loaded
             setTimeout(() => {
               this.toggleModal(true);
-            }, 1000);
+            }, 500);
         }
       });
     }
@@ -92,15 +92,14 @@ export class AdditionalServiceModalComponent {
   ngOnInit() { }
 
   getServiceInfo(serviceInfo, pollingScheduleID, from = null) {
-
     this.navigateFromParent = from;
     this.serviceName = serviceInfo.name ? serviceInfo.name : '';
-    this.isServiceEnabled = serviceInfo.isEnabled;   
-    this.isServiceAvailable = serviceInfo.added;
+    this.isServiceEnabled = serviceInfo.isEnabled ? (serviceInfo.isEnabled === 'true' || serviceInfo.isEnabled === true) : false;
+    this.isServiceAvailable = serviceInfo.added ? (serviceInfo.added === 'true' || serviceInfo.added === true) : false;
     this.serviceProcessName = serviceInfo.process;
     this.serviceType = serviceInfo.type;
     this.packageName = serviceInfo.package;
-    this.isInstalled = serviceInfo.isInstalled;  
+    this.isInstalled =  serviceInfo.isInstalled ? (serviceInfo.isInstalled === 'true' || serviceInfo.isInstalled === true) : false;  
     if (pollingScheduleID) {
       this.pollingScheduleID = pollingScheduleID;
     }
@@ -142,9 +141,6 @@ export class AdditionalServiceModalComponent {
         this.notifyService.emit();
       } else {
         this.notify.emit();
-      }
-      if (this.fromNavbar){
-        this.router.navigate(['/developer/options/additional-services']);
       }
       serviceModal.classList.remove('is-active');
       this.category = '';
@@ -324,19 +320,19 @@ export class AdditionalServiceModalComponent {
     if (name != null) {
       serviceName = name;
     }
-    this.additionalServicesUtils.enableService(serviceName);
+    this.additionalServicesUtils.enableService(serviceName, this.fromNavbar);
     this.toggleModal(false);
     this.isServiceEnabled = true;
   }
 
   disableService() {
-    this.additionalServicesUtils.disableService(this.serviceName);
+    this.additionalServicesUtils.disableService(this.serviceName, this.fromNavbar);
     this.toggleModal(false);
     this.isServiceEnabled = false;
   }
 
   deleteService(serviceName) {
-    this.additionalServicesUtils.deleteService(serviceName);
+    this.additionalServicesUtils.deleteService(serviceName, this.fromNavbar);
     this.closeDeleteModal("dialog-delete-confirmation");
     this.toggleModal(false);
   }
