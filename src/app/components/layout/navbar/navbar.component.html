@@ -25,7 +25,7 @@
     </div>
     <div *ngIf="!pingInfo.isAlive" class="navbar-item">
       <span class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
-        <i class="fa fa-sm fa-circle parent-icon"> </i>
+        <i class="bi bi-circle-fill parent-icon"> </i>
       </span>
       <b style="color:gray;">&nbsp;DOWN</b>
     </div>
@@ -37,7 +37,7 @@
             <div class="dropdown-trigger">
               <a id="hover-link" (click)="getServiceStatus()">
                 <span id="service-status" class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
-                  <i class="fa fa-sm fa-circle parent-icon"> </i>
+                  <i class="bi bi-circle-fill parent-icon"> </i>
                 </span>
                 <b
                   *ngIf="pingData['hostName'] && pingData['serviceName']">{{pingInfo.hostName}}/{{pingData['serviceName']}}</b>
@@ -83,7 +83,7 @@
                       <tr *ngFor="let s of servicesRecord">
                         <td class="has-text-left">
                           <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
-                            <i class="fa fa-sm fa-circle child-icon"></i>
+                            <i class="bi bi-circle-fill child-icon"></i>
                           </span>
                           {{s.name}}&nbsp;
                         </td>
@@ -106,7 +106,7 @@
           <div class="control">
             <span class="icon has-text-success tooltip has-tooltip-right has-tooltip-arrow"
               data-tooltip="Authentication required.">
-              <i class="fa fa-sm fa-circle parent-icon"> </i>
+              <i class="bi bi-circle-fill parent-icon"> </i>
             </span>
           </div>
         </div>
@@ -123,7 +123,7 @@
               <div class="dropdown-trigger">
                 <a id="hover-link" (click)="getServiceStatus()">
                   <span id="service-status" class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
-                    <i class="fa fa-sm fa-circle parent-icon"> </i>
+                    <i class="bi bi-circle-fill parent-icon"> </i>
                   </span>
                   <b *ngIf="pingData['hostName']  && pingData['serviceName']">{{pingInfo.hostName.substr(0,
                     8)}}/{{pingData['serviceName'].substr(0, 8)}}</b>
@@ -172,7 +172,7 @@
                         <tr *ngFor="let s of servicesRecord">
                           <td class="has-text-left">
                             <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
-                              <i class="fa fa-sm fa-circle child-icon"></i>
+                              <i class="bi bi-circle-fill child-icon"></i>
                             </span>
                             {{s.name.length <= 18 ? s.name : s.name.substr(0,18) + '..' }}&nbsp; </td>
                           <td>
@@ -193,7 +193,7 @@
               <div class="control">
                 <span class="icon has-text-success tooltip has-tooltip-right has-tooltip-arrow"
                   data-tooltip="Authentication required.">
-                  <i class="fa fa-sm fa-circle parent-icon"> </i>
+                  <i class="bi bi-circle-fill parent-icon"> </i>
                 </span>
               </div>
             </div>
@@ -218,7 +218,7 @@
                     [ngClass]="{'default-cursor': this.servicesRecord.length === 0}">
                     <div>
                       <span id="service-status" class="icon" [ngClass]="applyPingStatusCustomCss(pingInfo)">
-                        <i class="fa fa-sm fa-circle parent-icon"> </i>
+                        <i class="bi bi-circle-fill parent-icon"> </i>
                       </span>
                       <b *ngIf="pingData['hostName']  && pingData['serviceName']">
                         {{pingInfo.hostName}}/{{pingData['serviceName']}}
@@ -241,7 +241,7 @@
                           <tr *ngFor="let s of servicesRecord">
                             <td class="has-text-left">
                               <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
-                                <i class="fa fa-sm fa-circle child-icon"></i>
+                                <i class="bi bi-circle-fill child-icon"></i>
                               </span>
                               <ng-container
                                 *ngIf="['northbound', 'southbound'].includes(s.type.toLowerCase()); else elseServiceTemplate">
@@ -297,7 +297,7 @@
             <div class="control">
               <span class="icon has-text-success tooltip has-tooltip-right has-tooltip-arrow"
                 data-tooltip="Authentication required.">
-                <i class="fa fa-sm fa-circle parent-icon"> </i>
+                <i class="bi bi-circle-fill bi-sm"> </i>
               </span>
             </div>
           </div>
@@ -318,18 +318,18 @@
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content" [ngClass]="{'disabled': !pingInfo.isAlive}">
             <a *ngIf='isUserLoggedIn' (click)="showProfile()" class="dropdown-item user-content">
-              <i class="fa fa-sm fa-user" aria-hidden="true"></i>&nbsp; Profile
+              <i class="bi bi-person bi-sm" aria-hidden="true"></i>&nbsp; Profile
             </a>
             <a *ngIf='isUserLoggedIn' (click)="logout()" class="dropdown-item user-content">
-              <i class="fa fa-sm fa-sign-out-alt" aria-hidden="true"></i>&nbsp; Log Out
+              <i class="bi bi-box-arrow-right bi-sm" aria-hidden="true"></i>&nbsp; Log Out
             </a>
             <ng-container *ngIf="pingInfo.isAlive && isUserLoggedIn && rolesService?.hasEditPermissions()">
               <a (click)="openModal()" class="dropdown-item user-content">
-                <span class="icon"><i class="fa fa-power-off" aria-hidden="true"></i>
+                <span class="icon"><i class="bi bi-power bi-sm" aria-hidden="true"></i>
                 </span>&nbsp;Shut Down
               </a>
               <a id="restart" (click)="openRestartModal()" class="dropdown-item user-content">
-                <span class="icon"><i class="fa fa-sm fa-sync" aria-hidden="true"></i></span>&nbsp; Restart
+                <span class="icon"><i class="bi bi-arrow-repeat bi-sm" aria-hidden="true"></i></span>&nbsp; Restart
               </a>
             </ng-container>
           </div>
@@ -340,7 +340,7 @@
       <div *ngIf="pingInfo.isAlive && isAuthOptional">
         <span class="icon has-text-danger is-small">
           <a class="tooltip has-tooltip-left has-tooltip-arrow" data-tooltip="Shut Down Fledge" (click)="openModal()">
-            <i class="fa fa-power-off" aria-hidden="true"></i>
+            <i class="bi bi-power bi-sm" aria-hidden="true"></i>
           </a>
         </span>
       </div>
@@ -350,7 +350,7 @@
         <span class="icon has-text-danger is-small">
           <a id="restart" class="tooltip has-tooltip-left has-tooltip-arrow" data-tooltip="Restart Fledge"
             (click)="openRestartModal()">
-            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+            <i class="bi bi-arrow-repeat bi-sm" aria-hidden="true"></i>
           </a>
         </span>
       </div>

@@ -391,6 +391,10 @@ span.tooltip {
   line-height: 1;
 }
 
+.bi-xs {
+  font-size: 0.75rem;
+}
+
 .bi-sm {
   font-size: 0.9rem;
 }
