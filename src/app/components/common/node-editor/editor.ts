@@ -31,6 +31,8 @@ class Connection<A extends Node, B extends Node> extends ClassicPreset.Connectio
 
 let editor = new NodeEditor<Schemes>();
 export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, data) {
+  console.log('data', data);
+
   const socket = new ClassicPreset.Socket("socket");
   editor = new NodeEditor<Schemes>();
   const area = new AreaPlugin<Schemes, AreaExtra>(container);
@@ -138,7 +140,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   area.use(dock);
   area.use(history);
 
-  if (data.source !== '' && data.source !== "nodelist") {
+  if (data.source) {
     area.use(minimap);
     if (rolesService.hasEditPermissions()) {
       // area.use(contextMenu);
@@ -169,7 +171,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
 async function createNodesAndConnections(socket, editor, arrange, area, rolesService, data) {
 
 
-  if (data.source !== "nodelist") {
+  if (data.source) {
     console.log('dddsss', data);
     let plugin;
     if (data.from == 'north') {

@@ -13,12 +13,14 @@
       </li>
       <article requiredViewEditorRole>
         <li>
-          <a id=" south" routerLinkActive="is-active" routerLink='/south'>
+          <a id=" south" routerLinkActive="is-active"
+            [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/south']: ['/south']">
             South
           </a>
         </li>
         <li>
-          <a id="north" routerLinkActive="is-active" routerLink='/north'>
+          <a id="north" routerLinkActive="is-active"
+            [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/north']: ['/north']">
             North
           </a>
         </li>

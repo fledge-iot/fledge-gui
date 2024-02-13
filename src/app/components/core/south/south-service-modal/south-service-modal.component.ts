@@ -521,17 +521,11 @@ export class SouthServiceModalComponent implements OnInit {
 
   navToSouth() {
     if (this.source === 'flowEditor') {
-      // this.router.navigate(['/south/flow'], { queryParams: { source: this.serviceName } });
-      this.router.navigate(['/south/flow'], { queryParams: { from: 'south', source: this.serviceName } })
-
+      this.router.navigate(['/flow/editor/south', 'south', this.serviceName, 'details'])
     }
     else {
       this.router.navigate(['/south']);
     }
-  }
-
-  navToFlowEditorDetailPage() {
-    this.router.navigate(['/south/flow'], { queryParams: { from: 'south', source: this.serviceName } });
   }
 
   checkFormState() {

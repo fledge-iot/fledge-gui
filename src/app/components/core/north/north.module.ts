@@ -14,7 +14,6 @@ import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.com
 import { NorthComponent } from './north.component';
 import { FilterModule } from '../filter/filter.module';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { NodeEditorComponent } from '../../common/node-editor/node-editor.component';
 
 const routes: Routes = [
   {
@@ -27,10 +26,6 @@ const routes: Routes = [
     canActivate: [RolesGuard]
   },
   {
-    path: 'flow',
-    component: NodeEditorComponent,
-  },
-  {
     path: ':name/details',
     component: NorthTaskModalComponent
   }
@@ -39,7 +34,7 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     NorthComponent,
-    AddTaskWizardComponent,
+    // AddTaskWizardComponent,
     NorthTaskModalComponent
   ],
   imports: [

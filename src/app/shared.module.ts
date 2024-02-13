@@ -16,6 +16,8 @@ import { PipesModule } from './pipes/pipes.module';
 import { ShowConfigurationComponent } from './components/core/configuration-manager/show-configuration/show-configuration.component';
 import { BucketConfigurationComponent } from './components/core/configuration-manager/bucket-configuration/bucket-configuration.component';
 import { TabNavigationComponent } from './components/core/configuration-manager/tab-navigation/tab-navigation.component';
+import { AddServiceWizardComponent } from './components/core/south/add-service-wizard/add-service-wizard.component';
+import { AddTaskWizardComponent } from './components/core/north/add-task-wizard/add-task-wizard.component';
 
 @NgModule({
   imports: [
@@ -37,7 +39,9 @@ import { TabNavigationComponent } from './components/core/configuration-manager/
     TimeDropdownComponent,
     RangeSliderComponent,
     ConfirmationDialogComponent,
-    TabNavigationComponent
+    TabNavigationComponent,
+    AddServiceWizardComponent,
+    AddTaskWizardComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -48,7 +52,9 @@ import { TabNavigationComponent } from './components/core/configuration-manager/
     TimeDropdownComponent,
     RangeSliderComponent,
     ConfirmationDialogComponent,
-    TabNavigationComponent
+    TabNavigationComponent,
+    AddServiceWizardComponent,
+    AddTaskWizardComponent
   ]
 })
 export class SharedModule { }

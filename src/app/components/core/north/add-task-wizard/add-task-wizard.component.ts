@@ -98,7 +98,11 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     const last = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = last.getAttribute('id');
     if (+id === 1) {
-      this.router.navigate(['/north']);
+      if (this.source) {
+        this.router.navigate(['/flow/editor/north'])
+      } else {
+        this.router.navigate(['/north']);
+      }
       return;
     }
     last.classList.remove('is-active');
@@ -273,15 +277,13 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           if (this.source === 'flowEditor') {
             this.ngProgress.start();
             setTimeout(() => {
-              // this.router.navigate(['/south/flow'], { queryParams: { source: response['name'] } });
-              this.router.navigate(['/north/flow'], { queryParams: { from: 'north', source: response['name'] } })
+              this.router.navigate(['flow/north', response['name']])
               this.ngProgress.done();
             }, 3000);
           }
           else {
             this.router.navigate(['/north']);
           }
-          //this.router.navigate(['/north']);
         },
         (error) => {
           /** request completed */
@@ -325,12 +327,10 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
             const name = payload.name
             this.uploadScript(name, files);
           }
-          // this.router.navigate(['/north']);
           if (this.source === 'flowEditor') {
             this.ngProgress.start();
             setTimeout(() => {
-              // this.router.navigate(['/south/flow'], { queryParams: { source: response['name'] } });
-              this.router.navigate(['/north/flow'], { queryParams: { from: 'north', source: response['name'] } })
+              this.router.navigate(['/flow/editor/north', response['name'], 'details']);
               this.ngProgress.done();
             }, 3000);
           }

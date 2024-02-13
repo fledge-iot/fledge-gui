@@ -2,18 +2,16 @@
   <div class="navbar-item">
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
-        <li *ngIf="from=='south'"><a [routerLink]="['/south/flow']"
-            [queryParams]="{ from, source: 'nodelist' }">South</a>
+        <li *ngIf="from=='south'"><a [routerLink]="['/flow/editor/south']">South</a>
         </li>
-        <li *ngIf="from=='north'"><a [routerLink]="['/north/flow']"
-            [queryParams]="{ from, source: 'nodelist' }">North</a>
+        <li *ngIf="from=='north'"><a [routerLink]="['/flow/editor/north']">North</a>
         </li>
-        <li [ngClass]="{'is-active' : !source || !isAddFilterWizard}" *ngIf="source!=='nodelist'">
-          <a [routerLink]="['/south/flow']" [queryParams]="{ source: source }">
+        <!-- <li [ngClass]="{'is-active' : !source || !isAddFilterWizard}" *ngIf="source">
+          <a [routerLink]="['/south/flow']">
             {{source ? source : 'Add'}}
           </a>
-        </li>
-        <li class="is-active" *ngIf="source && source!=='nodelist' && isAddFilterWizard">
+        </li> -->
+        <li class="is-active" *ngIf="source  && isAddFilterWizard">
           <a href="#" aria-current="page">
             Add Filter
           </a>
@@ -27,11 +25,12 @@
   <ng-container *ngIf="!isAddFilterWizard">
     <div class="rete" #rete></div>
   </ng-container>
-  <ng-contafiner *ngIf="source && source!=='nodelist' && isAddFilterWizard">
+  <ng-contafiner *ngIf="source && isAddFilterWizard">
     <div class="box animated slideInRight">
       <app-add-filter-wizard (notify)="onNotify($event)" [serviceName]="source" [from]="from"></app-add-filter-wizard>
     </div>
   </ng-contafiner>
+  <!-- Quick View -->
   <app-quickview>
     <ng-container *ngIf="showPluginConfiguration">
       <app-configuration-group *ngIf="category" [category]="category" [from]="'south'" [sourceName]="serviceName"

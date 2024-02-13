@@ -14,12 +14,10 @@ export class North extends ClassicPreset.Node {
       this.addControl(task.name, new ClassicPreset.InputControl("text"));
       this.addControl("plname" + task.plugin.name, new ClassicPreset.InputControl("text"));
       // let assetCount = service.assets.length;
-      // let readingCount = service.assets.reduce((total, asset) => {
-      //     return total + asset.count;
-      // }, 0)
+      let sentReadings = task.sent;
       //this.addControl("asc" + assetCount, new ClassicPreset.InputControl("text"));
-      // this.addControl("rdc" + readingCount, new ClassicPreset.InputControl("text"));
-      this.addControl(task?.status, new ClassicPreset.InputControl("text"));
+      this.addControl("sent" + sentReadings, new ClassicPreset.InputControl("text"));
+      // this.addControl(task?.status, new ClassicPreset.InputControl("text"));
       this.addControl(task.enabled, new ClassicPreset.InputControl("text"));
     }
     this.addOutput("port", new ClassicPreset.Output(socket));

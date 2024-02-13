@@ -8,9 +8,34 @@ import { RefDirective } from './ref.directive';
 import { QuickviewModule } from '../quickview/quickview.module';
 import { LogsModule } from '../../core/logs/logs.module';
 import { SharedModule } from './../../../shared.module';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { FilterModule } from '../../core/filter/filter.module';
+import { AddServiceWizardComponent } from '../../core/south/add-service-wizard/add-service-wizard.component';
+import { RolesGuard } from '../../../guards/roles.gurad';
+import { PluginService } from '../../../services/plugin.service';
+import { AddTaskWizardComponent } from '../../core/north/add-task-wizard/add-task-wizard.component';
 
+const routes: Routes = [
+  {
+    path: 'editor/:from',
+    component: NodeEditorComponent,
+  },
+  {
+    path: 'editor/:from/:name/details',
+    component: NodeEditorComponent
+  },
+  {
+    path: 'editor/north/add',
+    component: AddTaskWizardComponent,
+    canActivate: [RolesGuard]
+  },
+  {
+    path: 'editor/south/add',
+    component: AddServiceWizardComponent,
+    canActivate: [RolesGuard]
+  }
+
+]
 
 
 @NgModule({
@@ -20,17 +45,20 @@ import { FilterModule } from '../../core/filter/filter.module';
     CustomConnectionComponent,
     RefDirective],
   imports: [
+    RouterModule.forChild(routes),
     CommonModule,
     QuickviewModule,
     LogsModule,
     SharedModule,
     RouterModule,
-    FilterModule
+    FilterModule,
+    SharedModule
   ],
   exports: [NodeEditorComponent,
     CustomNodeComponent,
     CustomSocketComponent,
     CustomConnectionComponent,
-    RefDirective]
+    RefDirective],
+  providers: [RolesGuard, PluginService],
 })
 export class FlowEditorModule { }

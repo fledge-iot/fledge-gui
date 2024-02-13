@@ -144,7 +144,12 @@ export class SouthComponent implements OnInit, OnDestroy {
   }
 
   addSouthService() {
+    console.log('add service');
     this.router.navigate(['/south/add']);
+  }
+
+  navToFlowEditor() {
+    this.router.navigate(['/flow/editor/south'])
   }
 
   /**
@@ -210,14 +215,5 @@ export class SouthComponent implements OnInit, OnDestroy {
     this.destroy$.unsubscribe();
   }
 
-  navToFlowEditorAddPage() {
-    // this.router.navigate(['/south/flow']);
-    this.router.navigate(['/south/flow'], { queryParams: { from: 'south' } })
 
-  }
-
-  navToFlowEditor() {
-    // this.router.navigate(['/south/flow'], { queryParams: { from: 'south', source: 'nodelist' } });
-    this.router.navigate(['/south/flow'], { queryParams: { from: 'south', source: 'nodelist' } })
-  }
 }

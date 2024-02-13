@@ -26,10 +26,6 @@ const routes: Routes = [
     canActivate: [RolesGuard]
   },
   {
-    path: 'flow',
-    component: NodeEditorComponent,
-  },
-  {
     path: ':name/details',
     component: SouthServiceModalComponent
   },
@@ -38,7 +34,7 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     SouthComponent,
-    AddServiceWizardComponent,
+    // AddServiceWizardComponent,
     SouthServiceModalComponent
   ],
   imports: [

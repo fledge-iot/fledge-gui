@@ -7,7 +7,6 @@ import { Service } from '../../core/south/south-service';
 import { Subject, Subscription, forkJoin, of } from 'rxjs';
 import { FlowEditorService } from './flow-editor.service';
 import { cloneDeep, isEmpty } from 'lodash';
-import { FilterListComponent } from '../../core/filter/filter-list/filter-list.component';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import { NorthTask } from '../../core/north/north-task';
 
@@ -73,27 +72,19 @@ export class NodeEditorComponent implements OnInit {
     private dialogService: DialogService,
     private northService: NorthService,
     private router: Router) {
-    this.route.queryParams.subscribe(params => {
+    this.route.params.subscribe(params => {
       console.log('param', params);
       this.from = params.from;
-      this.source = params.source;
+      this.source = params.name;
       if (this?.from === 'south') {
         this.getSouthboundServices();
       } else {
         this.getNorthboundServices();
       }
 
-      if (this?.source !== "nodelist") {
+      if (this.source) {
         this.getFilterPipeline();
       }
-
-      // if (params['source']) {
-      //   this.source = params['source'];
-      //   this.getSouthboundServices();
-      //   if (this.source !== "nodelist") {
-      //     this.getFilterPipeline();
-      //   }
-      // }
     });
   }
 
@@ -170,8 +161,6 @@ export class NodeEditorComponent implements OnInit {
       if (this.initialApiCallsStack.length > 0) {
         this.ngProgress.start();
         forkJoin(this.initialApiCallsStack).subscribe((result) => {
-          console.log('node reuslt', result);
-
           this.ngProgress.done();
           result.forEach((r: any) => {
             if (r.status) {
@@ -304,8 +293,7 @@ export class NodeEditorComponent implements OnInit {
         this.filterService.deleteFilter(this.filterName).subscribe((data: any) => {
           this.toastService.success(data.result);
           setTimeout(() => {
-            // this.router.navigate(['/south/flow'], { queryParams: { source: this.source } });
-            this.router.navigate(['/', this.from, 'flow'], { queryParams: { from: this.from, source: this.source } });
+            this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
           }, 1000);
         },
           (error) => {
@@ -330,7 +318,6 @@ export class NodeEditorComponent implements OnInit {
     if (updatedPipeline && updatedPipeline.length > 0 && !this.isFilterPipelineComplex(updatedPipeline) && !this.isFilterDuplicatedInPipeline(updatedPipeline)) {
       this.updatedFilterPipeline = updatedPipeline;
       if (this.isPipelineUpdated() && this.isEachFilterConfigured()) {
-        // console.log("pipeline updated")
         this.updateFilterPipeline();
         console.log(this.updatedFilterPipeline);
       }
@@ -342,8 +329,7 @@ export class NodeEditorComponent implements OnInit {
       .subscribe((data: any) => {
         this.toastService.success(data.result);
         setTimeout(() => {
-          //this.router.navigate(['/south/flow'], { queryParams: { source: this.source } });
-          this.router.navigate(['/', this.from, 'flow'], { queryParams: { from: this.from, source: this.service.name } });
+          this.router.navigate(['/flow/editor', this.from, this.service.name, 'details']);
         }, 1000);
       },
         (error) => {
@@ -555,8 +541,7 @@ export class NodeEditorComponent implements OnInit {
     this.servicesApiService.deleteService(this.deleteServiceName)
       .subscribe((data: any) => {
         this.toastService.success(data['result']);
-        //this.router.navigate(['/south/flow'], { queryParams: { source: 'nodelist' } });
-        this.router.navigate(['/', this.from, 'flow'], { queryParams: { from: this.from, source: 'nodelist' } });
+        this.router.navigate(['/flow/editor', this.from]);
       },
         (error) => {
           if (error.status === 0) {
@@ -572,11 +557,8 @@ export class NodeEditorComponent implements OnInit {
   }
 
   onNotify() {
-    console.log('notify');
-
     this.isAddFilterWizard = false;
-    //this.router.navigate(['/south/flow'], { queryParams: { source: this.source } });
-    this.router.navigate(['/', this.from, 'flow'], { queryParams: { from: this.from, source: this.service.name } });
+    this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
   }
 
   ngOnDestroy() {

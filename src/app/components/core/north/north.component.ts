@@ -79,7 +79,7 @@ export class NorthComponent implements OnInit, OnDestroy {
   }
 
   navToFlowEditor() {
-    this.router.navigate(['/north/flow'], { queryParams: { from: 'north', source: 'nodelist' } });
+    this.router.navigate(['/flow/editor/north']);
   }
 
   addNorthInstance() {

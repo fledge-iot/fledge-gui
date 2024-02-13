@@ -433,7 +433,7 @@ export class AddFilterWizardComponent implements OnInit {
               this.updateFilterPipeline({ 'pipeline': this.updatedFilterPipeline, files }, data.filter);
               console.log(this.updatedFilterPipeline)
               // this.router.navigate(['/south/flow'], { queryParams: { source: this.serviceName } });
-              this.router.navigate(['/', this.from, 'flow'], { queryParams: { from: this.from, source: this.serviceName } });
+              this.router.navigate(['/flow/editor', this.from, this.serviceName, 'details']);
             }
             else {
               this.addFilterPipeline({ 'pipeline': [payload.name], files });
@@ -574,8 +574,7 @@ export class AddFilterWizardComponent implements OnInit {
           this.uploadScript(name, payload?.files);
         }
         console.log("pipeline updated");
-        // this.router.navigate(['/south/flow'], { queryParams: { source: this.serviceName } });
-        this.router.navigate(['/', this.from, 'flow'], { queryParams: { from: this.from, source: this.serviceName } });
+        this.router.navigate(['/flow/editor', this.from, this.serviceName, 'details']);
       },
         (error) => {
           console.log('service down ', error);
