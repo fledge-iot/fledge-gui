@@ -122,8 +122,11 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
     this.getGroups();
     this.showGroupInLeft = false;
-    if(this.groups.length === 1 && this.categoryType === "filter"){
-      this.showGroupInLeft = true;
+    if (this.categoryType === "filter") {
+      if (this.groups.length === 1) {
+        this.showGroupInLeft = true;
+      }
+      delete (this.groups[0]?.config?.enable);
     }
     // set initial group
     this.selectedGroup = this.groups[0]?.group;
