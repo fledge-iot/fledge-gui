@@ -43,7 +43,7 @@
       </ng-container>
       <span *ngIf="data.label!=='Filter'" class="help-text">{{helpText}}</span>
     </div>
-    <div [ngClass]="{'mt-1':!isServiceNode}">
+    <div>
       <ng-container *ngIf="isServiceNode && from != 'north'">
         <div class="reading-details">
           <small class="reading has-tooltip-right has-tooltip-arrow"
@@ -58,16 +58,17 @@
             data-tooltip="Readings Sent">{{service.readingCount}}</small>
         </div>
       </ng-container>
-      <ng-container *ngIf="data.label==='Filter'">
+      <ng-container *ngIf="isFilterNode">
         <div class="is-flex is-justify-content-center">
           <span class="has-text-grey-light">
-            <i class="fa fa-2xl fa-filter"></i>
+            <i class="bi bi-funnel bi-xl"></i>
           </span>
         </div>
       </ng-container>
       <ng-container *ngIf="source">
         <div class="output is-pulled-right" *ngFor="let output of data.outputs | keyvalue: sortByIndex"
-          [attr.data-testid]="'output-'+output.key" [ngClass]="{'output-container': isServiceNode}">
+          [attr.data-testid]="'output-'+output.key"
+          [ngClass]="{'output-container': isServiceNode,'custom-margin': isFilterNode && data.label!=='Filter'}">
           <div class="output-title" data-testid="output-title">
             {{output.value?.label}}
           </div>
@@ -77,7 +78,7 @@
         </div>
       </ng-container>
       <div class="input is-pulled-left input-container" *ngFor="let input of data.inputs | keyvalue: sortByIndex"
-        [attr.data-testid]="'input-'+input.key">
+        [attr.data-testid]="'input-'+input.key" [ngClass]="{'custom-margin': data.label!=='Filter'}">
         <div class="input-socket" refComponent
           [data]="{type: 'socket', side: 'input', key: input.key, nodeId: data.id, payload: input.value?.socket, seed: seed }"
           [emit]="emit" data-testid="input-socket" title="Destination"></div>
@@ -89,12 +90,12 @@
                     data-testid="input-control"></div> -->
       </div>
     </div>
-    <div [ngClass]="{'mt-1':!isServiceNode}">
+    <div>
       <ng-container
         *ngIf="data.label!=='Applications' && data.label!=='South' &&  data.label!=='North' && data.label!=='Filter'">
         <div class="is-pulled-left ml-2 mt-2">
-          <span class="icon is-small has-tooltip-right has-tooltip-arrow is-pulled-left is-hovered" data-tooltip="Help"
-            (click)="goToLink()">
+          <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered"
+            data-tooltip="Help" (click)="goToLink()">
             <i class="far fa-xs fa-question-circle"></i>
           </span>
           <span *ngIf="isServiceNode"

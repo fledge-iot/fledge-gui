@@ -169,8 +169,6 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
 }
 
 async function createNodesAndConnections(socket, editor, arrange, area, rolesService, data) {
-
-
   if (data.source) {
     console.log('dddsss', data);
     let plugin;
@@ -283,7 +281,6 @@ async function createNodesAndConnections(socket, editor, arrange, area, rolesSer
       }
     }
   }
-
 
   addCustomBackground(area);
   // AreaExtensions.simpleNodesOrder(area);

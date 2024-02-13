@@ -521,7 +521,7 @@ export class SouthServiceModalComponent implements OnInit {
 
   navToSouth() {
     if (this.source === 'flowEditor') {
-      this.router.navigate(['/flow/editor/south', 'south', this.serviceName, 'details'])
+      this.router.navigate(['/flow/editor', 'south', this.serviceName, 'details'])
     }
     else {
       this.router.navigate(['/south']);

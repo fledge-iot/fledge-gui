@@ -8,8 +8,6 @@ export class South extends ClassicPreset.Node {
 
   constructor(socket: ClassicPreset.Socket, service) {
     super("South");
-
-    console.log('south', service);
     if (service) {
       this.addControl(service.name, new ClassicPreset.InputControl("text"));
       this.addControl("plname" + service.plugin.name, new ClassicPreset.InputControl("text"));

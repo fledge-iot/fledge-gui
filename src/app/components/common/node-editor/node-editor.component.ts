@@ -1,7 +1,18 @@
 import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
 import { createEditor, getUpdatedFilterPipeline, deleteConnection } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfigurationControlService, ConfigurationService, FileUploaderService, FilterService, NorthService, ProgressBarService, ResponseHandler, RolesService, ServicesApiService, ToastService } from './../../../services';
+import {
+  ConfigurationControlService,
+  ConfigurationService,
+  FileUploaderService,
+  FilterService,
+  NorthService,
+  ProgressBarService,
+  ResponseHandler,
+  RolesService,
+  ServicesApiService,
+  ToastService
+} from './../../../services';
 import { catchError, map, skip, takeUntil } from 'rxjs/operators';
 import { Service } from '../../core/south/south-service';
 import { Subject, Subscription, forkJoin, of } from 'rxjs';
