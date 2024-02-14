@@ -49,7 +49,6 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   viewPort: any = '';
   public showSpinner = false;
   isManualRefresh = false;
-  pollingScheduleID: string;
 
   @ViewChild(ShutdownModalComponent, { static: true }) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent, { static: true }) childRestart: RestartModalComponent;
@@ -428,12 +427,14 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate(['logs/syslog'], { queryParams: { source: service.name } });
   }
 
-  public getSchedules(): void {
+  public showConfigWithPollingSchedule(serviceInfo): void {
     this.ngProgress.start();
     this.schedulesService.getSchedules().
       subscribe(
         (data: any) => {
-          this.pollingScheduleID = data.schedules.find(s => s.processName === 'manage')?.id;
+          const pollingScheduleID = data.schedules.find(s => s.processName === 'manage')?.id;
+          serviceInfo['pollingScheduleID'] = pollingScheduleID;
+          this.router.navigate(['/developer/options/additional-services/config'], { queryParams: { ...serviceInfo },  skipLocationChange: true });
         },
         error => {
           this.ngProgress.done();
@@ -474,13 +475,11 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         serviceInfo['package'] = 'fledge-service-bucket';
         this.router.navigate(['/developer/options/additional-services/config'], { queryParams: { ...serviceInfo },  skipLocationChange: true });
         break;
-      case 'Management':
-        this.getSchedules();
+      case 'Management':       
         serviceInfo['process'] = 'management';
         serviceInfo['type'] = 'Management';
         serviceInfo['package'] = 'fledge-service-management';
-        serviceInfo['pollingScheduleID'] = this.pollingScheduleID;
-        this.router.navigate(['/developer/options/additional-services/config'], { queryParams: { ...serviceInfo },  skipLocationChange: true });
+        this.showConfigWithPollingSchedule(serviceInfo);
         break;
       case 'Dispatcher':
         serviceInfo['process'] = 'dispatcher';
