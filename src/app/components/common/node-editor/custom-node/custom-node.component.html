@@ -58,7 +58,7 @@
             <ng-container *ngIf="isFilterNode">
                 <div class="is-flex is-justify-content-center">
                     <span class="has-text-grey-light">
-                        <i class="bi bi-funnel bi-lg funnel"></i>
+                        <i class="bi bi-funnel bi-lg no-hover"></i>
                     </span>
                 </div>
             </ng-container>
@@ -144,12 +144,8 @@
         <div class="input-socket" refComponent
             [data]="{type: 'socket', side: 'input', key: input.key, nodeId: data.id, payload: input.value?.socket, seed: seed }"
             [emit]="emit" data-testid="input-socket" title="Destination"></div>
-        <div class="input-title" data-testid="input-title" *ngIf="!input.value?.control || !input.value?.showControl">
-            {{input.value?.label}}
-        </div>
-        <div class="input-control" [style.display]="input.value?.control && input.value?.showControl ? '' : 'none'"
-            refComponent [data]="{type: 'control', payload: input.value?.control }" [emit]="emit"
-            data-testid="input-control"></div>
+        <span class="has-text-grey ml-2">
+            <i class="bi bi-database bi-xl no-hover"></i>
+        </span>
     </div>
-    <img src="assets/storage.png" alt="" class="storage ml-5">
 </ng-template>

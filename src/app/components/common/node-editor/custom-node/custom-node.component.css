@@ -137,11 +137,6 @@
   justify-content: center;
 }
 
-.storage {
-  width: 45px;
-  margin-left: 3px;
-}
-
 .storage-input {
   margin-top: 2px;
 }
@@ -171,7 +166,7 @@
   margin-top: -25px;
 }
 
-.funnel {
+.no-hover {
   color: #b5b5b5 !important;
 }
 
