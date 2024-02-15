@@ -275,11 +275,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
             this.uploadScript(name, files);
           }
           if (this.source === 'flowEditor') {
-            this.ngProgress.start();
-            setTimeout(() => {
-              this.router.navigate(['flow/north', response['name']])
-              this.ngProgress.done();
-            }, 3000);
+            this.router.navigate(['/flow/editor/north', response['name']])
           }
           else {
             this.router.navigate(['/north']);
@@ -328,11 +324,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
             this.uploadScript(name, files);
           }
           if (this.source === 'flowEditor') {
-            this.ngProgress.start();
-            setTimeout(() => {
-              this.router.navigate(['/flow/editor/north', response['name'], 'details']);
-              this.ngProgress.done();
-            }, 3000);
+            this.router.navigate(['/flow/editor/north', response['name'], 'details']);
           }
           else {
             this.router.navigate(['/north']);
