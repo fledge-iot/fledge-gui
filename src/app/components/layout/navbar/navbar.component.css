@@ -82,6 +82,10 @@
   font-size: 0.8rem;
 }
 
+.logout-icon {
+  padding-left: 0.1rem;
+}
+
 .child-icon {
   font-size: 0.7rem;
 }

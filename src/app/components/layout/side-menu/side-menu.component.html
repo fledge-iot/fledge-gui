@@ -4,32 +4,32 @@
       <li>
         
         <a id="dashboard" routerLinkActive="is-active" routerLink="/" [routerLinkActiveOptions]={exact:true}>
-          <span><i class="bi bi-speedometer2"></i> </span>
+          <span><i class="bi bi-speedometer2 bi-sm"></i> </span>
           Dashboard
         </a>
       </li>
       <li>
         <a id="asset" routerLinkActive="is-active" routerLink='/asset'>
-          <span><i class="bi bi-graph-up" style="font-size:0.85rem;"></i></span>
+          <span><i class="bi bi-graph-up icon-sm"></i></span>
           Assets &amp; Readings
         </a>
       </li>
       <article requiredViewEditorRole>
         <li>
           <a id=" south" routerLinkActive="is-active" routerLink='/south'>
-            <span><i class="bi bi-pc-display-horizontal" style="font-size:0.95rem;"></i></span>
+            <span><i class="bi bi-pc-display-horizontal bi-sm"></i></span>
             South
           </a>
         </li>
         <li>
           <a id="north" routerLinkActive="is-active" routerLink='/north'>
-            <span><i class="bi bi-cloud-upload"></i></span>
+            <span><i class="bi bi-cloud-upload bi-sm"></i></span>
             North
           </a>
         </li>
         <li>
           <a id="notification" routerLinkActive="is-active" routerLink='/notification'>
-            <span><i class="bi bi-lightning-charge"></i></span>
+            <span><i class="bi bi-lightning-charge bi-sm"></i></span>
             Notifications
           </a>
         </li>
@@ -37,7 +37,7 @@
           <a type="button" [ngClass]="{'has-background-light':  isControlListOpen }" id="control"
             (click)="isControlListOpen = !isControlListOpen; ; $event.stopPropagation()">
             <span>
-              <i class="bi bi-controller"></i>
+              <i class="bi bi-controller bi-sm"></i>
               Control
             </span>
             <span class="icon is-small menu-toogle-icon is-pulled-right"
@@ -72,19 +72,19 @@
 
         <li>
           <a id="configuration" routerLinkActive="is-active" routerLink='/configuration'>
-            <span><i class="bi bi-gear-wide-connected"></i></span>
+            <span><i class="bi bi-gear-wide-connected bi-sm"></i></span>
             Configuration
           </a>
         </li>
         <li>
           <a id="schedules" routerLinkActive="is-active" routerLink='/schedules'>
-            <span><i class="bi bi-calendar3" style="font-size:0.9rem;"></i></span>
+            <span><i class="bi bi-calendar3 icon-sm"></i></span>
             Schedules
           </a>
         </li>
         <li>
           <a id="certificate" routerLinkActive="is-active" routerLink='/certificate'>
-            <span><i class="bi bi-filetype-key"></i></span>
+            <span><i class="bi bi-filetype-key bi-sm"></i></span>
             Certificate Store
           </a>
         </li>
@@ -93,21 +93,21 @@
             
             <a *ngIf="mfe?.displayName" routerLinkActive="is-active"
               [routerLink]="mfe.routePath">
-              <!--icons-->
+              <span *ngIf="mfe.displayName === 'ML Models'"><i class="bi bi-bucket bi-sm"></i></span>
               {{mfe.displayName}}</a>
           </ng-container>
         </li>
         <li>
           <a *ngIf="rolesService.hasEditPermissions()" id="backup-restore" routerLinkActive="is-active"
             routerLink='/backup-restore'>
-            <span><i class="bi bi-database-gear"></i></span>
+            <span><i class="bi bi-database-gear bi-sm"></i></span>
             Backup &amp; Restore
           </a>
         </li>
         <li>
           <a type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
             (click)="isLogsListOpen = !isLogsListOpen; $event.stopPropagation()">
-            <span><i class="bi bi-file-earmark-text mr-1"></i></span>
+            <span><i class="bi bi-file-earmark-text bi-sm mr-1"></i></span>
             <span>Logs</span>
             <span class="icon is-small menu-toogle-icon is-pulled-right"
               [title]="isLogsListOpen ? 'Collapse' : 'Expand'">
@@ -137,21 +137,21 @@
         </li>
         <li>
           <a id="user-management" *ngIf="isAdmin" routerLinkActive="is-active" routerLink='/user-management'>
-            <span><i class="bi bi-people"></i></span>
+            <span><i class="bi bi-people bi-sm"></i></span>
             User Management
           </a>
         </li>
 
         <li>
           <a id="support" routerLinkActive="is-active" routerLink='/support'>
-            <span><i class="bi bi-file-medical"></i></span>
+            <span><i class="bi bi-file-medical bi-sm"></i></span>
             Support
           </a>
         </li>
         <li>
           <a id="developer" routerLinkActive="is-active" routerLink='/developer/options'
             *ngIf="developerFeaturesService.getDeveloperFeatureControl() &&  rolesService.hasEditPermissions()">
-            <span><i class="bi bi-code-slash"></i></span>
+            <span><i class="bi bi-code-slash bi-sm"></i></span>
             Developer
           </a>
         </li>
@@ -160,13 +160,13 @@
     <li>
       <a id="setting" routerLinkActive="is-active" routerLink='/setting'
         (click)="toggleSideMenu(); $event.preventDefault()">
-        <span><i class="bi bi-gear"></i></span>
+        <span><i class="bi bi-gear bi-sm"></i></span>
         Settings
       </a>
     </li>
     <li>
       <a id="help" (click)="goToLink()" (click)="toggleSideMenu(); $event.preventDefault()">
-        <span><i class="bi bi-question-circle"></i></span>
+        <span><i class="bi bi-question-circle bi-sm"></i></span>
         Help
       </a>
     </li>
