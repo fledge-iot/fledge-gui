@@ -432,6 +432,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.schedulesService.getSchedules().
       subscribe(
         (data: any) => {
+          this.ngProgress.done();
           const pollingScheduleID = data.schedules.find(s => s.processName === 'manage')?.id;
           serviceInfo['pollingScheduleID'] = pollingScheduleID;
           this.router.navigate(['/developer/options/additional-services/config'], { queryParams: { ...serviceInfo },  skipLocationChange: true });
@@ -447,7 +448,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public isDeveloperFeatureOn(): boolean {
-    const devFeature: boolean = JSON.parse(localStorage.getItem('DEV_FEATURES'));
+    const devFeature = JSON.parse(localStorage.getItem('DEV_FEATURES'));
     return devFeature ? devFeature : false;
   }
 

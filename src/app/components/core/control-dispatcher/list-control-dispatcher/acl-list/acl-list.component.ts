@@ -26,8 +26,8 @@ export class AclListComponent implements OnInit {
   private subscription: Subscription;
 
   public reenableButton = new EventEmitter<boolean>(false);
-  showConfigureModal: boolean = false;
-  serviceInfo;
+  showConfigureModal = false;
+  serviceInfo = {};
 
   constructor(
     private aclService: AclService,

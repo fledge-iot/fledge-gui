@@ -27,7 +27,7 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   public reenableButton = new EventEmitter<boolean>(false);
-  showConfigureModal: boolean = false;
+  showConfigureModal = false;
   serviceInfo;
 
   constructor(private controlPipelinesService: ControlPipelinesService,

@@ -12,11 +12,11 @@ import { DocService } from '../../../../services/doc.service';
 export class AddDispatcherServiceComponent implements OnInit {
   private viewPortSubscription: Subscription;
   private subscription: Subscription;
-  dispatcherServiceInstalled;
-  dispatcherServiceAdded;
-  dispatcherServiceEnabled;
-  dispatcherServiceName: string = '';
-  showConfigureModal: boolean = false;
+  dispatcherServiceInstalled: boolean;
+  dispatcherServiceAdded: boolean;
+  dispatcherServiceEnabled: boolean;
+  dispatcherServiceName = '';
+  showConfigureModal = false;
 
   @Output() serviceStatusEvent = new EventEmitter<boolean>();
   @Output() serviceConfigureModal = new EventEmitter<Object>();

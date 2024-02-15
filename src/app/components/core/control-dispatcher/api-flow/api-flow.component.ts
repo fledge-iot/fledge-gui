@@ -44,8 +44,8 @@ export class APIFlowComponent implements OnInit {
 
     public reenableButton = new EventEmitter<boolean>(false);
 
-    showConfigureModal: boolean = false;
-    serviceInfo;
+    showConfigureModal = false;
+    serviceInfo: {};
 
     constructor(
         private alertService: AlertService,

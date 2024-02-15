@@ -24,7 +24,7 @@ export class ControlScriptsListComponent implements OnInit {
   private subscription: Subscription;
   isServiceAvailable = false;
   public reenableButton = new EventEmitter<boolean>(false);
-  showConfigureModal: boolean = false;
+  showConfigureModal = false;
   serviceInfo;
 
   constructor(
