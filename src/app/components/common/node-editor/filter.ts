@@ -2,7 +2,7 @@ import { ClassicPreset } from "rete";
 
 
 export class Filter extends ClassicPreset.Node {
-    height = 115;
+    height = 100;
     width = 200;
     parent?: string;
 

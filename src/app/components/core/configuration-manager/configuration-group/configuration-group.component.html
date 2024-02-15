@@ -14,7 +14,7 @@
           <ul>
             <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
               <h6 class="is-6 is-small-font">
-                <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false}">
+                <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false, 'is-pulled-left': showGroupInLeft}">
                   {{g.group}}
                 </a>
               </h6>
