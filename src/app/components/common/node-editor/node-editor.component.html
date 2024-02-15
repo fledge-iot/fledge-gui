@@ -50,7 +50,8 @@
     </ng-container>
     <ng-container *ngIf="showFilterConfiguration">
       <app-configuration-group *ngIf="filterCategory" [category]="filterCategory" [sourceName]="quickviewFilterName"
-        (changedConfigEvent)="getChangedFilterConfig($event)" (formStatusEvent)="validFilterConfigForm = $event">
+        [categoryType]="'filter'" (changedConfigEvent)="getChangedFilterConfig($event)"
+        (formStatusEvent)="validFilterConfigForm = $event">
       </app-configuration-group>
       <div class="columns" *ngIf="rolesService.hasEditPermissions()">
         <div class="column">
@@ -75,7 +76,7 @@
     <button class="delete" aria-label="close" (click)="closeModal('delete-service-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Deleting this service can not be undone. Continue?
+    Deleting {{deleteServiceName}} service can not be undone. Continue?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('delete-service-dialog')">Cancel</button>
@@ -90,7 +91,7 @@
     <button class="delete" aria-label="close" (click)="closeModal('delete-filter-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Deleting this filter can not be undone. Continue?
+    Deleting {{filterName}} filter can not be undone. Continue?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('delete-filter-dialog')">Cancel</button>

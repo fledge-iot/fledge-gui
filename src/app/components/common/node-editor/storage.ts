@@ -2,7 +2,7 @@ import { ClassicPreset } from "rete";
 
 
 export class Storage extends ClassicPreset.Node {
-    height = 100;
+    height = 50;
     width = 100;
     parent?: string;
 
