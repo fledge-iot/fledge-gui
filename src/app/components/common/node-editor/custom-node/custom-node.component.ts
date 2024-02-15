@@ -104,7 +104,7 @@ export class CustomNodeComponent implements OnChanges {
     if (this.data.label === 'South' || this.data.label === 'North') {
       if (this.source !== '') {
         this.isServiceNode = true;
-        this.elRef.nativeElement.style.borderColor = "#B6D7A8";
+        this.elRef.nativeElement.style.borderColor = this.data.label === 'South' ? "#B6D7A8" : '#C781BB'
         interval(POLLING_INTERVAL)
           .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
           .subscribe(() => {
@@ -186,7 +186,7 @@ export class CustomNodeComponent implements OnChanges {
     if (this.data.label === 'AddService') {
       this.data.label = "";
     }
-    if (this.data.label === 'AddTask') {
+    if (this.data.label === 'AddTask') { //647eed
       this.data.label = "";
     }
     if (this.data.label === 'Storage') {

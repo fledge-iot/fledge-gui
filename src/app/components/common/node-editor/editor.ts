@@ -164,13 +164,102 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
       dock.add(newDockFilter);
     }
   }
+  if (data.from == 'south') {
+    createNodesAndConnections(socket, editor, arrange, area, rolesService, data);
+    return;
+  }
+  createNorthNodesAndConnections(socket, editor, arrange, area, rolesService, data);
 
-  createNodesAndConnections(socket, editor, arrange, area, rolesService, data);
+}
+
+
+async function createNorthNodesAndConnections(socket, editor, arrange, area, rolesService, data) {
+  if (data.source) {
+
+    // Storage Node
+    const db = new Storage(socket);
+    await editor.addNode(db);
+
+    // North Node
+    const plugin = new North(socket, data.task);
+    await editor.addNode(plugin);
+
+    let fpLen = data.filterPipeline.length;
+    let previousNode = db;
+    for (let i = 0; i < fpLen; i++) {
+      let pipelineItem = data.filterPipeline[i];
+      if (typeof (pipelineItem) === "string") {
+        let nextNodeConfig = data.filterConfigurations.find((f: any) => f.filterName === pipelineItem)
+        let nextFilterNode = new Filter(socket, nextNodeConfig);
+        await editor.addNode(nextFilterNode);
+        await editor.addConnection(
+          new ClassicPreset.Connection(previousNode, "port", nextFilterNode, "port")
+        );
+        previousNode = nextFilterNode;
+      }
+    }
+
+    await editor.addConnection(
+      new ClassicPreset.Connection(previousNode, "port", plugin, "port")
+    );
+
+    await arrange.layout();
+    AreaExtensions.zoomAt(area, editor.getNodes());
+  }
+  else {
+    if (data.from == 'north') {
+      let j = 0;
+      let k = 0;
+      for (let i = 0; i < data.tasks.length; i++) {
+        const northPlugin = new North(socket, data.tasks[i]);
+        await editor.addNode(northPlugin);
+        if (j < 4) {
+          await area.translate(northPlugin.id, { x: 250 * j, y: 250 * k });
+          j++;
+          if (j == 4) {
+            j = 0; k++;
+          }
+        }
+      }
+      if (rolesService.hasEditPermissions()) {
+        const addTask = new AddTask();
+        await editor.addNode(addTask);
+        await area.translate(addTask.id, { x: 250 * j, y: 250 * k });
+      }
+    } else {
+      let j = 0;
+      let k = 0;
+      for (let i = 0; i < data.services.length; i++) {
+        const southPlugin = new South(socket, data.services[i]);
+        await editor.addNode(southPlugin);
+        if (j < 4) {
+          await area.translate(southPlugin.id, { x: 250 * j, y: 250 * k });
+          j++;
+          if (j == 4) {
+            j = 0; k++;
+          }
+        }
+      }
+      if (rolesService.hasEditPermissions()) {
+        const addService = new AddService();
+        await editor.addNode(addService);
+        await area.translate(addService.id, { x: 250 * j, y: 250 * k });
+      }
+    }
+  }
+
+  addCustomBackground(area);
+  // AreaExtensions.simpleNodesOrder(area);
+  AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
+    accumulating: AreaExtensions.accumulateOnCtrl()
+  });
+  AreaExtensions.restrictor(area, {
+    scaling: () => ({ min: 0.5, max: 2 }),
+  });
 }
 
 async function createNodesAndConnections(socket, editor, arrange, area, rolesService, data) {
   if (data.source) {
-    console.log('dddsss', data);
     let plugin;
     if (data.from == 'north') {
       plugin = new North(socket, data.task);

@@ -9,7 +9,7 @@ export class North extends ClassicPreset.Node {
   constructor(socket: ClassicPreset.Socket, task) {
     super("North");
     console.log('North', task);
-
+    this.addInput("port", new ClassicPreset.Input(socket));
     if (task) {
       this.addControl(task.name, new ClassicPreset.InputControl("text"));
       this.addControl("plname" + task.plugin.name, new ClassicPreset.InputControl("text"));

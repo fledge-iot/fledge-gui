@@ -40,7 +40,7 @@
 
 :host .input {
   text-align: left;
-  display: inline-block;
+   display: inline-block;
   box-shadow: none !important;
   background-color: inherit !important;
   border: none !important;
@@ -176,4 +176,14 @@
 
 .icon-margin {
   margin-top: 2px;
+}
+
+.north-storage-output {
+  margin-left: 13px;
+  margin-top: 8px;
+}
+
+.north-storage-icon {
+  margin-top: 4px;
+  margin-left: 30px;
 }

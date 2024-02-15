@@ -275,7 +275,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
             this.uploadScript(name, files);
           }
           if (this.source === 'flowEditor') {
-            this.router.navigate(['/flow/editor/north', response['name']])
+            this.router.navigate(['/flow/editor/north', response['name'], 'details'])
           }
           else {
             this.router.navigate(['/north']);
