@@ -326,7 +326,7 @@ export class AdditionalServiceModalComponent {
     // enabling service takes time to get the updated state from API
     setTimeout(() => {
       this.toggleModal(false);             
-    }, 1000);
+    }, 3000);
     this.isServiceEnabled = true;
   }
 

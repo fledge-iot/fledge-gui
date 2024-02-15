@@ -27,7 +27,7 @@ export class AdditionalServicesUtils {
               // enabling service takes time to get the updated state from API
               setTimeout(() => {
                 this.router.navigate(['/developer/options/additional-services']);             
-              }, 2000);
+              }, 3000);
             }
             this.alertService.success(data["message"], true);
           },

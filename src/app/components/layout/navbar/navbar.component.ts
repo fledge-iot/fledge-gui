@@ -452,10 +452,6 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   navToServiceConfiguration(service) {
-    if (!this.isDeveloperFeatureOn() && ['dispatcher', 'notification', 'management', 'bucketstorage'].includes(service.type.toLowerCase())) {
-      this.alertService.warning('Please enable Developer Feature from Settings page first.');
-      return;
-    }
     let serviceInfo = {
       name: service.name,
       isEnabled: service.status === 'running' ? true : false,

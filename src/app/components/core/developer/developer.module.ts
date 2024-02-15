@@ -37,7 +37,6 @@ const routes: Routes = [
   },
   {
     path: 'options/additional-services/config',
-    canActivate: [DeveloperGuard],
     component: AdditionalServiceModalComponent
   }
 ];
