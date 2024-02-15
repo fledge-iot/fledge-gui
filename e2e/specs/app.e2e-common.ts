@@ -29,7 +29,7 @@ describe('Fledge gui', () => {
       () => {
         skipLogin.navigateToHome();
         skipLogin.getNavTitle().then(title => {
-          expect(title.trim()).to.equal('Fledge')
+          expect(title.trim()).to.equal('Fledge1')
         })
         skipLogin.getAppStatus()
         skipLogin.getReceived().then(received => {
