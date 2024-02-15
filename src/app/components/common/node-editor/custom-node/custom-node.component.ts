@@ -99,9 +99,6 @@ export class CustomNodeComponent implements OnChanges {
         this.service.readingCount = Object.keys(this.data.controls)[3].slice(3);
         this.service.status = Object.keys(this.data.controls)[4];
         this.service.schedule_enabled = Object.keys(this.data.controls)[5];
-        if (this.service.status === '') {
-          this.service.status = 'shutdown';
-        }
 
         this.data.label = this.service.name;
         if (this.service.schedule_enabled === 'true') {

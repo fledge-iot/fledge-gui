@@ -1,7 +1,7 @@
 <div class="container is-fluid">
   <div class="card" [ngClass]="{'custom-quickview-card': sourceName}">
     <div class="breadcrumb-container" *ngIf="sourceName; else cardHeaderTemplate">
-      <nav class="breadcrumb" aria-label="breadcrumbs">
+      <nav class="breadcrumb" aria-label="breadcrumbs" [ngClass]="{'quickview-breadcrumb': sourceName}">
         <ul>
           <li class="is-active"><a>{{sourceName}}</a></li>
           <li class="is-active">
