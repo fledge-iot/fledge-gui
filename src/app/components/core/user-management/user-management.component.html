@@ -16,7 +16,7 @@
           <li style="position: absolute;right: 0;">
             <a class="is-light" (click)="openCreateUserModal()" style="border-bottom-width: 0">
               <p *ngIf="viewPort !== 'mobile'" class="add-btn">&nbsp; Add User &nbsp;</p>
-              <i class="fa fa-xs fa-user" aria-hidden="true"></i>
+              <i class="bi bi-person-plus bi-sm" aria-hidden="true"></i>
             </a>
           </li>
         </ul>
@@ -69,20 +69,20 @@
                     <div class="dropdown-menu" id="dropdown-menu" role="menu">
                       <div class="dropdown-content">
                         <a class="dropdown-item" (click)="openUpdateUserModal(user, 'auth')">
-                          <i class="fa fa-xs fa-edit" aria-hidden="true"></i>
+                          <i class="bi bi-pen bi-xs" aria-hidden="true"></i>
                           Edit
                         </a>
                         <a class="dropdown-item" (click)="openUpdateUserModal(user, 'role')">
-                          <i class="fa fa-sm fa-user-tag" aria-hidden="true"></i>
+                          <i class="bi bi-person-gear bi-xs" aria-hidden="true"></i>
                           Change Role
                         </a>
                         <a class="dropdown-item" (click)="openUpdateUserModal(user, 'password')">
-                          <i class="fa fa-sm fa-key" aria-hidden="true"></i>
+                          <i class="bi bi-key bi-xs" aria-hidden="true"></i>
                           Reset Password
                         </a>
                         <a class="dropdown-item"
                           (click)="openModal(user.userId, user.userName, 'deactivateUser', 'Are You sure, you want to deactivate the user')">
-                          <i class="fa fa-sm fa-trash-alt" aria-hidden="true"></i>
+                          <i class="bi bi-trash bi-xs" aria-hidden="true"></i>
                           Deactivate
                         </a>
                         <!-- TODO: FOGL-5381
@@ -92,7 +92,7 @@
                       </a> -->
                         <a class="dropdown-item"
                           (click)="openModal(user.userId, user.userName, 'clearSessions', 'Are you sure, You want to clear all active sessions for')">
-                          <i class="fa fa-sm fa-sign-out-alt" aria-hidden="true"></i>
+                          <i class="bi bi-box-arrow-right bi-xs" aria-hidden="true"></i>
                           Logout Active Sessions
                         </a>
                       </div>
