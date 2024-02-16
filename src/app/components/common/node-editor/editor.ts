@@ -18,7 +18,7 @@ import { Storage } from "./storage";
 import { Filter } from "./filter";
 import { AddService } from "./add-service";
 import { MinimapExtra, MinimapPlugin } from "rete-minimap-plugin";
-import { curveStep, curveMonotoneX, curveLinear, CurveFactory } from "d3-shape";
+import { CurveFactory, curveBasis } from "d3-shape";
 import { ConnectionPathPlugin } from "rete-connection-path-plugin";
 
 type Node = South | Filter;
@@ -46,9 +46,9 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
         boundViewport: true
     });
     const pathPlugin = new ConnectionPathPlugin<Schemes, Area2D<Schemes>>({
-        curve: (c) => c.curve || curveStep,
+        curve: (c) => c.curve || curveBasis,
         // transformer: () => Transformers.classic({ vertical: false }),
-        arrow: () => true
+        arrow: () => {return {marker: 'M6,-6 L6,6 L20,0 z'}}
     });
 
     // @ts-ignore
