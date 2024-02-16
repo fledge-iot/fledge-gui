@@ -172,6 +172,7 @@ export class NodeEditorComponent implements OnInit {
                 this.filterConfigurations.push(filterConfig);
               })
               createEditor(el, this.injector, this.source, this.filterPipeline, this.service, this.services, this.filterConfigurations, this.flowEditorService, this.rolesService);
+              this.filterConfigApiCallsStack = [];
             })
           }
           else {
