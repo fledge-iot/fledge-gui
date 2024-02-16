@@ -31,8 +31,6 @@ class Connection<A extends Node, B extends Node> extends ClassicPreset.Connectio
 
 let editor = new NodeEditor<Schemes>();
 export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, data) {
-  console.log('data', data);
-
   const socket = new ClassicPreset.Socket("socket");
   editor = new NodeEditor<Schemes>();
   const area = new AreaPlugin<Schemes, AreaExtra>(container);
@@ -225,25 +223,6 @@ async function createNorthNodesAndConnections(socket, editor, arrange, area, rol
         const addTask = new AddTask();
         await editor.addNode(addTask);
         await area.translate(addTask.id, { x: 250 * j, y: 250 * k });
-      }
-    } else {
-      let j = 0;
-      let k = 0;
-      for (let i = 0; i < data.services.length; i++) {
-        const southPlugin = new South(socket, data.services[i]);
-        await editor.addNode(southPlugin);
-        if (j < 4) {
-          await area.translate(southPlugin.id, { x: 250 * j, y: 250 * k });
-          j++;
-          if (j == 4) {
-            j = 0; k++;
-          }
-        }
-      }
-      if (rolesService.hasEditPermissions()) {
-        const addService = new AddService();
-        await editor.addNode(addService);
-        await area.translate(addService.id, { x: 250 * j, y: 250 * k });
       }
     }
   }

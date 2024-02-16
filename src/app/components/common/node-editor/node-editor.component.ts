@@ -84,7 +84,6 @@ export class NodeEditorComponent implements OnInit {
     private northService: NorthService,
     private router: Router) {
     this.route.params.subscribe(params => {
-      console.log('param', params);
       this.from = params.from;
       this.source = params.name;
       if (this?.from === 'south') {

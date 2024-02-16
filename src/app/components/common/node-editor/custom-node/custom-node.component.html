@@ -54,8 +54,14 @@
       </ng-container>
       <ng-container *ngIf="isServiceNode && from == 'north'">
         <div class="reading-details">
-          <small class="reading has-tooltip-right has-tooltip-arrow"
-            data-tooltip="Readings Sent">{{service.readingCount}}</small>
+          <ng-container *ngIf="service.readingCount > 0; else emptySpan">
+            <small class="reading has-tooltip-right has-tooltip-arrow"
+              data-tooltip="Readings Sent">{{service.readingCount}}</small>
+          </ng-container>
+          <ng-template #emptySpan>
+            <span class="reading">&nbsp;</span>
+          </ng-template>
+
         </div>
       </ng-container>
       <ng-container *ngIf="isFilterNode">
@@ -77,18 +83,17 @@
             [emit]="emit" data-testid="output-socket" title="Source"></div>
         </div>
       </ng-container>
-      <div class="input is-pulled-left input-container" *ngFor="let input of data.inputs | keyvalue: sortByIndex"
-        [attr.data-testid]="'input-'+input.key" [ngClass]="{'custom-margin': data.label!=='Filter'}">
-        <div class="input-socket" refComponent
-          [data]="{type: 'socket', side: 'input', key: input.key, nodeId: data.id, payload: input.value?.socket, seed: seed }"
-          [emit]="emit" data-testid="input-socket" title="Destination"></div>
-        <div class="input-title" data-testid="input-title" *ngIf="!input.value?.control || !input.value?.showControl">
-          {{input.value?.label}}
+      <ng-container *ngIf="source">
+        <div class="input is-pulled-left input-container" *ngFor="let input of data.inputs | keyvalue: sortByIndex"
+          [attr.data-testid]="'input-'+input.key" [ngClass]="{'custom-margin': data.label!=='Filter'}">
+          <div class="input-socket" refComponent
+            [data]="{type: 'socket', side: 'input', key: input.key, nodeId: data.id, payload: input.value?.socket, seed: seed }"
+            [emit]="emit" data-testid="input-socket" title="Destination"></div>
+          <div class="input-title" data-testid="input-title" *ngIf="!input.value?.control || !input.value?.showControl">
+            {{input.value?.label}}
+          </div>
         </div>
-        <!-- <div class="input-control" [style.display]="input.value?.control && input.value?.showControl ? '' : 'none'"
-                    refComponent [data]="{type: 'control', payload: input.value?.control }" [emit]="emit"
-                    data-testid="input-control"></div> -->
-      </div>
+      </ng-container>
     </div>
     <div>
       <ng-container
