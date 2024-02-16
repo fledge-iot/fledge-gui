@@ -24,3 +24,7 @@
 ul:has(section.disabled) {
   cursor: not-allowed;
 }
+
+.icon-sm {
+  font-size: 0.85rem;
+}
