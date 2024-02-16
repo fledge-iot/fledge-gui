@@ -186,7 +186,7 @@ export class CustomNodeComponent implements OnChanges {
     if (this.data.label === 'AddService') {
       this.data.label = "";
     }
-    if (this.data.label === 'AddTask') { //647eed
+    if (this.data.label === 'AddTask') {
       this.data.label = "";
     }
     if (this.data.label === 'Storage') {

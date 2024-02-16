@@ -1,16 +1,18 @@
 <div>
-  <div class="navbar-item">
-    <nav class="breadcrumb" aria-label="breadcrumbs">
+  <div class="navbar-item pb-0">
+    <nav class="breadcrumb mb-0" aria-label="breadcrumbs">
       <ul>
-        <li *ngIf="from=='south'"><a [routerLink]="['/flow/editor/south']">South</a>
+        <li *ngIf="from=='south'">
+          <a [routerLink]="['/flow/editor/south']">South</a>
         </li>
-        <li *ngIf="from=='north'"><a [routerLink]="['/flow/editor/north']">North</a>
+        <li *ngIf="from=='north'">
+          <a [routerLink]="['/flow/editor/north']">North</a>
         </li>
-        <!-- <li [ngClass]="{'is-active' : !source || !isAddFilterWizard}" *ngIf="source">
-          <a [routerLink]="['/south/flow']">
+        <li [ngClass]="{'is-active' : !source || !isAddFilterWizard}" *ngIf="source">
+          <a [routerLink]="['/flow/editor', source]">
             {{source ? source : 'Add'}}
           </a>
-        </li> -->
+        </li>
         <li class="is-active" *ngIf="source  && isAddFilterWizard">
           <a href="#" aria-current="page">
             Add Filter
