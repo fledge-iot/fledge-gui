@@ -49,7 +49,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, s
     const pathPlugin = new ConnectionPathPlugin<Schemes, Area2D<Schemes>>({
         curve: (c) => c.curve || curveBasis,
         // transformer: () => Transformers.classic({ vertical: false }),
-        arrow: () => {return {marker: 'M6,-6 L6,6 L20,0 z'}}
+        arrow: () => { return { marker: 'M6,-6 L6,6 L20,0 z' } }
     });
 
     // @ts-ignore
@@ -221,7 +221,7 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
                     await editor.addConnection(
                         new ClassicPreset.Connection(tempNode, "port", db, "port")
                     );
-                    colorNumber = (colorNumber+1)%21
+                    colorNumber = (colorNumber + 1) % 21
                 }
             }
             if (previousNode != southPlugin) {
@@ -290,6 +290,13 @@ export function getUpdatedFilterPipeline() {
         }
     }
 
+    for (let i = 0; i < connections.length; i++) {
+        if (connections[i].source === connections[i].target) {
+            console.log("self loop exist in pipeline")
+            return false;
+        }
+    }
+
     let updatedFilterPipeline = [];
     let sourceNode = nodes[0];
     while (connections.find(c => c.source === sourceNode.id)) {
@@ -298,23 +305,47 @@ export function getUpdatedFilterPipeline() {
         if (connlist.length === 1) {
             let filterNode = editor.getNode(connlist[0].target);
             if (filterNode.label !== "Storage") {
+                if (isExistInPipeline(updatedFilterPipeline, filterNode.label)) {
+                    console.log("invalid pipeline");
+                    return false;
+                }
                 updatedFilterPipeline.push(filterNode.label);
             }
             sourceNode = filterNode;
         }
         else {
-            for (let i = 0; i < connlist.length; i++) {
+            let mainBranchStartIndex = [];
+            let i;
+            for (i = 0; i < connlist.length; i++) {
                 let node = editor.getNode(connlist[i].target);
-                let branch = getBranchNodes(connections, node);
+                let branch = getBranchNodes(updatedFilterPipeline, connections, node);
                 if (branch) {
+                    if (branch.length === 0) {
+                        console.log("invalid pipeline");
+                        return false;
+                    }
                     updatedFilterPipeline.push(branch);
                 }
                 else {
-                    if (node.label !== "Storage") {
-                        updatedFilterPipeline.push(node.label);
-                    }
-                    sourceNode = node;
+                    mainBranchStartIndex.push(i);
                 }
+            }
+            if (mainBranchStartIndex.length > 1) {
+                console.log("Multi level deep pipeline not supported.")
+                return false;
+            }
+            if (mainBranchStartIndex.length === 1) {
+                let node = editor.getNode(connlist[mainBranchStartIndex[0]].target);
+                if (node.label !== "Storage") {
+                    updatedFilterPipeline.push(node.label);
+                }
+                sourceNode = node;
+            }
+            else {
+                updatedFilterPipeline.pop();
+                let node = editor.getNode(connlist[i - 1].target);
+                updatedFilterPipeline.push(node.label);
+                sourceNode = node;
             }
         }
         if (previousSourceNode === sourceNode) {
@@ -324,7 +355,7 @@ export function getUpdatedFilterPipeline() {
     return updatedFilterPipeline;
 }
 
-function getBranchNodes(connections, node) {
+function getBranchNodes(pipeline, connections, node) {
     if (node.label === "Storage") {
         return;
     }
@@ -334,6 +365,9 @@ function getBranchNodes(connections, node) {
         let connlist = connections.filter(c => c.source === node.id);
         if (connlist.length === 1) {
             let filterNode = editor.getNode(connlist[0].target);
+            if (isExistInPipeline(pipeline, filterNode.label) || isExistInPipeline(branchNodes, filterNode.label)) {
+                return [];
+            }
             branchNodes.push(filterNode.label);
             node = filterNode;
         }
@@ -351,4 +385,20 @@ export function deleteConnection(connectionId) {
 
 function rgbToHex(r, g, b) {
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+
+function isExistInPipeline(pipeline, filterName) {
+    for (let i = 0; i < pipeline.length; i++) {
+        if (typeof (pipeline[i] === "string")) {
+            if (pipeline[i] === filterName) {
+                return true;
+            }
+        }
+        else {
+            if (pipeline[i].indexOf(filterName) !== -1) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
