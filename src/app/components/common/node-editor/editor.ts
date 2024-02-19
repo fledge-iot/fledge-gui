@@ -137,7 +137,6 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   area.use(arrange);
   area.use(dock);
   area.use(history);
-
   if (data.source) {
     area.use(minimap);
     if (rolesService.hasEditPermissions()) {
@@ -205,16 +204,18 @@ async function createNorthNodesAndConnections(socket, editor, arrange, area, rol
     AreaExtensions.zoomAt(area, editor.getNodes());
   }
   else {
+    const canvasWidth = area.container.parentElement.clientWidth;
+    const itemCount = Math.round(canvasWidth / 300);
     if (data.from == 'north') {
       let j = 0;
       let k = 0;
       for (let i = 0; i < data.tasks.length; i++) {
         const northPlugin = new North(socket, data.tasks[i]);
         await editor.addNode(northPlugin);
-        if (j < 4) {
-          await area.translate(northPlugin.id, { x: 250 * j, y: 250 * k });
+        if (j < itemCount) {
+          await area.translate(northPlugin.id, { x: 250 * j, y: 150 * k });
           j++;
-          if (j == 4) {
+          if (j == itemCount) {
             j = 0; k++;
           }
         }
@@ -222,7 +223,7 @@ async function createNorthNodesAndConnections(socket, editor, arrange, area, rol
       if (rolesService.hasEditPermissions()) {
         const addTask = new AddTask();
         await editor.addNode(addTask);
-        await area.translate(addTask.id, { x: 250 * j, y: 250 * k });
+        await area.translate(addTask.id, { x: 250 * j, y: 150 * k });
       }
     }
   }

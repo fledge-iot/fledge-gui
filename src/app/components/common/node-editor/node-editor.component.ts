@@ -156,7 +156,6 @@ export class NodeEditorComponent implements OnInit {
 
   ngAfterViewInit(): void {
     const el = this.container.nativeElement;
-
     if (el) {
       const data = {
         from: this.from,
