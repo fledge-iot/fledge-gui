@@ -49,6 +49,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   viewPort: any = '';
   public showSpinner = false;
   isManualRefresh = false;
+  servicesToShow = ['northbound', 'southbound', 'dispatcher', 'notification', 'management', 'bucketstorage'];
 
   @ViewChild(ShutdownModalComponent, { static: true }) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent, { static: true }) childRestart: RestartModalComponent;
@@ -455,9 +456,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   navToServiceConfiguration(service) {
     let serviceInfo = {
       name: service.name,
-      isEnabled: service.status === 'running' ? true : false,
-      added: true,
-      isInstalled: true
+      isEnabled: service.status === 'running' ? true : false
     }
     switch (service.type) {
       case 'Northbound':
@@ -470,7 +469,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         serviceInfo['process'] = 'bucket';
         serviceInfo['type'] = 'BucketStorage';
         serviceInfo['package'] = 'fledge-service-bucket';
-        this.router.navigate(['/developer/options/additional-services/config'], { queryParams: { ...serviceInfo },  skipLocationChange: true });
+        this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
         break;
       case 'Management':       
         serviceInfo['process'] = 'management';
@@ -482,13 +481,13 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         serviceInfo['process'] = 'dispatcher';
         serviceInfo['type'] = 'Dispatcher';
         serviceInfo['package'] = 'fledge-service-dispatcher';
-        this.router.navigate(['/developer/options/additional-services/config'], { queryParams: { ...serviceInfo },  skipLocationChange: true });
+        this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
         break;
       case 'Notification':
         serviceInfo['process'] = 'notification';
         serviceInfo['type'] = 'Notification';
         serviceInfo['package'] = 'fledge-service-notification';
-        this.router.navigate(['/developer/options/additional-services/config'], { queryParams: { ...serviceInfo },  skipLocationChange: true });
+        this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
         break;
       default:
         break;

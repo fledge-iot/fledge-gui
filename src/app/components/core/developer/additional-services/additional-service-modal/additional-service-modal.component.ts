@@ -12,7 +12,7 @@ import { DialogService } from '../../../../common/confirmation-dialog/dialog.ser
 
 import { AlertDialogComponent } from '../../../../common/alert-dialog/alert-dialog.component';
 import { isEmpty, cloneDeep } from 'lodash';
-import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
+import { concatMap, delayWhen, retryWhen, take, tap, map } from 'rxjs/operators';
 import { BehaviorSubject, of, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../../services/doc.service';
 import { ConfigurationGroupComponent } from '../../../configuration-manager/configuration-group/configuration-group.component';
@@ -77,16 +77,18 @@ export class AdditionalServiceModalComponent {
     private configurationControlService: ConfigurationControlService,
     private additionalServicesUtils: AdditionalServicesUtils,
     public rolesService: RolesService) {
-      this.activatedRoute.queryParams.subscribe(params => {
-        if (params?.name) {
+      this.activatedRoute.paramMap
+      .pipe(map(() => window.history.state)).subscribe(res=>{
+          if (res?.name) {
             this.fromNavbar = true;
-            this.getServiceInfo(params, params?.pollingScheduleID);
-            // Wait to get html page loaded
+            res['added'] = true;
+            res['isInstalled'] = true;
+            this.getServiceInfo(res, res?.pollingScheduleID);
             setTimeout(() => {
               this.toggleModal(true);
-            }, 500);
-        }
-      });
+            }, 0);
+          }                          
+       })
     }
 
   ngOnInit() { }
@@ -94,12 +96,12 @@ export class AdditionalServiceModalComponent {
   getServiceInfo(serviceInfo, pollingScheduleID, from = null) {
     this.navigateFromParent = from;
     this.serviceName = serviceInfo.name ? serviceInfo.name : '';
-    this.isServiceEnabled = serviceInfo.isEnabled ? (serviceInfo.isEnabled === 'true' || serviceInfo.isEnabled === true) : false;
-    this.isServiceAvailable = serviceInfo.added ? (serviceInfo.added === 'true' || serviceInfo.added === true) : false;
+    this.isServiceEnabled = serviceInfo.isEnabled;
+    this.isServiceAvailable = serviceInfo.added;
     this.serviceProcessName = serviceInfo.process;
     this.serviceType = serviceInfo.type;
     this.packageName = serviceInfo.package;
-    this.isInstalled =  serviceInfo.isInstalled ? (serviceInfo.isInstalled === 'true' || serviceInfo.isInstalled === true) : false;  
+    this.isInstalled =  serviceInfo.isInstalled;  
     if (pollingScheduleID) {
       this.pollingScheduleID = pollingScheduleID;
     }
@@ -321,13 +323,61 @@ export class AdditionalServiceModalComponent {
     if (name != null) {
       serviceName = name;
     }
-    this.additionalServicesUtils.enableService(serviceName, this.fromNavbar);
-    // added some delay to close the modal because 
+    this.additionalServicesUtils.enableService(serviceName);
     // enabling service takes time to get the updated state from API
-    setTimeout(() => {
-      this.toggleModal(false);             
-    }, 3000);
-    this.isServiceEnabled = true;
+    this.getUpdatedSate();
+  }
+
+  getUpdatedSate() {
+    let i = 1;
+    this.servicesApiService.getServiceByType(this.serviceType)
+      .pipe(
+        take(1),
+        // checking the response object for service.
+        // if pacakge.status !== 'running' then
+        // throw an error to re-fetch:
+        tap((response: any) => {
+          if (response['services'][0].status !== 'running') {
+            i++;
+            throw response;
+          }
+        }),
+        retryWhen(result =>
+          result.pipe(
+            // only if a server returned an error, stop trying and pass the error down
+            tap(serviceStatus => {
+              if (serviceStatus.error) {
+                this.ngProgress.done();
+                this.toggleModal(false);
+                throw serviceStatus.error;
+              }
+            }),
+            delayWhen(() => {
+              const delay = i * this.initialDelay;
+              console.log(new Date().toLocaleString(), `retrying after ${delay} msec...`);             
+              return timer(delay);
+            }), // delay between api calls
+            // Set the number of attempts.
+            take(3),
+            // Throw error after exceed number of attempts
+            concatMap(o => {
+              if (i > 3) {
+                this.isServiceEnabled = false;
+                this.ngProgress.done();
+                this.toggleModal(false);
+                return;
+              }
+              return of(o);
+            }),
+          ))
+      ).subscribe(() => {
+        this.ngProgress.done();
+        this.isServiceEnabled = true;
+        this.toggleModal(false);
+        if (this.fromNavbar){
+          this.router.navigate(['/developer/options/additional-services']);
+        }
+      });
   }
 
   disableService() {

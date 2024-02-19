@@ -17,18 +17,12 @@ export class AdditionalServicesUtils {
         private alertService: AlertService){
     }
 
-    enableService(serviceName, fromNavbar = false) {
+    enableService(serviceName) {
         this.ngProgress.start();
         this.schedulesService.enableScheduleByName(serviceName).subscribe(
           (data) => {
             this.ngProgress.done();
             this.reenableButton.emit(false);         
-            if (fromNavbar){
-              // enabling service takes time to get the updated state from API
-              setTimeout(() => {
-                this.router.navigate(['/developer/options/additional-services']);             
-              }, 3000);
-            }
             this.alertService.success(data["message"], true);
           },
           (error) => {
