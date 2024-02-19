@@ -181,7 +181,6 @@ export class NodeEditorComponent implements OnInit {
               }
             } else {
               if (r.tasks) {
-
                 const tasks = r.tasks as NorthTask[];
                 this.tasks = tasks;
                 this.task = tasks.find(t => (t.name == this.source));
@@ -212,15 +211,12 @@ export class NodeEditorComponent implements OnInit {
                 this.filterConfigurations.push(filterConfig);
               })
               createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
-            })
+            });
           }
           else {
             createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
           }
         });
-      }
-      else {
-        createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
       }
     }
   }
