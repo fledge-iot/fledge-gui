@@ -34,7 +34,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
       "type": "BucketStorage",
       "name": "",
       "state": "",
-      "added": false 
+      "added": false
     },
     {
       "package": "fledge-service-management",
@@ -92,8 +92,8 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     // Update state of services according to the response of '/service' endpoint response 
     this.servicesInfoSubscription = this.sharedService.allServicesInfo.subscribe(servicesInfo => {
       if (servicesInfo) {
-        this.installedServicePkgs.forEach(function(p) {
-          servicesInfo.forEach(function(s) {
+        this.installedServicePkgs.forEach(function (p) {
+          servicesInfo.forEach(function (s) {
             if (p.name === s.name) {
               p.state = s.status;
             } else if (p.type === s.type) {
@@ -103,17 +103,17 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
             }
           });
         });
-        this.availableServicePkgs.forEach(function(p) {
-          servicesInfo.forEach(function(s) {
+        this.availableServicePkgs.forEach(function (p) {
+          servicesInfo.forEach(function (s) {
             if (p.type === s.type) {
               p.name = s.name;
               p.state = s.status;
               p.added = true;
             }
           });
-        });        
+        });
       }
-      
+
     });
     this.showLoadingText();
     this.showServices();
@@ -147,7 +147,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
           this.getAvaiableServices(available["services"]);
 
           let installedServicePkgsNames = []
-          this.installedServicePkgs.forEach(function(s) {
+          this.installedServicePkgs.forEach(function (s) {
             installedServicePkgsNames.push(s["package"]);
           });
 
@@ -179,7 +179,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
           }
         });
       });
-}
+  }
 
   public getInstalledServices(services) {
     let svcs = services.filter(
@@ -194,9 +194,9 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.installedServicePkgs.forEach((installed, idx) => {
       replacement = structuredClone(installed);
       let foundService = this.servicesRegistry.find(s => s.type == installed.type);
-      if (foundService === undefined){
+      if (foundService === undefined) {
         let foundSchedule = this.servicesSchedules.find(s => s.processName == installed["schedule_process"]);
-        if (foundSchedule !== undefined){
+        if (foundSchedule !== undefined) {
           replacement.name = foundSchedule.name;
           replacement.added = true;
           replacement.state = foundSchedule.enabled === true ? 'enabled' : 'disabled';
@@ -214,7 +214,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
         replacement.enabled = foundService.enabled;
         atIndex = idx;
       }
-      if (atIndex != -1){
+      if (atIndex != -1) {
         this.installedServicePkgs[atIndex] = replacement;
       }
     });
@@ -282,7 +282,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
       this.serviceModal.toggleModal(false);
     }
   }
-  
+
   applyClass(serviceStatus: string) {
     if (serviceStatus.toLowerCase() === "running") {
       return "is-success";

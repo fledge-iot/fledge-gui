@@ -37,39 +37,42 @@
                   </div>
                 </td>
                 <td class="py-1">
-                  <a *ngIf="s?.name && rolesService?.hasEditPermissions()" class="button cog-icon" (click)="openServiceModal(s)">
+                  <a *ngIf="s?.name && rolesService?.hasEditPermissions()" class="button cog-icon"
+                    (click)="openServiceModal(s)">
                     <span class="icon mt-2">
                       <i class="bi bi-gear-wide-connected" aria-hidden="true" title="Service Configuration"></i>
                     </span>
                   </a>
-                </td>          
+                </td>
                 <td class="py-1">
-                  <a *ngIf="!s.added && rolesService?.hasEditPermissions()" (click)="openServiceModal(s)" class="button is-text text-btn">
+                  <a *ngIf="!s.added && rolesService?.hasEditPermissions()" (click)="openServiceModal(s)"
+                    class="button is-text text-btn">
                     Add
                   </a>
-                  <app-additional-services-context-menu *ngIf="s?.name" [service]="s" [index]="i" (notify)="onNotifyEvent($event)" (click)="setService(s)"></app-additional-services-context-menu>
-                </td>             
+                  <app-additional-services-context-menu *ngIf="s?.name" [service]="s" [index]="i"
+                    (notify)="onNotifyEvent($event)" (click)="setService(s)"></app-additional-services-context-menu>
+                </td>
               </tr>
-              </ng-container>
-              <ng-container *ngFor="let s of availableServicePkgs; let j = index;">
-                <tr [ngClass]="{'dashed-border': (j === 0 && installedServicePkgs.length > 0)}">
-                  <td class="align-content content-pad">
-                    <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>
-                  </td>
-                  <td></td>
-                  <td></td>
-                  <td class="align-content content-pad">
-                    <a (click)="openServiceModal(s)" class="button is-text text-btn">
-                      Add
-                    </a>
-                  </td>     
-                </tr>
-              </ng-container>
-            </tbody>
-          </table>
-        </ng-container>
-      </div>
+            </ng-container>
+            <ng-container *ngFor="let s of availableServicePkgs; let j = index;">
+              <tr [ngClass]="{'dashed-border': (j === 0 && installedServicePkgs.length > 0)}">
+                <td class="align-content content-pad">
+                  <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>
+                </td>
+                <td></td>
+                <td></td>
+                <td class="align-content content-pad">
+                  <a (click)="openServiceModal(s)" class="button is-text text-btn">
+                    Add
+                  </a>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </ng-container>
     </div>
+  </div>
 </div>
 <app-additional-service-modal (notifyService)="getData()"></app-additional-service-modal>
 
@@ -83,19 +86,25 @@
   </section>
   <footer class="modal-card-foot">
     <button type="button" class="button is-small" (click)="closeModal('delete-confirmation-dialog')">Cancel</button>
-    <button type="button" class="button is-small is-danger" (click)="deleteService(service?.name)" [appDisableUntilResponse]="reenableButton">Delete</button>
+    <button type="button" class="button is-small is-danger" (click)="deleteService(service?.name)"
+      [appDisableUntilResponse]="reenableButton">Delete</button>
   </footer>
 </app-confirmation-dialog>
 <app-confirmation-dialog id="confirmation-dialog">
   <header class="modal-card-head">
-    <p class="modal-card-title is-size-6">{{ ["shutdown", "disabled"].includes(service?.state) ? "Enable" : "Disable" }}</p>
+    <p class="modal-card-title is-size-6">{{ ["shutdown", "disabled"].includes(service?.state) ? "Enable" : "Disable" }}
+    </p>
     <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Are you sure, You want to {{ ["shutdown", "disabled"].includes(service?.state) ? "enable" : "disable" }} the service {{service?.name}}?
+    Are you sure, You want to {{ ["shutdown", "disabled"].includes(service?.state) ? "enable" : "disable" }} the service
+    {{service?.name}}?
   </section>
   <footer class="modal-card-foot">
     <button type="button" class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
-    <button type="button" class="button is-small" [ngClass]="{'is-info': ['shutdown', 'disabled'].includes(service?.state), 'is-danger': !['shutdown', 'disabled'].includes(service?.state)}" (click)="stateUpdate()" [appDisableUntilResponse]="reenableButton">{{ ["shutdown", "disabled"].includes(service?.state) ? "Enable" : "Disable" }}</button>
+    <button type="button" class="button is-small"
+      [ngClass]="{'is-info': ['shutdown', 'disabled'].includes(service?.state), 'is-danger': !['shutdown', 'disabled'].includes(service?.state)}"
+      (click)="stateUpdate()" [appDisableUntilResponse]="reenableButton">{{ ["shutdown",
+      "disabled"].includes(service?.state) ? "Enable" : "Disable" }}</button>
   </footer>
 </app-confirmation-dialog>

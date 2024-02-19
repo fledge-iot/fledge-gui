@@ -16,7 +16,7 @@ import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { BehaviorSubject, of, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../../services/doc.service';
 import { ConfigurationGroupComponent } from '../../../configuration-manager/configuration-group/configuration-group.component';
-import {QUOTATION_VALIDATION_PATTERN} from '../../../../../utils';
+import { QUOTATION_VALIDATION_PATTERN } from '../../../../../utils';
 import { Service } from '../../../../../models';
 import { AdditionalServicesUtils } from '../additional-services-utils.service';
 
@@ -44,7 +44,7 @@ export class AdditionalServiceModalComponent {
   maxRetry = 15;
   initialDelay = 1000;
   state$ = new BehaviorSubject<any>(null);
-  service = <Service> {};
+  service = <Service>{};
 
   @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
@@ -103,7 +103,7 @@ export class AdditionalServiceModalComponent {
     if (pollingScheduleID) {
       this.pollingScheduleID = pollingScheduleID;
     }
-    this.enabled =  this.isServiceEnabled;
+    this.enabled = this.isServiceEnabled;
     this.btnText = 'Add';
     if (this.isServiceAvailable) {
       this.showDeleteBtn = true;
@@ -152,16 +152,16 @@ export class AdditionalServiceModalComponent {
   public getServiceByType() {
     this.ngProgress.start();
     this.servicesApiService.getServiceByType(this.serviceType)
-    .subscribe((res: Service) => {
-      this.ngProgress.done();
-      this.service = res['services'][0];
-    },
-    (error) => {
-      this.ngProgress.done();
-      if (error.status === 0) {
-        console.log('service down ', error);
-      }
-    });
+      .subscribe((res: Service) => {
+        this.ngProgress.done();
+        this.service = res['services'][0];
+      },
+        (error) => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          }
+        });
   }
 
   addService(installationState = false) {
@@ -240,7 +240,7 @@ export class AdditionalServiceModalComponent {
           ))
       ).subscribe(() => {
         this.ngProgress.done();
-        this.serviceInstallationState = false;     
+        this.serviceInstallationState = false;
         this.addService(true);
       });
   }
@@ -474,6 +474,6 @@ export class AdditionalServiceModalComponent {
     if (this.serviceProcessName === 'dispatcher') {
       this.docService.goToSetPointControlDocLink('control-dispatcher-service');
     }
-    return;  
+    return;
   }
 }
