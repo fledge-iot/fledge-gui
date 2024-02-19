@@ -43,7 +43,7 @@
           margin-left: auto;
 }
 
-.fa-power-off {
+.bi-power {
           color: rgb(178, 34, 34);
 }
 
@@ -89,6 +89,10 @@
 
 .parent-icon {
   font-size: 0.8rem;
+}
+
+.logout-icon {
+  padding-left: 0.1rem;
 }
 
 .child-icon {
