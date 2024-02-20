@@ -7,7 +7,6 @@
   box-sizing: border-box;
   width: 200px;
   height: auto;
-  padding-bottom: 6px;
   position: relative;
   user-select: none;
 }
@@ -28,8 +27,8 @@
 :host .title {
   color: black;
   font-family: sans-serif;
-  font-size: 18px;
-  padding: 4px 4px 0px 4px;
+  font-size: 16px;
+  padding: 6px 6px 0px 6px;
   margin-bottom: 0px;
   font-weight: 500;
 }
@@ -115,16 +114,7 @@
 }
 
 .reading {
-  font-size: 21px;
-  font-weight: bolder;
-  visibility: hidden;
-}
-
-.asset {
   font-size: 14px;
-  color: grey;
-  padding-top: 12px;
-  padding-left: 4px;
   visibility: hidden;
 }
 
