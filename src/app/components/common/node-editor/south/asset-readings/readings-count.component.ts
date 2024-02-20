@@ -16,6 +16,3 @@ export class ReadingsCountComponent {
   @Input() assetCount: AssetControl;
   constructor() { }
 }
-
-
-
