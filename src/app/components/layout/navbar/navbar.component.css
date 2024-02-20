@@ -128,3 +128,19 @@
   cursor: default;
 }
 
+.icon-badge-container {
+  position:relative;
+}
+
+.icon-badge {
+  background-color: #f84a0a;
+  font-size: 0.7rem;
+  color: white;
+  text-align: center;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 35%;
+  position: absolute;
+  top: -5px;
+  left: 15px;
+}

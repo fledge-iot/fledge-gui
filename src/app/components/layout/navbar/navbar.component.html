@@ -337,12 +337,13 @@
       </div>
     </div>
     <div class="navbar-item">
-      <div *ngIf="pingInfo.isAlive && showBellIcon && getUpdateInterval() !== '-1'">
+      <div *ngIf="pingInfo.isAlive && pingInfo.alertCount">
         <div class="dropdown is-right is-hoverable">
           <div class="dropdown-trigger">
             <a aria-haspopup="true" aria-controls="dropdown-menu" title="Updates">
-              <span class="icon">
+              <span class="icon icon-badge-container">
                 <i class="fa-regular fa-bell" aria-hidden="true"></i>
+                <div class="icon-badge">{{pingInfo.alertCount}}</div>
               </span>
             </a>
           </div>
