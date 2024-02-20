@@ -4,8 +4,8 @@ import {
   NameControl,
   PluginControl,
   StatusControl
-} from "./controls/common-custom-control";
-import { SentReadingsControl } from "./controls/north-custom-control";
+} from "../controls/common-custom-control";
+import { SentReadingsControl } from "../controls/north-custom-control";
 
 export class North extends ClassicPreset.Node {
   height = 110;

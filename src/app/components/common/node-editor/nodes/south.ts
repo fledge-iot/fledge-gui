@@ -2,13 +2,13 @@ import { ClassicPreset } from "rete";
 import {
   AssetControl,
   ReadingControl,
-} from "./controls/south-custom-control";
+} from "../controls/south-custom-control";
 import {
   EnabledControl,
   NameControl,
   PluginControl,
   StatusControl
-} from "./controls/common-custom-control";
+} from "../controls/common-custom-control";
 
 export class South extends ClassicPreset.Node {
   height = 110;
