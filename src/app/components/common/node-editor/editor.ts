@@ -305,7 +305,7 @@ export function getUpdatedFilterPipeline() {
         if (connlist.length === 1) {
             let filterNode = editor.getNode(connlist[0].target);
             if (filterNode.label !== "Storage") {
-                if (isExistInPipeline(updatedFilterPipeline, filterNode.label)) {
+                if (existsInPipeline(updatedFilterPipeline, filterNode.label)) {
                     console.log("invalid pipeline");
                     return false;
                 }
@@ -365,7 +365,7 @@ function getBranchNodes(pipeline, connections, node) {
         let connlist = connections.filter(c => c.source === node.id);
         if (connlist.length === 1) {
             let filterNode = editor.getNode(connlist[0].target);
-            if (isExistInPipeline(pipeline, filterNode.label) || isExistInPipeline(branchNodes, filterNode.label)) {
+            if (existsInPipeline(pipeline, filterNode.label) || existsInPipeline(branchNodes, filterNode.label)) {
                 return [];
             }
             branchNodes.push(filterNode.label);
@@ -387,7 +387,7 @@ function rgbToHex(r, g, b) {
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
 
-function isExistInPipeline(pipeline, filterName) {
+function existsInPipeline(pipeline, filterName) {
     for (let i = 0; i < pipeline.length; i++) {
         if (typeof (pipeline[i] === "string")) {
             if (pipeline[i] === filterName) {
