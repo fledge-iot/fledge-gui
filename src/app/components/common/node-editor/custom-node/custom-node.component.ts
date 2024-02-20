@@ -164,8 +164,8 @@ export class CustomNodeComponent implements OnChanges {
         this.addFilterSubscription = this.flowEditorService.showAddFilterIcon.subscribe((data) => {
           if (data) {
             if (data.addedFiltersIdColl.includes(this.nodeId)) {
-              this.elRef.nativeElement.style.borderColor = "#EA9999";
-              this.elRef.nativeElement.style.borderWidth = "6px";
+              this.elRef.nativeElement.style.outline = "#EA9999 dashed 2px";
+              // this.elRef.nativeElement.style.borderWidth = "1px";
               this.showPlusIcon = true;
             }
           }

@@ -1,7 +1,7 @@
 :host {
   display: block;
   background: white;
-  border: 3px solid silver;
+  border: 2px solid silver;
   border-radius: 12px;
   cursor: pointer;
   box-sizing: border-box;
@@ -31,6 +31,7 @@
   font-size: 18px;
   padding: 4px 4px 0px 4px;
   margin-bottom: 0px;
+  font-weight: 500;
 }
 
 :host .output {
@@ -99,7 +100,7 @@
 .help-text {
   display: block;
   color: grey;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
 .service-details {
