@@ -185,10 +185,12 @@ export class AdditionalServiceModalComponent {
           this.isServiceAvailable = true;
           this.btnText = 'Save';
           this.toggleModal(false);
+          this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
         },
         (error) => {
           this.ngProgress.done();
           this.toggleModal(false);
+          this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -349,6 +351,7 @@ export class AdditionalServiceModalComponent {
               if (serviceStatus.error) {
                 this.ngProgress.done();
                 this.toggleModal(false);
+                this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
                 throw serviceStatus.error;
               }
             }),
@@ -365,6 +368,7 @@ export class AdditionalServiceModalComponent {
                 this.isServiceEnabled = false;
                 this.ngProgress.done();
                 this.toggleModal(false);
+                this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
                 return;
               }
               return of(o);
@@ -443,12 +447,14 @@ export class AdditionalServiceModalComponent {
     if (!isEmpty(this.changedConfig) && this.categoryCopy?.name) {
       this.updateConfiguration(this.categoryCopy?.name, this.changedConfig);
       this.toggleModal(false);
+      this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
     }
     if (!isEmpty(this.advancedConfiguration)) {
       this.advancedConfiguration.forEach(element => {
         this.updateConfiguration(element.key, element.config);
       });
       this.toggleModal(false);
+      this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
     }
   }
 

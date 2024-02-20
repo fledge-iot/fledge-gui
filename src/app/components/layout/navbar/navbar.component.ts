@@ -436,7 +436,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           this.ngProgress.done();
           const pollingScheduleID = data.schedules.find(s => s.processName === 'manage')?.id;
           serviceInfo['pollingScheduleID'] = pollingScheduleID;
-          this.router.navigate(['/developer/options/additional-services/config'], { queryParams: { ...serviceInfo },  skipLocationChange: true });
+          this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
         },
         error => {
           this.ngProgress.done();
