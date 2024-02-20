@@ -579,6 +579,7 @@ export class AddControlPipelineComponent implements OnInit {
     const ifSourceDestSame = this.checkIfSourceDestSame(payload.source, payload.destination);
     if (ifSourceDestSame) {
       this.toast.error("Source and Destination can't be same.");
+      this.reenableButton.emit(false);
       return;
     }
     if (!this.editMode) {
