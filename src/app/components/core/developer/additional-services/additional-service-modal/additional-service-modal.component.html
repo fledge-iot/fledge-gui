@@ -10,7 +10,7 @@
       </span>
       <span *ngIf="!isServiceAvailable" class="modal-card-title is-size-6">{{serviceType !== 'BucketStorage' ? serviceType : 'Bucket Storage'}} Service
       </span>
-      <button class="delete" aria-label="close" (click)="toggleModal(false); navToAdditionalServicePage();"></button>
+      <button class="delete" aria-label="close" (click)="toggleModal(false); navToAdditionalService();"></button>
     </header>
     <section class="modal-card-body">
       <form name="additional-service-form" id="serviceForm" #fg="ngForm">
@@ -75,7 +75,7 @@
           <div class="is-pulled-right field is-grouped">
             <p class="control">
               <button [disabled]="serviceInstallationState" class="button is-small" id="cancel"
-                (click)="toggleModal(false); navToAdditionalServicePage();">Cancel</button>
+                (click)="toggleModal(false); navToAdditionalService();">Cancel</button>
             </p>
             <p class="control">
               <button [disabled]="serviceInstallationState || fg.controls['serviceName']?.invalid || !validForm"

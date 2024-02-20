@@ -120,7 +120,7 @@ export class AdditionalServiceModalComponent {
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     if (!this.serviceInstallationState) {
       this.toggleModal(false);
-      this.navToAdditionalServicePage();
+      this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
     }
   }
 
@@ -374,20 +374,18 @@ export class AdditionalServiceModalComponent {
         this.ngProgress.done();
         this.isServiceEnabled = true;
         this.toggleModal(false);
-        if (this.fromNavbar){
-          this.router.navigate(['/developer/options/additional-services']);
-        }
+        this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
       });
   }
 
   disableService() {
-    this.additionalServicesUtils.disableService(this.serviceName, this.fromNavbar);
+    this.additionalServicesUtils.disableService(this.serviceName, this.fromNavbar, this.serviceProcessName);
     this.toggleModal(false);
     this.isServiceEnabled = false;
   }
 
   deleteService(serviceName) {
-    this.additionalServicesUtils.deleteService(serviceName, this.fromNavbar);
+    this.additionalServicesUtils.deleteService(serviceName, this.fromNavbar, this.serviceProcessName);
     this.closeDeleteModal("dialog-delete-confirmation");
     this.toggleModal(false);
   }
@@ -508,11 +506,8 @@ export class AdditionalServiceModalComponent {
     this.router.navigate(['logs/syslog'], { queryParams: { source: name } });
   }
 
-  navToAdditionalServicePage() {
-    if (this.fromNavbar) {
-      this.router.navigate(['/developer/options/additional-services']);
-    }
-    return;
+  navToAdditionalService() {
+    this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
   }
 
   goToLink() {

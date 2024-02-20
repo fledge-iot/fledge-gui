@@ -37,15 +37,13 @@ export class AdditionalServicesUtils {
         );
     }
 
-    disableService(serviceName, fromNavbar = false) {
+    disableService(serviceName, fromNavbar = false, serviceProcessName = null) {
         this.ngProgress.start();
         this.schedulesService.disableScheduleByName(serviceName).subscribe(
           (data) => {
             this.ngProgress.done();
-            this.reenableButton.emit(false);           
-            if (fromNavbar){
-              this.router.navigate(['/developer/options/additional-services']);
-            }
+            this.reenableButton.emit(false);
+            this.navToAdditionalServicePage(fromNavbar, serviceProcessName);
             this.alertService.success(data["message"], true);
           },
           (error) => {
@@ -60,15 +58,13 @@ export class AdditionalServicesUtils {
         );
     }
     
-    deleteService(serviceName, fromNavbar = false) {
+    deleteService(serviceName, fromNavbar = false, serviceProcessName = null) {
         this.ngProgress.start();
         this.servicesApiService.deleteService(serviceName).subscribe(
             (data: any) => {
             this.ngProgress.done();
             this.reenableButton.emit(false);
-            if (fromNavbar){
-              this.router.navigate(['/developer/options/additional-services']);
-            }
+            this.navToAdditionalServicePage(fromNavbar, serviceProcessName);
             this.alertService.success(data["result"], true);
             },
             (error) => {
@@ -81,5 +77,34 @@ export class AdditionalServicesUtils {
             }
             }
         );
+    }
+
+    navToAdditionalServicePage(fromNavbar, serviceProcessName) {
+      if (fromNavbar) {
+        let routeToNavigate = '/developer/options/additional-services';
+        if (!this.isDeveloperFeatureOn()) {
+          switch (serviceProcessName) {
+            case 'notification':
+              routeToNavigate = '/notification';
+              break;
+            case 'bucket':
+              routeToNavigate = '/mlmodels';
+              break;
+            case 'dispatcher':
+              routeToNavigate = '/control-dispatcher/acl';
+              break;
+            default:
+              routeToNavigate = '';
+              break;
+          }
+        }
+        this.router.navigate([routeToNavigate]);
+      }
+      return;
+    }
+
+    public isDeveloperFeatureOn(): boolean {
+      const devFeature = JSON.parse(localStorage.getItem('DEV_FEATURES'));
+      return devFeature ? devFeature : false;
     }
 }
