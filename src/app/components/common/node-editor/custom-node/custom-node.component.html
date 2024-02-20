@@ -7,11 +7,10 @@
       </span>
       <span *ngIf="source; else serviceNameTemplate">{{data.label}}</span>
       <ng-template #serviceNameTemplate>
-        <span (click)="openServiceDetails()" class="service-name">{{data.label}}</span>
+        <span (click)="openServiceDetails()" class="service-name">{{data.controls.nameControl.name}}</span>
       </ng-template>
       <ng-container *ngIf="data.label!=='Applications'">
-        <ng-container
-          *ngIf="data.label!=='South' && data.label!=='North' && data.label!=='Filter'; else southServiceTemplate">
+        <ng-container *ngIf="data.label!=='Filter'; else southServiceTemplate">
           <span class="is-pulled-right">
             <input class="checkbox" type="checkbox" [checked]='isEnabled' (click)="toggleEnabled($event.target.checked)"
               [disabled]="!rolesService.hasEditPermissions()">
@@ -45,12 +44,8 @@
     </div>
     <div>
       <ng-container *ngIf="isServiceNode && from != 'north'">
-        <div class="reading-details">
-          <small class="reading has-tooltip-right has-tooltip-arrow"
-            data-tooltip="Reading count">{{service.readingCount}}</small>
-          <small class="asset has-tooltip-right has-tooltip-arrow"
-            data-tooltip="Asset count">{{service.assetCount}}</small>
-        </div>
+        <readings-count *ngIf="service" [readingCount]="service.readingCount"
+          [assetCount]="service.assetCount"></readings-count>
       </ng-container>
       <ng-container *ngIf="isServiceNode && from == 'north'">
         <div class="reading-details">
@@ -61,7 +56,6 @@
           <ng-template #emptySpan>
             <span class="reading">&nbsp;</span>
           </ng-template>
-
         </div>
       </ng-container>
       <ng-container *ngIf="isFilterNode">
@@ -96,8 +90,7 @@
       </ng-container>
     </div>
     <div>
-      <ng-container
-        *ngIf="data.label!=='Applications' && data.label!=='South' &&  data.label!=='North' && data.label!=='Filter'">
+      <ng-container *ngIf="data.label!=='Applications' && data.label!=='Filter'">
         <div class="is-pulled-left ml-2 icon-margin">
           <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered"
             data-tooltip="Help" (click)="goToLink()">

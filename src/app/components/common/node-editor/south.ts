@@ -1,5 +1,14 @@
 import { ClassicPreset } from "rete";
-
+import {
+  AssetControl,
+  ReadingControl,
+} from "./controls/south-custom-control";
+import {
+  EnabledControl,
+  NameControl,
+  PluginControl,
+  StatusControl
+} from "./controls/common-custom-control";
 
 export class South extends ClassicPreset.Node {
   height = 110;
@@ -9,16 +18,24 @@ export class South extends ClassicPreset.Node {
   constructor(socket: ClassicPreset.Socket, service) {
     super("South");
     if (service) {
-      this.addControl(service.name, new ClassicPreset.InputControl("text"));
-      this.addControl("plname" + service.plugin.name, new ClassicPreset.InputControl("text"));
       let assetCount = service.assets.length;
       let readingCount = service.assets.reduce((total, asset) => {
         return total + asset.count;
       }, 0)
-      this.addControl("asc" + assetCount, new ClassicPreset.InputControl("text"));
-      this.addControl("rdc" + readingCount, new ClassicPreset.InputControl("text"));
-      this.addControl(service.status, new ClassicPreset.InputControl("text"));
-      this.addControl(service.schedule_enabled, new ClassicPreset.InputControl("text"));
+
+      const nameControl = new NameControl(service.name);
+      const pluginControl = new PluginControl(service.plugin.name);
+      const statusControl = new StatusControl(service.status);
+      const enabledControl = new EnabledControl(service.schedule_enabled);
+      const readingCountControl = new ReadingControl(readingCount);
+      const assetCountControl = new AssetControl(assetCount);
+
+      this.addControl('nameControl', nameControl);
+      this.addControl('pluginControl', pluginControl);
+      this.addControl('readingCountControl', readingCountControl);
+      this.addControl('assetCountControl', assetCountControl);
+      this.addControl('statusControl', statusControl);
+      this.addControl('enabledControl', enabledControl);
     }
     this.addOutput("port", new ClassicPreset.Output(socket));
   }

@@ -1,0 +1,23 @@
+:host:hover .reading,
+:host:hover .asset {
+  visibility: visible;
+}
+
+.reading-details {
+  display: flex;
+  justify-content: center;
+}
+
+.reading {
+  font-size: 18px;
+  font-weight: bolder;
+  visibility: hidden;
+}
+
+.asset {
+  font-size: 12px;
+  color: grey;
+  padding-top: 12px;
+  padding-left: 4px;
+  visibility: hidden;
+}

@@ -14,6 +14,7 @@ import { AddServiceWizardComponent } from '../../core/south/add-service-wizard/a
 import { RolesGuard } from '../../../guards/roles.gurad';
 import { PluginService } from '../../../services/plugin.service';
 import { AddTaskWizardComponent } from '../../core/north/add-task-wizard/add-task-wizard.component';
+import { ReadingsCountComponent } from './south/asset-readings/readings-count.component';
 
 const routes: Routes = [
   {
@@ -43,6 +44,7 @@ const routes: Routes = [
     CustomNodeComponent,
     CustomSocketComponent,
     CustomConnectionComponent,
+    ReadingsCountComponent,
     RefDirective],
   imports: [
     RouterModule.forChild(routes),

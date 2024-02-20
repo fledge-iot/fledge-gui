@@ -1,5 +1,11 @@
 import { ClassicPreset } from "rete";
-
+import {
+  EnabledControl,
+  NameControl,
+  PluginControl,
+  StatusControl
+} from "./controls/common-custom-control";
+import { SentReadingsControl } from "./controls/north-custom-control";
 
 export class North extends ClassicPreset.Node {
   height = 110;
@@ -10,13 +16,17 @@ export class North extends ClassicPreset.Node {
     super("North");
     this.addInput("port", new ClassicPreset.Input(socket));
     if (task) {
-      this.addControl(task.name, new ClassicPreset.InputControl("text"));
-      this.addControl("plname" + task.plugin.name, new ClassicPreset.InputControl("text"));
-      let sentReadings = task.sent;
-      this.addControl("sent" + sentReadings, new ClassicPreset.InputControl("text"));
-      // this.addControl(task?.status, new ClassicPreset.InputControl("text"));
-      this.addControl(task.enabled, new ClassicPreset.InputControl("text"));
+      const nameControl = new NameControl(task.name);
+      const pluginControl = new PluginControl(task.plugin.name);
+      const sentReadingControl = new SentReadingsControl(task.sent);
+      const statusControl = new StatusControl(task?.status);
+      const enabledControl = new EnabledControl(task.enabled);
+
+      this.addControl('nameControl', nameControl);
+      this.addControl('pluginControl', pluginControl);
+      this.addControl('statusControl', statusControl);
+      this.addControl('sentReadingControl', sentReadingControl);
+      this.addControl('enabledControl', enabledControl);
     }
-    this.addOutput("port", new ClassicPreset.Output(socket));
   }
 }

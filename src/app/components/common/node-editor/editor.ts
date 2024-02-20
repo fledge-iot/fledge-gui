@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { Injector } from "@angular/core";
 import { NodeEditor, GetSchemes, ClassicPreset } from "rete";
 import { AreaPlugin, AreaExtensions, Area2D } from "rete-area-plugin";
@@ -23,6 +24,10 @@ import { ConnectionPathPlugin } from "rete-connection-path-plugin";
 import { North } from "./north";
 import { AddTask } from "./add-task";
 import { RolesService } from "../../../services/roles.service"
+import { Service } from "../../core/south/south-service";
+import { ReadingControl } from "./controls/south-custom-control";
+import { SentReadingsControl } from './controls/north-custom-control';
+
 
 type Node = South | North | Filter;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
@@ -31,10 +36,13 @@ type AreaExtra = AngularArea2D<Schemes> | MinimapExtra | ContextMenuExtra;
 class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> { curve?: CurveFactory; }
 
 let editor = new NodeEditor<Schemes>();
+let area: AreaPlugin<Schemes, AreaExtra>;
 export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, data) {
+  //console.log('create editor', data);
+
   const socket = new ClassicPreset.Socket("socket");
   editor = new NodeEditor<Schemes>();
-  const area = new AreaPlugin<Schemes, AreaExtra>(container);
+  area = new AreaPlugin<Schemes, AreaExtra>(container);
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   const render = new AngularPlugin<Schemes, AreaExtra>({ injector });
   const arrange = new AutoArrangePlugin<Schemes>();
@@ -110,6 +118,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   render.addPreset(Presets.classic.setup(
     {
       customize: {
+
         node() {
           return CustomNodeComponent;
         },
@@ -122,6 +131,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
       }
     }
   ));
+
   // connection.addPreset(ConnectionPresets.classic.setup());
   connection.addPreset(() => new BidirectFlow())
   arrange.addPreset(ArrangePresets.classic.setup());
@@ -168,7 +178,6 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     return;
   }
   createNorthNodesAndConnections(socket, editor, arrange, area, rolesService, data);
-
 }
 
 async function createNorthNodesAndConnections(socket: ClassicPreset.Socket,
@@ -270,7 +279,7 @@ async function nodesGrid(area: AreaPlugin<Schemes,
   rolesService: RolesService,
   from: string) {
   const canvasWidth = area.container.parentElement.clientWidth;
-  const itemCount = Math.round(canvasWidth / 300);
+  const itemCount = Math.round(canvasWidth / 275);
   let j = 0;
   let k = 0;
   for (let i = 0; i < nodeItems.length; i++) {
@@ -287,7 +296,7 @@ async function nodesGrid(area: AreaPlugin<Schemes,
   if (rolesService.hasEditPermissions()) {
     const service = from == 'south' ? new AddService() : new AddTask();
     await editor.addNode(service);
-    await area.translate(service.id, { x: 250 * j, y: 250 * k });
+    await area.translate(service.id, { x: 250 * j, y: 150 * k });
   }
 }
 
@@ -369,6 +378,30 @@ function getBranchNodes(connections, node) {
   }
   branchNodes.pop();
   return branchNodes;
+}
+
+export function updateNode(data) {
+  editor.getNodes().forEach(async (node) => {
+    if (!isEmpty(node.controls)) {
+      if (node.label == 'South') {
+        const readingControl = node.controls.readingCountControl as ReadingControl;
+        const service = data.services.find(s => s.name === node.controls.nameControl['name'])
+        let readingCount = service.assets.reduce((total, asset) => {
+          return total + asset.count;
+        }, 0)
+        readingControl.count = readingCount;
+        area.update("control", readingControl.id);
+        area.update('node', node.id)
+      }
+      if (node.label == 'North') {
+        const sentReadingControl = node.controls.sentReadingControl as SentReadingsControl;
+        const task = data.tasks.find(t => t.name === node.controls.nameControl['name'])
+        sentReadingControl.sent = task.sent;
+        area.update("control", sentReadingControl.id);
+        area.update('node', node.id)
+      }
+    }
+  });
 }
 
 export function deleteConnection(connectionId) {

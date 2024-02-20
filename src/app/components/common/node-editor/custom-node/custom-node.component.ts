@@ -3,12 +3,18 @@ import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
-import { ConfigurationService, NorthService, PingService, RolesService, SchedulesService, ServicesApiService, ToastService } from "./../../../../services";
+import {
+  ConfigurationService,
+  NorthService, PingService,
+  RolesService,
+  SchedulesService,
+  ServicesApiService,
+  ToastService
+} from "./../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
-import { Subject, Subscription, interval } from "rxjs";
-import { POLLING_INTERVAL } from "./../../../../utils";
-import { takeUntil, takeWhile } from "rxjs/operators";
+import { Subject, Subscription } from "rxjs";
+import { takeUntil } from "rxjs/operators";
 import { Service } from "./../../../core/south/south-service";
 import { NorthTask } from "../../../core/north/north-task";
 
@@ -31,7 +37,16 @@ export class CustomNodeComponent implements OnChanges {
   from = '';
   helpText = '';
   isEnabled: boolean = false;
-  service = { name: "", status: "", protocol: "", address: "", management_port: "", pluginName: "", assetCount: "", readingCount: "", schedule_enabled: 'false' }
+  service = {
+    name: "", status: "",
+    protocol: "",
+    address: "",
+    management_port: "",
+    pluginName: "",
+    assetCount: "",
+    readingCount: "",
+    schedule_enabled: false
+  }
   task = {
     name: "",
     day: "",
@@ -54,7 +69,6 @@ export class CustomNodeComponent implements OnChanges {
   destroy$: Subject<boolean> = new Subject<boolean>();
   fetchedTask;
   fetchedService;
-  isAlive: boolean;
   showPlusIcon = false;
   nodeId = '';
 
@@ -89,14 +103,6 @@ export class CustomNodeComponent implements OnChanges {
         this.router.navigated = false;
       }
     });
-    this.isAlive = true;
-    this.ping.pingIntervalChanged
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((timeInterval: number) => {
-        if (timeInterval === -1) {
-          this.isAlive = false;
-        }
-      });
   }
 
   ngOnChanges(): void {
@@ -105,27 +111,14 @@ export class CustomNodeComponent implements OnChanges {
       if (this.source !== '') {
         this.isServiceNode = true;
         this.elRef.nativeElement.style.borderColor = this.data.label === 'South' ? "#B6D7A8" : '#C781BB'
-        interval(POLLING_INTERVAL)
-          .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
-          .subscribe(() => {
-            if (this.from == 'north') {
-              this.getNorthboundTasks();
-            } else {
-              this.getSouthboundServices();
-            }
-          });
-
         this.isServiceNode = true;
         if (this.from == 'north') {
           if (!isEmpty(this.data.controls)) {
-            this.service.name = Object.keys(this.data.controls)[0];
-            this.service.pluginName = Object.keys(this.data.controls)[1].slice(6);
-            // this.service.assetCount = Object.keys(this.data.controls)[2].slice(3);
-            this.service.readingCount = Object.keys(this.data.controls)[2].slice(4);
-            //this.service.status = Object.keys(this.data.controls)[4];
-            this.service.schedule_enabled = Object.keys(this.data.controls)[3];
-            this.data.label = this.service.name;
-            if (this.service.schedule_enabled === 'true') {
+            this.service.name = this.data.controls.nameControl['name'];
+            this.service.pluginName = this.data.controls.pluginControl['plugin'];
+            this.service.readingCount = this.data.controls.sentReadingControl['sent'];
+            this.service.schedule_enabled = this.data.controls.enabledControl['enabled'];
+            if (this.service.schedule_enabled === true) {
               this.isEnabled = true;
             }
             this.helpText = this.service.pluginName;
@@ -133,14 +126,13 @@ export class CustomNodeComponent implements OnChanges {
           }
         } else {
           if (!isEmpty(this.data.controls)) {
-            this.service.name = Object.keys(this.data.controls)[0];
-            this.service.pluginName = Object.keys(this.data.controls)[1].slice(6);
-            this.service.assetCount = Object.keys(this.data.controls)[2].slice(3);
-            this.service.readingCount = Object.keys(this.data.controls)[3].slice(3);
-            this.service.status = Object.keys(this.data.controls)[4];
-            this.service.schedule_enabled = Object.keys(this.data.controls)[5];
-            this.data.label = this.service.name;
-            if (this.service.schedule_enabled === 'true') {
+            this.service.name = this.data.controls.nameControl['name']
+            this.service.pluginName = this.data.controls.pluginControl['plugin'];
+            this.service.assetCount = this.data.controls.assetCountControl['count'];
+            this.service.readingCount = this.data.controls.readingCountControl['count'];
+            this.service.status = this.data.controls.statusControl['status'];
+            this.service.schedule_enabled = this.data.controls.enabledControl['enabled'];
+            if (this.service.schedule_enabled === true) {
               this.isEnabled = true;
             }
             this.helpText = this.service.pluginName;
@@ -155,10 +147,10 @@ export class CustomNodeComponent implements OnChanges {
     }
     if (this.data.label === 'Filter') {
       this.isFilterNode = true;
-      this.filter.name = Object.keys(this.data.controls)[0];
-      this.filter.pluginName = Object.keys(this.data.controls)[1].slice(6);
-      this.filter.enabled = Object.keys(this.data.controls)[2];
-      this.filter.color = Object.keys(this.data.controls)[3];
+      this.filter.name = this.data.controls.nameControl['name'];
+      this.filter.pluginName = this.data.controls.pluginControl['plugin'];
+      this.filter.enabled = this.data.controls.enabledControl['enabled'];
+      this.filter.color = this.data.controls.filterColorControl['color'];
       this.elRef.nativeElement.style.borderColor = this.filter.color;
       this.data.label = this.filter.name;
       if (this.filter.name !== "Filter") {
@@ -351,8 +343,8 @@ export class CustomNodeComponent implements OnChanges {
           this.service.status = this.fetchedTask?.status;
           let readingCount = this.fetchedTask.sent;
           this.service.readingCount = readingCount;
-          this.service.schedule_enabled = String(this.fetchedTask.enabled);
-          if (this.service.schedule_enabled === 'true') {
+          this.service.schedule_enabled = this.fetchedTask.enabled;
+          if (this.service.schedule_enabled === true) {
             this.isEnabled = true;
           }
           else {
@@ -383,8 +375,8 @@ export class CustomNodeComponent implements OnChanges {
           }, 0)
           this.service.assetCount = assetCount;
           this.service.readingCount = readingCount;
-          this.service.schedule_enabled = String(this.fetchedService.schedule_enabled);
-          if (this.service.schedule_enabled === 'true') {
+          this.service.schedule_enabled = this.fetchedService.schedule_enabled;
+          if (this.service.schedule_enabled === true) {
             this.isEnabled = true;
           }
           else {
@@ -402,7 +394,6 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   ngOnDestroy() {
-    this.isAlive = false;
     this.subscription.unsubscribe();
     this.addFilterSubscription?.unsubscribe();
     this.destroy$.next(true);

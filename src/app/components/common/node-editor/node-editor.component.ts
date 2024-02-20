@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
-import { createEditor, getUpdatedFilterPipeline, deleteConnection } from './editor';
+import { createEditor, getUpdatedFilterPipeline, deleteConnection, updateNode } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   ConfigurationControlService,
@@ -7,19 +7,21 @@ import {
   FileUploaderService,
   FilterService,
   NorthService,
+  PingService,
   ProgressBarService,
   ResponseHandler,
   RolesService,
   ServicesApiService,
   ToastService
 } from './../../../services';
-import { catchError, map, skip, takeUntil } from 'rxjs/operators';
+import { catchError, map, skip, takeUntil, takeWhile } from 'rxjs/operators';
 import { Service } from '../../core/south/south-service';
-import { Subject, Subscription, forkJoin, of } from 'rxjs';
+import { Subject, Subscription, forkJoin, interval, of } from 'rxjs';
 import { FlowEditorService } from './flow-editor.service';
 import { cloneDeep, isEmpty } from 'lodash';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import { NorthTask } from '../../core/north/north-task';
+import { POLLING_INTERVAL } from '../../../utils';
 
 @Component({
   selector: 'app-node-editor',
@@ -67,6 +69,7 @@ export class NodeEditorComponent implements OnInit {
   validFilterConfigForm = true;
   quickviewFilterName = "";
   isAddFilterWizard: boolean = false;
+  isAlive: boolean;
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -82,6 +85,7 @@ export class NodeEditorComponent implements OnInit {
     public ngProgress: ProgressBarService,
     private dialogService: DialogService,
     private northService: NorthService,
+    private ping: PingService,
     private router: Router) {
     this.route.params.subscribe(params => {
       this.from = params.from;
@@ -139,7 +143,8 @@ export class NodeEditorComponent implements OnInit {
           }
         }
       }
-    })
+    });
+
     this.connectionSubscription = this.flowEditorService.connectionInfo.subscribe(data => {
       if (data.selected) {
         this.selectedConnectionId = data.id;
@@ -147,11 +152,31 @@ export class NodeEditorComponent implements OnInit {
       else {
         this.selectedConnectionId = "";
       }
-    })
+    });
+
     this.serviceSubscription = this.flowEditorService.serviceInfo.pipe(skip(1)).subscribe(data => {
       this.openModal('delete-service-dialog');
       this.deleteServiceName = data.name;
-    })
+    });
+
+    this.isAlive = true;
+    this.ping.pingIntervalChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((timeInterval: number) => {
+        if (timeInterval === -1) {
+          this.isAlive = false;
+        }
+      });
+
+    interval(POLLING_INTERVAL)
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+      .subscribe(() => {
+        if (this.from == 'north') {
+          this.getNorthasks();
+        } else {
+          this.getSouthervices();
+        }
+      });
   }
 
   ngAfterViewInit(): void {
@@ -219,6 +244,62 @@ export class NodeEditorComponent implements OnInit {
         });
       }
     }
+  }
+
+  getNorthasks() {
+    this.northService.getNorthTasks(true)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: any) => {
+        const tasks = data as NorthTask[];
+        this.tasks = tasks;
+        this.task = tasks.find(t => (t.name == this.source));
+        data = {
+          from: this.from,
+          source: this.source,
+          filterPipeline: this.filterPipeline,
+          service: this.service,
+          services: this.services,
+          task: this.task,
+          tasks: this.tasks,
+          filterConfigurations: this.filterConfigurations,
+        }
+        // refresh node data
+        updateNode(data);
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.toastService.error(error.statusText);
+          }
+        });
+  }
+
+  getSouthervices() {
+    this.servicesApiService.getSouthServices(true)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: any) => {
+        const services = data.services as Service[];
+        data = {
+          from: this.from,
+          source: this.source,
+          filterPipeline: this.filterPipeline,
+          service: this.service,
+          services: services,
+          task: this.task,
+          tasks: this.tasks,
+          filterConfigurations: this.filterConfigurations,
+        }
+        // refresh node data
+        updateNode(data);
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.toastService.error(error.statusText);
+          }
+        });
   }
 
   getFilterPipeline() {
