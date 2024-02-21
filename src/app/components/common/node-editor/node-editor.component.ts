@@ -14,9 +14,9 @@ import {
   ServicesApiService,
   ToastService
 } from './../../../services';
-import { catchError, map, skip, takeUntil, takeWhile } from 'rxjs/operators';
+import { catchError, delay, map, mergeMap, repeatWhen, skip, take, takeUntil, takeWhile } from 'rxjs/operators';
 import { Service } from '../../core/south/south-service';
-import { Subject, Subscription, forkJoin, interval, of } from 'rxjs';
+import { EMPTY, Subject, Subscription, forkJoin, interval, of } from 'rxjs';
 import { FlowEditorService } from './flow-editor.service';
 import { cloneDeep, isEmpty } from 'lodash';
 import { DialogService } from '../confirmation-dialog/dialog.service';
@@ -192,56 +192,75 @@ export class NodeEditorComponent implements OnInit {
         tasks: this.tasks,
         filterConfigurations: this.filterConfigurations,
       }
+
+      let isServiceExist = true;
       if (this.initialApiCallsStack.length > 0) {
         this.ngProgress.start();
-        forkJoin(this.initialApiCallsStack).subscribe((result) => {
-          this.ngProgress.done();
-          result.forEach((r: any) => {
-            if (r.status) {
-              if (r.status === 404) {
-                this.filterPipeline = [];
-                this.isfilterPipelineFetched = true;
+        forkJoin(this.initialApiCallsStack)
+          .pipe(mergeMap(res => {
+            // Retry GET tasks call when task as a service created.It take times to populate in the GET tasks response
+            if (this.source && this.from == 'north') {
+              const tasks = res[0]['tasks'];
+              isServiceExist = tasks?.some(t => (t.name == this.source));
+            }
+            return !isServiceExist ? EMPTY : of(res);
+          }),
+            repeatWhen(notifications => {
+              return notifications.pipe(
+                delay(2000),
+                takeWhile(() => !isServiceExist)
+              )
+            }),
+            take(1)
+          )
+          .subscribe((result) => {
+            this.ngProgress.done();
+            result.forEach((r: any) => {
+              if (r.status) {
+                if (r.status === 404) {
+                  this.filterPipeline = [];
+                  this.isfilterPipelineFetched = true;
+                } else {
+                  this.toastService.error(r.statusText);
+                }
               } else {
-                this.toastService.error(r.statusText);
-              }
-            } else {
-              if (r.tasks) {
-                const tasks = r.tasks as NorthTask[];
-                this.tasks = tasks;
-                this.task = tasks.find(t => (t.name == this.source));
-                data.tasks = tasks;
-                data.task = this.task;
-              } else {
-                if (r.services) {
-                  const services = r.services as Service[];
-                  this.services = services;
-                  this.service = services.find(service => (service.name == this.source));
-                  data.services = services;
-                  data.service = this.service;
+                if (r.tasks) {
+                  const tasks = r.tasks as NorthTask[];
+                  this.tasks = tasks;
+                  this.task = tasks.find(t => (t.name == this.source));
+                  data.tasks = tasks;
+                  data.task = this.task;
+                } else {
+                  if (r.services) {
+                    const services = r.services as Service[];
+                    this.services = services;
+                    this.service = services.find(service => (service.name == this.source));
+                    data.services = services;
+                    data.service = this.service;
+                  }
+                }
+                if (r.result) {
+                  this.filterPipeline = r.result.pipeline as string[];
+                  this.isfilterPipelineFetched = true;
+                  data.filterPipeline = this.filterPipeline;
+                  this.createFilterConfigurationsArray();
                 }
               }
-              if (r.result) {
-                this.filterPipeline = r.result.pipeline as string[];
-                this.isfilterPipelineFetched = true;
-                data.filterPipeline = this.filterPipeline;
-                this.createFilterConfigurationsArray();
-              }
+            });
+            this.initialApiCallsStack = [];
+            if (this.filterConfigApiCallsStack.length > 0) {
+              forkJoin(this.filterConfigApiCallsStack).subscribe((result) => {
+                result.forEach((r: any) => {
+                  let filterConfig = { pluginName: r.plugin.value, enabled: r.enable.value, filterName: r.filterName, color: "#F9CB9C" };
+                  this.filterConfigurations.push(filterConfig);
+                })
+                createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
+              });
+            }
+            else {
+              createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
             }
           });
-          this.initialApiCallsStack = [];
-          if (this.filterConfigApiCallsStack.length > 0) {
-            forkJoin(this.filterConfigApiCallsStack).subscribe((result) => {
-              result.forEach((r: any) => {
-                let filterConfig = { pluginName: r.plugin.value, enabled: r.enable.value, filterName: r.filterName, color: "#F9CB9C" };
-                this.filterConfigurations.push(filterConfig);
-              })
-              createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
-            });
-          }
-          else {
-            createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
-          }
-        });
       }
     }
   }

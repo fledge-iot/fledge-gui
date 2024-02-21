@@ -166,7 +166,6 @@ export class CustomNodeComponent implements OnChanges {
           if (data) {
             if (data.addedFiltersIdColl.includes(this.nodeId)) {
               this.elRef.nativeElement.style.outline = "#EA9999 dashed 2px";
-              // this.elRef.nativeElement.style.borderWidth = "1px";
               this.showPlusIcon = true;
             }
           }

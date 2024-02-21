@@ -135,6 +135,7 @@
 }
 
 .add-service {
+  height: 92px;
   width: 198px;
   display: flex;
   justify-content: center;

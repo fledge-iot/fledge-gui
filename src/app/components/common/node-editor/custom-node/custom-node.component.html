@@ -7,7 +7,7 @@
             [ngClass]="applyServiceStatusCustomCss(service.status)">
             <i class="fa fa-2xs fa-circle child-icon"></i>
           </span>
-          <span> {{data.controls.nameControl.name}}</span>
+          <span> {{data.controls?.nameControl?.name}}</span>
           <span *ngIf="task.execution === 'task'" class="help has-text-grey-light">&nbsp;Task</span>
         </div>
         <div class="is-inline-flex is-align-items-baseline">
@@ -60,7 +60,7 @@
               data-tooltip="Readings Sent">{{service.readingCount}}</small>
           </ng-container>
           <ng-template #emptySpan>
-            <span class="reading p-2">&nbsp;</span>
+            <span class="reading p-1">&nbsp;</span>
           </ng-template>
         </div>
       </ng-container>
@@ -137,7 +137,7 @@
     </div>
   </ng-container>
   <ng-template #addServiceTemplate>
-    <div class="add-service" [ngStyle]="{'height.px': from == 'north'? '100' : '93'}">
+    <div class="add-service">
       <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
         [attr.data-tooltip]="from == 'north'?'Add Task': 'Add Service'" (click)="navToAddServicePage()">
         <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>

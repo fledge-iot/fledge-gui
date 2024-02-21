@@ -27,7 +27,8 @@ import { RolesService } from "../../../services/roles.service"
 import { Service } from "../../core/south/south-service";
 import { ReadingControl } from "./controls/south-custom-control";
 import { SentReadingsControl } from './controls/north-custom-control';
-import { EnabledControl, StatusControl } from './controls/common-custom-control';
+import { EnabledControl, NameControl, PluginControl, StatusControl } from './controls/common-custom-control';
+import { NorthTask } from '../../core/north/north-task';
 
 
 type Node = South | North | Filter;
@@ -404,7 +405,7 @@ export function updateNode(data) {
       }
       if (node.label == 'North') {
         const sentReadingControl = node.controls.sentReadingControl as SentReadingsControl;
-        const task = data.tasks.find(t => t.name === node.controls.nameControl['name'])
+        const task = data.tasks.find(t => t.name === node.controls.nameControl['name']) as NorthTask;
         sentReadingControl.sent = task.sent;
         enabledControl.enabled = task.enabled;
 
