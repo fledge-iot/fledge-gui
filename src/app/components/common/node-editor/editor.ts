@@ -27,6 +27,7 @@ import { RolesService } from "../../../services/roles.service"
 import { Service } from "../../core/south/south-service";
 import { ReadingControl } from "./controls/south-custom-control";
 import { SentReadingsControl } from './controls/north-custom-control';
+import { EnabledControl, StatusControl } from './controls/common-custom-control';
 
 
 type Node = South | North | Filter;
@@ -382,22 +383,33 @@ function getBranchNodes(connections, node) {
 
 export function updateNode(data) {
   editor.getNodes().forEach(async (node) => {
+    const readingControl = node.controls.readingCountControl as ReadingControl;
+    const enabledControl = node.controls.enabledControl as EnabledControl;
+    const statusControl = node.controls.statusControl as StatusControl;
     if (!isEmpty(node.controls)) {
       if (node.label == 'South') {
-        const readingControl = node.controls.readingCountControl as ReadingControl;
         const service = data.services.find(s => s.name === node.controls.nameControl['name'])
         let readingCount = service.assets.reduce((total, asset) => {
           return total + asset.count;
         }, 0)
+
         readingControl.count = readingCount;
+        enabledControl.enabled = service.schedule_enabled;
+        statusControl.status = service.status;
+
         area.update("control", readingControl.id);
+        area.update("control", enabledControl.id);
+        area.update("control", statusControl.id);
         area.update('node', node.id)
       }
       if (node.label == 'North') {
         const sentReadingControl = node.controls.sentReadingControl as SentReadingsControl;
         const task = data.tasks.find(t => t.name === node.controls.nameControl['name'])
         sentReadingControl.sent = task.sent;
+        enabledControl.enabled = task.enabled;
+
         area.update("control", sentReadingControl.id);
+        area.update("control", enabledControl.id);
         area.update('node', node.id)
       }
     }

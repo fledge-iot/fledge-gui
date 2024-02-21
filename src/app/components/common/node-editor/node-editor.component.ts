@@ -383,6 +383,7 @@ export class NodeEditorComponent implements OnInit {
           }, 1000);
         },
           (error) => {
+            this.reenableButton.emit(false);
             if (error.status === 0) {
               console.log('service down ', error);
             } else {

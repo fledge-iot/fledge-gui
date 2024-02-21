@@ -15,6 +15,7 @@ import { RolesGuard } from '../../../guards/roles.gurad';
 import { PluginService } from '../../../services/plugin.service';
 import { AddTaskWizardComponent } from '../../core/north/add-task-wizard/add-task-wizard.component';
 import { ReadingsCountComponent } from './south/asset-readings/readings-count.component';
+import { DirectivesModule } from '../../../directives/directives.module';
 
 const routes: Routes = [
   {
@@ -54,7 +55,8 @@ const routes: Routes = [
     SharedModule,
     RouterModule,
     FilterModule,
-    SharedModule
+    SharedModule,
+    DirectivesModule
   ],
   exports: [NodeEditorComponent,
     CustomNodeComponent,

@@ -5,7 +5,7 @@
         [ngClass]="applyServiceStatusCustomCss(service.status)">
         <i class="fa fa-2xs fa-circle child-icon"></i>
       </span>
-      <span *ngIf="source; else serviceNameTemplate">{{data.controls.nameControl.name}}</span>
+      <span *ngIf="source; else serviceNameTemplate">{{data.controls?.nameControl?.name}}</span>
       <ng-template #serviceNameTemplate>
         <span (click)="openServiceDetails()" class="service-name">{{data.controls.nameControl.name}}</span>
       </ng-template>
@@ -131,7 +131,7 @@
     </div>
   </ng-container>
   <ng-template #addServiceTemplate>
-    <div class="add-service">
+    <div class="add-service" [ngStyle]="{'height.px': from == 'north'? '85' : '93'}">
       <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
         [attr.data-tooltip]="from == 'north'?'Add Task': 'Add Service'" (click)="navToAddServicePage()">
         <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
