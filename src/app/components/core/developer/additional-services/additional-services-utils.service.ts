@@ -1,4 +1,4 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { SchedulesService, ProgressBarService, AlertService, ServicesApiService } from '../../../../services';
 import { Router } from '@angular/router';
 
@@ -7,8 +7,7 @@ import { Router } from '@angular/router';
   })
 
 export class AdditionalServicesUtils {
-    public reenableButton = new EventEmitter<boolean>(false);
-
+    
     constructor(
         private router: Router,
         public schedulesService: SchedulesService,
@@ -22,12 +21,10 @@ export class AdditionalServicesUtils {
         this.schedulesService.enableScheduleByName(serviceName).subscribe(
           (data) => {
             this.ngProgress.done();
-            this.reenableButton.emit(false);         
             this.alertService.success(data["message"], true);
           },
           (error) => {
             this.ngProgress.done();
-            this.reenableButton.emit(false);
             if (error.status === 0) {
               console.log("service down ", error);
             } else {
@@ -42,13 +39,11 @@ export class AdditionalServicesUtils {
         this.schedulesService.disableScheduleByName(serviceName).subscribe(
           (data) => {
             this.ngProgress.done();
-            this.reenableButton.emit(false);
             this.navToAdditionalServicePage(fromNavbar, serviceProcessName);
             this.alertService.success(data["message"], true);
           },
           (error) => {
             this.ngProgress.done();
-            this.reenableButton.emit(false);
             if (error.status === 0) {
               console.log("service down ", error);
             } else {
@@ -63,13 +58,11 @@ export class AdditionalServicesUtils {
         this.servicesApiService.deleteService(serviceName).subscribe(
             (data: any) => {
             this.ngProgress.done();
-            this.reenableButton.emit(false);
             this.navToAdditionalServicePage(fromNavbar, serviceProcessName);
             this.alertService.success(data["result"], true);
             },
             (error) => {
             this.ngProgress.done();
-            this.reenableButton.emit(false);
             if (error.status === 0) {
                 console.log("service down ", error);
             } else {

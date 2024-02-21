@@ -351,6 +351,7 @@ export class AdditionalServiceModalComponent {
               if (serviceStatus.error) {
                 this.ngProgress.done();
                 this.toggleModal(false);
+                this.reenableButton.emit(false);
                 this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
                 throw serviceStatus.error;
               }
@@ -368,6 +369,7 @@ export class AdditionalServiceModalComponent {
                 this.isServiceEnabled = false;
                 this.ngProgress.done();
                 this.toggleModal(false);
+                this.reenableButton.emit(false);   
                 this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
                 return;
               }
@@ -378,18 +380,21 @@ export class AdditionalServiceModalComponent {
         this.ngProgress.done();
         this.isServiceEnabled = true;
         this.toggleModal(false);
+        this.reenableButton.emit(false);
         this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
       });
   }
 
   disableService() {
     this.additionalServicesUtils.disableService(this.serviceName, this.fromNavbar, this.serviceProcessName);
+    this.reenableButton.emit(false);
     this.toggleModal(false);
     this.isServiceEnabled = false;
   }
 
   deleteService(serviceName) {
     this.additionalServicesUtils.deleteService(serviceName, this.fromNavbar, this.serviceProcessName);
+    this.reenableButton.emit(false);
     this.closeDeleteModal("dialog-delete-confirmation");
     this.toggleModal(false);
   }

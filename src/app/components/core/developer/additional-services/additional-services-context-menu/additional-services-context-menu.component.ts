@@ -15,8 +15,6 @@ export class AdditionalServicesContextMenuComponent implements OnInit {
     @Input() index;
     @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
-    public reenableButton = new EventEmitter<boolean>(false);
-
     constructor(
         public rolesService: RolesService,
         private dialogService: DialogService,

@@ -271,6 +271,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
 
   deleteService(serviceName) {
     this.additionalServicesUtils.deleteService(serviceName);
+    this.reenableButton.emit(false);
     this.closeModal('delete-confirmation-dialog');
     this.closeServiceModal();
     this.getData();
@@ -323,6 +324,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     } else {
       this.additionalServicesUtils.disableService(this.service.name);
     }
+    this.reenableButton.emit(false);
     this.closeModal('confirmation-dialog');
     this.closeServiceModal();
     this.getData();
