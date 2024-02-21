@@ -5,7 +5,7 @@ import {
   PluginControl,
   StatusControl
 } from "../controls/common-custom-control";
-import { SentReadingsControl } from "../controls/north-custom-control";
+import { ExecutionControl, SentReadingsControl } from "../controls/north-custom-control";
 
 export class North extends ClassicPreset.Node {
   height = 110;
@@ -16,17 +16,19 @@ export class North extends ClassicPreset.Node {
     super("North");
     this.addInput("port", new ClassicPreset.Input(socket));
     if (task) {
-      const nameControl = new NameControl(task.name);
-      const pluginControl = new PluginControl(task.plugin.name);
-      const sentReadingControl = new SentReadingsControl(task.sent);
-      const statusControl = new StatusControl(task?.status);
-      const enabledControl = new EnabledControl(task.enabled);
+      const name = new NameControl(task.name);
+      const plugin = new PluginControl(task.plugin.name);
+      const sentReading = new SentReadingsControl(task.sent);
+      const status = new StatusControl(task?.status);
+      const execution = new ExecutionControl(task?.execution);
+      const enabled = new EnabledControl(task.enabled);
 
-      this.addControl('nameControl', nameControl);
-      this.addControl('pluginControl', pluginControl);
-      this.addControl('statusControl', statusControl);
-      this.addControl('sentReadingControl', sentReadingControl);
-      this.addControl('enabledControl', enabledControl);
+      this.addControl('nameControl', name);
+      this.addControl('pluginControl', plugin);
+      this.addControl('statusControl', status);
+      this.addControl('executionControl', execution);
+      this.addControl('sentReadingControl', sentReading);
+      this.addControl('enabledControl', enabled);
     }
   }
 }

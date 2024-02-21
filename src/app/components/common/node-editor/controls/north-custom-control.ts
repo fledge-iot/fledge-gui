@@ -5,3 +5,9 @@ export class SentReadingsControl extends ClassicPreset.Control {
     super();
   }
 }
+
+export class ExecutionControl extends ClassicPreset.Control {
+  constructor(public execution: string) {
+    super();
+  }
+}

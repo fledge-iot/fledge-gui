@@ -50,11 +50,11 @@ export class CustomNodeComponent implements OnChanges {
   task = {
     name: "",
     day: "",
-    enabled: "",
+    enabled: false,
     exclusive: "",
     execution: "",
     id: "",
-    plugin: { name: "", version: "" },
+    plugin: "",
     processName: "",
     repeat: "",
     sent: "",
@@ -114,15 +114,16 @@ export class CustomNodeComponent implements OnChanges {
         this.isServiceNode = true;
         if (this.from == 'north') {
           if (!isEmpty(this.data.controls)) {
-            this.service.name = this.data.controls.nameControl['name'];
-            this.service.pluginName = this.data.controls.pluginControl['plugin'];
-            this.service.readingCount = this.data.controls.sentReadingControl['sent'];
-            this.service.schedule_enabled = this.data.controls.enabledControl['enabled'];
-            if (this.service.schedule_enabled === true) {
+            this.task.name = this.service.name = this.data.controls.nameControl['name'];
+            this.task.plugin = this.service.pluginName = this.data.controls.pluginControl['plugin'];
+            this.task.sent = this.service.readingCount = this.data.controls.sentReadingControl['sent'];
+            this.task.execution = this.data.controls.executionControl['execution'];
+            this.task.enabled = this.data.controls.enabledControl['enabled'];
+            if (this.task.enabled === true) {
               this.isEnabled = true;
             }
-            this.helpText = this.service.pluginName;
-            this.pluginName = this.service.pluginName;
+            this.helpText = this.task.plugin;
+            this.pluginName = this.task.plugin;
           }
         } else {
           if (!isEmpty(this.data.controls)) {
