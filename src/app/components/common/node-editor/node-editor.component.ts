@@ -415,7 +415,7 @@ export class NodeEditorComponent implements OnInit {
       .subscribe((data: any) => {
         this.toastService.success(data.result);
         setTimeout(() => {
-          this.router.navigate(['/flow/editor', this.from, this.service.name, 'details']);
+          this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
         }, 1000);
       },
         (error) => {

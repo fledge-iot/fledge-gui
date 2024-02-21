@@ -332,7 +332,7 @@ export function getUpdatedFilterPipeline() {
     let connlist = connections.filter(c => c.source === sourceNode.id);
     if (connlist.length === 1) {
       let filterNode = editor.getNode(connlist[0].target);
-      if (filterNode.label !== "Storage") {
+      if (filterNode.label !== "Storage" && filterNode.label != 'North') {
         updatedFilterPipeline.push(filterNode.label);
       }
       sourceNode = filterNode;
@@ -345,7 +345,7 @@ export function getUpdatedFilterPipeline() {
           updatedFilterPipeline.push(branch);
         }
         else {
-          if (node.label !== "Storage") {
+          if (node.label !== "Storage" && node.label != 'North') {
             updatedFilterPipeline.push(node.label);
           }
           sourceNode = node;

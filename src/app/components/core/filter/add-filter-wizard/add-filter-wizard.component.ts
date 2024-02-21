@@ -73,10 +73,8 @@ export class AddFilterWizardComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private cdRef: ChangeDetectorRef) {
-    this.activatedRoute.queryParams.subscribe(params => {
-      if (params['source']) {
-        this.source = params['source'];
-      }
+    this.activatedRoute.params.subscribe(params => {
+      this.source = params.name;
     });
   }
 
@@ -432,7 +430,6 @@ export class AddFilterWizardComponent implements OnInit {
               this.replaceFilterNameInPipeline(data.filter);
               this.updateFilterPipeline({ 'pipeline': this.updatedFilterPipeline, files }, data.filter);
               console.log(this.updatedFilterPipeline)
-              // this.router.navigate(['/south/flow'], { queryParams: { source: this.serviceName } });
               this.router.navigate(['/flow/editor', this.from, this.serviceName, 'details']);
             }
             else {
