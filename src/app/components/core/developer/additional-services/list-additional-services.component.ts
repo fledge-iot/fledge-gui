@@ -1,7 +1,6 @@
-import { Component, OnInit, Input, Output, ViewChild, EventEmitter, OnDestroy, QueryList, ViewChildren } from '@angular/core';
-import { forkJoin } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, ViewChild, EventEmitter, OnDestroy, QueryList, ViewChildren } from '@angular/core';
+import { forkJoin, timer, of, Subscription } from 'rxjs';
+import { concatMap, delayWhen, retryWhen, take, tap, map } from 'rxjs/operators';
 
 import { AlertService, ProgressBarService, RolesService, ServicesApiService, SchedulesService, ResponseHandler } from '../../../../services';
 import { SharedService } from '../../../../services/shared.service';
@@ -321,6 +320,8 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   stateUpdate() {
     if (["shutdown", "disabled"].includes(this.service.state)) {
         this.additionalServicesUtils.enableService(this.service.name);
+        // enabling service takes time to get the updated state from API
+        this.getUpdatedSate();
     } else {
       this.additionalServicesUtils.disableService(this.service.name);
     }
@@ -328,6 +329,54 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.closeModal('confirmation-dialog');
     this.closeServiceModal();
     this.getData();
+  }
+
+  getUpdatedSate() {
+    let i = 1;
+    const initialDelay = 1000;
+    this.servicesApiService.getServiceByType(this.service.type)
+      .pipe(
+        take(1),
+        // checking the response object for service.
+        // if pacakge.status !== 'running' then
+        // throw an error to re-fetch:
+        tap((response: any) => {
+          if (response['services'][0].status !== 'running') {
+            i++;
+            throw response;
+          }
+        }),
+        retryWhen(result =>
+          result.pipe(
+            // only if a server returned an error, stop trying and pass the error down
+            tap(serviceStatus => {
+              if (serviceStatus.error) {
+                this.ngProgress.done();
+                this.reenableButton.emit(false);
+                throw serviceStatus.error;
+              }
+            }),
+            delayWhen(() => {
+              const delay = i * initialDelay;
+              console.log(new Date().toLocaleString(), `retrying after ${delay} msec...`);             
+              return timer(delay);
+            }), // delay between api calls
+            // Set the number of attempts.
+            take(3),
+            // Throw error after exceed number of attempts
+            concatMap(o => {
+              if (i > 3) {
+                this.ngProgress.done();
+                this.reenableButton.emit(false);   
+                return;
+              }
+              return of(o);
+            }),
+          ))
+      ).subscribe(() => {
+        this.ngProgress.done();
+        this.reenableButton.emit(false);
+      });
   }
 
   setService(service) {
