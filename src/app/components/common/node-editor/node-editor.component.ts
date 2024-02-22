@@ -21,7 +21,8 @@ import { FlowEditorService } from './flow-editor.service';
 import { cloneDeep, isEmpty } from 'lodash';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import { NorthTask } from '../../core/north/north-task';
-import { POLLING_INTERVAL } from '../../../utils';
+import Utils, { POLLING_INTERVAL } from '../../../utils';
+import { TaskScheduleComponent } from '../../core/north/task-schedule/task-schedule.component';
 
 @Component({
   selector: 'app-node-editor',
@@ -40,11 +41,13 @@ export class NodeEditorComponent implements OnInit {
   public filterCategory: any;
   private subscription: Subscription;
   private filterSubscription: Subscription;
+  private taskSubscription: Subscription;
   private connectionSubscription: Subscription;
   private serviceSubscription: Subscription;
 
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
+  showTaskSchedule: boolean = false;
   showLogs: boolean = false;
   service: Service;
   task: NorthTask;
@@ -70,6 +73,9 @@ export class NodeEditorComponent implements OnInit {
   quickviewFilterName = "";
   isAddFilterWizard: boolean = false;
   isAlive: boolean;
+
+  taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };
+  @ViewChild('taskScheduleComponent') taskScheduleComponent: TaskScheduleComponent;
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -116,6 +122,7 @@ export class NodeEditorComponent implements OnInit {
       this.showPluginConfiguration = data.showPluginConfiguration;
       this.showFilterConfiguration = data.showFilterConfiguration;
       this.showLogs = data.showLogs;
+      this.showTaskSchedule = data.showTaskSchedule;
       this.serviceName = data.serviceName;
       if (this.showPluginConfiguration) {
         this.getCategory();
@@ -126,7 +133,23 @@ export class NodeEditorComponent implements OnInit {
         this.quickviewFilterName = data.filterName;
         this.getFilterCategory()
       }
-    })
+    });
+
+    this.taskSubscription = this.flowEditorService.taskInfo.pipe(skip(1)).subscribe(name => {
+      const task = this.tasks.find(t => t.name == name);
+      const repeatInterval = Utils.secondsToDhms(task.repeat);
+      this.taskSchedule = {
+        id: task.id,
+        name: task.name,
+        exclusive: task.exclusive,
+        repeatDays: repeatInterval.days,
+        repeatTime: repeatInterval.time
+      }
+      if (task) {
+        this.taskScheduleComponent.openModal('update-task-schedule-dialog');
+      }
+    });
+
     this.filterSubscription = this.flowEditorService.filterInfo.pipe(skip(1)).subscribe(data => {
       if (data.name !== "newPipelineFilter") {
         this.openModal('delete-filter-dialog');
@@ -198,7 +221,7 @@ export class NodeEditorComponent implements OnInit {
         this.ngProgress.start();
         forkJoin(this.initialApiCallsStack)
           .pipe(mergeMap(res => {
-            // Retry GET tasks call when task as a service created.It take times to populate in the GET tasks response
+            // Retry GET tasks call when task as a service created. Service takes time to populate in the GET tasks response
             if (this.source && this.from == 'north') {
               const tasks = res[0]['tasks'];
               isServiceExist = tasks?.some(t => (t.name == this.source));
@@ -276,8 +299,6 @@ export class NodeEditorComponent implements OnInit {
           from: this.from,
           source: this.source,
           filterPipeline: this.filterPipeline,
-          service: this.service,
-          services: this.services,
           task: this.task,
           tasks: this.tasks,
           filterConfigurations: this.filterConfigurations,
@@ -305,8 +326,6 @@ export class NodeEditorComponent implements OnInit {
           filterPipeline: this.filterPipeline,
           service: this.service,
           services: services,
-          task: this.task,
-          tasks: this.tasks,
           filterConfigurations: this.filterConfigurations,
         }
         // refresh node data
@@ -668,6 +687,7 @@ export class NodeEditorComponent implements OnInit {
   }
 
   ngOnDestroy() {
+    this.taskSubscription.unsubscribe();
     this.subscription.unsubscribe();
     this.filterSubscription.unsubscribe();
     this.connectionSubscription.unsubscribe();

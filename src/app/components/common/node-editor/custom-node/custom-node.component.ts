@@ -304,6 +304,10 @@ export class CustomNodeComponent implements OnChanges {
     }
   }
 
+  openTaskSchedule() {
+    this.flowEditorService.taskInfo.next(this.task.name)
+  }
+
   openServiceDetails() {
     this.router.navigate(['/flow/editor', this.from, this.service.name, 'details']);
   }

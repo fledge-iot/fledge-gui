@@ -41,7 +41,8 @@ const routes: Routes = [
 
 
 @NgModule({
-  declarations: [NodeEditorComponent,
+  declarations: [
+    NodeEditorComponent,
     CustomNodeComponent,
     CustomSocketComponent,
     CustomConnectionComponent,

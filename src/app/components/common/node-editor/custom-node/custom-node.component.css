@@ -75,13 +75,9 @@
   display: inline-block;
 }
 
-.config-gear {
-  vertical-align: top;
+.btn-icon {
   background: none;
   border: none;
-  padding-bottom: 0px !important;
-  font-size: 14px;
-  z-index: 999;
 }
 
 .add-btn {
