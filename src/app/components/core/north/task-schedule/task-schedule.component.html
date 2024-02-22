@@ -1,50 +1,78 @@
-<app-confirmation-dialog id="update-task-schedule-dialog" *ngIf="rolesService.hasEditPermissions()">
-  <header class="modal-card-head">
-    <span class="modal-card-title is-size-6">{{taskSchedule?.name}}</span>
-    <button class="delete" aria-label="close" (click)="closeModal('update-task-schedule-dialog')"></button>
-  </header>
-  <section class="modal-card-body">
-    <ng-container>
-      <form #f="ngForm">
-        <div class="field is-horizontal">
-          <div class="field-label has-text-left">
-            <label class="label">Exclusive</label>
-          </div>
-          <div class="field-body">
-            <div class="field">
-              <input class="checkbox" name="exclusive" type="checkbox" [checked]="taskSchedule.exclusive"
-                [(ngModel)]="taskSchedule.exclusive" [disabled]="!rolesService.hasEditPermissions()">
+<div class="container is-fluid">
+  <nav aria-label="breadcrumbs" class="breadcrumb">
+    <ul>
+      <li class="is-active"><a>{{taskSchedule.name}}</a></li>
+      <li class="is-active"><a href="#" aria-current="page">Task Schedule</a></li>
+    </ul>
+  </nav>
+  <div class="section px-0 py-5">
+    <div class="columns">
+      <div class="column">
+        <form #f="ngForm">
+          <div class="field is-horizontal">
+            <div class="field-label has-text-left">
+              <label class="label">Interval
+                <span class="tooltip has-tooltip-right has-tooltip-arrow"
+                  data-tooltip="Repeat every n (0-365) days/HH:mm:ss hours">
+                  <i class="far fa-xs fa-question-circle"></i>
+                </span>
+              </label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="columns">
+                  <div class="column is-one-quarter">
+                    <input #repeatDays="ngModel" name="repeatDays" class="input is-small"
+                      [ngClass]="{'is-static': !rolesService.hasEditPermissions()}" type='number' appNumberOnly min="0"
+                      max="365" placeholder="days" [(ngModel)]="taskSchedule.repeatDays"
+                      [readOnly]="!rolesService.hasEditPermissions()">
+
+                  </div>
+                  <div class="column">
+                    <input #repeatTime="ngModel" class="input is-small"
+                      [ngClass]="{'is-static': !rolesService.hasEditPermissions()}" name="repeatTime" type="text"
+                      [pattern]='regExp' placeholder="HH:mm:ss" mask="00:00:00" [(ngModel)]="taskSchedule.repeatTime"
+                      required (change)="getTimeIntervalValue($event)" [readOnly]="!rolesService.hasEditPermissions()">
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <span *ngIf="repeatDays.invalid" class="help is-danger">
+                  <sup>*</sup>Repeat days must be in range 0 - 365.
+                </span>
+                <span *ngIf="repeatTime.invalid" class="help is-danger">
+                  <sup>*</sup>Repeat hours must be in range 00:00:00 - 23:59:59.
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="field is-horizontal">
-          <div class="field-label has-text-left">
-            <label class="label">Interval</label>
-          </div>
-          <div class="field-body">
-            <div class="field">
-              <input name="repeatDays" class="input is-small"
-                [ngClass]="{'is-static': !rolesService.hasEditPermissions()}" type='number' appNumberOnly min="0"
-                max="365" placeholder="days" [(ngModel)]="taskSchedule.repeatDays"
-                [readOnly]="!rolesService.hasEditPermissions()">
+          <div class="field is-horizontal">
+            <div class="field-label has-text-left">
+              <label class="label">Exclusive</label>
             </div>
-            <div class="field">
-              <input #repeatTime="ngModel" class="input is-small"
-                [ngClass]="{'is-static': !rolesService.hasEditPermissions()}" name="repeatTime" type="text"
-                [pattern]='regExp' placeholder="HH:mm:ss" mask="00:00:00" [(ngModel)]="taskSchedule.repeatTime" required
-                (change)="getTimeIntervalValue($event)" [readOnly]="!rolesService.hasEditPermissions()">
-              <span *ngIf="repeatTime.invalid" class="help is-danger">
-                <sup>*</sup>Repeat hours must be in range 00:00:00 - 23:59:59.
-              </span>
+            <div class="field-body">
+              <div class="field">
+                <input class="checkbox" name="exclusive" type="checkbox" [checked]="taskSchedule.exclusive"
+                  [(ngModel)]="taskSchedule.exclusive" [disabled]="!rolesService.hasEditPermissions()">
+              </div>
             </div>
           </div>
-        </div>
-      </form>
-    </ng-container>
-  </section>
-  <footer class="modal-card-foot">
-    <button class="button is-small" (click)="closeModal('update-task-schedule-dialog')">Cancel</button>
-    <button class="button is-small is-link" type="button" (click)="updateTaskSchedule(f.value)"
-      [appDisableUntilResponse]="reenableButton">Save</button>
-  </footer>
-</app-confirmation-dialog>
+
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <!-- Left empty for spacing -->
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <button [disabled]="f.invalid || !f.dirty" class="button is-small is-link" type="button"
+                    (click)="updateTaskSchedule(f.value)" [appDisableUntilResponse]="reenableButton">Save</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -305,7 +305,7 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   openTaskSchedule() {
-    this.flowEditorService.taskInfo.next(this.task.name)
+    this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: false, showFilterConfiguration: false, showLogs: false, showTaskSchedule: true, serviceName: this.service.name });
   }
 
   openServiceDetails() {

@@ -41,12 +41,20 @@
         (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
       <div class="container is-fluid">
         <div class="columns" *ngIf="rolesService.hasEditPermissions()">
+          <div class="column is-one-fifth"></div>
           <div class="column">
-            <div class="field is-grouped is-pulled-left">
-              <p class="control">
-                <button [disabled]="checkFormState()" [appDisableUntilResponse]="reenableButton"
-                  class="button is-small is-link ml-4" (click)="saveConfiguration()">Save</button>
-              </p>
+            <div class="field is-horizontal">
+              <div class="field-label mr-0">
+                <!-- Left empty for spacing -->
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control">
+                    <button [disabled]="checkFormState()" [appDisableUntilResponse]="reenableButton"
+                      class="button is-small is-link ml-4" (click)="saveConfiguration()">Save</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -59,12 +67,20 @@
       </app-configuration-group>
       <div class="container is-fluid">
         <div class="columns" *ngIf="rolesService.hasEditPermissions()">
+          <div class="column is-one-fifth"></div>
           <div class="column">
-            <div class="field is-grouped is-pulled-left">
-              <p class="control">
-                <button [disabled]="checkFilterFormState()" [appDisableUntilResponse]="reenableButton"
-                  class="button is-small is-link ml-4" (click)="saveFilterConfiguration()">Save</button>
-              </p>
+            <div class="field is-horizontal">
+              <div class="field-label mr-0">
+                <!-- Left empty for spacing -->
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control">
+                    <button [disabled]="checkFilterFormState()" [appDisableUntilResponse]="reenableButton"
+                      class="button is-small is-link ml-4" (click)="saveFilterConfiguration()">Save</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -72,6 +88,9 @@
     </ng-container>
     <ng-container *ngIf="showLogs">
       <app-system-log [sourceName]="serviceName"></app-system-log>
+    </ng-container>
+    <ng-container *ngIf="showTaskSchedule">
+      <app-task-schedule [taskSchedule]="taskSchedule"></app-task-schedule>
     </ng-container>
   </app-quickview>
 </div>
@@ -107,4 +126,4 @@
       [appDisableUntilResponse]="reenableButton">Delete</button>
   </footer>
 </app-confirmation-dialog>
-<app-task-schedule #taskScheduleComponent [taskSchedule]="taskSchedule"></app-task-schedule>
+<!-- <app-task-schedule #taskScheduleComponent [taskSchedule]="taskSchedule"></app-task-schedule> -->

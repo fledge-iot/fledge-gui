@@ -22,7 +22,6 @@ import { cloneDeep, isEmpty } from 'lodash';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import { NorthTask } from '../../core/north/north-task';
 import Utils, { POLLING_INTERVAL } from '../../../utils';
-import { TaskScheduleComponent } from '../../core/north/task-schedule/task-schedule.component';
 
 @Component({
   selector: 'app-node-editor',
@@ -41,13 +40,13 @@ export class NodeEditorComponent implements OnInit {
   public filterCategory: any;
   private subscription: Subscription;
   private filterSubscription: Subscription;
-  private taskSubscription: Subscription;
   private connectionSubscription: Subscription;
   private serviceSubscription: Subscription;
 
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
   showLogs: boolean = false;
+  showTaskSchedule = false;
   service: Service;
   task: NorthTask;
   services: Service[] = [];
@@ -74,7 +73,6 @@ export class NodeEditorComponent implements OnInit {
   isAlive: boolean;
 
   taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };
-  @ViewChild('taskScheduleComponent') taskScheduleComponent: TaskScheduleComponent;
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -121,30 +119,25 @@ export class NodeEditorComponent implements OnInit {
       this.showPluginConfiguration = data.showPluginConfiguration;
       this.showFilterConfiguration = data.showFilterConfiguration;
       this.showLogs = data.showLogs;
+      this.showTaskSchedule = data.showTaskSchedule;
       this.serviceName = data.serviceName;
       if (this.showPluginConfiguration) {
         this.getCategory();
       }
-      if (this.showLogs) {
+      if (this.showTaskSchedule) {
+        const task = this.tasks.find(t => t.name == data.serviceName);
+        const repeatInterval = Utils.secondsToDhms(task.repeat);
+        this.taskSchedule = {
+          id: task.id,
+          name: task.name,
+          exclusive: task.exclusive,
+          repeatDays: repeatInterval.days,
+          repeatTime: repeatInterval.time
+        }
       }
       if (this.showFilterConfiguration) {
         this.quickviewFilterName = data.filterName;
         this.getFilterCategory()
-      }
-    });
-
-    this.taskSubscription = this.flowEditorService.taskInfo.pipe(skip(1)).subscribe(name => {
-      const task = this.tasks.find(t => t.name == name);
-      const repeatInterval = Utils.secondsToDhms(task.repeat);
-      this.taskSchedule = {
-        id: task.id,
-        name: task.name,
-        exclusive: task.exclusive,
-        repeatDays: repeatInterval.days,
-        repeatTime: repeatInterval.time
-      }
-      if (task) {
-        this.taskScheduleComponent.openModal('update-task-schedule-dialog');
       }
     });
 
@@ -685,7 +678,6 @@ export class NodeEditorComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.taskSubscription.unsubscribe();
     this.subscription.unsubscribe();
     this.filterSubscription.unsubscribe();
     this.connectionSubscription.unsubscribe();

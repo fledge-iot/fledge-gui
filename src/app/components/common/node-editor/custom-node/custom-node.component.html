@@ -24,7 +24,8 @@
                 </span>
               </button>
               <ng-container *ngIf="task.execution === 'task'">
-                <button class="btn btn-icon p-0" type="button" (click)="openTaskSchedule()">
+                <button class="btn btn-icon p-0" type="button" data-show="quickview" data-target="quickviewDefault"
+                  data-toggle="quickview" (click)="openTaskSchedule()">
                   <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Task Schedule">
                     <i class="bi bi-calendar2-week bi-xs"></i>
                   </span>

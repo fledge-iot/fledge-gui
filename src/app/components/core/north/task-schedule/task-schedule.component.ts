@@ -1,8 +1,8 @@
 
-import { Component, EventEmitter, Input } from '@angular/core';
+import { Component, EventEmitter, Input, ViewChild } from '@angular/core';
 import { AlertService, ProgressBarService, RolesService, SchedulesService } from '../../../../services';
-import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import Utils from '../../../../utils';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-task-schedule',
@@ -10,25 +10,17 @@ import Utils from '../../../../utils';
   styleUrls: ['./task-schedule.component.css']
 })
 export class TaskScheduleComponent {
-
   @Input() taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };
   public reenableButton = new EventEmitter<boolean>(false);
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
+  @ViewChild('fg') ngForm: NgForm;
   constructor(
     public rolesService: RolesService,
-    private dialogService: DialogService,
     private schedulesService: SchedulesService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
   ) { }
 
-  openModal(id: string) {
-    this.dialogService.open(id);
-  }
-
-  closeModal(id: string) {
-    this.dialogService.close(id);
-  }
 
   getTimeIntervalValue(event) {
     this.taskSchedule.repeatTime = event.target.value;
@@ -51,7 +43,8 @@ export class TaskScheduleComponent {
           this.reenableButton.emit(false)
           this.alertService.success('Schedule updated successfully', true);
           this.ngProgress.done();
-          this.closeModal('update-task-schedule-dialog');
+          this.ngForm.form.markAsUntouched();
+
         },
         error => {
           this.reenableButton.emit(false);
@@ -62,7 +55,6 @@ export class TaskScheduleComponent {
           } else {
             this.alertService.error(error.statusText, true);
           }
-          this.closeModal('update-task-schedule-dialog');
         });
   }
 }
