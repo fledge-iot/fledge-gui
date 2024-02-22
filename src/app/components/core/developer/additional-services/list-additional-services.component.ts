@@ -118,7 +118,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.showServices();
   }
 
-  showServices(from = null) {
+  showServices() {
     let callsStack = {
       services: this.servicesApiService.getAllServices(),
       schedules: this.schedulesService.getSchedules(),
@@ -145,7 +145,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
           this.getInstalledServices(installed["services"]);
           this.getAvaiableServices(available["services"]);
 
-          let installedServicePkgsNames = []
+          let installedServicePkgsNames = [];
           this.installedServicePkgs.forEach(function (s) {
             installedServicePkgsNames.push(s["package"]);
           });
@@ -153,13 +153,6 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
           // Remove service name from available list if it is already installed
           this.availableServicePkgs = this.availableServicePkgs.filter((s) => !installedServicePkgsNames.includes(s.package));
           this.hideLoadingText();
-          if (from !== null) {
-            let service = this.installedServicePkgs.find((s) => s.process === from);
-            if (!service) {
-              service = this.availableServicePkgs.find((s) => s.process === from);
-            }
-            this.openServiceModal(service);
-          }
           return result;
         })
       )
@@ -324,11 +317,8 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
         this.getUpdatedSate();
     } else {
       this.additionalServicesUtils.disableService(this.service.name);
+      this.afterStateUpdate();  
     }
-    this.reenableButton.emit(false);
-    this.closeModal('confirmation-dialog');
-    this.closeServiceModal();
-    this.getData();
   }
 
   getUpdatedSate() {
@@ -352,7 +342,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
             tap(serviceStatus => {
               if (serviceStatus.error) {
                 this.ngProgress.done();
-                this.reenableButton.emit(false);
+                this.afterStateUpdate();
                 throw serviceStatus.error;
               }
             }),
@@ -367,7 +357,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
             concatMap(o => {
               if (i > 3) {
                 this.ngProgress.done();
-                this.reenableButton.emit(false);   
+                this.afterStateUpdate(); 
                 return;
               }
               return of(o);
@@ -375,8 +365,15 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
           ))
       ).subscribe(() => {
         this.ngProgress.done();
-        this.reenableButton.emit(false);
+        this.afterStateUpdate();
       });
+  }
+
+  afterStateUpdate() {
+    this.reenableButton.emit(false);
+    this.closeModal('confirmation-dialog');
+    this.closeServiceModal();
+    this.getData();
   }
 
   setService(service) {
