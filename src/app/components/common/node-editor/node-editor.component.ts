@@ -47,7 +47,6 @@ export class NodeEditorComponent implements OnInit {
 
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
-  showTaskSchedule: boolean = false;
   showLogs: boolean = false;
   service: Service;
   task: NorthTask;
@@ -122,7 +121,6 @@ export class NodeEditorComponent implements OnInit {
       this.showPluginConfiguration = data.showPluginConfiguration;
       this.showFilterConfiguration = data.showFilterConfiguration;
       this.showLogs = data.showLogs;
-      this.showTaskSchedule = data.showTaskSchedule;
       this.serviceName = data.serviceName;
       if (this.showPluginConfiguration) {
         this.getCategory();
