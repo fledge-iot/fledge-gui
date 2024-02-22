@@ -21,7 +21,7 @@
       </ul>
     </nav>
     <ng-container *ngIf="source && rolesService.hasEditPermissions() && !isAddFilterWizard">
-      <button class="button is-small is-link" (click)="save()">Save</button>
+      <button class="button is-small is-link mb-1" (click)="save()">Save</button>
     </ng-container>
   </div>
   <ng-container *ngIf="!isAddFilterWizard">
@@ -39,13 +39,15 @@
         (changedConfigEvent)="getChangedConfig($event)"
         (changedAdvanceConfigEvent)="getChangedAdvanceConfiguration($event)"
         (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
-      <div class="columns" *ngIf="rolesService.hasEditPermissions()">
-        <div class="column">
-          <div class="field is-grouped is-pulled-right">
-            <p class="control">
-              <button [disabled]="checkFormState()" [appDisableUntilResponse]="reenableButton"
-                class="button is-small is-link" (click)="saveConfiguration()">Save</button>
-            </p>
+      <div class="container is-fluid">
+        <div class="columns" *ngIf="rolesService.hasEditPermissions()">
+          <div class="column">
+            <div class="field is-grouped is-pulled-left">
+              <p class="control">
+                <button [disabled]="checkFormState()" [appDisableUntilResponse]="reenableButton"
+                  class="button is-small is-link ml-4" (click)="saveConfiguration()">Save</button>
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -55,13 +57,15 @@
         [categoryType]="'filter'" (changedConfigEvent)="getChangedFilterConfig($event)"
         (formStatusEvent)="validFilterConfigForm = $event">
       </app-configuration-group>
-      <div class="columns" *ngIf="rolesService.hasEditPermissions()">
-        <div class="column">
-          <div class="field is-grouped is-pulled-right">
-            <p class="control">
-              <button [disabled]="checkFilterFormState()" [appDisableUntilResponse]="reenableButton"
-                class="button is-small is-link" (click)="saveFilterConfiguration()">Save</button>
-            </p>
+      <div class="container is-fluid">
+        <div class="columns" *ngIf="rolesService.hasEditPermissions()">
+          <div class="column">
+            <div class="field is-grouped is-pulled-left">
+              <p class="control">
+                <button [disabled]="checkFilterFormState()" [appDisableUntilResponse]="reenableButton"
+                  class="button is-small is-link ml-4" (click)="saveFilterConfiguration()">Save</button>
+              </p>
+            </div>
           </div>
         </div>
       </div>

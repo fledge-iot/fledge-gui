@@ -2,8 +2,8 @@ import { ClassicPreset } from "rete";
 
 
 export class AddService extends ClassicPreset.Node {
-  height = 110;
-  width = 220;
+  height = 100;
+  width = 200;
   parent?: string;
 
   constructor() {

@@ -80,6 +80,11 @@
   border: none;
 }
 
+.checkbox {
+  line-height: 0px !important;
+  align-self: center;
+}
+
 .add-btn {
   vertical-align: top;
   background: none;
@@ -123,7 +128,7 @@
 }
 
 .storage-input {
-  margin-top: 2px;
+  margin-top: 16px;
 }
 
 .health-icon {
@@ -171,4 +176,9 @@
 .north-storage-icon {
   margin-top: 4px;
   margin-left: 30px;
+}
+
+.south-storage-icon{
+  margin-top: 4px;
+  margin-left: 10px;
 }
