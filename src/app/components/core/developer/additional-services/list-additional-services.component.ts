@@ -1,7 +1,6 @@
-import { Component, OnInit, Input, Output, ViewChild, EventEmitter, OnDestroy, QueryList, ViewChildren } from '@angular/core';
-import { forkJoin } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, ViewChild, EventEmitter, OnDestroy, QueryList, ViewChildren } from '@angular/core';
+import { forkJoin, timer, of, Subscription } from 'rxjs';
+import { concatMap, delayWhen, retryWhen, take, tap, map } from 'rxjs/operators';
 
 import { AlertService, ProgressBarService, RolesService, ServicesApiService, SchedulesService, ResponseHandler } from '../../../../services';
 import { SharedService } from '../../../../services/shared.service';
@@ -9,6 +8,7 @@ import { DialogService } from '../../../common/confirmation-dialog/dialog.servic
 import { AdditionalServiceModalComponent } from './additional-service-modal/additional-service-modal.component';
 import { AdditionalServicesContextMenuComponent } from './additional-services-context-menu/additional-services-context-menu.component';
 import { AvailableServices, Schedule, Service } from '../../../../models';
+import { AdditionalServicesUtils } from './additional-services-utils.service';
 
 @Component({
   selector: "app-list-additional-services",
@@ -71,10 +71,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   public reenableButton = new EventEmitter<boolean>(false);
   @ViewChild(AdditionalServiceModalComponent, { static: true }) serviceModal: AdditionalServiceModalComponent;
   @ViewChildren(AdditionalServicesContextMenuComponent) contextMenus: QueryList<AdditionalServicesContextMenuComponent>;
-
-  @Input() navigateFromParent: string;
-  @Output() notify: EventEmitter<any> = new EventEmitter<any>();
-
+  
   constructor(
     public sharedService: SharedService,
     private alertService: AlertService,
@@ -83,8 +80,9 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     public servicesApiService: ServicesApiService,
     public rolesService: RolesService,
     public schedulesService: SchedulesService,
-    private response: ResponseHandler
-  ) { }
+    private response: ResponseHandler,
+    private additionalServicesUtils: AdditionalServicesUtils,
+  ) {}
 
   ngOnInit() {
     this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
@@ -117,12 +115,10 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
 
     });
     this.showLoadingText();
-    if (!this.navigateFromParent) {
-      this.showServices();
-    }
+    this.showServices();
   }
 
-  showServices(from = null) {
+  showServices() {
     let callsStack = {
       services: this.servicesApiService.getAllServices(),
       schedules: this.schedulesService.getSchedules(),
@@ -149,7 +145,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
           this.getInstalledServices(installed["services"]);
           this.getAvaiableServices(available["services"]);
 
-          let installedServicePkgsNames = []
+          let installedServicePkgsNames = [];
           this.installedServicePkgs.forEach(function (s) {
             installedServicePkgsNames.push(s["package"]);
           });
@@ -157,13 +153,6 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
           // Remove service name from available list if it is already installed
           this.availableServicePkgs = this.availableServicePkgs.filter((s) => !installedServicePkgsNames.includes(s.package));
           this.hideLoadingText();
-          if (from !== null) {
-            let service = this.installedServicePkgs.find((s) => s.process === from);
-            if (!service) {
-              service = this.availableServicePkgs.find((s) => s.process === from);
-            }
-            this.openServiceModal(service);
-          }
           return result;
         })
       )
@@ -248,10 +237,21 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   /**
     * Open Settings modal
     */
-  openServiceModal(service) {
+   openServiceModal(service) {
+    if (!service) {
+      this.alertService.warning('No package available to install');
+      return;
+    }
+    let availableService = this.availableServicePkgs.find(s => s.process === service.process);
+    if (availableService) {
+      service.isInstalled = false;
+    } else {
+      service.isInstalled = true;
+    }
+    service.isEnabled = ["shutdown", "disabled", "installed", ""].includes(service.state) ? false : true;
     this.serviceModal.toggleModal(true);
     this.setService(service);
-    this.serviceModal.getServiceInfo(service, this.availableServicePkgs, this.pollingScheduleID);
+    this.serviceModal.getServiceInfo(service, this.pollingScheduleID);
   }
 
   getData() {
@@ -261,85 +261,12 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     }, 3000);
   }
 
-  deleteService(serviceName, event = null) {
-    this.ngProgress.start();
-    this.servicesApiService.deleteService(serviceName).subscribe(
-      (data: any) => {
-        this.ngProgress.done();
-        this.reenableButton.emit(false);
-        this.alertService.success(data["result"], true);
-        this.closeModal("delete-confirmation-dialog");
-        this.closeServiceModal();
-        if (!this.navigateFromParent) {
-          this.getData();
-        }
-        this.notify.emit(event);
-      },
-      (error) => {
-        this.ngProgress.done();
-        this.reenableButton.emit(false);
-        this.notify.emit(event);
-        if (error.status === 0) {
-          console.log("service down ", error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      }
-    );
-  }
-
-  enableService(serviceName, event = null) {
-    this.ngProgress.start();
-    this.schedulesService.enableScheduleByName(serviceName).subscribe(
-      (data) => {
-        this.ngProgress.done();
-        this.reenableButton.emit(false);
-        this.alertService.success(data["message"], true);
-        this.closeModal('confirmation-dialog');
-        this.closeServiceModal();
-        if (!this.navigateFromParent) {
-          this.getData();
-        }
-        this.notify.emit(event);
-      },
-      (error) => {
-        this.ngProgress.done();
-        this.reenableButton.emit(false);
-        this.notify.emit(event);
-        if (error.status === 0) {
-          console.log("service down ", error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      }
-    );
-  }
-
-  disableService(serviceName, event = null) {
-    this.ngProgress.start();
-    this.schedulesService.disableScheduleByName(serviceName).subscribe(
-      (data) => {
-        this.ngProgress.done();
-        this.reenableButton.emit(false);
-        this.alertService.success(data["message"], true);
-        this.closeModal('confirmation-dialog');
-        this.closeServiceModal();
-        if (!this.navigateFromParent) {
-          this.getData();
-        }
-        this.notify.emit(event);
-      },
-      (error) => {
-        this.ngProgress.done();
-        this.reenableButton.emit(false);
-        this.notify.emit(event);
-        if (error.status === 0) {
-          console.log("service down ", error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      }
-    );
+  deleteService(serviceName) {
+    this.additionalServicesUtils.deleteService(serviceName);
+    this.reenableButton.emit(false);
+    this.closeModal('delete-confirmation-dialog');
+    this.closeServiceModal();
+    this.getData();
   }
 
   closeServiceModal() {
@@ -367,34 +294,6 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     }
   }
 
-  onNotifyEvent(event) {
-    if (event?.isCancelEvent) {
-      this.notify.emit(event);
-      return;
-    }
-    if (!event?.state) {
-      if (this.navigateFromParent) {
-        this.notify.emit(event);
-      } else {
-        this.getData();
-      }
-      return;
-    }
-    switch (event?.state) {
-      case 'delete':
-        this.deleteService(event.service, event);
-        break;
-      case 'disable':
-        this.disableService(event.service, event);
-        break;
-      case 'enable':
-        this.enableService(event.service, event);
-        break;
-      default:
-        break;
-    }
-  }
-
   public showLoadingText() {
     this.showLoading = true;
   }
@@ -413,10 +312,68 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
 
   stateUpdate() {
     if (["shutdown", "disabled"].includes(this.service.state)) {
-      this.enableService(this.service.name);
+        this.additionalServicesUtils.enableService(this.service.name);
+        // enabling service takes time to get the updated state from API
+        this.getUpdatedSate();
     } else {
-      this.disableService(this.service.name);
+      this.additionalServicesUtils.disableService(this.service.name);
+      this.afterStateUpdate();  
     }
+  }
+
+  getUpdatedSate() {
+    let i = 1;
+    const initialDelay = 1000;
+    this.servicesApiService.getServiceByType(this.service.type)
+      .pipe(
+        take(1),
+        // checking the response object for service.
+        // if pacakge.status !== 'running' then
+        // throw an error to re-fetch:
+        tap((response: any) => {
+          if (response['services'][0].status !== 'running') {
+            i++;
+            throw response;
+          }
+        }),
+        retryWhen(result =>
+          result.pipe(
+            // only if a server returned an error, stop trying and pass the error down
+            tap(serviceStatus => {
+              if (serviceStatus.error) {
+                this.ngProgress.done();
+                this.afterStateUpdate();
+                throw serviceStatus.error;
+              }
+            }),
+            delayWhen(() => {
+              const delay = i * initialDelay;
+              console.log(new Date().toLocaleString(), `retrying after ${delay} msec...`);             
+              return timer(delay);
+            }), // delay between api calls
+            // Set the number of attempts.
+            take(3),
+            // Throw error after exceed number of attempts
+            concatMap(o => {
+              if (i > 3) {
+                this.ngProgress.done();
+                this.afterStateUpdate(); 
+                return;
+              }
+              return of(o);
+            }),
+          ))
+      ).subscribe(() => {
+        this.ngProgress.done();
+        this.afterStateUpdate();
+      });
+  }
+
+  afterStateUpdate() {
+    this.reenableButton.emit(false);
+    this.closeModal('confirmation-dialog');
+    this.closeServiceModal();
+    this.getData();
   }
 
   setService(service) {

@@ -2,7 +2,7 @@
   <ul class="menu-list">
     <section [ngClass]="{'disabled':  !isServiceRunning}" (click)="toggleSideMenu(); $event.preventDefault()">
       <li>
-        
+
         <a id="dashboard" routerLinkActive="is-active" routerLink="/" [routerLinkActiveOptions]={exact:true}>
           <span><i class="bi bi-speedometer2 bi-sm"></i> </span>
           Dashboard
@@ -10,19 +10,21 @@
       </li>
       <li>
         <a id="asset" routerLinkActive="is-active" routerLink='/asset'>
-          <span><i class="bi bi-graph-up icon-sm"></i></span>
+          <span><i class="bi bi-graph-up bi-xs"></i></span>
           Assets &amp; Readings
         </a>
       </li>
       <article requiredViewEditorRole>
         <li>
-          <a id=" south" routerLinkActive="is-active" routerLink='/south'>
-            <span><i class="bi bi-pc-display-horizontal bi-sm"></i></span>
+          <a id=" south" routerLinkActive="is-active"
+            [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/south']: ['/south']">
+            <span><i class="bi bi-pc-display-horizontal  icon-sm"></i></span>
             South
           </a>
         </li>
         <li>
-          <a id="north" routerLinkActive="is-active" routerLink='/north'>
+          <a id="north" routerLinkActive="is-active"
+            [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/north']: ['/north']">
             <span><i class="bi bi-cloud-upload bi-sm"></i></span>
             North
           </a>
@@ -78,7 +80,7 @@
         </li>
         <li>
           <a id="schedules" routerLinkActive="is-active" routerLink='/schedules'>
-            <span><i class="bi bi-calendar3 icon-sm"></i></span>
+            <span><i class="bi bi-calendar2-week bi-xs schedules_icon"></i></span>
             Schedules
           </a>
         </li>
@@ -90,9 +92,8 @@
         </li>
         <li>
           <ng-container *ngFor="let mfe of microfrontends">
-            
-            <a *ngIf="mfe?.displayName" routerLinkActive="is-active"
-              [routerLink]="mfe.routePath">
+
+            <a *ngIf="mfe?.displayName" routerLinkActive="is-active" [routerLink]="mfe.routePath">
               <span *ngIf="mfe.displayName === 'ML Models'"><i class="bi bi-bucket bi-sm"></i></span>
               {{mfe.displayName}}</a>
           </ng-container>

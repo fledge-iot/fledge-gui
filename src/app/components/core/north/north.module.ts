@@ -34,7 +34,6 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     NorthComponent,
-    AddTaskWizardComponent,
     NorthTaskModalComponent
   ],
   imports: [

@@ -10,7 +10,8 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { APIFlow, User } from '../../../../../../src/app/models';
-import { ListAdditionalServicesComponent } from '../../developer/additional-services/list-additional-services.component';
+import { AdditionalServiceModalComponent } from '../../developer/additional-services/additional-service-modal/additional-service-modal.component';
+
 import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
@@ -20,7 +21,7 @@ import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-d
 })
 
 export class APIFlowComponent implements OnInit {
-  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
+  @ViewChild(AdditionalServiceModalComponent, { static: true }) additionalServiceModalComponent: AdditionalServiceModalComponent;
   @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
 
     apiFlows = [];
@@ -43,7 +44,8 @@ export class APIFlowComponent implements OnInit {
 
     public reenableButton = new EventEmitter<boolean>(false);
 
-    showConfigureModal: boolean = false;
+    showConfigureModal = false;
+    serviceInfo: {};
 
     constructor(
         private alertService: AlertService,
@@ -258,12 +260,21 @@ export class APIFlowComponent implements OnInit {
       this.addDispatcherServiceComponent.getInstalledServicesList();
     }
 
+    getServiceDetail(event) {
+      this.showConfigureModal = event.isOpen;
+      delete event.isOpen;
+      this.serviceInfo = event;
+      if (this.showConfigureModal) {
+        this.openServiceConfigureModal();
+      }
+    }
+
     /**
      * Open Configure Service modal
      */
     openServiceConfigureModal() {
-      this.showConfigureModal = true;
-      this.listAdditionalServicesComponent.showServices('dispatcher');
+      this.additionalServiceModalComponent.toggleModal(true);
+      this.additionalServiceModalComponent.getServiceInfo(this.serviceInfo, null, 'dispatcher');
     }
 
     closeModal(id: string) {
