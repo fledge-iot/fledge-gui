@@ -95,7 +95,6 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     const last = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = last.getAttribute('id');
     if (+id === 1) {
-      console.log('move previous');
       if (this.source) {
         this.router.navigate(['/flow/editor/south'])
       } else {

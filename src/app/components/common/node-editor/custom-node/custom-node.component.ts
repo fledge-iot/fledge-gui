@@ -119,9 +119,7 @@ export class CustomNodeComponent implements OnChanges {
             this.task.sent = this.service.readingCount = this.data.controls.sentReadingControl['sent'];
             this.task.execution = this.data.controls.executionControl['execution'];
             this.task.enabled = this.data.controls.enabledControl['enabled'];
-            if (this.task.enabled === true) {
-              this.isEnabled = true;
-            }
+            this.isEnabled = this.task.enabled;
             this.helpText = this.task.plugin;
             this.pluginName = this.task.plugin;
           }
@@ -133,9 +131,7 @@ export class CustomNodeComponent implements OnChanges {
             this.service.readingCount = this.data.controls.readingCountControl['count'];
             this.service.status = this.data.controls.statusControl['status'];
             this.service.schedule_enabled = this.data.controls.enabledControl['enabled'];
-            if (this.service.schedule_enabled === true) {
-              this.isEnabled = true;
-            }
+            this.isEnabled = this.service.schedule_enabled;
             this.helpText = this.service.pluginName;
             this.pluginName = this.service.pluginName;
           }
@@ -273,7 +269,7 @@ export class CustomNodeComponent implements OnChanges {
 
   goToLink() {
     if (this.isServiceNode) {
-      this.docService.goToPluginLink({ name: this.pluginName, type: 'South' });
+      this.docService.goToPluginLink({ name: this.pluginName, type: this.from });
     }
     else {
       this.docService.goToPluginLink({ name: this.pluginName, type: 'Filter' });

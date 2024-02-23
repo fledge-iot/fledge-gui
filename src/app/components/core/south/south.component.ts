@@ -144,7 +144,6 @@ export class SouthComponent implements OnInit, OnDestroy {
   }
 
   addSouthService() {
-    console.log('add service');
     this.router.navigate(['/south/add']);
   }
 
