@@ -269,11 +269,9 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
                 colorNumber = (colorNumber + 1) % (colors.length+1);
             }
         }
-        if (previousNode != plugin) {
-            await editor.addConnection(
-                new ClassicPreset.Connection(previousNode, "port", db, "port")
-            );
-        }
+        await editor.addConnection(
+            new ClassicPreset.Connection(previousNode, "port", db, "port")
+        );
         await arrange.layout();
         AreaExtensions.zoomAt(area, editor.getNodes());
     }
