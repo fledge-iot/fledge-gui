@@ -426,7 +426,7 @@ export class AddFilterWizardComponent implements OnInit {
             }
             this.notify.emit({ 'filter': payload.name, files });
           } else {
-            if (this.source) {
+            if (this.source && this.from) {
               this.replaceFilterNameInPipeline(data.filter);
               this.updateFilterPipeline({ 'pipeline': this.updatedFilterPipeline, files }, data.filter);
               console.log(this.updatedFilterPipeline)
