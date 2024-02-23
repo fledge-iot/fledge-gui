@@ -13,7 +13,7 @@ export class TaskScheduleComponent {
   @Input() taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };
   public reenableButton = new EventEmitter<boolean>(false);
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
-  @ViewChild('fg') ngForm: NgForm;
+  @ViewChild('f') scheduleForm: NgForm;
   constructor(
     public rolesService: RolesService,
     private schedulesService: SchedulesService,
@@ -43,7 +43,8 @@ export class TaskScheduleComponent {
           this.reenableButton.emit(false)
           this.alertService.success('Schedule updated successfully', true);
           this.ngProgress.done();
-          this.ngForm.form.markAsUntouched();
+          this.scheduleForm?.form.markAsPristine();
+          this.scheduleForm?.form.markAsUntouched();
 
         },
         error => {
