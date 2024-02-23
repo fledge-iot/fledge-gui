@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef, EventEmitter } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
@@ -31,6 +31,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   public isService = false;
   private subscription: Subscription;
   public taskType = 'North';
+  public source = '';
+
   // to hold child form state
   validConfigurationForm = true;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
@@ -59,6 +61,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     private schedulesService: SchedulesService,
     private router: Router,
+    private route: ActivatedRoute,
     private ngProgress: ProgressBarService,
     private sharedService: SharedService,
     private servicesApiService: ServicesApiService,
@@ -66,7 +69,13 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     private fileUploaderService: FileUploaderService,
     private configurationControlService: ConfigurationControlService,
     private cdRef: ChangeDetectorRef
-  ) { }
+  ) {
+    this.route.queryParams.subscribe(params => {
+      if (params['source']) {
+        this.source = params['source'];
+      }
+    });
+  }
 
   ngOnInit() {
     this.getSchedules();
@@ -89,7 +98,11 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     const last = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = last.getAttribute('id');
     if (+id === 1) {
-      this.router.navigate(['/north']);
+      if (this.source) {
+        this.router.navigate(['/flow/editor/north'])
+      } else {
+        this.router.navigate(['/north']);
+      }
       return;
     }
     last.classList.remove('is-active');
@@ -146,7 +159,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         nxtButton.textContent = 'Next';
         previousButton.textContent = 'Previous';
         previousButton.disabled = false;
-        
+
         // check if configuration form is valid or invalid
         this.validConfigurationForm ? nxtButton.disabled = false : nxtButton.disabled = true;
         break;
@@ -252,7 +265,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     this.ngProgress.start();
     this.schedulesService.createScheduledTask(payload)
       .subscribe(
-        () => {
+        (response) => {
           /** request completed */
           this.ngProgress.done();
           this.reenableButton.emit(false);
@@ -261,7 +274,12 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
             const name = payload.name;
             this.uploadScript(name, files);
           }
-          this.router.navigate(['/north']);
+          if (this.source === 'flowEditor') {
+            this.router.navigate(['/flow/editor/north', response['name'], 'details'])
+          }
+          else {
+            this.router.navigate(['/north']);
+          }
         },
         (error) => {
           /** request completed */
@@ -305,7 +323,12 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
             const name = payload.name
             this.uploadScript(name, files);
           }
-          this.router.navigate(['/north']);
+          if (this.source === 'flowEditor') {
+            this.router.navigate(['/flow/editor/north', response['name'], 'details']);
+          }
+          else {
+            this.router.navigate(['/north']);
+          }
         },
         (error) => {
           /** request done */

@@ -1,14 +1,22 @@
+import { isEmpty } from 'lodash';
 import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef } from "@angular/core";
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
-import { ConfigurationService, PingService, RolesService, SchedulesService, ServicesApiService, ToastService } from "./../../../../services";
+import {
+  ConfigurationService,
+  NorthService, PingService,
+  RolesService,
+  SchedulesService,
+  ServicesApiService,
+  ToastService
+} from "./../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
-import { Subject, Subscription, interval } from "rxjs";
-import { POLLING_INTERVAL } from "./../../../../utils";
-import { takeUntil, takeWhile } from "rxjs/operators";
+import { Subject, Subscription } from "rxjs";
+import { takeUntil } from "rxjs/operators";
 import { Service } from "./../../../core/south/south-service";
+import { NorthTask } from "../../../core/north/north-task";
 
 @Component({
   selector: 'app-custom-node',
@@ -25,10 +33,33 @@ export class CustomNodeComponent implements OnChanges {
   @Input() rendered!: () => void;
 
   seed = 0;
-  source = '';
+  source;
+  from = '';
   helpText = '';
   isEnabled: boolean = false;
-  service = { name: "", status: "", protocol: "", address: "", management_port: "", pluginName: "", assetCount: "", readingCount: "", schedule_enabled: 'false' }
+  service = {
+    name: "", status: "",
+    protocol: "",
+    address: "",
+    management_port: "",
+    pluginName: "",
+    assetCount: "",
+    readingCount: "",
+    schedule_enabled: false
+  }
+  task = {
+    name: "",
+    day: "",
+    enabled: false,
+    exclusive: "",
+    execution: "",
+    id: "",
+    plugin: "",
+    processName: "",
+    repeat: "",
+    sent: "",
+    taskStatus: {}
+  }
   filter = { pluginName: '', enabled: 'false', name: '', color: '' }
   isServiceNode: boolean = false;
   subscription: Subscription;
@@ -36,8 +67,8 @@ export class CustomNodeComponent implements OnChanges {
   pluginName = '';
   isFilterNode: boolean = false;
   destroy$: Subject<boolean> = new Subject<boolean>();
+  fetchedTask;
   fetchedService;
-  isAlive: boolean;
   showPlusIcon = false;
   nodeId = '';
 
@@ -47,6 +78,7 @@ export class CustomNodeComponent implements OnChanges {
 
   constructor(private cdr: ChangeDetectorRef,
     private schedulesService: SchedulesService,
+    private northService: NorthService,
     private docService: DocService,
     private router: Router,
     private route: ActivatedRoute,
@@ -57,11 +89,11 @@ export class CustomNodeComponent implements OnChanges {
     public rolesService: RolesService,
     private elRef: ElementRef,
     private ping: PingService) {
-    this.route.queryParams.subscribe(params => {
-      if (params['source']) {
-        this.source = params['source'];
-      }
+    this.route.params.subscribe(params => {
+      this.from = params.from;
+      this.source = params.name;
     });
+
     this.router.routeReuseStrategy.shouldReuseRoute = function () {
       return false;
     };
@@ -71,41 +103,39 @@ export class CustomNodeComponent implements OnChanges {
         this.router.navigated = false;
       }
     });
-    this.isAlive = true;
-    this.ping.pingIntervalChanged
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((timeInterval: number) => {
-        if (timeInterval === -1) {
-          this.isAlive = false;
-        }
-      });
   }
 
   ngOnChanges(): void {
     this.nodeId = this.data.id;
-    if (this.data.label === 'South') {
+    if (this.data.label === 'South' || this.data.label === 'North') {
       if (this.source !== '') {
-        this.elRef.nativeElement.style.borderColor = "#B6D7A8";
-        interval(POLLING_INTERVAL)
-          .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
-          .subscribe(() => {
-            this.getSouthboundServices();
-          });
         this.isServiceNode = true;
-
-        this.service.name = Object.keys(this.data.controls)[0];
-        this.service.pluginName = Object.keys(this.data.controls)[1].slice(6);
-        this.service.assetCount = Object.keys(this.data.controls)[2].slice(3);
-        this.service.readingCount = Object.keys(this.data.controls)[3].slice(3);
-        this.service.status = Object.keys(this.data.controls)[4];
-        this.service.schedule_enabled = Object.keys(this.data.controls)[5];
-
-        this.data.label = this.service.name;
-        if (this.service.schedule_enabled === 'true') {
-          this.isEnabled = true;
+        this.elRef.nativeElement.style.borderColor = this.data.label === 'South' ? "#B6D7A8" : '#C781BB'
+        this.isServiceNode = true;
+        if (this.from == 'north') {
+          if (!isEmpty(this.data.controls)) {
+            this.task.name = this.service.name = this.data.controls.nameControl['name'];
+            this.task.plugin = this.service.pluginName = this.data.controls.pluginControl['plugin'];
+            this.task.sent = this.service.readingCount = this.data.controls.sentReadingControl['sent'];
+            this.task.execution = this.data.controls.executionControl['execution'];
+            this.task.enabled = this.data.controls.enabledControl['enabled'];
+            this.isEnabled = this.task.enabled;
+            this.helpText = this.task.plugin;
+            this.pluginName = this.task.plugin;
+          }
+        } else {
+          if (!isEmpty(this.data.controls)) {
+            this.service.name = this.data.controls.nameControl['name']
+            this.service.pluginName = this.data.controls.pluginControl['plugin'];
+            this.service.assetCount = this.data.controls.assetCountControl['count'];
+            this.service.readingCount = this.data.controls.readingCountControl['count'];
+            this.service.status = this.data.controls.statusControl['status'];
+            this.service.schedule_enabled = this.data.controls.enabledControl['enabled'];
+            this.isEnabled = this.service.schedule_enabled;
+            this.helpText = this.service.pluginName;
+            this.pluginName = this.service.pluginName;
+          }
         }
-        this.helpText = this.service.pluginName;
-        this.pluginName = this.service.pluginName;
       }
       else {
         this.elRef.nativeElement.style.borderColor = "#EA9999";
@@ -114,10 +144,10 @@ export class CustomNodeComponent implements OnChanges {
     }
     if (this.data.label === 'Filter') {
       this.isFilterNode = true;
-      this.filter.name = Object.keys(this.data.controls)[0];
-      this.filter.pluginName = Object.keys(this.data.controls)[1].slice(6);
-      this.filter.enabled = Object.keys(this.data.controls)[2];
-      this.filter.color = Object.keys(this.data.controls)[3];
+      this.filter.name = this.data.controls.nameControl['name'];
+      this.filter.pluginName = this.data.controls.pluginControl['plugin'];
+      this.filter.enabled = this.data.controls.enabledControl['enabled'];
+      this.filter.color = this.data.controls.filterColorControl['color'];
       this.elRef.nativeElement.style.borderColor = this.filter.color;
       this.data.label = this.filter.name;
       if (this.filter.name !== "Filter") {
@@ -131,8 +161,7 @@ export class CustomNodeComponent implements OnChanges {
         this.addFilterSubscription = this.flowEditorService.showAddFilterIcon.subscribe((data) => {
           if (data) {
             if (data.addedFiltersIdColl.includes(this.nodeId)) {
-              this.elRef.nativeElement.style.borderColor = "#EA9999";
-              this.elRef.nativeElement.style.borderWidth = "6px";
+              this.elRef.nativeElement.style.outline = "#EA9999 dashed 2px";
               this.showPlusIcon = true;
             }
           }
@@ -143,6 +172,9 @@ export class CustomNodeComponent implements OnChanges {
       this.helpText = 'Filters';
     }
     if (this.data.label === 'AddService') {
+      this.data.label = "";
+    }
+    if (this.data.label === 'AddTask') {
       this.data.label = "";
     }
     if (this.data.label === 'Storage') {
@@ -163,12 +195,8 @@ export class CustomNodeComponent implements OnChanges {
     return ai - bi;
   }
 
-  addSouthService() {
-    this.router.navigate(['/south/add'], { queryParams: { source: 'flowEditor' } });
-  }
-
-  navToSouthService() {
-    this.router.navigate(['/south', this.service.name, 'details'], { queryParams: { source: 'flowEditor' } })
+  addService() {
+    this.router.navigate(['flow/editor', this.from, 'add'], { queryParams: { source: 'flowEditor' } });
   }
 
   showConfigurationInQuickview() {
@@ -241,7 +269,7 @@ export class CustomNodeComponent implements OnChanges {
 
   goToLink() {
     if (this.isServiceNode) {
-      this.docService.goToPluginLink({ name: this.pluginName, type: 'South' });
+      this.docService.goToPluginLink({ name: this.pluginName, type: this.from });
     }
     else {
       this.docService.goToPluginLink({ name: this.pluginName, type: 'Filter' });
@@ -249,16 +277,16 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   applyServiceStatusCustomCss(serviceStatus: string) {
-    if (serviceStatus.toLowerCase() === 'running') {
+    if (serviceStatus?.toLowerCase() === 'running') {
       return 'has-text-success';
     }
-    if (serviceStatus.toLowerCase() === 'unresponsive') {
+    if (serviceStatus?.toLowerCase() === 'unresponsive') {
       return 'has-text-warning';
     }
-    if (serviceStatus.toLowerCase() === 'shutdown') {
+    if (serviceStatus?.toLowerCase() === 'shutdown') {
       return 'has-text-grey-lighter';
     }
-    if (serviceStatus.toLowerCase() === 'failed') {
+    if (serviceStatus?.toLowerCase() === 'failed') {
       return 'has-text-danger';
     }
   }
@@ -272,12 +300,16 @@ export class CustomNodeComponent implements OnChanges {
     }
   }
 
+  openTaskSchedule() {
+    this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: false, showFilterConfiguration: false, showLogs: false, showTaskSchedule: true, serviceName: this.service.name });
+  }
+
   openServiceDetails() {
-    this.router.navigate(['/south/flow'], { queryParams: { source: this.service.name } });
+    this.router.navigate(['/flow/editor', this.from, this.service.name, 'details']);
   }
 
   navToAddServicePage() {
-    this.router.navigate(['/south/flow']);
+    this.router.navigate(['/flow/editor', this.from, 'add'], { queryParams: { source: 'flowEditor' } });
   }
 
   updateFilterConfiguration() {
@@ -301,6 +333,34 @@ export class CustomNodeComponent implements OnChanges {
         });
   }
 
+  getNorthboundTasks() {
+    this.northService.getNorthTasks(true)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: any) => {
+        const tasks = data as NorthTask[];
+        this.fetchedTask = tasks.find(task => (task.name == this.service.name));
+        if (this.fetchedTask) {
+          this.service.status = this.fetchedTask?.status;
+          let readingCount = this.fetchedTask.sent;
+          this.service.readingCount = readingCount;
+          this.service.schedule_enabled = this.fetchedTask.enabled;
+          if (this.service.schedule_enabled === true) {
+            this.isEnabled = true;
+          }
+          else {
+            this.isEnabled = false;
+          }
+        }
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.toastService.error(error.statusText);
+          }
+        });
+  }
+
   getSouthboundServices() {
     this.servicesApiService.getSouthServices(true)
       .pipe(takeUntil(this.destroy$))
@@ -315,8 +375,8 @@ export class CustomNodeComponent implements OnChanges {
           }, 0)
           this.service.assetCount = assetCount;
           this.service.readingCount = readingCount;
-          this.service.schedule_enabled = String(this.fetchedService.schedule_enabled);
-          if (this.service.schedule_enabled === 'true') {
+          this.service.schedule_enabled = this.fetchedService.schedule_enabled;
+          if (this.service.schedule_enabled === true) {
             this.isEnabled = true;
           }
           else {
@@ -334,7 +394,6 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   ngOnDestroy() {
-    this.isAlive = false;
     this.subscription.unsubscribe();
     this.addFilterSubscription?.unsubscribe();
     this.destroy$.next(true);

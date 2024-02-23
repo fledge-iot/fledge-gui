@@ -48,7 +48,7 @@ export class SouthComponent implements OnInit, OnDestroy {
     private sharedService: SharedService,
     public rolesService: RolesService,
     public flowEditorService: FlowEditorService) {
-    if(flowEditorService.getFlowEditorStatus()){
+    if (flowEditorService.getFlowEditorStatus()) {
       setTimeout(() => {
         this.navToFlowEditor();
       }, 1);
@@ -147,6 +147,10 @@ export class SouthComponent implements OnInit, OnDestroy {
     this.router.navigate(['/south/add']);
   }
 
+  navToFlowEditor() {
+    this.router.navigate(['/flow/editor/south'])
+  }
+
   /**
  * Open create scheduler modal dialog
  */
@@ -210,11 +214,5 @@ export class SouthComponent implements OnInit, OnDestroy {
     this.destroy$.unsubscribe();
   }
 
-  navToFlowEditorAddPage(){
-    this.router.navigate(['/south/flow']);
-  }
 
-  navToFlowEditor(){
-    this.router.navigate(['/south/flow'], { queryParams: { source: 'nodelist' } });
-  }
 }

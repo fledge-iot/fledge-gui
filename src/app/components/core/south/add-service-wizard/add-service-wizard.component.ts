@@ -64,6 +64,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     private cdRef: ChangeDetectorRef
   ) {
     this.route.queryParams.subscribe(params => {
+      console.log('page', params);
       if (params['source']) {
         this.source = params['source'];
       }
@@ -94,7 +95,11 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     const last = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = last.getAttribute('id');
     if (+id === 1) {
-      this.router.navigate(['/south']);
+      if (this.source) {
+        this.router.navigate(['/flow/editor/south'])
+      } else {
+        this.router.navigate(['/south']);
+      }
       return;
     }
     last.classList.remove('is-active');
@@ -256,14 +261,10 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
             const name = payload.name
             this.uploadScript(name, files);
           }
-          if(this.source === 'flowEditor'){
-            this.ngProgress.start();
-            setTimeout(() => {
-              this.router.navigate(['/south/flow'], { queryParams: { source: response['name'] } });
-              this.ngProgress.done();
-            }, 3000);
+          if (this.source === 'flowEditor') {
+            this.router.navigate(['/flow/editor/south', response['name'], 'details']);
           }
-          else{
+          else {
             this.router.navigate(['/south']);
           }
         },
