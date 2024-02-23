@@ -180,17 +180,6 @@ async function createNodesAndConnections(socket, service, editor, filterPipeline
                 new ClassicPreset.Connection(southPlugin, "port", db, "port")
             );
         }
-        else if (fpLen == 1) {
-            let nextNodeConfig = filterConfigurations.find((f: any) => f.filterName === filterPipeline[0])
-            let nextNode = new Filter(socket, nextNodeConfig);
-            await editor.addNode(nextNode);
-            await editor.addConnection(
-                new ClassicPreset.Connection(southPlugin, "port", nextNode, "port")
-            );
-            await editor.addConnection(
-                new ClassicPreset.Connection(nextNode, "port", db, "port")
-            );
-        }
         else {
             let previousNode = southPlugin;
             let colorNumber = 0;
