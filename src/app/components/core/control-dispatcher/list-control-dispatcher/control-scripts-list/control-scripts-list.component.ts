@@ -6,7 +6,7 @@ import { ControlDispatcherService } from '../../../../../services/control-dispat
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import { DocService } from '../../../../../services/doc.service';
-import { ListAdditionalServicesComponent } from '../../../developer/additional-services/list-additional-services.component';
+import { AdditionalServiceModalComponent } from '../../../developer/additional-services/additional-service-modal/additional-service-modal.component';
 import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
@@ -17,14 +17,15 @@ import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/ad
 export class ControlScriptsListComponent implements OnInit {
   controlScripts: any = [];
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
-  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
+  @ViewChild(AdditionalServiceModalComponent, { static: true }) additionalServiceModalComponent: AdditionalServiceModalComponent;
   @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
 
   script;
   private subscription: Subscription;
   isServiceAvailable = false;
   public reenableButton = new EventEmitter<boolean>(false);
-  showConfigureModal: boolean = false;
+  showConfigureModal = false;
+  serviceInfo;
 
   constructor(
     private controlService: ControlDispatcherService,
@@ -103,12 +104,21 @@ export class ControlScriptsListComponent implements OnInit {
       });
   }
 
+  getServiceDetail(event) {
+    this.showConfigureModal = event.isOpen;
+    delete event.isOpen;
+    this.serviceInfo = event;
+    if (this.showConfigureModal) {
+      this.openServiceConfigureModal();
+    }
+  }
+
   /**
    * Open Configure Service modal
    */
   openServiceConfigureModal() {
-    this.showConfigureModal = true;
-    this.listAdditionalServicesComponent.showServices('dispatcher');
+    this.additionalServiceModalComponent.toggleModal(true);
+    this.additionalServiceModalComponent.getServiceInfo(this.serviceInfo, null, 'dispatcher');
   }
 
   onNotify(event) {

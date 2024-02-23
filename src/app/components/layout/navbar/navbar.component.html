@@ -244,7 +244,7 @@
                                 <i class="bi bi-circle-fill child-icon"></i>
                               </span>
                               <ng-container
-                                *ngIf="['northbound', 'southbound'].includes(s.type.toLowerCase()); else elseServiceTemplate">
+                                *ngIf="servicesToShow.includes(s.type.toLowerCase()); else elseServiceTemplate">
                                 <a class="ghost" (click)="navToServiceConfiguration(s)">{{s.name}}</a>
                               </ng-container>
                               <ng-template #elseServiceTemplate>
@@ -364,7 +364,7 @@
       <div *ngIf="pingInfo.isAlive && isAuthOptional">
         <span class="icon has-text-danger is-small">
           <a class="tooltip has-tooltip-left has-tooltip-arrow" data-tooltip="Shut Down Fledge" (click)="openModal()">
-            <i class="bi bi-power bi-sm" aria-hidden="true"></i>
+            <i class="bi bi-power bi-lg" aria-hidden="true"></i>
           </a>
         </span>
       </div>
@@ -374,7 +374,7 @@
         <span class="icon has-text-danger is-small">
           <a id="restart" class="tooltip has-tooltip-left has-tooltip-arrow" data-tooltip="Restart Fledge"
             (click)="openRestartModal()">
-            <i class="bi bi-arrow-repeat bi-sm" aria-hidden="true"></i>
+            <i class="bi bi-arrow-repeat bi-lg" aria-hidden="true"></i>
           </a>
         </span>
       </div>

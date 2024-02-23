@@ -6,7 +6,7 @@ import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.
 import { Router } from '@angular/router';
 import { DocService } from '../../../../services/doc.service';
 import { AlertService, ControlPipelinesService, ProgressBarService, RolesService } from '../../../../services';
-import { ListAdditionalServicesComponent } from '../../developer/additional-services/list-additional-services.component';
+import { AdditionalServiceModalComponent } from '../../developer/additional-services/additional-service-modal/additional-service-modal.component';
 import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
@@ -16,7 +16,7 @@ import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-d
 })
 export class ControlPipelinesComponent implements OnInit, OnDestroy {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
-  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
+  @ViewChild(AdditionalServiceModalComponent, { static: true }) additionalServiceModalComponent: AdditionalServiceModalComponent;
   @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
 
   pipelines = [];
@@ -27,7 +27,8 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   public reenableButton = new EventEmitter<boolean>(false);
-  showConfigureModal: boolean = false;
+  showConfigureModal = false;
+  serviceInfo;
 
   constructor(private controlPipelinesService: ControlPipelinesService,
     private alertService: AlertService,
@@ -171,12 +172,21 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
     this.showSpinner = false;
   }
 
+  getServiceDetail(event) {
+    this.showConfigureModal = event.isOpen;
+    delete event.isOpen;
+    this.serviceInfo = event;
+    if (this.showConfigureModal) {
+      this.openServiceConfigureModal();
+    }
+  }
+
   /**
- * Open Configure Service modal
- */
+   * Open Configure Service modal
+   */
   openServiceConfigureModal() {
-    this.showConfigureModal = true;
-    this.listAdditionalServicesComponent.showServices('dispatcher');
+    this.additionalServiceModalComponent.toggleModal(true);
+    this.additionalServiceModalComponent.getServiceInfo(this.serviceInfo, null, 'dispatcher');
   }
 
   onNotify(event) {
