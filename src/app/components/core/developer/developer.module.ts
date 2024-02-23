@@ -22,19 +22,23 @@ const routes: Routes = [
     component: DeveloperComponent
   },
   {
-    path: 'python/package/list',
+    path: 'options/python/package/list',
     canActivate: [DeveloperGuard],
     component: ListPythonPackagesComponent
   },
   {
-    path: 'python/package/add',
+    path: 'options/python/package/add',
     canActivate: [DeveloperGuard],
     component: InstallPythonPackageComponent
   },
   {
-    path: 'additional-services',
+    path: 'options/additional-services',
     canActivate: [DeveloperGuard],
     component: ListAdditionalServicesComponent
+  },
+  {
+    path: 'options/additional-services/config',
+    component: AdditionalServiceModalComponent
   },
   {
     path: 'perfmon',
@@ -62,6 +66,6 @@ const routes: Routes = [
     RouterModule.forChild(routes)
   ],
   providers: [DeveloperGuard],
-  exports: [ListAdditionalServicesComponent, AdditionalServiceModalComponent]
+  exports: [AdditionalServiceModalComponent]
 })
 export class DeveloperModule { }
