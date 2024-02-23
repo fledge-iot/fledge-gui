@@ -11,7 +11,7 @@ import {
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
 import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
-import { ListAdditionalServicesComponent } from '../developer/additional-services/list-additional-services.component';
+import { AdditionalServiceModalComponent } from '../developer/additional-services/additional-service-modal/additional-service-modal.component';
 
 import { DocService } from '../../../services/doc.service';
 
@@ -42,7 +42,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   @ViewChild(NotificationModalComponent, { static: true }) notificationModal: NotificationModalComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
-  @ViewChild(ListAdditionalServicesComponent, { static: true }) listAdditionalServicesComponent: ListAdditionalServicesComponent;
+  @ViewChild(AdditionalServiceModalComponent, { static: true }) additionalServiceModalComponent: AdditionalServiceModalComponent;
   
   constructor(
     public servicesApiService: ServicesApiService,
@@ -263,8 +263,18 @@ export class NotificationsComponent implements OnInit, OnDestroy {
    * Open Configure Service modal
    */
    openServiceConfigureModal() {
+    const serviceInfo = {
+      name: this.notificationServiceName,
+      isEnabled: this.isNotificationServiceEnabled,
+      added: this.isNotificationServiceAvailable,
+      process: 'notification',
+      type: 'Notification',
+      package: 'fledge-service-notification',
+      isInstalled: this.notificationServiceInstalled
+    }
     this.showConfigureModal = true;
-    this.listAdditionalServicesComponent.showServices('notification');
+    this.additionalServiceModalComponent.toggleModal(true);
+    this.additionalServiceModalComponent.getServiceInfo(serviceInfo, null, 'notification');
   }
 
   onNotifyConfigureModal() {

@@ -1,5 +1,6 @@
 import { Component, ViewChild, Output, HostListener, EventEmitter } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   ProgressBarService, AlertService, ServicesApiService, SchedulesService,
   ConfigurationService,
@@ -11,13 +12,13 @@ import { DialogService } from '../../../../common/confirmation-dialog/dialog.ser
 
 import { AlertDialogComponent } from '../../../../common/alert-dialog/alert-dialog.component';
 import { isEmpty, cloneDeep } from 'lodash';
-import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
+import { concatMap, delayWhen, retryWhen, take, tap, map } from 'rxjs/operators';
 import { BehaviorSubject, of, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../../services/doc.service';
-import { Router } from '@angular/router';
 import { ConfigurationGroupComponent } from '../../../configuration-manager/configuration-group/configuration-group.component';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../../utils';
 import { Service } from '../../../../../models';
+import { AdditionalServicesUtils } from '../additional-services-utils.service';
 
 @Component({
   selector: 'app-additional-service-modal',
@@ -32,7 +33,7 @@ export class AdditionalServiceModalComponent {
   serviceProcessName = '';
   serviceType = '';
   serviceName = '';
-  availableServices = [];
+  isInstalled: boolean;
   packageName = '';
   btnText = 'Add';
   showDeleteBtn = true;
@@ -49,6 +50,7 @@ export class AdditionalServiceModalComponent {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild('configComponent') configComponent: ConfigurationGroupComponent;
   @Output() notifyService: EventEmitter<any> = new EventEmitter<any>();
+  @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   changedConfig: any;
   categoryCopy: { name: string; config: Object; };
@@ -56,9 +58,12 @@ export class AdditionalServiceModalComponent {
   validForm = true;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
   pollingScheduleID: string;
+  navigateFromParent: string;
+  fromNavbar: boolean;
   public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(
+    public activatedRoute: ActivatedRoute,
     private router: Router,
     public fb: FormBuilder,
     public ngProgress: ProgressBarService,
@@ -70,18 +75,33 @@ export class AdditionalServiceModalComponent {
     private dialogService: DialogService,
     private fileUploaderService: FileUploaderService,
     private configurationControlService: ConfigurationControlService,
-    public rolesService: RolesService) { }
+    private additionalServicesUtils: AdditionalServicesUtils,
+    public rolesService: RolesService) {
+      this.activatedRoute.paramMap
+      .pipe(map(() => window.history.state)).subscribe(res=>{
+          if (res?.name) {
+            this.fromNavbar = true;
+            res['added'] = true;
+            res['isInstalled'] = true;
+            this.getServiceInfo(res, res?.pollingScheduleID);
+            setTimeout(() => {
+              this.toggleModal(true);
+            }, 0);
+          }                          
+       })
+    }
 
   ngOnInit() { }
 
-  getServiceInfo(serviceInfo, availableServicePkgs, pollingScheduleID) {
+  getServiceInfo(serviceInfo, pollingScheduleID, from = null) {
+    this.navigateFromParent = from;
     this.serviceName = serviceInfo.name ? serviceInfo.name : '';
-    this.isServiceEnabled = ["shutdown", "disabled", "installed", ""].includes(serviceInfo.state) ? false : true;
+    this.isServiceEnabled = serviceInfo.isEnabled;
     this.isServiceAvailable = serviceInfo.added;
     this.serviceProcessName = serviceInfo.process;
     this.serviceType = serviceInfo.type;
     this.packageName = serviceInfo.package;
-    this.availableServices = availableServicePkgs;
+    this.isInstalled =  serviceInfo.isInstalled;  
     if (pollingScheduleID) {
       this.pollingScheduleID = pollingScheduleID;
     }
@@ -99,11 +119,12 @@ export class AdditionalServiceModalComponent {
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     if (!this.serviceInstallationState) {
-      this.toggleModal(false, { isCancelEvent: true });
+      this.toggleModal(false);
+      this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
     }
   }
 
-  public toggleModal(isOpen: Boolean, emitData = null) {
+  public toggleModal(isOpen: Boolean) {
     this.serviceInstallationState = false;
     this.reenableButton.emit(false);
     const serviceModal = <HTMLDivElement>document.getElementById('additional-service-modal');
@@ -119,7 +140,11 @@ export class AdditionalServiceModalComponent {
         serviceModal.classList.add('is-active');
         return;
       }
-      this.notifyService.emit(emitData);
+      if (!this.navigateFromParent) {
+        this.notifyService.emit();
+      } else {
+        this.notify.emit();
+      }
       serviceModal.classList.remove('is-active');
       this.category = '';
       this.service = <Service>{};
@@ -159,11 +184,13 @@ export class AdditionalServiceModalComponent {
           this.alertService.success('Service added successfully.', true);
           this.isServiceAvailable = true;
           this.btnText = 'Save';
-          this.toggleModal(false, { isCancelEvent: false });
+          this.toggleModal(false);
+          this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
         },
         (error) => {
           this.ngProgress.done();
-          this.toggleModal(false, { isCancelEvent: false });
+          this.toggleModal(false);
+          this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -207,7 +234,7 @@ export class AdditionalServiceModalComponent {
               if (this.increment > this.maxRetry) {
                 this.serviceInstallationState = false;
                 this.ngProgress.done();
-                this.toggleModal(false, { isCancelEvent: false });
+                this.toggleModal(false);
                 this.alertService.closeMessage();
                 // tslint:disable-next-line: max-line-length
                 return throwError(`Failed to get expected results in ${this.maxRetry} attempts, tried with incremental time delay starting with 2s, for installing plugin ${pluginName}`);
@@ -252,7 +279,7 @@ export class AdditionalServiceModalComponent {
         error => {
           /** request done */
           this.serviceInstallationState = false;
-          this.toggleModal(false, { isCancelEvent: false });
+          this.toggleModal(false);
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
@@ -298,21 +325,82 @@ export class AdditionalServiceModalComponent {
     if (name != null) {
       serviceName = name;
     }
-    this.toggleModal(false, { service: serviceName, state: 'enable', isCancelEvent: false });
-    this.isServiceEnabled = true;
+    this.additionalServicesUtils.enableService(serviceName);
+    // enabling service takes time to get the updated state from API
+    this.getUpdatedSate();
+  }
+
+  getUpdatedSate() {
+    let i = 1;
+    this.servicesApiService.getServiceByType(this.serviceType)
+      .pipe(
+        take(1),
+        // checking the response object for service.
+        // if pacakge.status !== 'running' then
+        // throw an error to re-fetch:
+        tap((response: any) => {
+          if (response['services'][0].status !== 'running') {
+            i++;
+            throw response;
+          }
+        }),
+        retryWhen(result =>
+          result.pipe(
+            // only if a server returned an error, stop trying and pass the error down
+            tap(serviceStatus => {
+              if (serviceStatus.error) {
+                this.ngProgress.done();
+                this.toggleModal(false);
+                this.reenableButton.emit(false);
+                this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
+                throw serviceStatus.error;
+              }
+            }),
+            delayWhen(() => {
+              const delay = i * this.initialDelay;
+              console.log(new Date().toLocaleString(), `retrying after ${delay} msec...`);             
+              return timer(delay);
+            }), // delay between api calls
+            // Set the number of attempts.
+            take(3),
+            // Throw error after exceed number of attempts
+            concatMap(o => {
+              if (i > 3) {
+                this.isServiceEnabled = false;
+                this.ngProgress.done();
+                this.toggleModal(false);
+                this.reenableButton.emit(false);   
+                this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
+                return;
+              }
+              return of(o);
+            }),
+          ))
+      ).subscribe(() => {
+        this.ngProgress.done();
+        this.isServiceEnabled = true;
+        this.toggleModal(false);
+        this.reenableButton.emit(false);
+        this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
+      });
   }
 
   disableService() {
-    this.toggleModal(false, { service: this.serviceName, state: 'disable', isCancelEvent: false });
+    this.additionalServicesUtils.disableService(this.serviceName, this.fromNavbar, this.serviceProcessName);
+    this.reenableButton.emit(false);
+    this.toggleModal(false);
     this.isServiceEnabled = false;
   }
 
+  deleteService(serviceName) {
+    this.additionalServicesUtils.deleteService(serviceName, this.fromNavbar, this.serviceProcessName);
+    this.reenableButton.emit(false);
+    this.closeDeleteModal("dialog-delete-confirmation");
+    this.toggleModal(false);
+  }
+
   public async addServiceEvent() {
-    let availableServicesProcessName = []
-    this.availableServices.forEach(function (s) {
-      availableServicesProcessName.push(s["process"]);
-    });
-    if (availableServicesProcessName.includes(this.serviceProcessName)) {
+    if (!this.isInstalled) {
       this.installService();
     } else {
       this.addService(false);
@@ -363,13 +451,15 @@ export class AdditionalServiceModalComponent {
     this.stateUpdate();
     if (!isEmpty(this.changedConfig) && this.categoryCopy?.name) {
       this.updateConfiguration(this.categoryCopy?.name, this.changedConfig);
-      this.toggleModal(false, { isCancelEvent: false });
+      this.toggleModal(false);
+      this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
     }
     if (!isEmpty(this.advancedConfiguration)) {
       this.advancedConfiguration.forEach(element => {
         this.updateConfiguration(element.key, element.config);
       });
-      this.toggleModal(false, { isCancelEvent: false });
+      this.toggleModal(false);
+      this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
     }
   }
 
@@ -425,6 +515,10 @@ export class AdditionalServiceModalComponent {
 
   navToSyslogs(name: string) {
     this.router.navigate(['logs/syslog'], { queryParams: { source: name } });
+  }
+
+  navToAdditionalService() {
+    this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
   }
 
   goToLink() {
