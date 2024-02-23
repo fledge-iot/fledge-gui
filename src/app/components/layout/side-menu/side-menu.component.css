@@ -25,9 +25,6 @@ ul:has(section.disabled) {
   cursor: not-allowed;
 }
 
-.icon-sm {
-  font-size: 0.85rem;
-}
 
 .schedules_icon {
   vertical-align: 0.1em !important;
