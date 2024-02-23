@@ -391,3 +391,12 @@ function existsInPipeline(pipeline, filterName) {
     }
     return false;
 }
+
+export function removeNode(nodeId) {
+    for (const c of editor
+        .getConnections()
+        .filter((c) => c.source === nodeId || c.target === nodeId)) {
+        editor.removeConnection(c.id);
+    }
+    editor.removeNode(nodeId);
+}

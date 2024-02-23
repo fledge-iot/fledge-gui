@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
-import { createEditor, getUpdatedFilterPipeline, deleteConnection } from './editor';
+import { createEditor, getUpdatedFilterPipeline, deleteConnection, removeNode } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfigurationControlService, ConfigurationService, FileUploaderService, FilterService, ProgressBarService, ResponseHandler, RolesService, ServicesApiService, ToastService } from './../../../services';
 import { catchError, map, skip, takeUntil } from 'rxjs/operators';
@@ -28,6 +28,7 @@ export class NodeEditorComponent implements OnInit {
   private filterSubscription: Subscription;
   private connectionSubscription: Subscription;
   private serviceSubscription: Subscription;
+  private removeFilterSubscription: Subscription;
 
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
@@ -132,6 +133,11 @@ export class NodeEditorComponent implements OnInit {
     this.serviceSubscription = this.flowEditorService.serviceInfo.pipe(skip(1)).subscribe(data => {
       this.openModal('delete-service-dialog');
       this.deleteServiceName = data.name;
+    })
+    this.removeFilterSubscription = this.flowEditorService.removeFilter.pipe(skip(1)).subscribe(data => {
+      if(data){
+        removeNode(data.id);
+      }
     })
   }
 
@@ -531,6 +537,7 @@ export class NodeEditorComponent implements OnInit {
     this.filterSubscription.unsubscribe();
     this.connectionSubscription.unsubscribe();
     this.serviceSubscription.unsubscribe();
+    this.removeFilterSubscription.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }

@@ -39,6 +39,7 @@ export class CustomNodeComponent implements OnChanges {
   fetchedService;
   isAlive: boolean;
   showPlusIcon = false;
+  showDeleteIcon = false;
   nodeId = '';
 
   @HostBinding("class.selected") get selected() {
@@ -134,6 +135,7 @@ export class CustomNodeComponent implements OnChanges {
               this.elRef.nativeElement.style.borderColor = "#EA9999";
               this.elRef.nativeElement.style.borderWidth = "6px";
               this.showPlusIcon = true;
+              this.showDeleteIcon = true;
             }
           }
         })
@@ -331,6 +333,10 @@ export class CustomNodeComponent implements OnChanges {
             this.toastService.error(error.statusText);
           }
         });
+  }
+
+  removeFilter(){
+    this.flowEditorService.removeFilter.next({id: this.nodeId});
   }
 
   ngOnDestroy() {

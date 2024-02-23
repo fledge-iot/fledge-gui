@@ -17,7 +17,8 @@
 }
 
 :host:hover .reading,
-:host:hover .asset {
+:host:hover .asset,
+:host:hover .trash-icon {
   visibility: visible;
 }
 
@@ -176,4 +177,8 @@
 
 .icon-margin {
   margin-top: 2px;
+}
+
+.trash-icon {
+  visibility: hidden;
 }
