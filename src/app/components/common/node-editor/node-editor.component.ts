@@ -684,6 +684,10 @@ export class NodeEditorComponent implements OnInit {
     this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
   }
 
+  reload() {
+    this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
+  }
+
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.filterSubscription.unsubscribe();

@@ -266,7 +266,7 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
                 await editor.addConnection(
                     new ClassicPreset.Connection(tempNode, "port", db, "port")
                 );
-                colorNumber = (colorNumber + 1) % (colors.length+1);
+                colorNumber = (colorNumber + 1) % (colors.length);
             }
         }
         await editor.addConnection(
