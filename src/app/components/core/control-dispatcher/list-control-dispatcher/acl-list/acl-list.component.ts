@@ -156,10 +156,10 @@ export class AclListComponent implements OnInit {
   }
 
   onNotify(event) {
-    if (event?.isCancelEvent) {
-      return;
+    if (!event) {
+      this.addDispatcherServiceComponent.getInstalledServicesList();
     }
-    this.addDispatcherServiceComponent.getInstalledServicesList();
+    return;
   }
 
   public ngOnDestroy(): void {

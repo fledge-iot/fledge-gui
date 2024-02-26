@@ -254,11 +254,13 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.serviceModal.getServiceInfo(service, this.pollingScheduleID);
   }
 
-  getData() {
+  getData(event = true) {
     // added 3 second wait after redirecting list page from modal beacuse it takes sometime to get data from API
-    setTimeout(() => {
-      this.showServices();
-    }, 3000);
+    if (event) {
+      setTimeout(() => {
+        this.showServices();
+      }, 3000);
+    }  
   }
 
   deleteService(serviceName) {

@@ -254,10 +254,10 @@ export class APIFlowComponent implements OnInit {
     }
 
     onNotify(event) {
-      if (event?.isCancelEvent) {
-        return;
+      if (!event) {
+        this.addDispatcherServiceComponent.getInstalledServicesList();
       }
-      this.addDispatcherServiceComponent.getInstalledServicesList();
+      return;
     }
 
     getServiceDetail(event) {
