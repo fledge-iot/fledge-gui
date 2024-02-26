@@ -122,8 +122,9 @@
             </div>
         </ng-container>
         <div class="is-pulled-right">
-            <ng-container *ngIf="data.label==='Filter' && showDeleteIcon">
-                <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered mr-2 mt-2 trash-icon"
+            <ng-container *ngIf="data.label==='Filter'">
+                <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered is-invisible 
+                mr-2 mt-2" [ngClass]="{'trash-icon': showDeleteIcon}"
                 data-tooltip="Delete" (click)="removeFilter()">
                 <i class="far fa-xs fa-trash-alt"></i>
             </span>
@@ -159,7 +160,7 @@
   <ng-template #addServiceTemplate>
     <div class="add-service">
       <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
-        [attr.data-tooltip]="from == 'north'?'Add Task': 'Add Service'" (click)="navToAddServicePage()">
+        [attr.data-tooltip]="from == 'north'?'Add Instance': 'Add Service'" (click)="navToAddServicePage()">
         <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
       </span>
     </div>

@@ -138,7 +138,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   connection.addPreset(() => new BidirectFlow())
   arrange.addPreset(ArrangePresets.classic.setup());
   render.addPreset(Presets.contextMenu.setup());
-  dock.addPreset(DockPresets.classic.setup({ area, size: 100, scale: 0.6 }));
+  dock.addPreset(DockPresets.classic.setup({ area, size: 70, scale: 0.6 }));
   // scopes.addPreset(ScopesPresets.classic.setup());
   HistoryExtensions.keyboard(history);
   history.addPreset(HistoryPresets.classic.setup());

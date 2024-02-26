@@ -18,7 +18,7 @@
 :host:hover .reading,
 :host:hover .asset,
 :host:hover .trash-icon {
-  visibility: visible;
+  visibility: visible !important;
 }
 
 :host .title {
@@ -182,5 +182,5 @@
 
 
 .trash-icon {
-  visibility: hidden;
+  visibility: hidden !important;
 }
