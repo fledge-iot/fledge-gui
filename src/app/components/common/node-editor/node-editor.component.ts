@@ -151,6 +151,10 @@ export class NodeEditorComponent implements OnInit {
         if (this.isfilterPipelineFetched) {
           let updatedPipeline = getUpdatedFilterPipeline();
           if (updatedPipeline && updatedPipeline.length > 0) {
+            if(this.from === 'north' && this.isFilterPipelineComplex(updatedPipeline)){
+              console.log("Complex pipeline not allowed on north side");
+              return;
+            }
             this.updatedFilterPipeline = updatedPipeline;
             console.log(this.updatedFilterPipeline);
             this.flowEditorService.pipelineInfo.next(this.updatedFilterPipeline);
@@ -439,6 +443,10 @@ export class NodeEditorComponent implements OnInit {
   save() {
     let updatedPipeline = getUpdatedFilterPipeline();
     if (updatedPipeline && updatedPipeline.length > 0) {
+      if(this.from === 'north' && this.isFilterPipelineComplex(updatedPipeline)){
+        console.log("Complex pipeline not allowed on north side");
+        return;
+      }
       this.updatedFilterPipeline = updatedPipeline;
       if (this.isPipelineUpdated() && this.isEachFilterConfigured()) {
         this.updateFilterPipeline();
