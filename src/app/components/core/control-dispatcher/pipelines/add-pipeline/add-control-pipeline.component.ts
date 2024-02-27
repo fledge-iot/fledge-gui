@@ -2,12 +2,13 @@ import { ChangeDetectorRef, Component, OnInit, ViewChild, EventEmitter } from '@
 import { NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty, isEqual } from 'lodash';
-import { forkJoin, of } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
 import { delay, map } from 'rxjs/operators';
 import { CustomValidator } from '../../../../../directives/custom-validator';
 import {
   AlertService, AssetsService,
   ControlPipelinesService,
+  FilterService,
   NotificationsService, ProgressBarService,
   ResponseHandler,
   RolesService,
@@ -92,6 +93,7 @@ export class AddControlPipelineComponent implements OnInit {
     private controlService: ControlDispatcherService,
     public notificationService: NotificationsService,
     private docService: DocService,
+    private filterService: FilterService,
     private router: Router,
     private toast: ToastService) { }
 
@@ -266,7 +268,21 @@ export class AddControlPipelineComponent implements OnInit {
     this.router.navigate(['control-dispatcher/pipelines']);
   }
 
+  deleteFilterOnDiscardChanges(orphanFilters: string[]) {
+    let filters: Observable<Object>[] = [];
+    orphanFilters.forEach(f => {
+      filters.push(this.filterService.deleteFilter(f));
+    });
+    if (filters.length > 0) {
+      forkJoin(filters).subscribe(() => {
+        error => console.log(error)
+      });
+    }
+  }
+
   discardUnsavedChanges() {
+    const orphanFilters = this.filterPipeline.filter(f => !this.controlPipeline.filters.includes(f));
+    this.deleteFilterOnDiscardChanges(orphanFilters);
     this.unsavedChangesInFilterForm = false;
     if (this.addFilterClicked) {
       this.isAddFilterWizard = this.addFilterClicked;
@@ -347,7 +363,7 @@ export class AddControlPipelineComponent implements OnInit {
         this.selectedDestinationType = value === 'Select Destination Type' ? '' : value;
         this.getDestinationNameList();
         // mark form invalid, if Source/Destination Name is not selected yet
-         if (!['Any', 'Broadcast'].includes(this.selectedDestinationType.name)) {
+        if (!['Any', 'Broadcast'].includes(this.selectedDestinationType.name)) {
           this.pipelineForm.form.setErrors({ 'invalid': true });
         }
         break;
@@ -603,14 +619,14 @@ export class AddControlPipelineComponent implements OnInit {
     this.controlPipelinesService.createPipeline(payload)
       .subscribe(() => {
         this.ngProgress.done();
-        this.reenableButton.emit(false); 
+        this.reenableButton.emit(false);
         this.alertService.success(`Control Pipeline ${payload['name']} created successfully.`);
         this.pipelineForm.form.markAsUntouched();
         this.pipelineForm.form.markAsPristine();
         this.navigateOnControlPipelineListPage();
       }, error => {
         this.ngProgress.done();
-        this.reenableButton.emit(false); 
+        this.reenableButton.emit(false);
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
@@ -645,14 +661,14 @@ export class AddControlPipelineComponent implements OnInit {
     this.ngProgress.start();
     this.controlPipelinesService.updatePipeline(this.pipelineID, payload)
       .subscribe((data: any) => {
-        this.reenableButton.emit(false); 
+        this.reenableButton.emit(false);
         this.pipelineName = payload.name;
         this.toast.success(data.message);
         /** request completed */
         this.ngProgress.done();
         this.navigateOnControlPipelineListPage();
       }, error => {
-        this.reenableButton.emit(false); 
+        this.reenableButton.emit(false);
         /** request completed */
         this.ngProgress.done();
         if (error.status === 0) {
