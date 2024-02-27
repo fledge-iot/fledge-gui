@@ -256,11 +256,11 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
 
   getData(event = true) {
     // added 3 second wait after redirecting list page from modal beacuse it takes sometime to get data from API
-    if (event) {
+    if (!event) {
       setTimeout(() => {
         this.showServices();
       }, 3000);
-    }  
+    }
   }
 
   deleteService(serviceName) {
@@ -316,24 +316,25 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     if (["shutdown", "disabled"].includes(this.service.state)) {
         this.additionalServicesUtils.enableService(this.service.name);
         // enabling service takes time to get the updated state from API
-        this.getUpdatedSate();
+        this.getUpdatedSate('running');
     } else {
       this.additionalServicesUtils.disableService(this.service.name);
-      this.afterStateUpdate();  
+      this.getUpdatedSate('shutdown');  
     }
   }
 
-  getUpdatedSate() {
+  getUpdatedSate(status) {
     let i = 1;
     const initialDelay = 1000;
+    const expectedStatus = status;
     this.servicesApiService.getServiceByType(this.service.type)
       .pipe(
         take(1),
         // checking the response object for service.
-        // if pacakge.status !== 'running' then
+        // if pacakge.status !== 'running'/'shutdown' then
         // throw an error to re-fetch:
         tap((response: any) => {
-          if (response['services'][0].status !== 'running') {
+          if (response['services'][0].status !== expectedStatus) {
             i++;
             throw response;
           }
@@ -375,7 +376,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.reenableButton.emit(false);
     this.closeModal('confirmation-dialog');
     this.closeServiceModal();
-    this.getData();
+    this.showServices();
   }
 
   setService(service) {
