@@ -172,9 +172,6 @@ export class CustomNodeComponent implements OnChanges {
         })
       }
     }
-    if (this.data.label === 'Applications') {
-      this.helpText = 'Filters';
-    }
     if (this.data.label === 'AddService') {
       this.data.label = "";
     }
