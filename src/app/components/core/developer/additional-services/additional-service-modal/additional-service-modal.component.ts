@@ -49,7 +49,7 @@ export class AdditionalServiceModalComponent {
   @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild('configComponent') configComponent: ConfigurationGroupComponent;
-  @Output() notifyService: EventEmitter<any> = new EventEmitter<any>();
+  // @Output() notifyService: EventEmitter<any> = new EventEmitter<any>();  Why?
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   changedConfig: any;
@@ -58,7 +58,7 @@ export class AdditionalServiceModalComponent {
   validForm = true;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
   pollingScheduleID: string;
-  navigateFromParent: string;
+  navigateFromParent: string;   // not sure why?
   fromNavbar: boolean;
   public reenableButton = new EventEmitter<boolean>(false);
 
@@ -77,19 +77,19 @@ export class AdditionalServiceModalComponent {
     private configurationControlService: ConfigurationControlService,
     private additionalServicesUtils: AdditionalServicesUtils,
     public rolesService: RolesService) {
-      this.activatedRoute.paramMap
-      .pipe(map(() => window.history.state)).subscribe(res=>{
-          if (res?.name) {
-            this.fromNavbar = true;
-            res['added'] = true;
-            res['isInstalled'] = true;
-            this.getServiceInfo(res, res?.pollingScheduleID);
-            setTimeout(() => {
-              this.toggleModal(true);
-            }, 0);
-          }                          
-       })
-    }
+    this.activatedRoute.paramMap
+      .pipe(map(() => window.history.state)).subscribe(res => {
+        if (res?.name) {
+          this.fromNavbar = true;
+          res['added'] = true;
+          res['isInstalled'] = true;
+          this.getServiceInfo(res, res?.pollingScheduleID);
+          setTimeout(() => {
+            this.toggleModal(true);
+          }, 0);
+        }
+      })
+  }
 
   ngOnInit() { }
 
@@ -101,7 +101,7 @@ export class AdditionalServiceModalComponent {
     this.serviceProcessName = serviceInfo.process;
     this.serviceType = serviceInfo.type;
     this.packageName = serviceInfo.package;
-    this.isInstalled =  serviceInfo.isInstalled;  
+    this.isInstalled = serviceInfo.isInstalled;
     if (pollingScheduleID) {
       this.pollingScheduleID = pollingScheduleID;
     }
@@ -140,11 +140,11 @@ export class AdditionalServiceModalComponent {
         serviceModal.classList.add('is-active');
         return;
       }
-      if (!this.navigateFromParent) {
-        this.notifyService.emit();
-      } else {
-        this.notify.emit();
-      }
+      // if (!this.navigateFromParent) {
+      //   this.notifyService.emit();
+      // } else {
+      //   this.notify.emit();
+      // }
       serviceModal.classList.remove('is-active');
       this.category = '';
       this.service = <Service>{};
@@ -358,7 +358,7 @@ export class AdditionalServiceModalComponent {
             }),
             delayWhen(() => {
               const delay = i * this.initialDelay;
-              console.log(new Date().toLocaleString(), `retrying after ${delay} msec...`);             
+              console.log(new Date().toLocaleString(), `retrying after ${delay} msec...`);
               return timer(delay);
             }), // delay between api calls
             // Set the number of attempts.
@@ -369,7 +369,7 @@ export class AdditionalServiceModalComponent {
                 this.isServiceEnabled = false;
                 this.ngProgress.done();
                 this.toggleModal(false);
-                this.reenableButton.emit(false);   
+                this.reenableButton.emit(false);
                 this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
                 return;
               }
@@ -461,6 +461,9 @@ export class AdditionalServiceModalComponent {
       this.toggleModal(false);
       this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
     }
+
+    // to notify the parent
+    this.notify.emit();
   }
 
   /**
