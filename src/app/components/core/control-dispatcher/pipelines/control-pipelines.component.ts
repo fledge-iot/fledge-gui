@@ -189,8 +189,8 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
     this.additionalServiceModalComponent.getServiceInfo(this.serviceInfo, null, 'dispatcher');
   }
 
-  onNotify(event) {
-    if (!event) {
+  onNotify(handleEvent) {
+    if (!handleEvent) {
       this.addDispatcherServiceComponent.getInstalledServicesList();
     }
     return;

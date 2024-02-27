@@ -253,8 +253,8 @@ export class APIFlowComponent implements OnInit {
       this.dialogService.open(id);
     }
 
-    onNotify(event) {
-      if (!event) {
+    onNotify(handleEvent) {
+      if (!handleEvent) {
         this.addDispatcherServiceComponent.getInstalledServicesList();
       }
       return;

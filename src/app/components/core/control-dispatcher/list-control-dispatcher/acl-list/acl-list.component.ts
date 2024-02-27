@@ -155,8 +155,8 @@ export class AclListComponent implements OnInit {
     this.docService.goToSetPointControlDocLink(urlSlug);
   }
 
-  onNotify(event) {
-    if (!event) {
+  onNotify(handleEvent) {
+    if (!handleEvent) {
       this.addDispatcherServiceComponent.getInstalledServicesList();
     }
     return;

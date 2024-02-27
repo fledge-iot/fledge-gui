@@ -121,8 +121,8 @@ export class ControlScriptsListComponent implements OnInit {
     this.additionalServiceModalComponent.getServiceInfo(this.serviceInfo, null, 'dispatcher');
   }
 
-  onNotify(event) {
-    if (!event) {
+  onNotify(handleEvent) {
+    if (!handleEvent) {
       this.addDispatcherServiceComponent.getInstalledServicesList();
     }
     return;
