@@ -1,25 +1,32 @@
 <div>
   <div class="navbar-item pb-0">
-    <nav class="breadcrumb mb-2" aria-label="breadcrumbs">
-      <ul>
-        <li *ngIf="from=='south'">
-          <a [routerLink]="['/flow/editor/south']">South</a>
-        </li>
-        <li *ngIf="from=='north'">
-          <a [routerLink]="['/flow/editor/north']">North</a>
-        </li>
-        <li [ngClass]="{'is-active' : !source || !isAddFilterWizard}" *ngIf="source">
-          <a [routerLink]="['/flow/editor', source]">
-            {{source ? source : 'Add'}}
-          </a>
-        </li>
-        <li class="is-active" *ngIf="source  && isAddFilterWizard">
-          <a href="#" aria-current="page">
-            Add Filter
-          </a>
-        </li>
-      </ul>
-    </nav>
+    <div>
+      <nav class="breadcrumb mb-2" aria-label="breadcrumbs">
+        <ul>
+          <li *ngIf="from=='south'">
+            <a [routerLink]="['/flow/editor/south']">South</a>
+          </li>
+          <li *ngIf="from=='north'">
+            <a [routerLink]="['/flow/editor/north']">North</a>
+          </li>
+          <li [ngClass]="{'is-active' : !source || !isAddFilterWizard}" *ngIf="source">
+            <a [routerLink]="['/flow/editor', from, source, 'details']">
+              {{source ? source : 'Add'}}
+            </a>
+          </li>
+          <li class="is-active" *ngIf="source  && isAddFilterWizard">
+            <a href="#" aria-current="page">
+              Add Filter
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <ng-container *ngIf="source && !isAddFilterWizard">
+        <button type="button" (click)="reload()" class="button is-small" title="Reload" id="refresh-check">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
+      </ng-container>
+    </div>
     <ng-container *ngIf="source && rolesService.hasEditPermissions() && !isAddFilterWizard">
       <button class="button is-small is-link mb-1" (click)="save()">Save</button>
     </ng-container>

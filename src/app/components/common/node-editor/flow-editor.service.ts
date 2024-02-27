@@ -13,6 +13,7 @@ export class FlowEditorService {
   public canvasClick: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public showAddFilterIcon: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public serviceInfo: BehaviorSubject<any> = new BehaviorSubject<any>(false);
+  public removeFilter: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   constructor() { }
 
   public flowEditorControl(visible: boolean) {
