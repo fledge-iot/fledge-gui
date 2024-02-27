@@ -337,6 +337,11 @@
       </div>
     </div>
     <div class="navbar-item">
+      <div *ngIf="pingInfo.isAlive && pingInfo.alertCount">
+        <app-system-alert [alertCount]='pingInfo.alertCount'></app-system-alert>
+      </div>
+    </div>
+    <div class="navbar-item">
       <div *ngIf="pingInfo.isAlive && isAuthOptional">
         <span class="icon has-text-danger is-small">
           <a class="tooltip has-tooltip-left has-tooltip-arrow" data-tooltip="Shut Down Fledge" (click)="openModal()">
