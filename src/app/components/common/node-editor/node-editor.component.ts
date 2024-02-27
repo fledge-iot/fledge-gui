@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
-import { createEditor, getUpdatedFilterPipeline, deleteConnection, updateNode } from './editor';
+import { createEditor, getUpdatedFilterPipeline, deleteConnection, removeNode, updateNode } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   ConfigurationControlService,
@@ -42,6 +42,7 @@ export class NodeEditorComponent implements OnInit {
   private filterSubscription: Subscription;
   private connectionSubscription: Subscription;
   private serviceSubscription: Subscription;
+  private removeFilterSubscription: Subscription;
 
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
@@ -149,7 +150,11 @@ export class NodeEditorComponent implements OnInit {
       else {
         if (this.isfilterPipelineFetched) {
           let updatedPipeline = getUpdatedFilterPipeline();
-          if (updatedPipeline && updatedPipeline.length > 0 && !this.isFilterPipelineComplex(updatedPipeline) && !this.isFilterDuplicatedInPipeline(updatedPipeline)) {
+          if (updatedPipeline && updatedPipeline.length > 0) {
+            if(this.from === 'north' && this.isFilterPipelineComplex(updatedPipeline)){
+              console.log("Complex pipeline not allowed on north side");
+              return;
+            }
             this.updatedFilterPipeline = updatedPipeline;
             console.log(this.updatedFilterPipeline);
             this.flowEditorService.pipelineInfo.next(this.updatedFilterPipeline);
@@ -191,6 +196,11 @@ export class NodeEditorComponent implements OnInit {
           this.getSouthervices();
         }
       });
+    this.removeFilterSubscription = this.flowEditorService.removeFilter.pipe(skip(1)).subscribe(data => {
+      if(data){
+        removeNode(data.id);
+      }
+    })
   }
 
   ngAfterViewInit(): void {
@@ -269,6 +279,7 @@ export class NodeEditorComponent implements OnInit {
                   this.filterConfigurations.push(filterConfig);
                 })
                 createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
+                this.filterConfigApiCallsStack = [];
               });
             }
             else {
@@ -431,7 +442,11 @@ export class NodeEditorComponent implements OnInit {
 
   save() {
     let updatedPipeline = getUpdatedFilterPipeline();
-    if (updatedPipeline && updatedPipeline.length > 0 && !this.isFilterPipelineComplex(updatedPipeline) && !this.isFilterDuplicatedInPipeline(updatedPipeline)) {
+    if (updatedPipeline && updatedPipeline.length > 0) {
+      if(this.from === 'north' && this.isFilterPipelineComplex(updatedPipeline)){
+        console.log("Complex pipeline not allowed on north side");
+        return;
+      }
       this.updatedFilterPipeline = updatedPipeline;
       if (this.isPipelineUpdated() && this.isEachFilterConfigured()) {
         this.updateFilterPipeline();
@@ -677,11 +692,16 @@ export class NodeEditorComponent implements OnInit {
     this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
   }
 
+  reload() {
+    this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
+  }
+
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.filterSubscription.unsubscribe();
     this.connectionSubscription.unsubscribe();
     this.serviceSubscription.unsubscribe();
+    this.removeFilterSubscription.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }

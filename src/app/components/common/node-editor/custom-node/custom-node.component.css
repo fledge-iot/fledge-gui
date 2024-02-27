@@ -16,12 +16,9 @@
 }
 
 :host:hover .reading,
-:host:hover .asset {
-  visibility: visible;
-}
-
-:host.selected {
-  border-color: aqua;
+:host:hover .asset,
+:host:hover .trash-icon {
+  visibility: visible !important;
 }
 
 :host .title {
@@ -181,4 +178,9 @@
 .south-storage-icon{
   margin-top: 4px;
   margin-left: 10px;
+}
+
+
+.trash-icon {
+  visibility: hidden !important;
 }
