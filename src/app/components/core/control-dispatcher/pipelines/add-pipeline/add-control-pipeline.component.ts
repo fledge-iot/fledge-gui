@@ -281,8 +281,11 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   discardUnsavedChanges() {
-    const orphanFilters = this.filterPipeline.filter(f => !this.controlPipeline.filters.includes(f));
-    this.deleteFilterOnDiscardChanges(orphanFilters);
+    // check orphan filters
+    const orphanFilters = this.filterPipeline.filter(f => !this.controlPipeline?.filters.includes(f));
+    if (orphanFilters.length > 0) {
+      this.deleteFilterOnDiscardChanges(orphanFilters);
+    }
     this.unsavedChangesInFilterForm = false;
     if (this.addFilterClicked) {
       this.isAddFilterWizard = this.addFilterClicked;
