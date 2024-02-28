@@ -424,13 +424,16 @@ function getBranchNodes(pipeline, connections, node) {
     if (node.label === "Storage") {
         return;
     }
+    if (existsInPipeline(pipeline, node.label)) {
+      return [];
+    }
     let branchNodes = [];
     branchNodes.push(node.label);
     while (connections.find(c => c.source === node.id)) {
         let connlist = connections.filter(c => c.source === node.id);
         if (connlist.length === 1) {
             let filterNode = editor.getNode(connlist[0].target);
-            if (existsInPipeline(pipeline, filterNode.label) || existsInPipeline(branchNodes, filterNode.label)) {
+            if (filterNode.label !== "Storage" && (existsInPipeline(pipeline, filterNode.label) || existsInPipeline(branchNodes, filterNode.label))) {
                 return [];
             }
             branchNodes.push(filterNode.label);
@@ -489,7 +492,7 @@ function rgbToHex(r, g, b) {
 
 function existsInPipeline(pipeline, filterName) {
     for (let i = 0; i < pipeline.length; i++) {
-        if (typeof (pipeline[i] === "string")) {
+        if (typeof (pipeline[i]) === "string") {
             if (pipeline[i] === filterName) {
                 return true;
             }
