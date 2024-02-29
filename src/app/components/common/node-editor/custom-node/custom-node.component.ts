@@ -70,6 +70,7 @@ export class CustomNodeComponent implements OnChanges {
   fetchedTask;
   fetchedService;
   showPlusIcon = false;
+  showDeleteIcon = false;
   nodeId = '';
 
   @HostBinding("class.selected") get selected() {
@@ -158,18 +159,18 @@ export class CustomNodeComponent implements OnChanges {
         }
       }
       else {
+        this.elRef.nativeElement.style.borderWidth = "3px";
         this.addFilterSubscription = this.flowEditorService.showAddFilterIcon.subscribe((data) => {
           if (data) {
             if (data.addedFiltersIdColl.includes(this.nodeId)) {
               this.elRef.nativeElement.style.outline = "#EA9999 dashed 2px";
+              this.elRef.nativeElement.style.borderWidth = "2px";
               this.showPlusIcon = true;
+              this.showDeleteIcon = true;
             }
           }
         })
       }
-    }
-    if (this.data.label === 'Applications') {
-      this.helpText = 'Filters';
     }
     if (this.data.label === 'AddService') {
       this.data.label = "";
@@ -391,6 +392,10 @@ export class CustomNodeComponent implements OnChanges {
             this.toastService.error(error.statusText);
           }
         });
+  }
+
+  removeFilter(){
+    this.flowEditorService.removeFilter.next({id: this.nodeId});
   }
 
   ngOnDestroy() {
