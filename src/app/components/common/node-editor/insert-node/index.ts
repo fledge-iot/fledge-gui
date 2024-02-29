@@ -13,7 +13,7 @@ export function checkIntersection(
   position: Position,
   size: { width: number; height: number },
   connections: (readonly [string, HTMLElement])[]
-): false | string {
+) {
   const paths = connections.map(([id, element]) => {
     const path = element.querySelector("path");
 
@@ -22,13 +22,14 @@ export function checkIntersection(
     return [id, element, path] as const;
   });
 
-  for (const [id, , path] of paths) {
+  let intersectedConnections = []
+  for (const [id, , path] of paths.reverse()) {
     if (checkElementIntersectPath({ ...position, ...size }, path)) {
-      return id;
+      intersectedConnections.push(id);
     }
   }
 
-  return false;
+  return intersectedConnections;
 }
 
 type Props<S extends Schemes> = {
@@ -52,9 +53,9 @@ export function insertableNodes<S extends Schemes>(
       );
 
       if (view) {
-        const id = checkIntersection(view.position, node, cons);
+        const intersectedConnections = checkIntersection(view.position, node, cons);   
 
-        if (id) {
+        for(let id of intersectedConnections){
           const exist = editor.getConnection(id);
 
           if (exist.source !== node.id && exist.target !== node.id) {

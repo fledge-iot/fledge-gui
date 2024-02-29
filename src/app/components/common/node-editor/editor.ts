@@ -282,16 +282,6 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
     else {
         nodesGrid(area, data.services, socket, rolesService, data.from);
     }
-
-
-    addCustomBackground(area);
-    // AreaExtensions.simpleNodesOrder(area);
-    AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
-        accumulating: AreaExtensions.accumulateOnCtrl()
-    });
-    AreaExtensions.restrictor(area, {
-        scaling: () => ({ min: 0.5, max: 2 }),
-    });
 }
 
 function setCustomBackground(area: AreaPlugin<Schemes, AreaExtra>,) {
@@ -540,7 +530,9 @@ async function removeOldConnection(nodeId) {
       new ClassicPreset.Connection(source, "port", t, "port")
     );
   }
-  await editor.removeConnection(inputConnId);
+  if(inputConnId){
+    await editor.removeConnection(inputConnId);
+  }
   for (let c of outputConnections) {
     await editor.removeConnection(c);
   }
