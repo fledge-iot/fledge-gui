@@ -396,7 +396,7 @@ span.tooltip {
 }
 
 .bi-sm {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .bi-md {
@@ -404,11 +404,11 @@ span.tooltip {
 }
 
 .bi-lg {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
 }
 
 .bi-xl {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
 }
 
 .bi:hover {
