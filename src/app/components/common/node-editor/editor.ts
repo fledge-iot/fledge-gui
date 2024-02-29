@@ -354,8 +354,13 @@ export function getUpdatedFilterPipeline() {
         console.log("self loop exist in pipeline")
         return false;
     }
-}
-
+  }
+  
+  // Remove duplicate connections
+  connections = connections.filter((connection, index) => {
+    return index === connections.findIndex(c => connection.source === c.source && connection.target === c.target);
+  });
+  
     let updatedFilterPipeline = [];
     let sourceNode = nodes[0];
     while (connections.find(c => c.source === sourceNode.id)) {
