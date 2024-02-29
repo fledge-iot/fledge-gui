@@ -86,7 +86,7 @@ export class AddControlPipelineComponent implements OnInit {
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
     public rolesService: RolesService,
-    private dialogService: DialogService,
+    public dialogService: DialogService,
     private response: ResponseHandler,
     public sharedService: SharedService,
     private schedulesService: SchedulesService,
@@ -95,7 +95,13 @@ export class AddControlPipelineComponent implements OnInit {
     private docService: DocService,
     private filterService: FilterService,
     private router: Router,
-    private toast: ToastService) { }
+    private toast: ToastService) {
+  }
+
+  canDeactivate(): Observable<boolean> | boolean {
+    return this.dialogService.confirm({ id: 'unsaved-changes-dialog', changeExist: this.unsavedChangesInFilterForm });
+  }
+
 
   ngOnInit(): void {
     let callsStack = {
@@ -289,9 +295,8 @@ export class AddControlPipelineComponent implements OnInit {
     this.unsavedChangesInFilterForm = false;
     if (this.addFilterClicked) {
       this.isAddFilterWizard = this.addFilterClicked;
-      return;
     }
-    this.router.navigate(['control-dispatcher/pipelines']);
+    this.dialogService.continueEmitter.emit(true);
   }
 
   deletePipeline(id: number) {
