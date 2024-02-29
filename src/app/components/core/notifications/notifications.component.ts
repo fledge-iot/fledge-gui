@@ -277,12 +277,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.additionalServiceModalComponent.getServiceInfo(serviceInfo, null, 'notification');
   }
 
-  onNotifyConfigureModal(event = false) {
-    if (!event) {
-      // enabling/disabling service is taking time to get updated state, so need to add some wait
-      setTimeout(() => {
-        this.checkNotificationServiceStatus(true);
-      }, 3000);
+  onNotifyConfigureModal(handleEvent) {
+    if (!handleEvent) {
+      this.checkNotificationServiceStatus(true);
     }
   }
 

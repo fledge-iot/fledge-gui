@@ -26,7 +26,6 @@ import { AdditionalServicesUtils } from '../additional-services-utils.service';
   styleUrls: ['./additional-service-modal.component.css']
 })
 export class AdditionalServiceModalComponent {
-  enabled: Boolean;
   category: any;
   isServiceAvailable = false;
   isServiceEnabled = false;
@@ -49,7 +48,6 @@ export class AdditionalServiceModalComponent {
   @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild('configComponent') configComponent: ConfigurationGroupComponent;
-  @Output() notifyService: EventEmitter<any> = new EventEmitter<any>();
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   changedConfig: any;
@@ -105,7 +103,6 @@ export class AdditionalServiceModalComponent {
     if (pollingScheduleID) {
       this.pollingScheduleID = pollingScheduleID;
     }
-    this.enabled = this.isServiceEnabled;
     this.btnText = 'Add';
     if (this.isServiceAvailable) {
       this.showDeleteBtn = true;
@@ -140,11 +137,7 @@ export class AdditionalServiceModalComponent {
         serviceModal.classList.add('is-active');
         return;
       }
-      if (!this.navigateFromParent) {
-        this.notifyService.emit(isCancelEvent);
-      } else {
-        this.notify.emit(isCancelEvent);
-      }
+      this.notify.emit(isCancelEvent);
       serviceModal.classList.remove('is-active');
       this.category = '';
       this.service = <Service>{};
@@ -327,19 +320,19 @@ export class AdditionalServiceModalComponent {
     }
     this.additionalServicesUtils.enableService(serviceName);
     // enabling service takes time to get the updated state from API
-    this.getUpdatedSate();
+    this.getUpdatedSate('running');
   }
 
-  getUpdatedSate() {
+  getUpdatedSate(status) {
     let i = 1;
     this.servicesApiService.getServiceByType(this.serviceType)
       .pipe(
         take(1),
         // checking the response object for service.
-        // if pacakge.status !== 'running' then
+        // if service.status !== 'running'/'shutdown' then
         // throw an error to re-fetch:
         tap((response: any) => {
-          if (response['services'][0].status !== 'running') {
+          if (response['services'][0].status !== status) {
             i++;
             throw response;
           }
@@ -366,7 +359,6 @@ export class AdditionalServiceModalComponent {
             // Throw error after exceed number of attempts
             concatMap(o => {
               if (i > 3) {
-                this.isServiceEnabled = false;
                 this.ngProgress.done();
                 this.toggleModal(false);
                 this.reenableButton.emit(false);   
@@ -378,7 +370,6 @@ export class AdditionalServiceModalComponent {
           ))
       ).subscribe(() => {
         this.ngProgress.done();
-        this.isServiceEnabled = true;
         this.toggleModal(false);
         this.reenableButton.emit(false);
         this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
@@ -387,9 +378,7 @@ export class AdditionalServiceModalComponent {
 
   disableService() {
     this.additionalServicesUtils.disableService(this.serviceName, this.fromNavbar, this.serviceProcessName);
-    this.reenableButton.emit(false);
-    this.toggleModal(false);
-    this.isServiceEnabled = false;
+    this.getUpdatedSate('shutdown');
   }
 
   deleteService(serviceName) {
@@ -412,10 +401,10 @@ export class AdditionalServiceModalComponent {
     if (!this.isServiceAvailable) {
       this.addServiceEvent();
     } else {
-      if (this.isServiceEnabled && !this.form.controls['enabled'].value) {
+      if (!this.form.controls['enabled'].value) {
         this.disableService();
       }
-      if (!this.isServiceEnabled && this.form.controls['enabled'].value) {
+      if (this.form.controls['enabled'].value) {
         this.enableService();
       }
     }

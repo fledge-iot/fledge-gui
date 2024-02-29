@@ -255,11 +255,8 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   }
 
   getData(handleEvent = true) {
-    // added 3 second wait after redirecting list page from modal beacuse it takes sometime to get data from API
     if (!handleEvent) {
-      setTimeout(() => {
-        this.showServices();
-      }, 3000);
+      this.showServices();
     }
   }
 
@@ -331,7 +328,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
       .pipe(
         take(1),
         // checking the response object for service.
-        // if pacakge.status !== 'running'/'shutdown' then
+        // if service.status !== 'running'/'shutdown' then
         // throw an error to re-fetch:
         tap((response: any) => {
           if (response['services'][0].status !== expectedStatus) {
