@@ -313,14 +313,14 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     if (["shutdown", "disabled"].includes(this.service.state)) {
         this.additionalServicesUtils.enableService(this.service.name);
         // enabling service takes time to get the updated state from API
-        this.getUpdatedSate('running');
+        this.getUpdatedState('running');
     } else {
       this.additionalServicesUtils.disableService(this.service.name);
-      this.getUpdatedSate('shutdown');  
+      this.getUpdatedState('shutdown');  
     }
   }
 
-  getUpdatedSate(status) {
+  getUpdatedState(status) {
     let i = 1;
     const initialDelay = 1000;
     const expectedStatus = status;

@@ -320,10 +320,10 @@ export class AdditionalServiceModalComponent {
     }
     this.additionalServicesUtils.enableService(serviceName);
     // enabling service takes time to get the updated state from API
-    this.getUpdatedSate('running');
+    this.getUpdatedState('running');
   }
 
-  getUpdatedSate(status) {
+  getUpdatedState(status) {
     let i = 1;
     this.servicesApiService.getServiceByType(this.serviceType)
       .pipe(
@@ -378,7 +378,7 @@ export class AdditionalServiceModalComponent {
 
   disableService() {
     this.additionalServicesUtils.disableService(this.serviceName, this.fromNavbar, this.serviceProcessName);
-    this.getUpdatedSate('shutdown');
+    this.getUpdatedState('shutdown');
   }
 
   deleteService(serviceName) {
