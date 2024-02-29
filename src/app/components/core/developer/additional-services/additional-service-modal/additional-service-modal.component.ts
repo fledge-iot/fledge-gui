@@ -116,12 +116,12 @@ export class AdditionalServiceModalComponent {
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     if (!this.serviceInstallationState) {
-      this.toggleModal(false, true);
+      this.toggleModal(false, false);
       this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
     }
   }
 
-  public toggleModal(isOpen: Boolean, isCancelEvent = false) {
+  public toggleModal(isOpen: Boolean, eventToHandle = true) {
     this.serviceInstallationState = false;
     this.reenableButton.emit(false);
     const serviceModal = <HTMLDivElement>document.getElementById('additional-service-modal');
@@ -137,7 +137,7 @@ export class AdditionalServiceModalComponent {
         serviceModal.classList.add('is-active');
         return;
       }
-      this.notify.emit(isCancelEvent);
+      this.notify.emit(eventToHandle);
       serviceModal.classList.remove('is-active');
       this.category = '';
       this.service = <Service>{};

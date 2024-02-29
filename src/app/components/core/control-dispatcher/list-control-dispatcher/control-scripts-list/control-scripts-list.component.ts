@@ -122,7 +122,7 @@ export class ControlScriptsListComponent implements OnInit {
   }
 
   onNotify(handleEvent) {
-    if (!handleEvent) {
+    if (handleEvent) {
       this.addDispatcherServiceComponent.getInstalledServicesList();
     }
     return;

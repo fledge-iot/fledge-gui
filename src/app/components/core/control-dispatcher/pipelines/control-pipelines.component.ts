@@ -190,7 +190,7 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
   }
 
   onNotify(handleEvent) {
-    if (!handleEvent) {
+    if (handleEvent) {
       this.addDispatcherServiceComponent.getInstalledServicesList();
     }
     return;

@@ -278,7 +278,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   onNotifyConfigureModal(handleEvent) {
-    if (!handleEvent) {
+    if (handleEvent) {
       this.checkNotificationServiceStatus(true);
     }
   }

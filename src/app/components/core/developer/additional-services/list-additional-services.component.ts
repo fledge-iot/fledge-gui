@@ -255,7 +255,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   }
 
   getData(handleEvent = true) {
-    if (!handleEvent) {
+    if (handleEvent) {
       this.showServices();
     }
   }
