@@ -69,6 +69,10 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
 
   insertableNodes(area, {
     async createConnections(node, connection) {
+      if(node.label === "South" || node.label === "Storage" || node.label === "North"){
+        return;
+      }
+      removeOldConnection(node.id)
       await editor.addConnection(
         new Connection(
           editor.getNode(connection.source),
@@ -513,4 +517,31 @@ export function removeNode(nodeId) {
         editor.removeConnection(c.id);
     }
     editor.removeNode(nodeId);
+}
+
+async function removeOldConnection(nodeId) {
+  let connections = editor.getConnections();
+  let source: Node;
+  let target: Node[] = [];
+  let inputConnId;
+  let outputConnections = [];
+  for (let i = 0; i < connections.length; i++) {
+    if (connections[i].source === nodeId) {
+      target.push(editor.getNode(connections[i].target));
+      outputConnections.push(connections[i].id);
+    }
+    if (connections[i].target === nodeId) {
+      source = editor.getNode(connections[i].source);
+      inputConnId = connections[i].id;
+    }
+  }
+  for (let t of target) {
+    await editor.addConnection(
+      new ClassicPreset.Connection(source, "port", t, "port")
+    );
+  }
+  await editor.removeConnection(inputConnId);
+  for (let c of outputConnections) {
+    await editor.removeConnection(c);
+  }
 }
