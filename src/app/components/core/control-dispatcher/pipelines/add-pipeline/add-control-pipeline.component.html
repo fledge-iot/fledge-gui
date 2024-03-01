@@ -293,7 +293,7 @@
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
                   <button class="button is-small" type="button"
-                    [routerLink]="['/control-dispatcher/pipelines']">Cancel</button>
+                    (click)="navigateOnControlPipelineListPage()">Cancel</button>
                 </p>
                 <p class="control">
                   <button (click)="onSubmit(pipelineForm)" type="submit" class="button is-small is-link"
