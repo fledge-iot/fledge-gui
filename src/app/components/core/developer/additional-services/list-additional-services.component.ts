@@ -125,6 +125,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
       installed: this.servicesApiService.getInstalledServices(),
       available: this.servicesApiService.getAvailableServices()
     }
+    this.ngProgress.start();
     forkJoin(callsStack)
       .pipe(
         map((response: any) => {

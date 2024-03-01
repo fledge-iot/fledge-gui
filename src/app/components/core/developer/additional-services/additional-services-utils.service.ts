@@ -35,41 +35,41 @@ export class AdditionalServicesUtils {
     }
 
     disableService(serviceName, fromNavbar = false, serviceProcessName = null) {
-        this.ngProgress.start();
-        this.schedulesService.disableScheduleByName(serviceName).subscribe(
-          (data) => {
-            this.ngProgress.done();
-            this.navToAdditionalServicePage(fromNavbar, serviceProcessName);
-            this.alertService.success(data["message"], true);
-          },
-          (error) => {
-            this.ngProgress.done();
-            if (error.status === 0) {
-              console.log("service down ", error);
-            } else {
-              this.alertService.error(error.statusText);
-            }
+      this.ngProgress.start();
+      this.schedulesService.disableScheduleByName(serviceName).subscribe(
+        (data) => {
+          this.ngProgress.done();
+          this.navToAdditionalServicePage(fromNavbar, serviceProcessName);
+          this.alertService.success(data["message"], true);
+        },
+        (error) => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log("service down ", error);
+          } else {
+            this.alertService.error(error.statusText);
           }
-        );
+        }
+      );
     }
     
     deleteService(serviceName, fromNavbar = false, serviceProcessName = null) {
-        this.ngProgress.start();
-        this.servicesApiService.deleteService(serviceName).subscribe(
-            (data: any) => {
-            this.ngProgress.done();
-            this.navToAdditionalServicePage(fromNavbar, serviceProcessName);
-            this.alertService.success(data["result"], true);
-            },
-            (error) => {
-            this.ngProgress.done();
-            if (error.status === 0) {
-                console.log("service down ", error);
-            } else {
-                this.alertService.error(error.statusText);
-            }
-            }
-        );
+      this.ngProgress.start();
+      this.servicesApiService.deleteService(serviceName).subscribe(
+          (data: any) => {
+          this.ngProgress.done();
+          this.navToAdditionalServicePage(fromNavbar, serviceProcessName);
+          this.alertService.success(data["result"], true);
+          },
+          (error) => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+              console.log("service down ", error);
+          } else {
+              this.alertService.error(error.statusText);
+          }
+          }
+      );
     }
 
     navToAdditionalServicePage(fromNavbar, serviceProcessName) {
