@@ -16,7 +16,6 @@ import { FooterComponent } from './components/layout/footer';
 import { LoginComponent } from './components/layout/login';
 import { CertificateBaseLoginComponent } from './components/layout/certificate-base-login';
 import { NavbarComponent } from './components/layout/navbar/navbar.component';
-import { SystemAlertComponent } from './components/layout/navbar/system-alert/system-alert.component';
 import { SideMenuComponent } from './components/layout/side-menu/side-menu.component';
 import { DirectivesModule } from './directives/directives.module';
 import { AuthRequiredGuard, DataViewRoleGuard } from './guards';
@@ -100,7 +99,6 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     FooterComponent,
     SideMenuComponent,
     NavbarComponent,
-    SystemAlertComponent,
     SettingsComponent,
     ServiceDiscoveryComponent,
     ShutdownModalComponent,

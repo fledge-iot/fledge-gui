@@ -337,7 +337,7 @@
       </div>
     </div>
     <div class="navbar-item">
-      <div *ngIf="pingInfo.isAlive && pingInfo.alertCount">
+      <div *ngIf="pingInfo.isAlive && pingInfo?.alertCount">
         <app-system-alert [alertCount]='pingInfo.alertCount'></app-system-alert>
       </div>
     </div>

@@ -21,7 +21,7 @@ import { SharedService } from '../../../services/shared.service';
 import Utils from '../../../utils';
 import { RestartModalComponent } from '../../common/restart-modal/restart-modal.component';
 import { ShutdownModalComponent } from '../../common/shut-down/shutdown-modal.component';
-import { SystemAlertComponent } from './system-alert/system-alert.component';
+import { SystemAlertComponent } from '../../core/system-alert/system-alert.component';
 
 @Component({
   selector: 'app-navbar',
