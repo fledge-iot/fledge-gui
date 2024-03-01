@@ -601,11 +601,8 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   navigateOnControlPipelineListPage() {
-    // small delay to effect backend changes before moving to list page
-    setTimeout(() => {
-      this.unsavedChangesInFilterForm = false;
-      this.router.navigate(['control-dispatcher/pipelines']);
-    }, 1000);
+    this.unsavedChangesInFilterForm = false;
+    this.router.navigate(['control-dispatcher/pipelines']);
   }
 
   goToLink(urlSlug: string) {
