@@ -127,7 +127,4 @@
     cursor: not-allowed;
   }
 
-  .message.is-warning {
-    margin-top: 10px;
-    margin-bottom: 0px !important;
-  }
+

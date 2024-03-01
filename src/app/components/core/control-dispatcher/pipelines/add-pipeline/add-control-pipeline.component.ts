@@ -263,8 +263,8 @@ export class AddControlPipelineComponent implements OnInit {
       .subscribe((data: any) => {
         this.ngProgress.done();
         this.reenableButton.emit(false);
-        // close modal
-        this.closeModal('confirmation-dialog');
+        // close modals
+        this.unsavedChangesInFilterForm = false;
         this.router.navigate(['control-dispatcher/pipelines']);
         this.alertService.success(data.message);
       }, error => {
