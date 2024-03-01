@@ -244,7 +244,7 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   discardUnsavedChanges() {
-    this.dialogService.continueEmitter.emit(true);
+    this.dialogService.resetChangesEmitter.emit(true);
     // check orphan filters
     const orphanFilters = this.filterPipeline.filter(f => !this.controlPipeline?.filters.includes(f));
     if (orphanFilters.length > 0) {

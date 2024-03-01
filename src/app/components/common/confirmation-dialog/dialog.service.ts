@@ -6,7 +6,7 @@ import { Observable, of } from 'rxjs';
 })
 export class DialogService {
   private modals: any[] = [];
-  @Output() continueEmitter: EventEmitter<boolean>; // = new EventEmitter();
+  @Output() resetChangesEmitter: EventEmitter<boolean>;
 
   add(modal: any) {
     // add modal to array of active modals
@@ -30,16 +30,17 @@ export class DialogService {
     modal?.close();
   }
 
+  // unsave changes dialog
   confirm(data: { id: string, changeExist: boolean }): Observable<boolean> {
     if (data.changeExist == true) {
-      this.continueEmitter = new EventEmitter();
+      this.resetChangesEmitter = new EventEmitter();
       this.open(data.id);
-      this.continueEmitter.emit(false);
-      return this.continueEmitter;
+      this.resetChangesEmitter.emit(false);
+      return this.resetChangesEmitter;
     }
     else {
-      this.continueEmitter?.emit(true);
-      this.continueEmitter?.complete();
+      this.resetChangesEmitter?.emit(true);
+      this.resetChangesEmitter?.complete();
       return of(true)
     }
   }
