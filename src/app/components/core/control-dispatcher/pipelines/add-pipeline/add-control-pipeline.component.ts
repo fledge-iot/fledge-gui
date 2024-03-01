@@ -99,8 +99,6 @@ export class AddControlPipelineComponent implements OnInit {
   canDeactivate(): Observable<boolean> | boolean {
     return this.dialogService.confirm({ id: 'unsaved-changes-dialog', changeExist: this.unsavedChangesInFilterForm });
   }
-
-
   ngOnInit(): void {
     let callsStack = {
       sources: this.controlPipelinesService.getSourceDestinationTypeList('source'),
@@ -225,22 +223,12 @@ export class AddControlPipelineComponent implements OnInit {
     this.filterPipeline = filters;
   }
 
-  getControlPipeline() {
-    /** request started */
-    this.ngProgress.start();
-    this.controlPipelinesService.getPipelineByID(this.pipelineID)
-      .subscribe((data: any) => {
-        this.ngProgress.done();
-        this.getPipelineData(data);
-      }, error => {
-        /** request completed */
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
+  refresh() {
+    const currentUrl = this.router.url;
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate([currentUrl]);
+    });
+
   }
 
   deleteFilterOnDiscardChanges(orphanFilters: string[]) {
@@ -256,6 +244,7 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   discardUnsavedChanges() {
+    this.dialogService.continueEmitter.emit(true);
     // check orphan filters
     const orphanFilters = this.filterPipeline.filter(f => !this.controlPipeline?.filters.includes(f));
     if (orphanFilters.length > 0) {
@@ -265,7 +254,6 @@ export class AddControlPipelineComponent implements OnInit {
     if (this.addFilterClicked) {
       this.isAddFilterWizard = this.addFilterClicked;
     }
-    this.dialogService.continueEmitter.emit(true);
   }
 
   deletePipeline(id: number) {

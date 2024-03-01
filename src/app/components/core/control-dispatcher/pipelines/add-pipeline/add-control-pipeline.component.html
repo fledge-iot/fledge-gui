@@ -10,7 +10,7 @@
         </li>
       </ul>
     </nav>
-    <button type="button" *ngIf="editMode" (click)="getControlPipeline()" class="button is-small" title="Reload"
+    <button type="button" *ngIf="editMode" (click)="refresh()" class="button is-small" title="Reload"
       id="refresh-check">
       <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
     </button>
@@ -337,10 +337,7 @@
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" type="button" (click)="closeModal('unsaved-changes-dialog')">Cancel</button>
-    <button class="button is-small is-danger" type="button" (click)="discardUnsavedChanges()"
+    <button class="button is-small is-warning" type="button" (click)="discardUnsavedChanges()"
       [appDisableUntilResponse]="reenableButton">Discard</button>
   </footer>
 </app-confirmation-dialog>
-
-<!-- <app-filter-alert *ngIf="unsavedChangesInFilterForm" (discardChanges)="discardUnsavedChanges()"
-  [filerDialogData]='confirmationDialogData'></app-filter-alert> -->
