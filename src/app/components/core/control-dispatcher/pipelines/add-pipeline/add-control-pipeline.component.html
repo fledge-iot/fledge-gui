@@ -2,7 +2,7 @@
   <div class="navbar-item">
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
-        <li><a (click)="navigateToCPList()">Control Pipelines</a></li>
+        <li><a [routerLink]="['/control-dispatcher/pipelines']">Control Pipelines</a></li>
         <li class="is-active">
           <a href="#" aria-current="page">
             {{ editMode ? pipelineName : 'Add' }}
@@ -292,7 +292,8 @@
             <div class="column">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
-                  <button class="button is-small" type="button" (click)="onCancel()">Cancel</button>
+                  <button class="button is-small" type="button"
+                    [routerLink]="['/control-dispatcher/pipelines']">Cancel</button>
                 </p>
                 <p class="control">
                   <button (click)="onSubmit(pipelineForm)" type="submit" class="button is-small is-link"

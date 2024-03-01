@@ -20,7 +20,6 @@ import { ControlDispatcherService } from '../../../../../services/control-dispat
 import { DocService } from '../../../../../services/doc.service';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../../utils';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
-import { FilterAlertComponent } from '../../../filter/filter-alert/filter-alert.component';
 import { FilterListComponent } from '../../../filter/filter-list/filter-list.component';
 
 export interface ControlPipeline {
@@ -50,7 +49,6 @@ export interface Destination {
 })
 export class AddControlPipelineComponent implements OnInit {
   @ViewChild('pipelineForm') pipelineForm: NgForm;
-  @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
   @ViewChild('filtersListComponent') filtersListComponent: FilterListComponent;
   selectedExecution = '';
   selectedSourceType = { cpsid: null, name: '' };
@@ -157,14 +155,6 @@ export class AddControlPipelineComponent implements OnInit {
       });
   }
 
-  navigateToCPList() {
-    if (this.unsavedChangesInFilterForm) {
-      this.showConfirmationDialog();
-      return;
-    }
-    this.router.navigate(['/control-dispatcher/pipelines']);
-  }
-
   getPipelineData(pipelineData: ControlPipeline) {
     this.controlPipeline = pipelineData;
     this.pipelineName = pipelineData.name;
@@ -216,19 +206,6 @@ export class AddControlPipelineComponent implements OnInit {
     this.isAddFilterWizard = isClicked;
   }
 
-  /**
-  * Open confirmation modal
-  */
-  showConfirmationDialog() {
-    this.confirmationDialogData = {
-      id: '',
-      name: '',
-      message: 'Do you want to discard unsaved changes?',
-      key: 'unsavedConfirmation'
-    };
-    this.filterAlert.toggleModal(true);
-  }
-
   addNewFitlerInPipeline(data: any) {
     this.isAddFilterWizard = false;
     this.addFilterClicked = false;
@@ -264,14 +241,6 @@ export class AddControlPipelineComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
-  }
-
-  onCancel() {
-    if (this.unsavedChangesInFilterForm) {
-      this.showConfirmationDialog();
-      return;
-    }
-    this.router.navigate(['control-dispatcher/pipelines']);
   }
 
   deleteFilterOnDiscardChanges(orphanFilters: string[]) {
