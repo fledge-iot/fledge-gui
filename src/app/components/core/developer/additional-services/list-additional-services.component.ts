@@ -192,7 +192,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
         if (foundSchedule !== undefined) {
           replacement.name = foundSchedule.name;
           replacement.added = true;
-          replacement.state = foundSchedule.enabled === true ? 'enabled' : 'disabled';
+          replacement.state = foundSchedule.enabled === true ? 'running' : 'disabled';
           atIndex = idx;
         } else {
           replacement.name = '';
@@ -261,8 +261,8 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     }
   }
 
-  deleteService(serviceName) {
-    this.additionalServicesUtils.deleteService(serviceName);
+  async deleteService(serviceName) {
+    await this.additionalServicesUtils.deleteService(serviceName);
     this.reenableButton.emit(false);
     this.closeModal('delete-confirmation-dialog');
     this.closeServiceModal();

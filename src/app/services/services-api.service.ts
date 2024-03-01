@@ -39,19 +39,19 @@ export class ServicesApiService {
   /**
   *  POST  | /fledge/service
   */
-  addService(payload) {
-    return this.http.post(this.GET_SERVICES_URL, payload).pipe(
+  async addService(payload) {
+    return await this.http.post(this.GET_SERVICES_URL, payload).pipe(
       map(response => response),
-      catchError(error => throwError(error)));
+      catchError(error => throwError(error))).toPromise();
   }
 
   /**
    *  DELETE | /fledge/service/{svc_name}
    */
-  deleteService(svc) {
-    return this.http.delete(this.GET_SERVICES_URL + '/' + encodeURIComponent(svc)).pipe(
+   async deleteService(svc) {
+    return await this.http.delete(this.GET_SERVICES_URL + '/' + encodeURIComponent(svc)).pipe(
       map(response => response),
-      catchError(error => throwError(error)));
+      catchError(error => throwError(error))).toPromise();
   }
 
   /**
@@ -108,10 +108,10 @@ export class ServicesApiService {
    * POST | /fledge/service?action=install
    * @param payload service data
    */
-  installService(payload: any) {
-    return this.http.post(`${this.GET_SERVICES_URL}?action=install`, payload).pipe(
+  async installService(payload: any) {
+    return await this.http.post(`${this.GET_SERVICES_URL}?action=install`, payload).pipe(
       map(response => response),
-      catchError(error => throwError(error)));
+      catchError(error => throwError(error))).toPromise();
   }
 
   monitorPluginInstallationStatus(statusURI: string) {

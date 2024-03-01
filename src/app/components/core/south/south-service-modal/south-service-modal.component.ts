@@ -332,14 +332,14 @@ export class SouthServiceModalComponent implements OnInit {
         });
   }
 
-  deleteService(svc: any) {
+  async deleteService(svc: any) {
     // check if user deleting service without saving previous changes in filters
     if (this.unsavedChangesInFilterForm) {
       this.filtersListComponent.discard();
     }
     this.ngProgress.start();
-    this.servicesApiService.deleteService(svc.name)
-      .subscribe(
+    await this.servicesApiService.deleteService(svc.name)
+      .then(
         (data) => {
           this.ngProgress.done();
           this.reenableButton.emit(false);

@@ -159,7 +159,7 @@ export class AdditionalServiceModalComponent {
         });
   }
 
-  addService(installationState = false) {
+  async addService(installationState = false) {
     const formValues = this.state$.getValue() || {};
     const name = formValues.serviceName;
     const payload = {
@@ -170,8 +170,8 @@ export class AdditionalServiceModalComponent {
     if (!installationState) {
       this.ngProgress.start();
     }
-    this.servicesApiService.addService(payload)
-      .subscribe(
+    await this.servicesApiService.addService(payload)
+      .then(
         () => {
           this.ngProgress.done();
           this.alertService.success('Service added successfully.', true);
@@ -253,7 +253,7 @@ export class AdditionalServiceModalComponent {
     this.dialogService.close(id);
   }
 
-  installService() {
+  async installService() {
     this.serviceInstallationState = true;
     const servicePayload = {
       format: 'repository',
@@ -264,8 +264,8 @@ export class AdditionalServiceModalComponent {
     /** request started */
     this.ngProgress.start();
     this.alertService.activityMessage('Installing service...', true);
-    this.servicesApiService.installService(servicePayload).
-      subscribe(
+    await this.servicesApiService.installService(servicePayload).
+      then(
         (data: any) => {
           this.pollServiceInstallationStatus(data, servicePayload.name);
         },
@@ -381,18 +381,18 @@ export class AdditionalServiceModalComponent {
     this.getUpdatedState('shutdown');
   }
 
-  deleteService(serviceName) {
-    this.additionalServicesUtils.deleteService(serviceName, this.fromNavbar, this.serviceProcessName);
-    this.reenableButton.emit(false);
+  async deleteService(serviceName) {
+    await this.additionalServicesUtils.deleteService(serviceName, this.fromNavbar, this.serviceProcessName);
     this.closeDeleteModal("dialog-delete-confirmation");
     this.toggleModal(false);
+    this.reenableButton.emit(false);
   }
 
   public async addServiceEvent() {
     if (!this.isInstalled) {
-      this.installService();
+      await this.installService();
     } else {
-      this.addService(false);
+      await this.addService(false);
     }
   }
 

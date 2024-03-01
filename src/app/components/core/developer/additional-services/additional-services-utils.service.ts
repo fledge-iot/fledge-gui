@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
   })
 
 export class AdditionalServicesUtils {
-    
+   
     constructor(
         private router: Router,
         public schedulesService: SchedulesService,
@@ -53,9 +53,9 @@ export class AdditionalServicesUtils {
       );
     }
     
-    deleteService(serviceName, fromNavbar = false, serviceProcessName = null) {
+    async deleteService(serviceName, fromNavbar = false, serviceProcessName = null) {
       this.ngProgress.start();
-      this.servicesApiService.deleteService(serviceName).subscribe(
+      await this.servicesApiService.deleteService(serviceName).then(
           (data: any) => {
           this.ngProgress.done();
           this.navToAdditionalServicePage(fromNavbar, serviceProcessName);
