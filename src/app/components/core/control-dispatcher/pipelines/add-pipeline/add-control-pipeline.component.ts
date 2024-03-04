@@ -244,7 +244,7 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   discardUnsavedChanges() {
-    this.dialogService.resetChangesEmitter.emit(true);
+    this.dialogService.resetChangesEmitter?.emit(true);
     // check orphan filters
     const orphanFilters = this.filterPipeline.filter(f => !this.controlPipeline?.filters.includes(f));
     if (orphanFilters.length > 0) {
@@ -603,6 +603,7 @@ export class AddControlPipelineComponent implements OnInit {
   navigateOnControlPipelineListPage() {
     // small delay to effect backend changes before moving to list page
     setTimeout(() => {
+      this.discardUnsavedChanges();
       this.unsavedChangesInFilterForm = false;
       this.router.navigate(['control-dispatcher/pipelines']);
     }, 1000);
