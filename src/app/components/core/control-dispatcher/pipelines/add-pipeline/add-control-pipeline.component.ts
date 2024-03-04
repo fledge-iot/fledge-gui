@@ -2,12 +2,13 @@ import { ChangeDetectorRef, Component, OnInit, ViewChild, EventEmitter } from '@
 import { NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty, isEqual } from 'lodash';
-import { forkJoin, of } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
 import { delay, map } from 'rxjs/operators';
 import { CustomValidator } from '../../../../../directives/custom-validator';
 import {
   AlertService, AssetsService,
   ControlPipelinesService,
+  FilterService,
   NotificationsService, ProgressBarService,
   ResponseHandler,
   RolesService,
@@ -19,7 +20,6 @@ import { ControlDispatcherService } from '../../../../../services/control-dispat
 import { DocService } from '../../../../../services/doc.service';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../../utils';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
-import { FilterAlertComponent } from '../../../filter/filter-alert/filter-alert.component';
 import { FilterListComponent } from '../../../filter/filter-list/filter-list.component';
 
 export interface ControlPipeline {
@@ -49,7 +49,6 @@ export interface Destination {
 })
 export class AddControlPipelineComponent implements OnInit {
   @ViewChild('pipelineForm') pipelineForm: NgForm;
-  @ViewChild(FilterAlertComponent) filterAlert: FilterAlertComponent;
   @ViewChild('filtersListComponent') filtersListComponent: FilterListComponent;
   selectedExecution = '';
   selectedSourceType = { cpsid: null, name: '' };
@@ -85,16 +84,21 @@ export class AddControlPipelineComponent implements OnInit {
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
     public rolesService: RolesService,
-    private dialogService: DialogService,
+    public dialogService: DialogService,
     private response: ResponseHandler,
     public sharedService: SharedService,
     private schedulesService: SchedulesService,
     private controlService: ControlDispatcherService,
     public notificationService: NotificationsService,
     private docService: DocService,
+    private filterService: FilterService,
     private router: Router,
-    private toast: ToastService) { }
+    private toast: ToastService) {
+  }
 
+  canDeactivate(): Observable<boolean> | boolean {
+    return this.dialogService.confirm({ id: 'unsaved-changes-dialog', changeExist: this.unsavedChangesInFilterForm });
+  }
   ngOnInit(): void {
     let callsStack = {
       sources: this.controlPipelinesService.getSourceDestinationTypeList('source'),
@@ -149,14 +153,6 @@ export class AddControlPipelineComponent implements OnInit {
       });
   }
 
-  navigateToCPList() {
-    if (this.unsavedChangesInFilterForm) {
-      this.showConfirmationDialog();
-      return;
-    }
-    this.router.navigate(['/control-dispatcher/pipelines']);
-  }
-
   getPipelineData(pipelineData: ControlPipeline) {
     this.controlPipeline = pipelineData;
     this.pipelineName = pipelineData.name;
@@ -208,19 +204,6 @@ export class AddControlPipelineComponent implements OnInit {
     this.isAddFilterWizard = isClicked;
   }
 
-  /**
-  * Open confirmation modal
-  */
-  showConfirmationDialog() {
-    this.confirmationDialogData = {
-      id: '',
-      name: '',
-      message: 'Do you want to discard unsaved changes?',
-      key: 'unsavedConfirmation'
-    };
-    this.filterAlert.toggleModal(true);
-  }
-
   addNewFitlerInPipeline(data: any) {
     this.isAddFilterWizard = false;
     this.addFilterClicked = false;
@@ -240,39 +223,37 @@ export class AddControlPipelineComponent implements OnInit {
     this.filterPipeline = filters;
   }
 
-  getControlPipeline() {
-    /** request started */
-    this.ngProgress.start();
-    this.controlPipelinesService.getPipelineByID(this.pipelineID)
-      .subscribe((data: any) => {
-        this.ngProgress.done();
-        this.getPipelineData(data);
-      }, error => {
-        /** request completed */
-        this.ngProgress.done();
-        if (error.status === 0) {
-          console.log('service down ', error);
-        } else {
-          this.alertService.error(error.statusText);
-        }
-      });
+  refresh() {
+    const currentUrl = this.router.url;
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate([currentUrl]);
+    });
+
   }
 
-  onCancel() {
-    if (this.unsavedChangesInFilterForm) {
-      this.showConfirmationDialog();
-      return;
+  deleteFilterOnDiscardChanges(orphanFilters: string[]) {
+    let filters: Observable<Object>[] = [];
+    orphanFilters.forEach(f => {
+      filters.push(this.filterService.deleteFilter(f));
+    });
+    if (filters.length > 0) {
+      forkJoin(filters).subscribe(() => {
+        error => console.log(error)
+      });
     }
-    this.router.navigate(['control-dispatcher/pipelines']);
   }
 
   discardUnsavedChanges() {
+    this.dialogService.resetChangesEmitter?.emit(true);
+    // check orphan filters
+    const orphanFilters = this.filterPipeline.filter(f => !this.controlPipeline?.filters.includes(f));
+    if (orphanFilters.length > 0) {
+      this.deleteFilterOnDiscardChanges(orphanFilters);
+    }
     this.unsavedChangesInFilterForm = false;
     if (this.addFilterClicked) {
       this.isAddFilterWizard = this.addFilterClicked;
-      return;
     }
-    this.router.navigate(['control-dispatcher/pipelines']);
   }
 
   deletePipeline(id: number) {
@@ -282,8 +263,8 @@ export class AddControlPipelineComponent implements OnInit {
       .subscribe((data: any) => {
         this.ngProgress.done();
         this.reenableButton.emit(false);
-        // close modal
-        this.closeModal('confirmation-dialog');
+        // close modals
+        this.unsavedChangesInFilterForm = false;
         this.router.navigate(['control-dispatcher/pipelines']);
         this.alertService.success(data.message);
       }, error => {
@@ -347,7 +328,7 @@ export class AddControlPipelineComponent implements OnInit {
         this.selectedDestinationType = value === 'Select Destination Type' ? '' : value;
         this.getDestinationNameList();
         // mark form invalid, if Source/Destination Name is not selected yet
-         if (!['Any', 'Broadcast'].includes(this.selectedDestinationType.name)) {
+        if (!['Any', 'Broadcast'].includes(this.selectedDestinationType.name)) {
           this.pipelineForm.form.setErrors({ 'invalid': true });
         }
         break;
@@ -603,14 +584,14 @@ export class AddControlPipelineComponent implements OnInit {
     this.controlPipelinesService.createPipeline(payload)
       .subscribe(() => {
         this.ngProgress.done();
-        this.reenableButton.emit(false); 
+        this.reenableButton.emit(false);
         this.alertService.success(`Control Pipeline ${payload['name']} created successfully.`);
         this.pipelineForm.form.markAsUntouched();
         this.pipelineForm.form.markAsPristine();
         this.navigateOnControlPipelineListPage();
       }, error => {
         this.ngProgress.done();
-        this.reenableButton.emit(false); 
+        this.reenableButton.emit(false);
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
@@ -619,9 +600,15 @@ export class AddControlPipelineComponent implements OnInit {
       });
   }
 
+  cancel() {
+    this.discardUnsavedChanges();
+    this.navigateOnControlPipelineListPage();
+  }
+
   navigateOnControlPipelineListPage() {
     // small delay to effect backend changes before moving to list page
     setTimeout(() => {
+      this.unsavedChangesInFilterForm = false;
       this.router.navigate(['control-dispatcher/pipelines']);
     }, 1000);
   }
@@ -645,14 +632,14 @@ export class AddControlPipelineComponent implements OnInit {
     this.ngProgress.start();
     this.controlPipelinesService.updatePipeline(this.pipelineID, payload)
       .subscribe((data: any) => {
-        this.reenableButton.emit(false); 
+        this.reenableButton.emit(false);
         this.pipelineName = payload.name;
         this.toast.success(data.message);
         /** request completed */
         this.ngProgress.done();
         this.navigateOnControlPipelineListPage();
       }, error => {
-        this.reenableButton.emit(false); 
+        this.reenableButton.emit(false);
         /** request completed */
         this.ngProgress.done();
         if (error.status === 0) {
