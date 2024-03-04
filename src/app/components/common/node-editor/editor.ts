@@ -69,9 +69,6 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
 
   insertableNodes(area, {
     async createConnections(node, connection) {
-      if(node.label === "South" || node.label === "Storage" || node.label === "North"){
-        return;
-      }
       removeOldConnection(node.id)
       await editor.addConnection(
         new Connection(
