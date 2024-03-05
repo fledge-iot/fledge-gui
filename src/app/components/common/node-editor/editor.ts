@@ -69,6 +69,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
 
   insertableNodes(area, {
     async createConnections(node, connection) {
+      removeOldConnection(node.id)
       await editor.addConnection(
         new Connection(
           editor.getNode(connection.source),
@@ -278,16 +279,6 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
     else {
         nodesGrid(area, data.services, socket, rolesService, data.from);
     }
-
-
-    addCustomBackground(area);
-    // AreaExtensions.simpleNodesOrder(area);
-    AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
-        accumulating: AreaExtensions.accumulateOnCtrl()
-    });
-    AreaExtensions.restrictor(area, {
-        scaling: () => ({ min: 0.5, max: 2 }),
-    });
 }
 
 function setCustomBackground(area: AreaPlugin<Schemes, AreaExtra>,) {
@@ -360,8 +351,13 @@ export function getUpdatedFilterPipeline() {
         console.log("self loop exist in pipeline")
         return false;
     }
-}
-
+  }
+  
+  // Remove duplicate connections
+  connections = connections.filter((connection, index) => {
+    return index === connections.findIndex(c => connection.source === c.source && connection.target === c.target);
+  });
+  
     let updatedFilterPipeline = [];
     let sourceNode = nodes[0];
     while (connections.find(c => c.source === sourceNode.id)) {
@@ -424,13 +420,16 @@ function getBranchNodes(pipeline, connections, node) {
     if (node.label === "Storage") {
         return;
     }
+    if (existsInPipeline(pipeline, node.label)) {
+      return [];
+    }
     let branchNodes = [];
     branchNodes.push(node.label);
     while (connections.find(c => c.source === node.id)) {
         let connlist = connections.filter(c => c.source === node.id);
         if (connlist.length === 1) {
             let filterNode = editor.getNode(connlist[0].target);
-            if (existsInPipeline(pipeline, filterNode.label) || existsInPipeline(branchNodes, filterNode.label)) {
+            if (filterNode.label !== "Storage" && (existsInPipeline(pipeline, filterNode.label) || existsInPipeline(branchNodes, filterNode.label))) {
                 return [];
             }
             branchNodes.push(filterNode.label);
@@ -489,7 +488,7 @@ function rgbToHex(r, g, b) {
 
 function existsInPipeline(pipeline, filterName) {
     for (let i = 0; i < pipeline.length; i++) {
-        if (typeof (pipeline[i] === "string")) {
+        if (typeof (pipeline[i]) === "string") {
             if (pipeline[i] === filterName) {
                 return true;
             }
@@ -510,4 +509,33 @@ export function removeNode(nodeId) {
         editor.removeConnection(c.id);
     }
     editor.removeNode(nodeId);
+}
+
+async function removeOldConnection(nodeId) {
+  let connections = editor.getConnections();
+  let source: Node;
+  let target: Node[] = [];
+  let inputConnId;
+  let outputConnections = [];
+  for (let i = 0; i < connections.length; i++) {
+    if (connections[i].source === nodeId) {
+      target.push(editor.getNode(connections[i].target));
+      outputConnections.push(connections[i].id);
+    }
+    if (connections[i].target === nodeId) {
+      source = editor.getNode(connections[i].source);
+      inputConnId = connections[i].id;
+    }
+  }
+  for (let t of target) {
+    await editor.addConnection(
+      new ClassicPreset.Connection(source, "port", t, "port")
+    );
+  }
+  if(inputConnId){
+    await editor.removeConnection(inputConnId);
+  }
+  for (let c of outputConnections) {
+    await editor.removeConnection(c);
+  }
 }
