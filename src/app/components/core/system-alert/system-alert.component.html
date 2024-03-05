@@ -9,10 +9,25 @@
   </div>
   <div class="dropdown-menu" id="dropdown-menu" role="menu">
     <div class="dropdown-content">
-      <a *ngFor="let alert of systemAlerts" class="dropdown-item">
-        <i [ngClass]="applyClass(s?.urgency)" class="bi bi-exclamation-triangle"></i>
-        {{alert.message}}
-      </a>
+      <ng-container *ngFor="let alert of systemAlerts">
+        <a class="dropdown-item">
+          <i [ngClass]="applyClass(alert?.urgency)" class="bi bi bi-exclamation-triangle-fill"></i>
+          {{alert.message}}
+        </a>
+        <div class="columns mr-1 margin-bottom">
+          <div class="column">
+            <div class="field is-grouped is-pulled-right">          
+              <p *ngIf="rolesService.hasEditPermissions()" class="control">
+                <button class="button is-small is-link" (click)="performAction()">Action</button>
+              </p>
+              <p class="control">
+                <button class="button is-small" (click)="deleteAlert(alert?.key)" [appDisableUntilResponse]="reenableButton">Hide</button>
+              </p>
+            </div>
+          </div>
+        </div>
+        <hr class="dropdown-divider">
+      </ng-container>
     </div>
   </div>
 </div>

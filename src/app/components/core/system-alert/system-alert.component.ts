@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { AlertService, SystemAlertService, ProgressBarService } from '../../../services';
+import { Component, Input, EventEmitter } from '@angular/core';
+import { AlertService, SystemAlertService, ProgressBarService, RolesService } from '../../../services';
 import { SystemAlerts } from './../../../models/system-alert';
 
 @Component({
@@ -11,11 +11,13 @@ import { SystemAlerts } from './../../../models/system-alert';
 export class SystemAlertComponent {
   @Input() alertCount: number;
   systemAlerts = SystemAlerts['alerts'];
+  public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(
     private alertService: AlertService,
     private systemAlertService: SystemAlertService,
-    public ngProgress: ProgressBarService) {
+    public ngProgress: ProgressBarService,
+    private rolesService: RolesService) {
   }
 
   ngOnInit() {}
@@ -30,24 +32,61 @@ export class SystemAlertComponent {
 
   getAlerts() {
     this.systemAlertService.getAlerts().
-      subscribe(
-        (data) => {
-          this.systemAlerts = data['alerts'];
-          console.log('systemAlerts', this.systemAlerts)
-        },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    subscribe(
+      (data) => {
+        this.systemAlerts = data['alerts'];
+        console.log('systemAlerts', this.systemAlerts)
+      },
+      error => {
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      }
+    );
+  }
+
+  performAction() {
+    console.log('WIP');
+  }
+
+  deleteAlert(key: string) {
+    this.ngProgress.start();
+    this.systemAlertService.deleteAlert(key).
+    subscribe(
+      (data: any) => {
+        this.ngProgress.done();
+        this.reenableButton.emit(false);
+
+        // Remove from local arrays of systemAlerts
+        this.systemAlerts = this.systemAlerts.filter(alert => alert.key !== key);  
+        this.alertService.success(data.message, true);
+      },
+      error => {
+        this.ngProgress.done();
+        this.reenableButton.emit(false);
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      }
+    );
   }
 
   applyClass(urgency: string) {
-    console.log('urgency', urgency);
-    // if (urgency.toLowerCase() === "normal") {
-    //   WIP
-    // }
+    if (urgency.toLowerCase() === "critical") {
+      return "has-text-danger";
+    }
+    if (urgency.toLowerCase() === "high") {
+      return "has-text-warning";
+    }
+    if (urgency.toLowerCase() === "normal") {
+      return "has-text-success";
+    }
+    if (urgency.toLowerCase() === "low") {
+      return "has-text-info";
+    }
   }
 }
