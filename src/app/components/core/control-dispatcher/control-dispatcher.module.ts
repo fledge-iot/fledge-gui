@@ -35,6 +35,7 @@ import { APIFlowComponent } from './api-flow/api-flow.component';
 import { AddEditAPIFlowComponent } from './api-flow/add-edit-api-flow/add-edit-api-flow.component';
 import { DispatcherServiceConfigComponent } from './dispatcher-service-config/dispatcher-service-config.component';
 import { DeveloperModule } from './../developer/developer.module';
+import { canDeactivateGuard } from '../../../guards/can-deactivate/can-deactivate.guard';
 
 const routes: Routes = [
 
@@ -80,11 +81,13 @@ const routes: Routes = [
   {
     path: 'pipelines/add',
     component: AddControlPipelineComponent,
-    canActivate: [RolesGuard]
+    canActivate: [RolesGuard],
+    canDeactivate: [canDeactivateGuard]
   },
   {
     path: 'pipelines/:id',
-    component: AddControlPipelineComponent
+    component: AddControlPipelineComponent,
+    canDeactivate: [canDeactivateGuard]
   },
   {
     path: 'entry-points',
