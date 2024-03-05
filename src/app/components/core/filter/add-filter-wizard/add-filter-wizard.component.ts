@@ -5,17 +5,15 @@ import { sortBy, isEmpty, cloneDeep } from 'lodash';
 import {
   AlertService, ConfigurationService, FilterService, ServicesApiService,
   ProgressBarService, FileUploaderService,
-  ConfigurationControlService,
-  ToastService
+  ConfigurationControlService
 } from '../../../../services';
-import { concatMap, delay, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
+import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { of, Subscription, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FlowEditorService } from '../../../common/node-editor/flow-editor.service';
-
 
 @Component({
   selector: 'app-add-filter-wizard',
@@ -64,7 +62,6 @@ export class AddFilterWizardComponent implements OnInit {
     private configurationService: ConfigurationService,
     private fileUploaderService: FileUploaderService,
     private alertService: AlertService,
-    private toast: ToastService,
     private service: ServicesApiService,
     public flowEditorService: FlowEditorService,
     private docService: DocService,
@@ -419,7 +416,6 @@ export class AddFilterWizardComponent implements OnInit {
     this.filterService.saveFilter(payload)
       .subscribe(
         (data: any) => {
-          this.toast.success(data.filter + ' filter added successfully.');
           if (this.from === 'control-pipeline') {
             if (files) {
               this.uploadScript(payload.name, files);
@@ -467,6 +463,7 @@ export class AddFilterWizardComponent implements OnInit {
         } else {
           this.reenableButton.emit(false);
         }
+        this.alertService.success(data.result, true);
       },
         (error) => {
           this.reenableButton.emit(false);
@@ -565,16 +562,20 @@ export class AddFilterWizardComponent implements OnInit {
 
   public updateFilterPipeline(payload, filterName) {
     this.filterService.updateFilterPipeline(payload, this.serviceName)
-      .subscribe(() => {
+      .subscribe((data: any) => {
         if (payload?.files.length > 0) {
           const name = this.serviceName + '_' + filterName
           this.uploadScript(name, payload?.files);
         }
-        console.log("pipeline updated");
+        this.alertService.success(data.result, true);
         this.router.navigate(['/flow/editor', this.from, this.serviceName, 'details']);
       },
         (error) => {
-          console.log('service down ', error);
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText, true);
+          }
         });
   }
 

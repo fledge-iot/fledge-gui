@@ -456,4 +456,13 @@ span.tooltip {
 .required-field {
   border-color: red;
 }
+
+.message.is-warning {
+  margin-bottom: 0px !important;
+}
+
+.message.is-warning .message-body {
+padding: 1em 0.75em !important
+}
+
 /*****************/
