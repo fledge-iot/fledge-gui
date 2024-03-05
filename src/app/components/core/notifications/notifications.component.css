@@ -36,15 +36,6 @@ button {
   margin: auto;
 }
 
-.message.is-warning {
-  margin-top: 10px;
-}
-
 .fade {
   background-color: #f5f5f5 !important;
-}
-
-.message-body {
-  padding-right: 0.7rem !important;
-  padding-left: 1.2rem !important;
 }
