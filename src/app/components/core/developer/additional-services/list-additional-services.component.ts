@@ -133,7 +133,8 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
             serviceTypes.push(s["process"]);
           });
           this.getInstalledServices(serviceTypes);
-          this.hideLoadingText();          
+          this.hideLoadingText();
+          this.ngProgress.done();         
         } else {
           this.getAllServices();
         }
@@ -162,6 +163,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
           });
           this.getInstalledServices(serviceTypes);
           this.hideLoadingText();
+          this.ngProgress.done();
         } else {
           this.showServices();
         }
