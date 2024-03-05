@@ -109,4 +109,4 @@
 </div>
 <app-notification-modal (notify)='onNotify()' [notification]="notification"></app-notification-modal>
 <app-view-logs></app-view-logs>
-<app-additional-service-modal (notify)="onNotifyConfigureModal()"></app-additional-service-modal>
+<app-additional-service-modal (notify)="onNotifyConfigureModal($event)"></app-additional-service-modal>

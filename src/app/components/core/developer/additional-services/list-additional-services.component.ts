@@ -115,43 +115,88 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
 
     });
     this.showLoadingText();
-    this.showServices();
+    this.checkSchedulesAndServices();
+  }
+
+  public checkSchedulesAndServices() {
+    this.schedulesService.getSchedules().
+      subscribe((data: Schedule) => {
+        this.ngProgress.start();
+        this.servicesSchedules = data['schedules'].filter((sch) => this.expectedServices.some(es => es.schedule_process == sch.processName));
+        this.pollingScheduleID = data['schedules'].find(s => s.processName === 'manage')?.id;
+        
+        // If schedule of all services available then no need to make other API calls
+        if (this.servicesSchedules?.length === this.expectedServices.length) {
+          this.availableServicePkgs = [];
+          let serviceTypes = [];
+          this.expectedServices.forEach(function (s) {
+            serviceTypes.push(s["process"]);
+          });
+          this.getInstalledServices(serviceTypes);
+          this.hideLoadingText();
+          this.ngProgress.done();         
+        } else {
+          this.getAllServices();
+        }
+      },
+        (error) => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  public getAllServices() {
+   this.servicesApiService.getAllServices().
+      subscribe((data: Service) => {
+        this.servicesRegistry = data['services'].filter((s) => this.expectedServices.some(es => es.type == s.type));
+        const addedServices = this.servicesSchedules.filter(sch => this.servicesRegistry.some(({name}) => sch.name === name));      
+        // If we get expected services in the response of /service API then no need to make other (/installed, /available) API calls
+        if (addedServices.length === this.expectedServices.length) {
+          this.availableServicePkgs = [];
+          let serviceTypes = [];
+          this.expectedServices.forEach(function (s) {
+            serviceTypes.push(s["process"]);
+          });
+          this.getInstalledServices(serviceTypes);
+          this.hideLoadingText();
+          this.ngProgress.done();
+        } else {
+          this.showServices();
+        }
+      },
+        (error) => {
+          /** request done */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   showServices() {
     let callsStack = {
-      services: this.servicesApiService.getAllServices(),
-      schedules: this.schedulesService.getSchedules(),
       installed: this.servicesApiService.getInstalledServices(),
       available: this.servicesApiService.getAvailableServices()
     }
+    this.ngProgress.start();
     forkJoin(callsStack)
       .pipe(
         map((response: any) => {
-          const services = <Array<Service[]>>response.services;
-          const schedules = <Array<Schedule[]>>response.schedules;
           const installed = <Array<string[]>>response.installed;
           const available = <Array<AvailableServices>>response.available;
           const result: any[] = [];
           result.push({
-            ...{ 'services': services },
-            ...{ 'schedules': schedules },
             ...{ 'installed': installed },
             ...{ 'available': available }
           });
-
-          this.getServices(services["services"]);
-          this.getSchedules(schedules["schedules"]);
           this.getInstalledServices(installed["services"]);
           this.getAvaiableServices(available["services"]);
-
-          let installedServicePkgsNames = [];
-          this.installedServicePkgs.forEach(function (s) {
-            installedServicePkgsNames.push(s["package"]);
-          });
-
-          // Remove service name from available list if it is already installed
-          this.availableServicePkgs = this.availableServicePkgs.filter((s) => !installedServicePkgsNames.includes(s.package));
           this.hideLoadingText();
           return result;
         })
@@ -180,7 +225,6 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.installedServicePkgs = this.expectedServices.filter(
       (s) => svcs.includes(s.process)
     );
-
     let replacement;
     let atIndex = -1;
     this.installedServicePkgs.forEach((installed, idx) => {
@@ -191,7 +235,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
         if (foundSchedule !== undefined) {
           replacement.name = foundSchedule.name;
           replacement.added = true;
-          replacement.state = foundSchedule.enabled === true ? 'enabled' : 'disabled';
+          replacement.state = foundSchedule.enabled === true ? 'running' : 'disabled';
           atIndex = idx;
         } else {
           replacement.name = '';
@@ -223,17 +267,6 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.availableServicePkgs = availableServices.sort((a, b) => a.type.localeCompare(b.type))
   }
 
-  public getServices(services) {
-    // We don't care for services which are not in expectedServices
-    this.servicesRegistry = services.filter((s) => this.expectedServices.some(es => es.type == s.type));
-  }
-
-  public getSchedules(schedules): void {
-    // We don't care for schedules which are not in expectedServices
-    this.servicesSchedules = schedules.filter((sch) => this.expectedServices.some(es => es.schedule_process == sch.processName));
-    this.pollingScheduleID = schedules.find(s => s.processName === 'manage')?.id;
-  }
-
   /**
     * Open Settings modal
     */
@@ -254,19 +287,33 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.serviceModal.getServiceInfo(service, this.pollingScheduleID);
   }
 
-  getData() {
-    // added 3 second wait after redirecting list page from modal beacuse it takes sometime to get data from API
-    setTimeout(() => {
-      this.showServices();
-    }, 3000);
+  getData(handleEvent = true) {
+    if (handleEvent) {
+      this.checkSchedulesAndServices();
+    }
   }
 
-  deleteService(serviceName) {
-    this.additionalServicesUtils.deleteService(serviceName);
-    this.reenableButton.emit(false);
-    this.closeModal('delete-confirmation-dialog');
-    this.closeServiceModal();
-    this.getData();
+  deleteService(serviceName: string) {
+    this.ngProgress.start();
+    this.servicesApiService.deleteService(serviceName).subscribe(
+      (data: any) => {
+        this.ngProgress.done();
+        this.reenableButton.emit(false);
+        this.alertService.success(data["result"], true);
+        this.closeModal('delete-confirmation-dialog');
+        this.closeServiceModal();   
+        this.getData();
+      },
+      (error) => {
+        this.ngProgress.done();
+        this.reenableButton.emit(false);
+        if (error.status === 0) {
+            console.log("service down ", error);
+        } else {
+            this.alertService.error(error.statusText);
+        }
+      }
+    );
   }
 
   closeServiceModal() {
@@ -314,24 +361,25 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     if (["shutdown", "disabled"].includes(this.service.state)) {
         this.additionalServicesUtils.enableService(this.service.name);
         // enabling service takes time to get the updated state from API
-        this.getUpdatedSate();
+        this.getUpdatedState('running');
     } else {
       this.additionalServicesUtils.disableService(this.service.name);
-      this.afterStateUpdate();  
+      this.getUpdatedState('shutdown');  
     }
   }
 
-  getUpdatedSate() {
+  getUpdatedState(status) {
     let i = 1;
     const initialDelay = 1000;
+    const expectedStatus = status;
     this.servicesApiService.getServiceByType(this.service.type)
       .pipe(
         take(1),
         // checking the response object for service.
-        // if pacakge.status !== 'running' then
+        // if service.status !== 'running'/'shutdown' then
         // throw an error to re-fetch:
         tap((response: any) => {
-          if (response['services'][0].status !== 'running') {
+          if (response['services'][0].status !== expectedStatus) {
             i++;
             throw response;
           }
@@ -373,7 +421,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.reenableButton.emit(false);
     this.closeModal('confirmation-dialog');
     this.closeServiceModal();
-    this.getData();
+    this.checkSchedulesAndServices();
   }
 
   setService(service) {

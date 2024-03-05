@@ -189,12 +189,11 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
     this.additionalServiceModalComponent.getServiceInfo(this.serviceInfo, null, 'dispatcher');
   }
 
-  onNotify(event) {
-    if (event?.isCancelEvent) {
-      return;
-    } else {
+  onNotify(handleEvent) {
+    if (handleEvent) {
       this.addDispatcherServiceComponent.getInstalledServicesList();
     }
+    return;
   }
 
   public ngOnDestroy(): void {

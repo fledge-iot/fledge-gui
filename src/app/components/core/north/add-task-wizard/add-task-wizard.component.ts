@@ -297,7 +297,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     return this.fileUploaderService.getConfigurationPropertyFiles(configuration, true);
   }
 
-  public addService() {
+  addService() {
     const payload = {
       name: this.taskForm.value['name'].trim(),
       type: this.taskType.toLowerCase(),

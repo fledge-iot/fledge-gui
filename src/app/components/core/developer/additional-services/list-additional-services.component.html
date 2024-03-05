@@ -10,7 +10,7 @@
         </li>
       </ul>
     </nav>
-    <button class="button is-small" id="refresh-check" title="Reload" (click)="showServices()">
+    <button class="button is-small" id="refresh-check" title="Reload" (click)="checkSchedulesAndServices()">
       <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
     </button>
   </div>
@@ -21,7 +21,7 @@
         </div>
         <ng-container *ngIf="!showLoading">
           <div class="has-text-centered" *ngIf="availableServicePkgs.length === 0 && installedServicePkgs.length === 0">
-            <small class="no-rec">No service is available for the given repository</small>
+            <small class="no-rec">No service packages are available with the configured archives repository.</small>
           </div>
           <table class="table is-responsive service-table is-hoverable mb-0">
             <tbody>
@@ -74,7 +74,7 @@
     </div>
   </div>
 </div>
-<app-additional-service-modal (notifyService)="getData()"></app-additional-service-modal>
+<app-additional-service-modal (notify)="getData($event)"></app-additional-service-modal>
 
 <app-confirmation-dialog id="delete-confirmation-dialog">
   <header class="modal-card-head">
