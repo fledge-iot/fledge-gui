@@ -235,7 +235,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
    * Method to add service
    * @param payload  to pass in request
    */
-  public addService() {
+  addService() {
     let config = this.serviceForm?.value['config'];
     const payload = {
       name: this.serviceForm.value['name'].trim(),

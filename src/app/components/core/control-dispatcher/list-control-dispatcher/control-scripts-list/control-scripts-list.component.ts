@@ -121,11 +121,11 @@ export class ControlScriptsListComponent implements OnInit {
     this.additionalServiceModalComponent.getServiceInfo(this.serviceInfo, null, 'dispatcher');
   }
 
-  onNotify(event) {
-    if (event?.isCancelEvent) {
-      return;
+  onNotify(handleEvent) {
+    if (handleEvent) {
+      this.addDispatcherServiceComponent.getInstalledServicesList();
     }
-    this.addDispatcherServiceComponent.getInstalledServicesList();
+    return;
   }
 
   public ngOnDestroy(): void {
