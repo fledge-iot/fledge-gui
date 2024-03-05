@@ -668,9 +668,9 @@ export class NodeEditorComponent implements OnInit {
     }
   }
 
-  async deleteService() {
-    await this.servicesApiService.deleteService(this.deleteServiceName)
-      .then((data: any) => {
+  deleteService() {
+    this.servicesApiService.deleteService(this.deleteServiceName)
+      .subscribe((data: any) => {
         this.toastService.success(data['result']);
         this.router.navigate(['/flow/editor', this.from]);
       },

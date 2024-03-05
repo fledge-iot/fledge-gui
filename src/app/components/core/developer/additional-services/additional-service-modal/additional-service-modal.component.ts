@@ -159,7 +159,7 @@ export class AdditionalServiceModalComponent {
         });
   }
 
-  async addService(installationState = false) {
+  addService(installationState = false) {
     const formValues = this.state$.getValue() || {};
     const name = formValues.serviceName;
     const payload = {
@@ -170,8 +170,8 @@ export class AdditionalServiceModalComponent {
     if (!installationState) {
       this.ngProgress.start();
     }
-    await this.servicesApiService.addService(payload)
-      .then(
+    this.servicesApiService.addService(payload)
+      .subscribe(
         () => {
           this.ngProgress.done();
           this.alertService.success('Service added successfully.', true);
@@ -253,7 +253,7 @@ export class AdditionalServiceModalComponent {
     this.dialogService.close(id);
   }
 
-  async installService() {
+  installService() {
     this.serviceInstallationState = true;
     const servicePayload = {
       format: 'repository',
@@ -263,9 +263,9 @@ export class AdditionalServiceModalComponent {
 
     /** request started */
     this.ngProgress.start();
-    this.alertService.activityMessage('Installing service...', true);
-    await this.servicesApiService.installService(servicePayload).
-      then(
+    this.alertService.activityMessage('Installing '+ this.serviceType +' service...', true);
+    this.servicesApiService.installService(servicePayload).
+      subscribe(
         (data: any) => {
           this.pollServiceInstallationStatus(data, servicePayload.name);
         },
@@ -381,18 +381,35 @@ export class AdditionalServiceModalComponent {
     this.getUpdatedState('shutdown');
   }
 
-  async deleteService(serviceName) {
-    await this.additionalServicesUtils.deleteService(serviceName, this.fromNavbar, this.serviceProcessName);
-    this.closeDeleteModal("dialog-delete-confirmation");
-    this.toggleModal(false);
-    this.reenableButton.emit(false);
+  deleteService(serviceName: string) {
+    this.ngProgress.start();
+    this.servicesApiService.deleteService(serviceName).subscribe(
+      (data: any) => {
+        this.ngProgress.done();
+        this.navToAdditionalService();
+        this.alertService.success(data["result"], true);
+        this.closeDeleteModal("dialog-delete-confirmation");
+        this.toggleModal(false);
+        this.reenableButton.emit(false);
+      },
+      (error) => {
+        this.ngProgress.done();
+        this.closeDeleteModal("dialog-delete-confirmation");
+        this.reenableButton.emit(false);
+        if (error.status === 0) {
+            console.log("service down ", error);
+        } else {
+            this.alertService.error(error.statusText);
+        }
+      }
+    );
   }
 
-  public async addServiceEvent() {
+  public addServiceEvent() {
     if (!this.isInstalled) {
-      await this.installService();
+      this.installService();
     } else {
-      await this.addService(false);
+      this.addService(false);
     }
   }
 

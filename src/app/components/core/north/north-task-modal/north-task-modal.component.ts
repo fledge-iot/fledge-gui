@@ -302,13 +302,13 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         });
   }
 
-  async deleteService(svc: any) {
+  deleteService(svc: any) {
     if (this.unsavedChangesInFilterForm) {
       this.filtersListComponent.discard();
     }
     this.ngProgress.start();
-    await this.servicesApiService.deleteService(svc.name)
-      .then(
+    this.servicesApiService.deleteService(svc.name)
+      .subscribe(
         (data: any) => {
           this.ngProgress.done();
           this.reenableButton.emit(false);

@@ -52,25 +52,6 @@ export class AdditionalServicesUtils {
         }
       );
     }
-    
-    async deleteService(serviceName, fromNavbar = false, serviceProcessName = null) {
-      this.ngProgress.start();
-      await this.servicesApiService.deleteService(serviceName).then(
-          (data: any) => {
-          this.ngProgress.done();
-          this.navToAdditionalServicePage(fromNavbar, serviceProcessName);
-          this.alertService.success(data["result"], true);
-          },
-          (error) => {
-          this.ngProgress.done();
-          if (error.status === 0) {
-              console.log("service down ", error);
-          } else {
-              this.alertService.error(error.statusText);
-          }
-          }
-      );
-    }
 
     navToAdditionalServicePage(fromNavbar, serviceProcessName) {
       if (fromNavbar) {

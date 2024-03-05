@@ -120,9 +120,10 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
 
   public checkSchedulesAndServices() {
     this.schedulesService.getSchedules().
-      subscribe((data: any) => {
-        this.servicesSchedules = data.schedules.filter((sch) => this.expectedServices.some(es => es.schedule_process == sch.processName));
-        this.pollingScheduleID = data.schedules.find(s => s.processName === 'manage')?.id;
+      subscribe((data: Schedule) => {
+        this.ngProgress.start();
+        this.servicesSchedules = data['schedules'].filter((sch) => this.expectedServices.some(es => es.schedule_process == sch.processName));
+        this.pollingScheduleID = data['schedules'].find(s => s.processName === 'manage')?.id;
         
         // If schedule of all services available then no need to make other API calls
         if (this.servicesSchedules?.length === this.expectedServices.length) {
@@ -138,6 +139,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
         }
       },
         (error) => {
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -148,8 +150,8 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
 
   public getAllServices() {
    this.servicesApiService.getAllServices().
-      subscribe((data: any) => {
-        this.servicesRegistry = data.services.filter((s) => this.expectedServices.some(es => es.type == s.type));
+      subscribe((data: Service) => {
+        this.servicesRegistry = data['services'].filter((s) => this.expectedServices.some(es => es.type == s.type));
         const addedServices = this.servicesSchedules.filter(sch => this.servicesRegistry.some(({name}) => sch.name === name));      
         // If we get expected services in the response of /service API then no need to make other (/installed, /available) API calls
         if (addedServices.length === this.expectedServices.length) {
@@ -289,12 +291,27 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     }
   }
 
-  async deleteService(serviceName) {
-    await this.additionalServicesUtils.deleteService(serviceName);
-    this.reenableButton.emit(false);
-    this.closeModal('delete-confirmation-dialog');
-    this.closeServiceModal();
-    this.getData();
+  deleteService(serviceName: string) {
+    this.ngProgress.start();
+    this.servicesApiService.deleteService(serviceName).subscribe(
+      (data: any) => {
+        this.ngProgress.done();
+        this.reenableButton.emit(false);
+        this.alertService.success(data["result"], true);
+        this.closeModal('delete-confirmation-dialog');
+        this.closeServiceModal();   
+        this.getData();
+      },
+      (error) => {
+        this.ngProgress.done();
+        this.reenableButton.emit(false);
+        if (error.status === 0) {
+            console.log("service down ", error);
+        } else {
+            this.alertService.error(error.statusText);
+        }
+      }
+    );
   }
 
   closeServiceModal() {

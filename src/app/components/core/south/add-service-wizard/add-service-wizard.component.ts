@@ -235,7 +235,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
    * Method to add service
    * @param payload  to pass in request
    */
-  async addService() {
+  addService() {
     let config = this.serviceForm?.value['config'];
     const payload = {
       name: this.serviceForm.value['name'].trim(),
@@ -250,8 +250,8 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
 
     /** request started */
     this.ngProgress.start();
-    await this.servicesApiService.addService(payload)
-      .then(
+    this.servicesApiService.addService(payload)
+      .subscribe(
         (response) => {
           /** request done */
           this.ngProgress.done();

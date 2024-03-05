@@ -297,7 +297,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     return this.fileUploaderService.getConfigurationPropertyFiles(configuration, true);
   }
 
-  async addService() {
+  addService() {
     const payload = {
       name: this.taskForm.value['name'].trim(),
       type: this.taskType.toLowerCase(),
@@ -312,8 +312,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     this.taskForm.get('name').markAsTouched();
     /** request started */
     this.ngProgress.start();
-    await this.servicesApiService.addService(payload)
-      .then(
+    this.servicesApiService.addService(payload)
+      .subscribe(
         (response) => {
           /** request done */
           this.ngProgress.done();
