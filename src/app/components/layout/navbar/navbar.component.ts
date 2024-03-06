@@ -33,7 +33,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   public timer: any = '';
   public pingData = {};
   public servicesRecord = [];
-  public pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '', alertCount: null };
+  public pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '', alertsCount: null };
   public shutDownData = {
     key: '',
     message: ''
@@ -214,7 +214,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.pingInfo = {
         isAlive: true, isAuth: false, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'],
-        version: this.pingData['version'], alertCount: this.pingData['alerts']
+        version: this.pingData['version'], alertsCount: this.pingData['alerts']
       };
       if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;
@@ -239,7 +239,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           this.pingInfo.isAuth = true;
         } else {
           this.sharedService.connectionInfo.next({ version: '', isServiceUp: false });
-          this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '', alertCount: this.pingData['alerts'] };
+          this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '', alertsCount: this.pingData['alerts'] };
         }
       });
   }

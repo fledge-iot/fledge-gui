@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 })
 
 export class SystemAlertComponent {
-  @Input() alertCount: number;
+  @Input() alertsCount: number;
   systemAlerts = SystemAlerts['alerts'];
   public reenableButton = new EventEmitter<boolean>(false);
 
@@ -106,9 +106,9 @@ export class SystemAlertComponent {
     if (message.includes('restarted')) {
       return "Show Logs";
     }
-    if (message.includes('updates')) {
+    if (message.includes('upgrade')) {
       return "Upgrade";
-    } 
+    }
   }
 
   applyClass(urgency: string) {
@@ -119,10 +119,10 @@ export class SystemAlertComponent {
       return "has-text-warning";
     }
     if (urgency.toLowerCase() === "normal") {
-      return "has-text-grey-light";
+      return "has-text-warning-light";
     }
     if (urgency.toLowerCase() === "low") {
-      return "text-grey-lighter";
+      return "has-text-info-light";
     }
   }
 }

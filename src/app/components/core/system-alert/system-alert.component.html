@@ -3,7 +3,7 @@
     <a class="button is-small system-alert" aria-haspopup="true" aria-controls="dropdown-menu" (click)="toggleDropdown()">
       <span class="icon icon-badge-container">
         <i class="bi bi-bell bi-lg" aria-hidden="true"></i>
-        <div class="icon-badge">{{alertCount}}</div>
+        <div class="icon-badge">{{alertsCount}}</div>
       </span>
     </a>
   </div>
@@ -25,18 +25,20 @@
           <!-- <div class="column is-1">
           </div>
           <div class="column is-pulled-right">
-            <span class="help">1 m ago</span>
+            <span class="help">1m ago</span>
           </div> -->
-          <div class="column pt-0 pb-0" *ngIf="rolesService.hasEditPermissions()">
-            <div class="field is-grouped is-pulled-right">          
-              <p class="control">
-                <button class="button is-tiny is-outlined is-link" (click)="performAction(alert)">{{getButtonText(alert?.message)}}</button>
-              </p>
-              <p class="control">
-                <button class="button is-tiny" (click)="deleteAlert(alert?.key)" [appDisableUntilResponse]="reenableButton">Hide</button>
-              </p>
+          <ng-container *ngIf="rolesService.hasEditPermissions()">
+            <div class="column pt-0 pb-0">
+              <div class="field is-grouped is-pulled-right">          
+                <p class="control">
+                  <button class="button is-tiny is-outlined is-link" (click)="performAction(alert)">{{getButtonText(alert?.message)}}</button>
+                </p>
+                <p class="control">
+                  <button class="button is-tiny" (click)="deleteAlert(alert?.key)" [appDisableUntilResponse]="reenableButton">Hide</button>
+                </p>
+              </div>
             </div>
-          </div>
+          </ng-container>
         </div>
         <hr *ngIf="i !== (systemAlerts.length -1)" class="dropdown-divider">
       </ng-container>
