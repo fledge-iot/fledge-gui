@@ -18,7 +18,7 @@ export class SystemAlertService {
       catchError(error => throwError(error)));
   }
 
-  deleteAlert(alertKey) {
+  public deleteAlert(alertKey) {
     return this.http.delete(environment.BASE_URL + 'alert/' + encodeURIComponent(alertKey)).pipe(
       map(response => response),
       catchError(error => throwError(error)));
@@ -26,6 +26,12 @@ export class SystemAlertService {
 
   public deleteAllAlerts() {
     return this.http.delete(environment.BASE_URL + 'alert').pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  public update() {
+    return this.http.put(environment.BASE_URL + 'update', null).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }

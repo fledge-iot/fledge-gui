@@ -306,6 +306,11 @@
     </div>
   </div>
   <div class="navbar-end">
+    <div class="navbar-item">
+      <div *ngIf="pingInfo.isAlive && pingInfo?.alertCount">
+        <app-system-alert [alertCount]='pingInfo.alertCount'></app-system-alert>  
+      </div>
+    </div>
     <div *ngIf='isUserLoggedIn' class="navbar-item user-dropdown">
       <div [ngClass]="{'is-hoverable': viewPort == 'desktop'}" class="dropdown is-right" id="dropdown-box"
         (click)="viewPort !== 'desktop'? toggleDropdown(): false">
@@ -334,11 +339,6 @@
             </ng-container>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="navbar-item">
-      <div *ngIf="pingInfo.isAlive && pingInfo?.alertCount">
-        <app-system-alert [alertCount]='pingInfo.alertCount'></app-system-alert>  
       </div>
     </div>
     <div class="navbar-item">

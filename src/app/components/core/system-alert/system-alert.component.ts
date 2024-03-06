@@ -1,6 +1,7 @@
 import { Component, Input, EventEmitter } from '@angular/core';
 import { AlertService, SystemAlertService, ProgressBarService, RolesService } from '../../../services';
-import { SystemAlerts } from './../../../models/system-alert';
+import { SystemAlert, SystemAlerts } from './../../../models/system-alert';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-system-alert',
@@ -15,6 +16,7 @@ export class SystemAlertComponent {
 
   constructor(
     private alertService: AlertService,
+    private router: Router,
     private systemAlertService: SystemAlertService,
     public ngProgress: ProgressBarService,
     private rolesService: RolesService) {
@@ -35,7 +37,6 @@ export class SystemAlertComponent {
     subscribe(
       (data) => {
         this.systemAlerts = data['alerts'];
-        console.log('systemAlerts', this.systemAlerts)
       },
       error => {
         if (error.status === 0) {
@@ -47,8 +48,34 @@ export class SystemAlertComponent {
     );
   }
 
-  performAction() {
-    console.log('WIP');
+  performAction(alert: SystemAlert) {
+    if (this.getButtonText(alert.message) === 'Show Logs') {
+      this.router.navigate(['logs/syslog'], { queryParams: { source: alert.key } });
+    }
+    if (this.getButtonText(alert.message) === 'Upgrade') {
+      this.update();
+    }
+    this.toggleDropdown();
+  }
+
+  update() {
+    this.ngProgress.start();
+    this.systemAlertService.update()
+    .subscribe(
+      (data) => {
+        this.ngProgress.done();
+        this.reenableButton.emit(false);
+        this.alertService.success(data['status']);
+      },
+      error => {
+        this.ngProgress.done();
+        this.reenableButton.emit(false);
+        if (error.status === 0) {
+          console.log('service down', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
   deleteAlert(key: string) {
@@ -73,6 +100,15 @@ export class SystemAlertComponent {
         }
       }
     );
+  }
+
+  getButtonText(message: string) {
+    if (message.includes('restarted')) {
+      return "Show Logs";
+    }
+    if (message.includes('updates')) {
+      return "Upgrade";
+    } 
   }
 
   applyClass(urgency: string) {

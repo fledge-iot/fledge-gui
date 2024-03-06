@@ -12,7 +12,7 @@
       <ng-container *ngFor="let alert of systemAlerts; let i=index;">
         <div class="columns dropdown-item pb-0">
           <a class="column is-vertical-center is-1">
-            <i [ngClass]="applyClass(alert?.urgency)" class="bi bi bi-exclamation-triangle-fill"></i>          
+            <i [ngClass]="applyClass(alert?.urgency)" class="bi bi bi-exclamation-triangle"></i>          
           </a>
           <div class="column">
             <div class="message-text">
@@ -21,10 +21,16 @@
           </div>
         </div>
         <div class="columns mb-0 mr-1">
-          <div class="column pt-0 pb-0">
+          <!-- TODO: Show timestamp -->
+          <!-- <div class="column is-1">
+          </div>
+          <div class="column is-pulled-right">
+            <span class="help">1 m ago</span>
+          </div> -->
+          <div class="column pt-0 pb-0" *ngIf="rolesService.hasEditPermissions()">
             <div class="field is-grouped is-pulled-right">          
-              <p *ngIf="rolesService.hasEditPermissions()" class="control">
-                <button class="button is-tiny is-link" (click)="performAction()">Action</button>
+              <p class="control">
+                <button class="button is-tiny is-outlined is-link" (click)="performAction(alert)">{{getButtonText(alert?.message)}}</button>
               </p>
               <p class="control">
                 <button class="button is-tiny" (click)="deleteAlert(alert?.key)" [appDisableUntilResponse]="reenableButton">Hide</button>
