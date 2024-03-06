@@ -83,10 +83,10 @@ export class SystemAlertComponent {
       return "has-text-warning";
     }
     if (urgency.toLowerCase() === "normal") {
-      return "has-text-success";
+      return "has-text-grey-light";
     }
     if (urgency.toLowerCase() === "low") {
-      return "has-text-info";
+      return "text-grey-lighter";
     }
   }
 }

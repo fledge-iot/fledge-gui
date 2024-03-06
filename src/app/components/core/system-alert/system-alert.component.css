@@ -3,18 +3,35 @@
 }
 
 .icon-badge {
+    padding-right: 0.4rem;
+    padding-left: 0.4rem;
     background-color: #f84a0a;
     font-size: 0.7rem;
     color: white;
     text-align: center;
-    width: 1rem;
-    height: 1rem;
     border-radius: 35%;
     position: absolute;
-    top: -5px;
-    left: 15px;
+    top: -11px;
+    left: 11px;
 }
 
 .system-alert {
     border: none;
+}
+
+.is-tiny {
+    font-size: 0.6rem !important;
+}
+
+.message-text {
+    white-space: normal;
+}
+
+#system-alert-dd .dropdown-item {
+    width: 20rem;
+}
+
+.is-vertical-center {
+    display: flex;
+    align-items: center;
 }

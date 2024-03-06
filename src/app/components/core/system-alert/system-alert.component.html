@@ -2,31 +2,37 @@
   <div class="dropdown-trigger">
     <a class="button is-small system-alert" aria-haspopup="true" aria-controls="dropdown-menu" (click)="toggleDropdown()">
       <span class="icon icon-badge-container">
-        <i class="fa-regular fa-bell" aria-hidden="true"></i>
+        <i class="bi bi-bell bi-lg" aria-hidden="true"></i>
         <div class="icon-badge">{{alertCount}}</div>
       </span>
     </a>
   </div>
   <div class="dropdown-menu" id="dropdown-menu" role="menu">
     <div class="dropdown-content">
-      <ng-container *ngFor="let alert of systemAlerts">
-        <a class="dropdown-item">
-          <i [ngClass]="applyClass(alert?.urgency)" class="bi bi bi-exclamation-triangle-fill"></i>
-          {{alert.message}}
-        </a>
-        <div class="columns mr-1 margin-bottom">
+      <ng-container *ngFor="let alert of systemAlerts; let i=index;">
+        <div class="columns dropdown-item pb-0">
+          <a class="column is-vertical-center is-1">
+            <i [ngClass]="applyClass(alert?.urgency)" class="bi bi bi-exclamation-triangle-fill"></i>          
+          </a>
           <div class="column">
+            <div class="message-text">
+              {{alert.message}}
+            </div>
+          </div>
+        </div>
+        <div class="columns mb-0 mr-1">
+          <div class="column pt-0 pb-0">
             <div class="field is-grouped is-pulled-right">          
               <p *ngIf="rolesService.hasEditPermissions()" class="control">
-                <button class="button is-small is-link" (click)="performAction()">Action</button>
+                <button class="button is-tiny is-link" (click)="performAction()">Action</button>
               </p>
               <p class="control">
-                <button class="button is-small" (click)="deleteAlert(alert?.key)" [appDisableUntilResponse]="reenableButton">Hide</button>
+                <button class="button is-tiny" (click)="deleteAlert(alert?.key)" [appDisableUntilResponse]="reenableButton">Hide</button>
               </p>
             </div>
           </div>
         </div>
-        <hr class="dropdown-divider">
+        <hr *ngIf="i !== (systemAlerts.length -1)" class="dropdown-divider">
       </ng-container>
     </div>
   </div>
