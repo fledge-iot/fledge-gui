@@ -561,6 +561,7 @@ export class NodeEditorComponent implements OnInit {
     if (!isEmpty(this.changedFilterConfig) && this.quickviewFilterName) {
       let catName = `${this.source}_${this.quickviewFilterName}`
       this.updateConfiguration(catName, this.changedFilterConfig, 'plugin-config');
+      this.patchFilterConfiguration();
     }
 
     if (this.apiCallsStack.length > 0) {
@@ -578,7 +579,8 @@ export class NodeEditorComponent implements OnInit {
           }
         });
         this.apiCallsStack = [];
-        this.getFilterCategory();
+        this.changedFilterConfig = [];
+        // this.getFilterCategory();
       });
     }
   }
@@ -702,6 +704,12 @@ export class NodeEditorComponent implements OnInit {
   patchConfiguration() {
     for(let configItem in this.changedConfig){
       this.pluginConfiguration.config[configItem].value = this.changedConfig[configItem];
+    }
+  }
+
+  patchFilterConfiguration() {
+    for(let configItem in this.changedFilterConfig){
+      this.filterPluginConfiguration.config[configItem].value = this.changedFilterConfig[configItem];
     }
   }
 
