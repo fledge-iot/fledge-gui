@@ -526,6 +526,7 @@ export class NodeEditorComponent implements OnInit {
   saveConfiguration() {
     if (!isEmpty(this.changedConfig) && this.pluginConfiguration?.name) {
       this.updateConfiguration(this.pluginConfiguration.name, this.changedConfig, 'plugin-config');
+      this.patchConfiguration();
     }
 
     if (!isEmpty(this.advancedConfiguration)) {
@@ -549,7 +550,9 @@ export class NodeEditorComponent implements OnInit {
           }
         });
         this.apiCallsStack = [];
-        this.getCategory();
+        this.changedConfig = [];
+        this.advancedConfiguration = [];
+        // this.getCategory();
       });
     }
   }
@@ -694,6 +697,12 @@ export class NodeEditorComponent implements OnInit {
 
   reload() {
     this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
+  }
+
+  patchConfiguration() {
+    for(let configItem in this.changedConfig){
+      this.pluginConfiguration.config[configItem].value = this.changedConfig[configItem];
+    }
   }
 
   ngOnDestroy() {
