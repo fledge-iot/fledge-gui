@@ -21,6 +21,7 @@ import { SharedService } from '../../../services/shared.service';
 import Utils from '../../../utils';
 import { RestartModalComponent } from '../../common/restart-modal/restart-modal.component';
 import { ShutdownModalComponent } from '../../common/shut-down/shutdown-modal.component';
+import { SystemAlertComponent } from '../../core/system-alert/system-alert.component';
 
 @Component({
   selector: 'app-navbar',
@@ -32,7 +33,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   public timer: any = '';
   public pingData = {};
   public servicesRecord = [];
-  public pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '' };
+  public pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '', alertsCount: null };
   public shutDownData = {
     key: '',
     message: ''
@@ -53,6 +54,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(ShutdownModalComponent, { static: true }) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent, { static: true }) childRestart: RestartModalComponent;
+  @ViewChild(SystemAlertComponent, { static: true }) systemAlertComponent: SystemAlertComponent;
   
   destroy$: Subject<boolean> = new Subject<boolean>();
   
@@ -212,7 +214,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.pingInfo = {
         isAlive: true, isAuth: false, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'],
-        version: this.pingData['version']
+        version: this.pingData['version'], alertsCount: this.pingData['alerts']
       };
       if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;
@@ -237,7 +239,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           this.pingInfo.isAuth = true;
         } else {
           this.sharedService.connectionInfo.next({ version: '', isServiceUp: false });
-          this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '' };
+          this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '', alertsCount: this.pingData['alerts'] };
         }
       });
   }
