@@ -184,112 +184,112 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
 }
 
 async function createNorthNodesAndConnections(socket: ClassicPreset.Socket,
-    editor: NodeEditor<Schemes>,
-    arrange: AutoArrangePlugin<Schemes, never>,
-    area: AreaPlugin<Schemes, AreaExtra>,
-    rolesService: RolesService,
-    data: any) {
-    if (data.source) {
-      // Storage Node
-      const db = new Storage(socket);
-      await editor.addNode(db);
-      // North Node
-      const plugin = new North(socket, data.task);
-      await editor.addNode(plugin);
-  
-      let fpLen = data.filterPipeline.length;
-      let previousNode = db;
-      for (let i = 0; i < fpLen; i++) {
-        let pipelineItem = data.filterPipeline[i];
-        if (typeof (pipelineItem) === "string") {
-          let nextNodeConfig = data.filterConfigurations.find((f: any) => f.filterName === pipelineItem)
-          let nextFilterNode = new Filter(socket, nextNodeConfig);
-          await editor.addNode(nextFilterNode);
-          await editor.addConnection(
-            new ClassicPreset.Connection(previousNode, "port", nextFilterNode, "port")
-          );
-          previousNode = nextFilterNode;
-        }
+  editor: NodeEditor<Schemes>,
+  arrange: AutoArrangePlugin<Schemes, never>,
+  area: AreaPlugin<Schemes, AreaExtra>,
+  rolesService: RolesService,
+  data: any) {
+  if (data.source) {
+    // Storage Node
+    const db = new Storage(socket);
+    await editor.addNode(db);
+    // North Node
+    const plugin = new North(socket, data.task);
+    await editor.addNode(plugin);
+
+    let fpLen = data.filterPipeline.length;
+    let previousNode = db;
+    for (let i = 0; i < fpLen; i++) {
+      let pipelineItem = data.filterPipeline[i];
+      if (typeof (pipelineItem) === "string") {
+        let nextNodeConfig = data.filterConfigurations.find((f: any) => f.filterName === pipelineItem)
+        let nextFilterNode = new Filter(socket, nextNodeConfig);
+        await editor.addNode(nextFilterNode);
+        await editor.addConnection(
+          new ClassicPreset.Connection(previousNode, "port", nextFilterNode, "port")
+        );
+        previousNode = nextFilterNode;
       }
-      await editor.addConnection(
-        new ClassicPreset.Connection(previousNode, "port", plugin, "port")
-      );
-      await arrange.layout();
-      AreaExtensions.zoomAt(area, editor.getNodes());
     }
-    else {
-      nodesGrid(area, data.tasks, socket, rolesService, data.from);
-    }
+    await editor.addConnection(
+      new ClassicPreset.Connection(previousNode, "port", plugin, "port")
+    );
+    await arrange.layout();
+    AreaExtensions.zoomAt(area, editor.getNodes());
   }
+  else {
+    nodesGrid(area, data.tasks, socket, rolesService, data.from);
+  }
+}
 async function createNodesAndConnections(socket: ClassicPreset.Socket,
-    editor: NodeEditor<Schemes>,
-    arrange: AutoArrangePlugin<Schemes, never>,
-    area: AreaPlugin<Schemes, AreaExtra>,
-    rolesService: RolesService,
-    data: any) {
+  editor: NodeEditor<Schemes>,
+  arrange: AutoArrangePlugin<Schemes, never>,
+  area: AreaPlugin<Schemes, AreaExtra>,
+  rolesService: RolesService,
+  data: any) {
 
-    if (data.source) {
-        // South node
-        const plugin = new South(socket, data.service);
-        await editor.addNode(plugin);
+  if (data.source) {
+    // South node
+    const plugin = new South(socket, data.service);
+    await editor.addNode(plugin);
 
-        // Storage node
-        const db = new Storage(socket);
-        await editor.addNode(db);
+    // Storage node
+    const db = new Storage(socket);
+    await editor.addNode(db);
 
-        let fpLen = data.filterPipeline.length;
-        let previousNode = plugin;
-        let colorNumber = 0;
-        for (let i = 0; i < fpLen; i++) {
-            let pipelineItem = data.filterPipeline[i];
-            if (typeof (pipelineItem) === "string") {
-                let nextNodeConfig = data.filterConfigurations.find((f: any) => f.filterName === pipelineItem)
-                let nextNode = new Filter(socket, nextNodeConfig);
-                await editor.addNode(nextNode);
-                await editor.addConnection(
-                    new ClassicPreset.Connection(previousNode, "port", nextNode, "port")
-                );
-                previousNode = nextNode;
-            }
-            else {
-                let piLen = pipelineItem.length;
-                let tempNode = previousNode;
-                for (let j = 0; j < piLen; j++) {
-                    let nextNodeConfig = data.filterConfigurations.find((f: any) => f.filterName === pipelineItem[j])
-                    nextNodeConfig.color = colors[colorNumber];
-                    let nextNode = new Filter(socket, nextNodeConfig);
-                    await editor.addNode(nextNode);
-                    await editor.addConnection(
-                        new ClassicPreset.Connection(tempNode, "port", nextNode, "port")
-                    );
-                    tempNode = nextNode;
-                }
-                await editor.addConnection(
-                    new ClassicPreset.Connection(tempNode, "port", db, "port")
-                );
-                colorNumber = (colorNumber + 1) % (colors.length);
-            }
+    let fpLen = data.filterPipeline.length;
+    let previousNode = plugin;
+    let colorNumber = 0;
+    for (let i = 0; i < fpLen; i++) {
+      let pipelineItem = data.filterPipeline[i];
+      if (typeof (pipelineItem) === "string") {
+        let nextNodeConfig = data.filterConfigurations.find((f: any) => f.filterName === pipelineItem)
+        let nextNode = new Filter(socket, nextNodeConfig);
+        await editor.addNode(nextNode);
+        await editor.addConnection(
+          new ClassicPreset.Connection(previousNode, "port", nextNode, "port")
+        );
+        previousNode = nextNode;
+      }
+      else {
+        let piLen = pipelineItem.length;
+        let tempNode = previousNode;
+        for (let j = 0; j < piLen; j++) {
+          let nextNodeConfig = data.filterConfigurations.find((f: any) => f.filterName === pipelineItem[j])
+          nextNodeConfig.color = colors[colorNumber];
+          let nextNode = new Filter(socket, nextNodeConfig);
+          await editor.addNode(nextNode);
+          await editor.addConnection(
+            new ClassicPreset.Connection(tempNode, "port", nextNode, "port")
+          );
+          tempNode = nextNode;
         }
         await editor.addConnection(
-            new ClassicPreset.Connection(previousNode, "port", db, "port")
+          new ClassicPreset.Connection(tempNode, "port", db, "port")
         );
-        await arrange.layout();
-        AreaExtensions.zoomAt(area, editor.getNodes());
+        colorNumber = (colorNumber + 1) % (colors.length);
+      }
     }
-    else {
-        nodesGrid(area, data.services, socket, rolesService, data.from);
-    }
+    await editor.addConnection(
+      new ClassicPreset.Connection(previousNode, "port", db, "port")
+    );
+    await arrange.layout();
+    AreaExtensions.zoomAt(area, editor.getNodes());
+  }
+  else {
+    nodesGrid(area, data.services, socket, rolesService, data.from);
+  }
 }
 
 function setCustomBackground(area: AreaPlugin<Schemes, AreaExtra>,) {
-    addCustomBackground(area);
-    // AreaExtensions.simpleNodesOrder(area);
-    AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
-      accumulating: AreaExtensions.accumulateOnCtrl()
-    });
-    AreaExtensions.restrictor(area, {
-      scaling: () => ({ min: 0.5, max: 2 }),
-    });
+  addCustomBackground(area);
+  // AreaExtensions.simpleNodesOrder(area);
+  AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
+    accumulating: AreaExtensions.accumulateOnCtrl()
+  });
+  AreaExtensions.restrictor(area, {
+    scaling: () => ({ min: 0.5, max: 2 }),
+  });
 }
 
 // Show Nodes in a Grid layout
@@ -348,99 +348,112 @@ export function getUpdatedFilterPipeline() {
 
   for (let i = 0; i < connections.length; i++) {
     if (connections[i].source === connections[i].target) {
-        console.log("self loop exist in pipeline")
-        return false;
+      console.log("self loop exist in pipeline")
+      return false;
     }
   }
-  
+
   // Remove duplicate connections
   connections = connections.filter((connection, index) => {
     return index === connections.findIndex(c => connection.source === c.source && connection.target === c.target);
   });
-  
-    let updatedFilterPipeline = [];
-    let sourceNode = nodes[0];
-    while (connections.find(c => c.source === sourceNode.id)) {
-        let previousSourceNode = sourceNode;
-        let connlist = connections.filter(c => c.source === sourceNode.id);
-        if (connlist.length === 1) {
-            let filterNode = editor.getNode(connlist[0].target);
-            if (filterNode.label !== "Storage" && filterNode.label != 'North') {
-                if (existsInPipeline(updatedFilterPipeline, filterNode.label)) {
-                    console.log("invalid pipeline");
-                    return false;
-                }
-                updatedFilterPipeline.push(filterNode.label);
-            }
-            sourceNode = filterNode;
+
+  let updatedFilterPipeline = [];
+  let sourceNode = nodes[0];
+  while (connections.find(c => c.source === sourceNode.id)) {
+    let previousSourceNode = sourceNode;
+    let connlist = connections.filter(c => c.source === sourceNode.id);
+    if (connlist.length === 1) {
+      let filterNode = editor.getNode(connlist[0].target);
+      if (filterNode.label !== "Storage" && filterNode.label != 'North') {
+        if (existsInPipeline(updatedFilterPipeline, filterNode.label)) {
+          console.log("invalid pipeline");
+          return false;
+        }
+        updatedFilterPipeline.push(filterNode.label);
+      }
+      sourceNode = filterNode;
+    }
+    else {
+      let mainBranchStartIndex = [];
+      let i;
+      for (i = 0; i < connlist.length; i++) {
+        let node = editor.getNode(connlist[i].target);
+        let branch = getBranchNodes(updatedFilterPipeline, connections, node);
+        if (branch) {
+          if (branch.length === 0) {
+            console.log("invalid pipeline");
+            return false;
+          }
+          updatedFilterPipeline.push(branch);
         }
         else {
-            let mainBranchStartIndex = [];
-            let i;
-            for (i = 0; i < connlist.length; i++) {
-                let node = editor.getNode(connlist[i].target);
-                let branch = getBranchNodes(updatedFilterPipeline, connections, node);
-                if (branch) {
-                    if (branch.length === 0) {
-                        console.log("invalid pipeline");
-                        return false;
-                    }
-                    updatedFilterPipeline.push(branch);
-                }
-                else {
-                    mainBranchStartIndex.push(i);
-                }
-            }
-            if (mainBranchStartIndex.length > 1) {
-                console.log("Multi level deep pipeline not supported.")
-                return false;
-            }
-            if (mainBranchStartIndex.length === 1) {
-                let node = editor.getNode(connlist[mainBranchStartIndex[0]].target);
-                if (node.label !== "Storage" && node.label != 'North') {
-                    updatedFilterPipeline.push(node.label);
-                }
-                sourceNode = node;
-            }
-            else {
-                updatedFilterPipeline.pop();
-                let node = editor.getNode(connlist[i - 1].target);
-                updatedFilterPipeline.push(node.label);
-                sourceNode = node;
-            }
+          mainBranchStartIndex.push(i);
         }
-        if (previousSourceNode === sourceNode) {
-            break;
+      }
+      if (mainBranchStartIndex.length > 1) {
+        console.log("Multi level deep pipeline not supported.")
+        return false;
+      }
+      if (mainBranchStartIndex.length === 1) {
+        let node = editor.getNode(connlist[mainBranchStartIndex[0]].target);
+        if (node.label !== "Storage" && node.label != 'North') {
+          updatedFilterPipeline.push(node.label);
         }
+        sourceNode = node;
+      }
+      else {
+        updatedFilterPipeline.pop();
+        let node = editor.getNode(connlist[i - 1].target);
+        updatedFilterPipeline.push(node.label);
+        sourceNode = node;
+      }
     }
-    return updatedFilterPipeline;
+    if (previousSourceNode === sourceNode) {
+      break;
+    }
+  }
+  return updatedFilterPipeline;
 }
 
 function getBranchNodes(pipeline, connections, node) {
-    if (node.label === "Storage") {
-        return;
+  if (node.label === "Storage") {
+    return;
+  }
+  if (existsInPipeline(pipeline, node.label)) {
+    return [];
+  }
+  let branchNodes = [];
+  branchNodes.push(node.label);
+  while (connections.find(c => c.source === node.id)) {
+    let connlist = connections.filter(c => c.source === node.id);
+    if (connlist.length === 1) {
+      let filterNode = editor.getNode(connlist[0].target);
+      if (filterNode.label !== "Storage" && (existsInPipeline(pipeline, filterNode.label) || existsInPipeline(branchNodes, filterNode.label))) {
+        return [];
+      }
+      branchNodes.push(filterNode.label);
+      node = filterNode;
     }
-    if (existsInPipeline(pipeline, node.label)) {
-      return [];
+    else {
+      return;
     }
-    let branchNodes = [];
-    branchNodes.push(node.label);
-    while (connections.find(c => c.source === node.id)) {
-        let connlist = connections.filter(c => c.source === node.id);
-        if (connlist.length === 1) {
-            let filterNode = editor.getNode(connlist[0].target);
-            if (filterNode.label !== "Storage" && (existsInPipeline(pipeline, filterNode.label) || existsInPipeline(branchNodes, filterNode.label))) {
-                return [];
-            }
-            branchNodes.push(filterNode.label);
-            node = filterNode;
-        }
-        else {
-            return;
-        }
+  }
+  branchNodes.pop();
+  return branchNodes;
+}
+
+export function updateFilterNode(filterConfiguration) {
+  editor.getNodes().forEach(async (node) => {
+    if (!isEmpty(node.controls)) {
+      if (node.label == filterConfiguration.filterName) {
+        const enabledControl = node.controls.enabledControl as EnabledControl;
+        enabledControl.enabled = filterConfiguration.enabled;
+        area.update("control", enabledControl.id);
+        area.update('node', node.id);
+      }
     }
-    branchNodes.pop();
-    return branchNodes;
+  });
 }
 
 export function updateNode(data) {
@@ -487,28 +500,28 @@ function rgbToHex(r, g, b) {
 }
 
 function existsInPipeline(pipeline, filterName) {
-    for (let i = 0; i < pipeline.length; i++) {
-        if (typeof (pipeline[i]) === "string") {
-            if (pipeline[i] === filterName) {
-                return true;
-            }
-        }
-        else {
-            if (pipeline[i].indexOf(filterName) !== -1) {
-                return true;
-            }
-        }
+  for (let i = 0; i < pipeline.length; i++) {
+    if (typeof (pipeline[i]) === "string") {
+      if (pipeline[i] === filterName) {
+        return true;
+      }
     }
-    return false;
+    else {
+      if (pipeline[i].indexOf(filterName) !== -1) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 export function removeNode(nodeId) {
-    for (const c of editor
-        .getConnections()
-        .filter((c) => c.source === nodeId || c.target === nodeId)) {
-        editor.removeConnection(c.id);
-    }
-    editor.removeNode(nodeId);
+  for (const c of editor
+    .getConnections()
+    .filter((c) => c.source === nodeId || c.target === nodeId)) {
+    editor.removeConnection(c.id);
+  }
+  editor.removeNode(nodeId);
 }
 
 async function removeOldConnection(nodeId) {
@@ -532,7 +545,7 @@ async function removeOldConnection(nodeId) {
       new ClassicPreset.Connection(source, "port", t, "port")
     );
   }
-  if(inputConnId){
+  if (inputConnId) {
     await editor.removeConnection(inputConnId);
   }
   for (let c of outputConnections) {

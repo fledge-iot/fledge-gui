@@ -46,49 +46,24 @@
         (changedConfigEvent)="getChangedConfig($event)"
         (changedAdvanceConfigEvent)="getChangedAdvanceConfiguration($event)"
         (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
-      <div class="container is-fluid">
+      <div class="container is-fluid" *ngIf="category">
         <div class="columns" *ngIf="rolesService.hasEditPermissions()">
-          <div class="column is-one-fifth"></div>
           <div class="column">
-            <div class="field is-horizontal">
-              <div class="field-label mr-0">
-                <!-- Left empty for spacing -->
-              </div>
-              <div class="field-body">
-                <div class="field">
-                  <div class="control">
-                    <button [disabled]="checkFormState()" [appDisableUntilResponse]="reenableButton"
-                      class="button is-small is-link ml-4" (click)="saveConfiguration()">Save</button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <button [disabled]="checkFormState()" [appDisableUntilResponse]="reenableButton"
+              class="button is-small is-link ml-4" (click)="saveConfiguration()">Save</button>
           </div>
         </div>
       </div>
     </ng-container>
     <ng-container *ngIf="showFilterConfiguration">
       <app-configuration-group *ngIf="filterCategory" [category]="filterCategory" [sourceName]="quickviewFilterName"
-        [categoryType]="'filter'" (changedConfigEvent)="getChangedFilterConfig($event)"
-        (formStatusEvent)="validFilterConfigForm = $event">
+        (changedConfigEvent)="getChangedFilterConfig($event)" (formStatusEvent)="validFilterConfigForm = $event">
       </app-configuration-group>
-      <div class="container is-fluid">
+      <div class="container is-fluid" *ngIf="filterCategory">
         <div class="columns" *ngIf="rolesService.hasEditPermissions()">
-          <div class="column is-one-fifth"></div>
           <div class="column">
-            <div class="field is-horizontal">
-              <div class="field-label mr-0">
-                <!-- Left empty for spacing -->
-              </div>
-              <div class="field-body">
-                <div class="field">
-                  <div class="control">
-                    <button [disabled]="checkFilterFormState()" [appDisableUntilResponse]="reenableButton"
-                      class="button is-small is-link ml-4" (click)="saveFilterConfiguration()">Save</button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <button [disabled]="checkFilterFormState()" [appDisableUntilResponse]="reenableButton"
+              class="button is-small is-link ml-4" (click)="saveFilterConfiguration()">Save</button>
           </div>
         </div>
       </div>

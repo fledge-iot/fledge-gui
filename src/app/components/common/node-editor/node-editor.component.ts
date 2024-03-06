@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
-import { createEditor, getUpdatedFilterPipeline, deleteConnection, removeNode, updateNode } from './editor';
+import { createEditor, getUpdatedFilterPipeline, deleteConnection, removeNode, updateNode, updateFilterNode } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   ConfigurationControlService,
@@ -151,7 +151,7 @@ export class NodeEditorComponent implements OnInit {
         if (this.isfilterPipelineFetched) {
           let updatedPipeline = getUpdatedFilterPipeline();
           if (updatedPipeline && updatedPipeline.length > 0) {
-            if(this.from === 'north' && this.isFilterPipelineComplex(updatedPipeline)){
+            if (this.from === 'north' && this.isFilterPipelineComplex(updatedPipeline)) {
               console.log("Complex pipeline not allowed on north side");
               return;
             }
@@ -197,7 +197,7 @@ export class NodeEditorComponent implements OnInit {
         }
       });
     this.removeFilterSubscription = this.flowEditorService.removeFilter.pipe(skip(1)).subscribe(data => {
-      if(data){
+      if (data) {
         removeNode(data.id);
       }
     })
@@ -443,7 +443,7 @@ export class NodeEditorComponent implements OnInit {
   save() {
     let updatedPipeline = getUpdatedFilterPipeline();
     if (updatedPipeline && updatedPipeline.length > 0) {
-      if(this.from === 'north' && this.isFilterPipelineComplex(updatedPipeline)){
+      if (this.from === 'north' && this.isFilterPipelineComplex(updatedPipeline)) {
         console.log("Complex pipeline not allowed on north side");
         return;
       }
@@ -557,7 +557,7 @@ export class NodeEditorComponent implements OnInit {
   saveFilterConfiguration() {
     if (!isEmpty(this.changedFilterConfig) && this.quickviewFilterName) {
       let catName = `${this.source}_${this.quickviewFilterName}`
-      this.updateConfiguration(catName, this.changedFilterConfig, 'plugin-config');
+      this.updateConfiguration(catName, this.changedFilterConfig, 'filter-config');
     }
 
     if (this.apiCallsStack.length > 0) {
@@ -617,7 +617,21 @@ export class NodeEditorComponent implements OnInit {
     }
     this.apiCallsStack.push(this.configService.
       updateBulkConfiguration(categoryName, configuration)
-      .pipe(map(() => ({ type, success: true })))
+      .pipe(map((data: any) => {
+        if (type == 'filter-config') {
+          this.filterCategory.config = data;
+          this.filterPluginConfiguration = cloneDeep(this.filterCategory);
+          const { enable, plugin } = data;
+          const filterConf = this.filterConfigurations.find(f => {
+            if (f.pluginName == plugin.default) {
+              f.enabled = enable.value
+              return f;
+            }
+          })
+          updateFilterNode(filterConf);
+        }
+        return { type, success: true }
+      }))
       .pipe(catchError(e => of({ error: e, failed: true }))));
   }
 

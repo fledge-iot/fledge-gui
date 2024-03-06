@@ -32,6 +32,8 @@ export class CustomNodeComponent implements OnChanges {
   @Input() emit!: (data: any) => void;
   @Input() rendered!: () => void;
 
+  nodeTypes = ['South', 'North', 'Filter', 'AddService', 'AddTask', 'Storage'];
+
   seed = 0;
   source;
   from = '';
@@ -170,6 +172,15 @@ export class CustomNodeComponent implements OnChanges {
             }
           }
         })
+      }
+    }
+
+    if (!this.nodeTypes.includes(this.data.label)) {
+      this.filter.enabled = this.data.controls.enabledControl['enabled'];
+      console.log('dcccc', this.filter);
+      this.isEnabled = false;
+      if (this.filter.enabled === 'true') {
+        this.isEnabled = true;
       }
     }
     if (this.data.label === 'AddService') {
@@ -394,8 +405,8 @@ export class CustomNodeComponent implements OnChanges {
         });
   }
 
-  removeFilter(){
-    this.flowEditorService.removeFilter.next({id: this.nodeId});
+  removeFilter() {
+    this.flowEditorService.removeFilter.next({ id: this.nodeId });
   }
 
   ngOnDestroy() {
