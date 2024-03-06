@@ -177,7 +177,6 @@ export class CustomNodeComponent implements OnChanges {
 
     if (!this.nodeTypes.includes(this.data.label)) {
       this.filter.enabled = this.data.controls.enabledControl['enabled'];
-      console.log('dcccc', this.filter);
       this.isEnabled = false;
       if (this.filter.enabled === 'true') {
         this.isEnabled = true;
