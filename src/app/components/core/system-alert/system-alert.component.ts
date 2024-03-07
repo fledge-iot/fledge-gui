@@ -42,11 +42,11 @@ export class SystemAlertComponent {
   getAlerts() {
     this.systemAlertService.getAlerts().
     subscribe(
-      (data) => {   
-        data['alerts'].forEach(alert => {         
+      (data: SystemAlerts) => {   
+        data.alerts.forEach(alert => {         
           alert['buttonText'] = this.getButtonText(alert.message);
         });
-        this.systemAlerts = data['alerts'].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        this.systemAlerts = data.alerts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       },
       error => {
         if (error.status === 0) {
