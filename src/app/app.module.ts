@@ -10,6 +10,7 @@ import { AlertDialogModule } from './components/common/alert-dialog/alert-dialog
 import { AlertComponent } from './components/common/alert/alert.component';
 import { RestartModalComponent } from './components/common/restart-modal/restart-modal.component';
 import { ShutdownModalComponent } from './components/common/shut-down/shutdown-modal.component';
+import { SystemAlertModule } from './components/core/system-alert/system-alert.module';
 import { ServiceDiscoveryComponent } from './components/core/service-discovery/service-discovery.component';
 import { SettingsComponent } from './components/core/settings';
 import { FooterComponent } from './components/layout/footer';
@@ -88,6 +89,7 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     SharedModule,
     DashboardModule,
     DirectivesModule,
+    SystemAlertModule,
     LogsModule
   ],
   declarations: [

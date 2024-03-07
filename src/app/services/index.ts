@@ -30,3 +30,4 @@ export * from './configuration-control.service';
 export * from './file-uploader.service';
 export * from './control-pipelines.service';
 export * from './control-api-flow.service';
+export * from './system-alert.service';
