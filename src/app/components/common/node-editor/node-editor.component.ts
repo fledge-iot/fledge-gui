@@ -525,8 +525,8 @@ export class NodeEditorComponent implements OnInit {
 
   saveConfiguration() {
     if (!isEmpty(this.changedConfig) && this.pluginConfiguration?.name) {
-      this.updateConfiguration(this.pluginConfiguration.name, this.changedConfig, 'plugin-config');
       this.patchConfiguration();
+      this.updateConfiguration(this.pluginConfiguration.name, this.changedConfig, 'plugin-config');
     }
 
     if (!isEmpty(this.advancedConfiguration)) {
@@ -560,8 +560,8 @@ export class NodeEditorComponent implements OnInit {
   saveFilterConfiguration() {
     if (!isEmpty(this.changedFilterConfig) && this.quickviewFilterName) {
       let catName = `${this.source}_${this.quickviewFilterName}`
-      this.updateConfiguration(catName, this.changedFilterConfig, 'plugin-config');
       this.patchFilterConfiguration();
+      this.updateConfiguration(catName, this.changedFilterConfig, 'plugin-config');
     }
 
     if (this.apiCallsStack.length > 0) {
@@ -703,13 +703,23 @@ export class NodeEditorComponent implements OnInit {
 
   patchConfiguration() {
     for(let configItem in this.changedConfig){
-      this.pluginConfiguration.config[configItem].value = this.changedConfig[configItem];
+      if(this.pluginConfiguration.config[configItem].type === 'JSON'){
+        this.pluginConfiguration.config[configItem].value = JSON.stringify(this.changedConfig[configItem]);
+      }
+      else{
+        this.pluginConfiguration.config[configItem].value = this.changedConfig[configItem];
+      }
     }
   }
 
   patchFilterConfiguration() {
     for(let configItem in this.changedFilterConfig){
-      this.filterPluginConfiguration.config[configItem].value = this.changedFilterConfig[configItem];
+      if(this.filterPluginConfiguration.config[configItem].type === 'JSON'){
+        this.filterPluginConfiguration.config[configItem].value = JSON.stringify(this.changedFilterConfig[configItem]);
+      }
+      else{
+        this.filterPluginConfiguration.config[configItem].value = this.changedFilterConfig[configItem];
+      }
     }
   }
 
