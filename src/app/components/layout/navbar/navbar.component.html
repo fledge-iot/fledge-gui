@@ -7,8 +7,8 @@
     </div>
     <div *ngIf="viewPort !== 'mobile'">
       <div class="navbar-item">
-        <div class="fledge-logo"></div>
-        &nbsp;&nbsp;
+        <img src="assets/fledge.png" alt="" width="32" />
+        &nbsp;
         <b>
           <a *ngIf="!pingInfo.version" href="/" style="color: #363636;">Fledge</a>
           <a *ngIf="pingInfo.version" id="hover-link" class="tooltip has-tooltip-bottom has-tooltip-arrow"
