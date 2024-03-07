@@ -139,13 +139,8 @@ export class SystemAlertComponent {
   getAlertTime(timestamp: Date) {
     const moment = require('moment');
     const alertTimestamp = moment.utc(timestamp);
-    
-    // Get the current time
-    const currentTime = moment().utc();
-    
-    const timeDifference = alertTimestamp.isAfter(currentTime) ?
-    alertTimestamp.fromNow() : 
-    alertTimestamp.from(currentTime);
+    const currentTime = moment().utc(); 
+    const timeDifference = alertTimestamp.isAfter(currentTime) ? alertTimestamp.fromNow() : alertTimestamp.from(currentTime);
     return timeDifference;
   }
 }
