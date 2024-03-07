@@ -46,7 +46,7 @@ export class SystemAlertComponent {
         data['alerts'].forEach(alert => {         
           alert['buttonText'] = this.getButtonText(alert.message);
         });
-        this.systemAlerts = data['alerts'];
+        this.systemAlerts = data['alerts'].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       },
       error => {
         if (error.status === 0) {
