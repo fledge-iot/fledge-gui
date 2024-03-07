@@ -42,7 +42,10 @@ export class SystemAlertComponent {
   getAlerts() {
     this.systemAlertService.getAlerts().
     subscribe(
-      (data) => {
+      (data) => {       
+        data['alerts'].forEach(alert => {         
+          alert['buttonText'] = this.getButtonText(alert.message);
+        });
         this.systemAlerts = data['alerts'];
       },
       error => {
@@ -56,10 +59,10 @@ export class SystemAlertComponent {
   }
 
   performAction(alert: SystemAlert) {
-    if (this.getButtonText(alert.message) === 'Show Logs') {
+    if (alert['buttonText'] === 'Show Logs') {
       this.router.navigate(['logs/syslog'], { queryParams: { source: alert.key } });
     }
-    if (this.getButtonText(alert.message) === 'Upgrade') {
+    if (alert['buttonText'] === 'Upgrade') {
       this.update();
     }
     this.toggleDropdown();
