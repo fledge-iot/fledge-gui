@@ -94,8 +94,8 @@
         </div>
       </ng-container>
       <ng-container *ngIf="source">
-        <div class="input is-pulled-left input-container custom-margin" *ngFor="let input of data.inputs | keyvalue: sortByIndex"
-          [attr.data-testid]="'input-'+input.key">
+        <div class="input is-pulled-left input-container custom-margin"
+          *ngFor="let input of data.inputs | keyvalue: sortByIndex" [attr.data-testid]="'input-'+input.key">
           <div class="input-socket" refComponent
             [data]="{type: 'socket', side: 'input', key: input.key, nodeId: data.id, payload: input.value?.socket, seed: seed }"
             [emit]="emit" data-testid="input-socket" title="Destination"></div>
@@ -107,51 +107,50 @@
     </div>
     <div>
       <ng-container *ngIf="data.label!=='Filter'">
-          <div class="is-pulled-left ml-2 icon-margin">
-            <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered"
-              data-tooltip="Help" (click)="goToLink()">
-              <i class="far fa-xs fa-question-circle"></i>
-            </span>
-            <span *ngIf="isServiceNode"
-              class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon ml-3"
-              data-tooltip="Show logs" data-show="quickview" data-target="quickviewDefault"
-              (click)="showLogsInQuickview()">
-              <i class="far fa-xs fa-file-alt"></i>
-            </span>
-          </div>
+        <div class="is-pulled-left ml-2 icon-margin">
+          <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered"
+            data-tooltip="Help" (click)="goToLink()">
+            <i class="far fa-xs fa-question-circle"></i>
+          </span>
+          <span *ngIf="isServiceNode"
+            class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon ml-3"
+            data-tooltip="Show logs" data-show="quickview" data-target="quickviewDefault"
+            (click)="showLogsInQuickview()">
+            <i class="far fa-xs fa-file-alt"></i>
+          </span>
+        </div>
       </ng-container>
       <div class="is-pulled-right">
-          <ng-container *ngIf="data.label==='Filter'">
-              <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered is-invisible 
-              mr-2 mt-2" [ngClass]="{'trash-icon': showDeleteIcon}"
-              data-tooltip="Delete" (click)="removeFilter()">
-              <i class="far fa-xs fa-trash-alt"></i>
+        <ng-container *ngIf="data.label==='Filter'">
+          <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered is-invisible
+              mr-2 mt-2" [ngClass]="{'trash-icon': showDeleteIcon}" data-tooltip="Delete" (click)="removeFilter()">
+            <i class="far fa-xs fa-trash-alt"></i>
           </span>
-          </ng-container>
-          <ng-container *ngIf="data.label!=='Filter'">
-              <div class="dropdown is-hoverable" *ngIf="!source || rolesService.hasEditPermissions()">
-                <div class="dropdown-trigger">
-                  <button class="button is-white is-small pt-0 pb-0 dropdown-button" aria-haspopup="true"
-                    aria-controls="dropdown-menu3">
-                    <span class="icon is-small">
-                      <i class="fas fa-ellipsis-v fa-xs fa-fw" aria-hidden="true"></i>
-                    </span>
-                  </button>
-                </div>
-                <div class="dropdown-menu" id="dropdown-menu3" role="menu">
-                  <div class="dropdown-content">
-                    <ng-container *ngIf="!source">
-                      <a class="dropdown-item" (click)="openServiceDetails()">
-                        <span>Details</span>
-                      </a>
-                    </ng-container>
-                    <a *ngIf="rolesService.hasEditPermissions()" class="dropdown-item" (click)="deleteFilterOrService()">
-                      <span>Delete</span>
-                    </a>
-                  </div>
-                </div>
+        </ng-container>
+        <ng-container *ngIf="data.label!=='Filter'">
+          <div class="dropdown is-hoverable" *ngIf="!source || rolesService.hasEditPermissions()">
+            <div class="dropdown-trigger">
+              <button class="button is-white is-small pt-0 pb-0 dropdown-button" aria-haspopup="true"
+                aria-controls="dropdown-menu3">
+                <span class="icon is-small">
+                  <i class="fas fa-ellipsis-v fa-xs fa-fw" aria-hidden="true"></i>
+                </span>
+              </button>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+              <div class="dropdown-content">
+                <ng-container *ngIf="!source">
+                  <a class="dropdown-item" (click)="openServiceDetails()">
+                    <span>Details</span>
+                  </a>
+                </ng-container>
+                <a *ngIf="rolesService.hasEditPermissions()" class="dropdown-item" (click)="deleteFilterOrService()">
+                  <span>Delete</span>
+                </a>
               </div>
-          </ng-container>
+            </div>
+          </div>
+        </ng-container>
       </div>
     </div>
   </ng-container>

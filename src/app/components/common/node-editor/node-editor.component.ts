@@ -621,9 +621,9 @@ export class NodeEditorComponent implements OnInit {
         if (type == 'filter-config') {
           this.filterCategory.config = data;
           this.filterPluginConfiguration = cloneDeep(this.filterCategory);
-          const { enable, plugin } = data;
+          const { enable } = data;
           const filterConf = this.filterConfigurations.find(f => {
-            if (f.pluginName == plugin.default) {
+            if (f.filterName == this.quickviewFilterName) {
               f.enabled = enable.value
               return f;
             }

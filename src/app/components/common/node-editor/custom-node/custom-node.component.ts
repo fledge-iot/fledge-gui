@@ -175,11 +175,14 @@ export class CustomNodeComponent implements OnChanges {
       }
     }
 
-    if (!this.nodeTypes.includes(this.data.label)) {
-      this.filter.enabled = this.data.controls.enabledControl['enabled'];
-      this.isEnabled = false;
-      if (this.filter.enabled === 'true') {
-        this.isEnabled = true;
+    if (!this.nodeTypes.includes(this.data?.label) && !isEmpty(this.data.controls)) {
+      if (this.filter.name == this.data.label) {
+        this.filter.enabled = this.data?.controls?.enabledControl['enabled'];
+        if (this.filter.enabled === 'true') {
+          this.isEnabled = true;
+        } else if (this.filter.enabled === 'false') {
+          this.isEnabled = false;
+        }
       }
     }
     if (this.data.label === 'AddService') {
@@ -328,6 +331,7 @@ export class CustomNodeComponent implements OnChanges {
     this.configService.
       updateBulkConfiguration(catName, { enable: String(this.isEnabled) })
       .subscribe(() => {
+        this.data.controls.enabledControl['enabled'] = JSON.stringify(this.isEnabled);
         if (this.isEnabled) {
           this.toastService.success(`${this.filter.name} filter enabled`);
         }
