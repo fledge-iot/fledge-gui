@@ -1,5 +1,5 @@
-import { Component, Input, EventEmitter } from '@angular/core';
-import { AlertService, SystemAlertService, ProgressBarService, RolesService } from '../../../services';
+import { Component, Input, EventEmitter, HostListener } from '@angular/core';
+import { AlertService, ProgressBarService, RolesService, SystemAlertService } from '../../../services';
 import { SystemAlert, SystemAlerts } from './../../../models/system-alert';
 import { Router } from '@angular/router';
 
@@ -20,6 +20,13 @@ export class SystemAlertComponent {
     private systemAlertService: SystemAlertService,
     public ngProgress: ProgressBarService,
     private rolesService: RolesService) {
+  }
+
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    const dropDown = document.querySelector('#system-alert-dd');
+    if (dropDown.classList.contains('is-active')) {
+      dropDown.classList.remove('is-active');
+    }
   }
 
   ngOnInit() {}
@@ -119,10 +126,23 @@ export class SystemAlertComponent {
       return "has-text-warning";
     }
     if (urgency.toLowerCase() === "normal") {
-      return "has-text-warning-light";
+      return "has-text-grey-light";
     }
     if (urgency.toLowerCase() === "low") {
-      return "has-text-info-light";
+      return "text-grey-lighter";
     }
+  }
+
+  getAlertTime(timestamp: Date) {
+    const moment = require('moment');
+    const alertTimestamp = moment.utc(timestamp);
+    
+    // Get the current time
+    const currentTime = moment().utc();
+    
+    const timeDifference = alertTimestamp.isAfter(currentTime) ?
+    alertTimestamp.fromNow() : 
+    alertTimestamp.from(currentTime);
+    return timeDifference;
   }
 }

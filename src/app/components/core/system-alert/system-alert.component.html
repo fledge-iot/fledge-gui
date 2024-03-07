@@ -1,6 +1,6 @@
 <div id="dropdown" class="dropdown is-right" id="system-alert-dd">
   <div class="dropdown-trigger">
-    <a class="button is-small system-alert" aria-haspopup="true" aria-controls="dropdown-menu" (click)="toggleDropdown()">
+    <a class="button is-small system-alert" [title]="alertsCount === 0 ? 'No Alerts' : 'Alerts'" aria-haspopup="true" aria-controls="dropdown-menu" (click)="toggleDropdown()">
       <span class="icon icon-badge-container">
         <i class="bi bi-bell bi-lg" aria-hidden="true"></i>
         <div class="icon-badge">{{alertsCount}}</div>
@@ -8,25 +8,24 @@
     </a>
   </div>
   <div class="dropdown-menu" id="dropdown-menu" role="menu">
-    <div class="dropdown-content">
+    <div class="dropdown-content" id="alerts">
       <ng-container *ngFor="let alert of systemAlerts; let i=index;">
-        <div class="columns dropdown-item pb-0">
-          <a class="column is-vertical-center is-1">
+        <div class="columns dropdown-item">
+          <span class="column is-vertical-center is-1">
             <i [ngClass]="applyClass(alert?.urgency)" class="bi bi bi-exclamation-triangle"></i>          
-          </a>
+          </span>
           <div class="column">
             <div class="message-text">
               {{alert.message}}
             </div>
           </div>
         </div>
-        <div class="columns mb-0 mr-1">
-          <!-- TODO: Show timestamp -->
-          <!-- <div class="column is-1">
+        <div class="columns p-0 mb-0 mr-1">
+          <div class="column is-1">
           </div>
-          <div class="column is-pulled-right">
-            <span class="help">1m ago</span>
-          </div> -->
+          <div class="column is-pulled-right pt-1 pb-0">
+            <span class="help">{{getAlertTime(alert?.timestamp)}}</span>
+          </div>
           <ng-container *ngIf="rolesService.hasEditPermissions()">
             <div class="column pt-0 pb-0">
               <div class="field is-grouped is-pulled-right">          
