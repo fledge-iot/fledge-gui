@@ -42,7 +42,7 @@ export class SystemAlertComponent {
   getAlerts() {
     this.systemAlertService.getAlerts().
     subscribe(
-      (data) => {       
+      (data) => {   
         data['alerts'].forEach(alert => {         
           alert['buttonText'] = this.getButtonText(alert.message);
         });
