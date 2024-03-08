@@ -25,7 +25,11 @@
 }
 
 .message-text {
-    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
 #system-alert-dd .dropdown-item {
@@ -43,3 +47,5 @@
     border-radius: 2px;
     border: lightgray solid 1px;
 }
+
+

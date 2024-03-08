@@ -13,6 +13,7 @@ export class SystemAlertComponent {
   @Input() alertsCount: number;
   systemAlerts = SystemAlerts['alerts'];
   expectedButtonLabels = ['Show Logs', 'Upgrade'];
+  sortByKey = 'Timestamp';
   public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(
@@ -69,10 +70,10 @@ export class SystemAlertComponent {
               break;
           }
         });
-        const SortedCriticalUrgency = this.getSortedAlerts(criticalUrgencyAlerts);
-        const SortedHighUrgency = this.getSortedAlerts(highUrgencyAlerts);
-        const SortedNormalUrgency = this.getSortedAlerts(normalUrgencyAlerts);
-        const SortedLowUrgency = this.getSortedAlerts(lowUrgencyAlerts);   
+        const SortedCriticalUrgency = this.sortAlertsByTimestamp(criticalUrgencyAlerts);
+        const SortedHighUrgency = this.sortAlertsByTimestamp(highUrgencyAlerts);
+        const SortedNormalUrgency = this.sortAlertsByTimestamp(normalUrgencyAlerts);
+        const SortedLowUrgency = this.sortAlertsByTimestamp(lowUrgencyAlerts);   
         this.systemAlerts = SortedCriticalUrgency.concat(SortedHighUrgency, SortedNormalUrgency, SortedLowUrgency);
       },
       error => {
@@ -85,8 +86,22 @@ export class SystemAlertComponent {
     );
   }
 
-  getSortedAlerts(alerts) {
+  sortAlerts() {
+    if (this.sortByKey === 'Timestamp') {
+      this.systemAlerts = this.sortAlertsByTimestamp(this.systemAlerts);
+      this.sortByKey = 'Urgency';
+    } else {
+      this.systemAlerts = this.sortAlertsByUrgency();
+      this.sortByKey = 'Timestamp';
+    }
+  }
+
+  sortAlertsByTimestamp(alerts) {
     return alerts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }
+
+  sortAlertsByUrgency() {
+    return this.systemAlerts.sort((a, b) => a.urgency.localeCompare(b.urgency));
   }
 
   performAction(alert: SystemAlert) {
@@ -144,6 +159,28 @@ export class SystemAlertComponent {
     );
   }
 
+  deleteAllAlerts() {
+    this.ngProgress.start();
+    this.systemAlertService.deleteAllAlerts().
+    subscribe(
+      (data: any) => {
+        this.ngProgress.done();
+        this.reenableButton.emit(false);
+        this.alertsCount = 0;
+        this.alertService.success(data.message, true);
+      },
+      error => {
+        this.ngProgress.done();
+        this.reenableButton.emit(false);
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      }
+    );
+  }
+
   getButtonText(message: string) {
     if (message.includes('restarted')) {
       return "Show Logs";
@@ -158,13 +195,13 @@ export class SystemAlertComponent {
       return "has-text-danger";
     }
     if (urgency.toLowerCase() === "high") {
-      return "has-text-warning";
+      return "has-text-warning-dark";
     }
     if (urgency.toLowerCase() === "normal") {
-      return "has-text-grey-light";
+      return "text-grey-lighter";
     }
     if (urgency.toLowerCase() === "low") {
-      return "text-grey-lighter";
+      return "has-text-grey-light";
     }
   }
 
