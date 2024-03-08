@@ -1,5 +1,5 @@
-import { Component, Input, EventEmitter } from '@angular/core';
-import { AlertService, SystemAlertService, ProgressBarService, RolesService } from '../../../services';
+import { Component, Input, EventEmitter, HostListener } from '@angular/core';
+import { AlertService, ProgressBarService, RolesService, SystemAlertService } from '../../../services';
 import { SystemAlert, SystemAlerts } from './../../../models/system-alert';
 import { Router } from '@angular/router';
 
@@ -22,6 +22,13 @@ export class SystemAlertComponent {
     private rolesService: RolesService) {
   }
 
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    const dropDown = document.querySelector('#system-alert-dd');
+    if (dropDown.classList.contains('is-active')) {
+      dropDown.classList.remove('is-active');
+    }
+  }
+
   ngOnInit() {}
 
   public toggleDropdown() {
@@ -35,8 +42,11 @@ export class SystemAlertComponent {
   getAlerts() {
     this.systemAlertService.getAlerts().
     subscribe(
-      (data) => {
-        this.systemAlerts = data['alerts'];
+      (data: SystemAlerts) => {   
+        data.alerts.forEach(alert => {         
+          alert['buttonText'] = this.getButtonText(alert.message);
+        });
+        this.systemAlerts = data.alerts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       },
       error => {
         if (error.status === 0) {
@@ -49,10 +59,10 @@ export class SystemAlertComponent {
   }
 
   performAction(alert: SystemAlert) {
-    if (this.getButtonText(alert.message) === 'Show Logs') {
+    if (alert['buttonText'] === 'Show Logs') {
       this.router.navigate(['logs/syslog'], { queryParams: { source: alert.key } });
     }
-    if (this.getButtonText(alert.message) === 'Upgrade') {
+    if (alert['buttonText'] === 'Upgrade') {
       this.update();
     }
     this.toggleDropdown();
@@ -119,10 +129,18 @@ export class SystemAlertComponent {
       return "has-text-warning";
     }
     if (urgency.toLowerCase() === "normal") {
-      return "has-text-warning-light";
+      return "has-text-grey-light";
     }
     if (urgency.toLowerCase() === "low") {
-      return "has-text-info-light";
+      return "text-grey-lighter";
     }
+  }
+
+  getAlertTime(timestamp: Date) {
+    const moment = require('moment');
+    const alertTimestamp = moment.utc(timestamp);
+    const currentTime = moment().utc(); 
+    const timeDifference = alertTimestamp.isAfter(currentTime) ? alertTimestamp.fromNow() : alertTimestamp.from(currentTime);
+    return timeDifference;
   }
 }
