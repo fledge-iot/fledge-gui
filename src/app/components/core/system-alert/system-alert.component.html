@@ -42,15 +42,14 @@
         <hr class="dropdown-divider">
       </ng-container>
       <div class="columns dropdown-item">
-        <div class="column is-1"></div>
         <div class="column">
           <p class="control">
-            <button class="button is-small pl-0 is-ghost is-pulled-left" (click)="deleteAllAlerts()" [appDisableUntilResponse]="reenableButton">Hide All</button>
+            <button class="button is-small pr-0 is-ghost is-pulled-right" (click)="sortAlerts()">Sort by {{sortByKey}}</button>
           </p>
         </div>
         <div class="column">
           <p class="control">
-            <button class="button is-small pr-0 is-ghost is-pulled-right" (click)="sortAlerts()">Sort By {{sortByKey}}</button>
+            <button class="button is-small pl-0 is-ghost is-pulled-left" (click)="deleteAllAlerts()" [appDisableUntilResponse]="reenableButton">Hide all</button>           
           </p>
         </div>
       </div>

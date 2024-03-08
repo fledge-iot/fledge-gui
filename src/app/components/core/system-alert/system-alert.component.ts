@@ -2,6 +2,7 @@ import { Component, Input, EventEmitter, HostListener } from '@angular/core';
 import { AlertService, ProgressBarService, RolesService, SystemAlertService } from '../../../services';
 import { SystemAlert, SystemAlerts } from './../../../models/system-alert';
 import { Router } from '@angular/router';
+import { chain, cloneDeep, uniqWith } from 'lodash';
 
 @Component({
   selector: 'app-system-alert',
@@ -13,7 +14,7 @@ export class SystemAlertComponent {
   @Input() alertsCount: number;
   systemAlerts = SystemAlerts['alerts'];
   expectedButtonLabels = ['Show Logs', 'Upgrade'];
-  sortByKey = 'Timestamp';
+  sortByKey = 'time';
   public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(
@@ -44,7 +45,7 @@ export class SystemAlertComponent {
   getAlerts() {
     this.systemAlertService.getAlerts().
     subscribe(
-      (data: SystemAlerts) => { 
+      (data: SystemAlerts) => {
         let criticalUrgencyAlerts = [];
         let highUrgencyAlerts = [];
         let normalUrgencyAlerts = [];
@@ -87,12 +88,12 @@ export class SystemAlertComponent {
   }
 
   sortAlerts() {
-    if (this.sortByKey === 'Timestamp') {
+    if (this.sortByKey === 'time') {
       this.systemAlerts = this.sortAlertsByTimestamp(this.systemAlerts);
-      this.sortByKey = 'Urgency';
+      this.sortByKey = 'urgency';
     } else {
       this.systemAlerts = this.sortAlertsByUrgency();
-      this.sortByKey = 'Timestamp';
+      this.sortByKey = 'time';
     }
   }
 
