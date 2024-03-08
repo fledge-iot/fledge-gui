@@ -16,7 +16,9 @@
           </span>
           <div class="column px-2">
             <div class="message-text">
+            <span [title]=" alert.message.length > 100 ? alert.message : '' ">
               {{alert.message}}
+            </span>
             </div>
           </div>         
         </div>
