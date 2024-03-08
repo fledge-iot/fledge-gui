@@ -23,7 +23,7 @@
         <div class="columns p-0 mb-0 mr-1">
           <div class="column is-1">
           </div>
-          <div class="column pt-1 pb-0" [ngClass]="{'pl-7': !rolesService.hasEditPermissions(), 'pl-5': rolesService.hasEditPermissions()}">
+          <div class="column pt-1 p-0">
             <span class="help has-text-grey">{{getAlertTime(alert?.timestamp)}}</span>
           </div>
           <ng-container *ngIf="rolesService.hasEditPermissions()">
@@ -39,15 +39,15 @@
             </div>
           </ng-container>
         </div>
-        <hr class="dropdown-divider">
+        <hr  *ngIf="alertsCount > 1"class="dropdown-divider">
       </ng-container>
-      <div class="columns dropdown-item">
-        <div class="column">
+      <div *ngIf="alertsCount > 1" class="columns dropdown-item" style="height: 10vh;" >
+        <div class="column px-2 py-0">
           <p class="control">
             <button class="button is-small pl-0 is-ghost is-pulled-left" (click)="sortAlerts()">Sort by {{sortByKey}}</button>
           </p>
         </div>
-        <div class="column">
+        <div class="column px-3 py-0">
           <p class="control">
             <button class="button is-small pr-0 is-ghost is-pulled-right" (click)="deleteAllAlerts()" [appDisableUntilResponse]="reenableButton">Hide all</button>           
           </p>
