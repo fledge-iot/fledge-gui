@@ -9,7 +9,7 @@
     font-size: 0.7rem;
     color: white;
     text-align: center;
-    border-radius: 35%;
+    border-radius: 12%;
     position: absolute;
     top: -11px;
     left: 11px;
@@ -35,4 +35,15 @@
 .is-vertical-center {
     display: flex;
     align-items: center;
+}
+
+#alerts {
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: 2px;
+    border: lightgray solid 1px;
+}
+
+.align-timestamp {
+    padding-left: 1.7rem !important;
 }
