@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 export class SystemAlertComponent {
   @Input() alertsCount: number;
   systemAlerts = SystemAlerts['alerts'];
+  expectedButtonLabels = ['Show Logs', 'Upgrade'];
   public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(
@@ -42,11 +43,37 @@ export class SystemAlertComponent {
   getAlerts() {
     this.systemAlertService.getAlerts().
     subscribe(
-      (data: SystemAlerts) => {   
-        data.alerts.forEach(alert => {         
+      (data: SystemAlerts) => { 
+        let criticalUrgencyAlerts = [];
+        let highUrgencyAlerts = [];
+        let normalUrgencyAlerts = [];
+        let lowUrgencyAlerts = [];
+
+        // Groupby 'urgency' and sorted by 'timestamp'
+        data.alerts.forEach(alert => {
           alert['buttonText'] = this.getButtonText(alert.message);
+          switch (alert.urgency.toLowerCase()) {
+            case 'critical':
+              criticalUrgencyAlerts.push(alert);
+              break;
+            case 'high':
+              highUrgencyAlerts.push(alert);
+              break;
+            case 'normal':
+              normalUrgencyAlerts.push(alert);
+              break;
+            case 'low':
+              lowUrgencyAlerts.push(alert);
+              break;
+            default:
+              break;
+          }
         });
-        this.systemAlerts = data.alerts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        const SortedCriticalUrgency = this.getSortedAlerts(criticalUrgencyAlerts);
+        const SortedHighUrgency = this.getSortedAlerts(highUrgencyAlerts);
+        const SortedNormalUrgency = this.getSortedAlerts(normalUrgencyAlerts);
+        const SortedLowUrgency = this.getSortedAlerts(lowUrgencyAlerts);   
+        this.systemAlerts = SortedCriticalUrgency.concat(SortedHighUrgency, SortedNormalUrgency, SortedLowUrgency);
       },
       error => {
         if (error.status === 0) {
@@ -56,6 +83,10 @@ export class SystemAlertComponent {
         }
       }
     );
+  }
+
+  getSortedAlerts(alerts) {
+    return alerts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
   }
 
   performAction(alert: SystemAlert) {
@@ -97,7 +128,8 @@ export class SystemAlertComponent {
         this.reenableButton.emit(false);
 
         // Remove from local arrays of systemAlerts
-        this.systemAlerts = this.systemAlerts.filter(alert => alert.key !== key);  
+        this.systemAlerts = this.systemAlerts.filter(alert => alert.key !== key);
+        --this.alertsCount;
         this.alertService.success(data.message, true);
       },
       error => {
