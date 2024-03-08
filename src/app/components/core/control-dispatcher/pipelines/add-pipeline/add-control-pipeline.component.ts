@@ -221,7 +221,8 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   updateFilterPipelineReference(filters: []) {
-    const deletedFilter = differenceWith(this.filterPipeline, filters, isEqual);
+    let deletedFilter = differenceWith(this.filterPipeline, filters, isEqual);
+    deletedFilter = differenceWith(deletedFilter, this.controlPipeline?.filters, isEqual);;
     this.deletedFilterRefrences.push(...deletedFilter);
     this.filterPipeline = filters;
   }
@@ -231,7 +232,6 @@ export class AddControlPipelineComponent implements OnInit {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate([currentUrl]);
     });
-
   }
 
   deleteFilterOnDiscardChanges(orphanFilters: string[]) {
