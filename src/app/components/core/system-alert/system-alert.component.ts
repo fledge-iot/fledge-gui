@@ -73,11 +73,14 @@ export class SystemAlertComponent {
   }
 
   sortByTimestamp() {
+    // toggle the next possible button text
     this.sortByKey = 'urgency';
+
     return this.systemAlerts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
   }
 
   groupByUrgencySortedByTime(alerts = []) {
+    // don't need to pass alerts array as param when clicking on 'Sort by Urgency' link, so assign "this.systemAlerts" to alerts variable in that case
     if (alerts.length === 0) {
       alerts = this.systemAlerts;
     }
@@ -105,7 +108,9 @@ export class SystemAlertComponent {
     });
     
     const systemAlerts = groupedByUrgency.reduce((a, value) => a.concat(value), []);
+    // toggle the next possible button text
     this.sortByKey = 'time';
+    
     this.systemAlerts = systemAlerts;
     this.hideLoadingSpinner();
   }
