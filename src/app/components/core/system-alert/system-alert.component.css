@@ -25,7 +25,11 @@
 }
 
 .message-text {
-    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
 }
 
 #system-alert-dd .dropdown-item {
@@ -44,6 +48,6 @@
     border: lightgray solid 1px;
 }
 
-.align-timestamp {
-    padding-left: 1.7rem !important;
+.bottom-row {
+    height: 7vh;
 }
