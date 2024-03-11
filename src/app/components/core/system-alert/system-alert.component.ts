@@ -14,6 +14,7 @@ export class SystemAlertComponent {
   systemAlerts = SystemAlerts['alerts'];
   expectedButtonLabels = ['Show Logs', 'Upgrade'];
   sortByKey = 'time';
+  showSpinner = true;
   public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(
@@ -33,10 +34,19 @@ export class SystemAlertComponent {
 
   ngOnInit() {}
 
+  public showLoadingSpinner() {
+    this.showSpinner = true;
+  }
+
+  public hideLoadingSpinner() {
+    this.showSpinner = false;
+  }
+
   public toggleDropdown() {
     const dropDown = document.querySelector('#system-alert-dd');
     dropDown.classList.toggle('is-active');
     if (dropDown.classList.contains('is-active')) {
+      this.showLoadingSpinner();
       this.getAlerts();
     }
   }
@@ -51,6 +61,7 @@ export class SystemAlertComponent {
         this.groupByUrgencySortedByTime(data.alerts);
       },
       error => {
+        this.hideLoadingSpinner();
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
@@ -95,6 +106,7 @@ export class SystemAlertComponent {
     const systemAlerts = groupedByUrgency.reduce((a, value) => a.concat(value), []);
     this.sortByKey = 'time';
     this.systemAlerts = systemAlerts;
+    this.hideLoadingSpinner();
   }
 
   performAction(alert: SystemAlert) {

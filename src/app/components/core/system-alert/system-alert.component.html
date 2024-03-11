@@ -9,52 +9,57 @@
   </div>
   <div *ngIf="alertsCount > 0" class="dropdown-menu" id="dropdown-menu" role="menu">
     <div class="dropdown-content" id="alerts">
-      <ng-container *ngFor="let alert of systemAlerts; let i=index;">
-        <div class="columns dropdown-item" [ngClass]="{'pb-0 mb-0': !rolesService.hasEditPermissions()}">
-          <span class="column is-vertical-center is-1 pl-2">
-            <i [ngClass]="applyClass(alert?.urgency)" class="bi bi bi-exclamation-triangle"></i>          
-          </span>
-          <div class="column px-2">
-            <div class="message-text">
-            <span [title]=" alert.message.length > 100 ? alert.message : '' ">
-              {{alert.message}}
-            </span>
-            </div>
-          </div>         
-        </div>
-        <div class="columns p-0 mb-0 mr-1">
-          <div class="column is-1">
-          </div>
-          <div class="column pt-1 p-0">
-            <span class="help has-text-grey">{{getAlertTime(alert?.timestamp)}}</span>
-          </div>
-          <ng-container *ngIf="rolesService.hasEditPermissions()">
-            <div class="column pt-0 pb-0">
-              <div class="field is-grouped is-pulled-right">          
-                <p *ngIf="expectedButtonLabels.includes(alert?.buttonText)" class="control">
-                  <button class="button is-tiny is-outlined is-link" (click)="performAction(alert)">{{alert?.buttonText}}</button>
-                </p>
-                <p class="control">
-                  <button class="button is-tiny" (click)="deleteAlert(alert?.key)" [appDisableUntilResponse]="reenableButton">Hide</button>
-                </p>
-              </div>
-            </div>
-          </ng-container>
-        </div>
-        <hr  *ngIf="alertsCount > 1"class="dropdown-divider">
-      </ng-container>
-      <div *ngIf="alertsCount > 1" class="columns dropdown-item bottom-row">
-        <div class="column px-2 py-0">
-          <p class="control">
-            <button class="button is-small pl-0 is-ghost is-pulled-left" (click)="sortByKey === 'time' ? sortByTimestamp() : groupByUrgencySortedByTime()">Sort by {{sortByKey}}</button>
-          </p>
-        </div>
-        <div class="column px-3 py-0">
-          <p class="control">
-            <button class="button is-small pr-0 is-ghost is-pulled-right" (click)="deleteAllAlerts()" [appDisableUntilResponse]="reenableButton">Hide all</button>           
-          </p>
-        </div>
+      <div *ngIf="showLoading" class="has-text-centered has-text-grey">
+        Loading...
       </div>
+      <ng-container *ngIf="!showSpinner">
+        <ng-container *ngFor="let alert of systemAlerts; let i=index;">
+          <div class="columns dropdown-item" [ngClass]="{'pb-0 mb-0': !rolesService.hasEditPermissions()}">
+            <span class="column is-vertical-center is-1 pl-2">
+              <i [ngClass]="applyClass(alert?.urgency)" class="bi bi bi-exclamation-triangle"></i>          
+            </span>
+            <div class="column px-2">
+              <div class="message-text">
+              <span [title]=" alert.message.length > 100 ? alert.message : '' ">
+                {{alert.message}}
+              </span>
+              </div>
+            </div>         
+          </div>
+          <div class="columns p-0 mb-0 mr-1">
+            <div class="column is-1">
+            </div>
+            <div class="column pt-1 p-0">
+              <span class="help has-text-grey">{{getAlertTime(alert?.timestamp)}}</span>
+            </div>
+            <ng-container *ngIf="rolesService.hasEditPermissions()">
+              <div class="column pt-0 pb-0">
+                <div class="field is-grouped is-pulled-right">          
+                  <p *ngIf="expectedButtonLabels.includes(alert?.buttonText)" class="control">
+                    <button class="button is-tiny is-outlined is-link" (click)="performAction(alert)">{{alert?.buttonText}}</button>
+                  </p>
+                  <p class="control">
+                    <button class="button is-tiny" (click)="deleteAlert(alert?.key)" [appDisableUntilResponse]="reenableButton">Hide</button>
+                  </p>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <hr  *ngIf="alertsCount > 1"class="dropdown-divider">
+        </ng-container>
+        <div *ngIf="alertsCount > 1" class="columns dropdown-item bottom-row">
+          <div class="column px-2 py-0">
+            <p class="control">
+              <button class="button is-small pl-0 is-ghost is-pulled-left" (click)="sortByKey === 'time' ? sortByTimestamp() : groupByUrgencySortedByTime()">Sort by {{sortByKey}}</button>
+            </p>
+          </div>
+          <div class="column px-3 py-0">
+            <p class="control">
+              <button class="button is-small pr-0 is-ghost is-pulled-right" (click)="deleteAllAlerts()" [appDisableUntilResponse]="reenableButton">Hide all</button>           
+            </p>
+          </div>
+        </div>
+      </ng-container>
     </div>
   </div>
 </div>
