@@ -47,7 +47,8 @@ export class CustomNodeComponent implements OnChanges {
     pluginName: "",
     assetCount: "",
     readingCount: "",
-    schedule_enabled: false
+    schedule_enabled: false,
+    pluginVersion: ""
   }
   task = {
     name: "",
@@ -60,9 +61,10 @@ export class CustomNodeComponent implements OnChanges {
     processName: "",
     repeat: "",
     sent: "",
-    taskStatus: {}
+    taskStatus: {},
+    pluginVersion: ""
   }
-  filter = { pluginName: '', enabled: 'false', name: '', color: '' }
+  filter = { pluginName: '', enabled: 'false', name: '', color: '', pluginVersion: "" }
   isServiceNode: boolean = false;
   subscription: Subscription;
   addFilterSubscription: Subscription;
@@ -74,6 +76,7 @@ export class CustomNodeComponent implements OnChanges {
   showPlusIcon = false;
   showDeleteIcon = false;
   nodeId = '';
+  pluginVersion = '';
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -122,9 +125,11 @@ export class CustomNodeComponent implements OnChanges {
             this.task.sent = this.service.readingCount = this.data.controls.sentReadingControl['sent'];
             this.task.execution = this.data.controls.executionControl['execution'];
             this.task.enabled = this.data.controls.enabledControl['enabled'];
+            this.task.pluginVersion = this.service.pluginVersion = this.data.controls.pluginVersionControl['pluginVersion'];
             this.isEnabled = this.task.enabled;
             this.helpText = this.task.plugin;
             this.pluginName = this.task.plugin;
+            this.pluginVersion = this.task.pluginVersion;
           }
         } else {
           if (!isEmpty(this.data.controls)) {
@@ -134,9 +139,11 @@ export class CustomNodeComponent implements OnChanges {
             this.service.readingCount = this.data.controls.readingCountControl['count'];
             this.service.status = this.data.controls.statusControl['status'];
             this.service.schedule_enabled = this.data.controls.enabledControl['enabled'];
+            this.service.pluginVersion = this.data.controls.pluginVersionControl['pluginVersion'];
             this.isEnabled = this.service.schedule_enabled;
             this.helpText = this.service.pluginName;
             this.pluginName = this.service.pluginName;
+            this.pluginVersion = this.service.pluginVersion;
           }
         }
       }

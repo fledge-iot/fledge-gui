@@ -56,7 +56,8 @@
           </ng-template>
         </div>
       </div>
-      <span *ngIf="data.label!=='Filter'" class="help-text">{{helpText}}</span>
+      <span *ngIf="isFilterNode && data.label!=='Filter'" class="help-text">{{helpText}}</span>
+      <span *ngIf="isServiceNode" class="help-text has-tooltip-bottom custom-tooltip has-tooltip-arrow tooltip is-hovered" [attr.data-tooltip]="pluginVersion">{{helpText}}</span>
     </div>
     <div>
       <ng-container *ngIf="isServiceNode && from != 'north'">
