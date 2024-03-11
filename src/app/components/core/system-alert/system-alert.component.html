@@ -9,8 +9,8 @@
   </div>
   <div *ngIf="alertsCount > 0" class="dropdown-menu" id="dropdown-menu" role="menu">
     <div class="dropdown-content" id="alerts">
-      <div *ngIf="showLoading" class="has-text-centered has-text-grey">
-        Loading...
+      <div *ngIf="showSpinner" class="has-text-centered has-text-grey">
+        <small>Loading...</small>
       </div>
       <ng-container *ngIf="!showSpinner">
         <ng-container *ngFor="let alert of systemAlerts; let i=index;">

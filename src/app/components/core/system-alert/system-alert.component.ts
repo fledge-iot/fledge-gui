@@ -62,6 +62,7 @@ export class SystemAlertComponent {
       },
       error => {
         this.hideLoadingSpinner();
+        this.toggleDropdown();
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
