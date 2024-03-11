@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { cloneDeep, isEmpty, isEqual } from 'lodash';
+import { cloneDeep, isEmpty, isEqual, uniq, differenceWith } from 'lodash';
 import { Observable, forkJoin, of } from 'rxjs';
 import { delay, map } from 'rxjs/operators';
 import { CustomValidator } from '../../../../../directives/custom-validator';
@@ -74,6 +74,7 @@ export class AddControlPipelineComponent implements OnInit {
   controlPipeline: ControlPipeline;
   // newly added filter List
   newAddedFilters: { filter: string, state: string }[] = [];
+  deletedFilterRefrences: string[] = [];
 
   public reenableButton = new EventEmitter<boolean>(false);
   constructor(
@@ -220,6 +221,9 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   updateFilterPipelineReference(filters: []) {
+    let deletedFilter = differenceWith(this.filterPipeline, filters, isEqual);
+    deletedFilter = differenceWith(deletedFilter, this.controlPipeline?.filters, isEqual);;
+    this.deletedFilterRefrences.push(...deletedFilter);
     this.filterPipeline = filters;
   }
 
@@ -228,7 +232,6 @@ export class AddControlPipelineComponent implements OnInit {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate([currentUrl]);
     });
-
   }
 
   deleteFilterOnDiscardChanges(orphanFilters: string[]) {
@@ -237,34 +240,42 @@ export class AddControlPipelineComponent implements OnInit {
       filters.push(this.filterService.deleteFilter(f));
     });
     if (filters.length > 0) {
-      forkJoin(filters).subscribe(() => {
-        error => console.log(error)
-      });
+      forkJoin(filters).subscribe(
+        () => {
+          this.deletedFilterRefrences = [];
+        },
+        (error) => {
+          console.log(error);
+        });
     }
   }
 
   discardUnsavedChanges() {
     this.dialogService.resetChangesEmitter?.emit(true);
     // check orphan filters
-    const orphanFilters = this.filterPipeline.filter(f => !this.controlPipeline?.filters.includes(f));
+    let orphanFilters = this.filterPipeline.filter(f => !this.controlPipeline?.filters.includes(f));
+    if (this.newAddedFilters.length > 0 && this.unsavedChangesInFilterForm) {
+      const availableButNotAddedInPipeline = this.newAddedFilters.map((f: any) => (f.filter as string));
+      orphanFilters = uniq([...orphanFilters, ...availableButNotAddedInPipeline])
+    }
     if (orphanFilters.length > 0) {
       this.deleteFilterOnDiscardChanges(orphanFilters);
     }
-    this.unsavedChangesInFilterForm = false;
     if (this.addFilterClicked) {
       this.isAddFilterWizard = this.addFilterClicked;
     }
+    this.unsavedChangesInFilterForm = false;
   }
 
   deletePipeline(id: number) {
+    // remove unattached filter if pipeline deleted without saving the changes
+    this.discardUnsavedChanges();
     /** request started */
     this.ngProgress.start();
     this.controlPipelinesService.deletePipeline(id)
       .subscribe((data: any) => {
         this.ngProgress.done();
         this.reenableButton.emit(false);
-        // close modals
-        this.unsavedChangesInFilterForm = false;
         this.router.navigate(['control-dispatcher/pipelines']);
         this.alertService.success(data.message);
       }, error => {
@@ -570,6 +581,10 @@ export class AddControlPipelineComponent implements OnInit {
     if (this.unsavedChangesInFilterForm) {
       this.filtersListComponent?.update();
       this.unsavedChangesInFilterForm = false;
+      // remove not attached filter with the pipeline
+      if (this.deletedFilterRefrences.length > 0) {
+        this.deleteFilterOnDiscardChanges(this.deletedFilterRefrences);
+      }
     }
 
     if (this.editMode) {
