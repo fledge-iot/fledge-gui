@@ -2,7 +2,6 @@ import { Component, Input, EventEmitter, HostListener } from '@angular/core';
 import { AlertService, ProgressBarService, RolesService, SystemAlertService } from '../../../services';
 import { SystemAlert, SystemAlerts } from './../../../models/system-alert';
 import { Router } from '@angular/router';
-import { chain, cloneDeep, uniqWith } from 'lodash';
 
 @Component({
   selector: 'app-system-alert',
@@ -46,36 +45,10 @@ export class SystemAlertComponent {
     this.systemAlertService.getAlerts().
     subscribe(
       (data: SystemAlerts) => {
-        let criticalUrgencyAlerts = [];
-        let highUrgencyAlerts = [];
-        let normalUrgencyAlerts = [];
-        let lowUrgencyAlerts = [];
-
-        // Groupby 'urgency' and sorted by 'timestamp'
         data.alerts.forEach(alert => {
           alert['buttonText'] = this.getButtonText(alert.message);
-          switch (alert.urgency.toLowerCase()) {
-            case 'critical':
-              criticalUrgencyAlerts.push(alert);
-              break;
-            case 'high':
-              highUrgencyAlerts.push(alert);
-              break;
-            case 'normal':
-              normalUrgencyAlerts.push(alert);
-              break;
-            case 'low':
-              lowUrgencyAlerts.push(alert);
-              break;
-            default:
-              break;
-          }
         });
-        const SortedCriticalUrgency = this.sortAlertsByTimestamp(criticalUrgencyAlerts);
-        const SortedHighUrgency = this.sortAlertsByTimestamp(highUrgencyAlerts);
-        const SortedNormalUrgency = this.sortAlertsByTimestamp(normalUrgencyAlerts);
-        const SortedLowUrgency = this.sortAlertsByTimestamp(lowUrgencyAlerts);   
-        this.systemAlerts = SortedCriticalUrgency.concat(SortedHighUrgency, SortedNormalUrgency, SortedLowUrgency);
+        this.groupByUrgencySortedByTime(data.alerts);
       },
       error => {
         if (error.status === 0) {
@@ -87,22 +60,41 @@ export class SystemAlertComponent {
     );
   }
 
-  sortAlerts() {
-    if (this.sortByKey === 'time') {
-      this.systemAlerts = this.sortAlertsByTimestamp(this.systemAlerts);
-      this.sortByKey = 'urgency';
-    } else {
-      this.systemAlerts = this.sortAlertsByUrgency();
-      this.sortByKey = 'time';
+  sortByTimestamp() {
+    this.sortByKey = 'urgency';
+    return this.systemAlerts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }
+
+  groupByUrgencySortedByTime(alerts = []) {
+    if (alerts.length === 0) {
+      alerts = this.systemAlerts;
     }
-  }
+    const urgencyOrder = { "Critical": 0, "High": 1, "Normal": 2, "Low": 3 };
+    
+    // Group by urgency
+    const groupedByUrgencyObj = alerts.reduce((alert, item) => {
+      if (!alert[item.urgency]) {
+        alert[item.urgency] = [];
+      }
+      alert[item.urgency].push(item);
+      return alert;
+    }, {});
 
-  sortAlertsByTimestamp(alerts) {
-    return alerts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-  }
+    // array of alerts Group by sorted urgency
+    let groupedByUrgency = Object.keys(groupedByUrgencyObj)
+    .sort((a, b) => urgencyOrder[a] - urgencyOrder[b])
+    .map((key) => 
+    [...groupedByUrgencyObj[key]]
+    );
 
-  sortAlertsByUrgency() {
-    return this.systemAlerts.sort((a, b) => a.urgency.localeCompare(b.urgency));
+    // Sort each group by timestamp
+    groupedByUrgency.forEach(alerts => {
+      alerts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    });
+    
+    const systemAlerts = groupedByUrgency.reduce((a, value) => a.concat(value), []);
+    this.sortByKey = 'time';
+    this.systemAlerts = systemAlerts;
   }
 
   performAction(alert: SystemAlert) {
@@ -168,6 +160,7 @@ export class SystemAlertComponent {
         this.ngProgress.done();
         this.reenableButton.emit(false);
         this.alertsCount = 0;
+        this.systemAlerts = [];
         this.alertService.success(data.message, true);
       },
       error => {
@@ -209,7 +202,8 @@ export class SystemAlertComponent {
   getAlertTime(timestamp: Date) {
     const moment = require('moment');
     const alertTimestamp = moment.utc(timestamp);
-    const currentTime = moment().utc(); 
+    const currentTime = moment().utc();
+    
     const timeDifference = alertTimestamp.isAfter(currentTime) ? alertTimestamp.fromNow() : alertTimestamp.from(currentTime);
     return timeDifference;
   }

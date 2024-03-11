@@ -43,10 +43,10 @@
         </div>
         <hr  *ngIf="alertsCount > 1"class="dropdown-divider">
       </ng-container>
-      <div *ngIf="alertsCount > 1" class="columns dropdown-item" style="height: 10vh;" >
+      <div *ngIf="alertsCount > 1" class="columns dropdown-item bottom-row">
         <div class="column px-2 py-0">
           <p class="control">
-            <button class="button is-small pl-0 is-ghost is-pulled-left" (click)="sortAlerts()">Sort by {{sortByKey}}</button>
+            <button class="button is-small pl-0 is-ghost is-pulled-left" (click)="sortByKey === 'time' ? sortByTimestamp() : groupByUrgencySortedByTime()">Sort by {{sortByKey}}</button>
           </p>
         </div>
         <div class="column px-3 py-0">

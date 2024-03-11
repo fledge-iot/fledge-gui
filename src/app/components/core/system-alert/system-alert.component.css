@@ -48,4 +48,6 @@
     border: lightgray solid 1px;
 }
 
-
+.bottom-row {
+    height: 10vh;
+}
