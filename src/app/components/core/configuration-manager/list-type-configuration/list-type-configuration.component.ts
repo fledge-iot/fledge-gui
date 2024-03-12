@@ -37,21 +37,20 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.onValChanges();
   }
 
-  ngAfterViewInit() {
-    console.log("form status", this.listItems.invalid);
-    if (this.listItems.invalid) {
-      console.log("parent form 123 ", this.configuration.key, this.form.controls[this.configuration.key]);
-
-      const control = this.form.controls[this.configuration.key];
-      control.valueChanges.subscribe(() => {
-        control.setErrors({ invalid: true });
-        control.updateValueAndValidity();
-        this.cdRef.detectChanges();
-      });
-    }
-    console.log("parent form ", this.form);
-    //this.formState.emit(this.listItems.valid);
-  }
+  // ngAfterViewInit() {
+  //   console.log("form status", this.listItems.invalid);
+  //   if (this.listItems.invalid) {
+  //     console.log("parent form 123 ", this.configuration.key, this.form.controls[this.configuration.key]);
+  //     const control = this.form.controls[this.configuration.key];
+  //     control.valueChanges.subscribe(() => {
+  //       control.setErrors({ invalid: true });
+  //       control.updateValueAndValidity();
+  //       this.cdRef.detectChanges();
+  //     });
+  //   }
+  //   console.log("parent form ", this.form);
+  //   //this.formState.emit(this.listItems.valid);
+  // }
 
   get listItems() {
     return this.listItemsForm.get('listItems') as FormArray;
@@ -86,7 +85,6 @@ export class ListTypeConfigurationComponent implements OnInit {
       this.form.get(this.configuration.key)?.patchValue(JSON.stringify(val))
 
       // this.formState.emit(this.listItems.valid);
-      console.log('updated parent', this.form);
     })
   }
 }
