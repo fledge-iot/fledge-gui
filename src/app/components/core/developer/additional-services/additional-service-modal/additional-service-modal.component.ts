@@ -103,7 +103,7 @@ export class AdditionalServiceModalComponent {
     if (pollingScheduleID) {
       this.pollingScheduleID = pollingScheduleID;
     } else if (this.isServiceAvailable && !pollingScheduleID && (this.serviceType === 'Management')) {
-      this.getPollingSchedulesID();
+      this.getPollingScheduleID();
     }
     this.btnText = 'Add';
     if (this.isServiceAvailable) {
@@ -116,7 +116,7 @@ export class AdditionalServiceModalComponent {
     }
   }
 
-  public getPollingSchedulesID() {
+  public getPollingScheduleID() {
     this.schedulesService.getSchedules().
       subscribe((data: Schedule) => {
         this.pollingScheduleID = data['schedules'].find(s => s.processName === 'manage')?.id;
@@ -312,7 +312,7 @@ export class AdditionalServiceModalComponent {
           this.category = { name: this.serviceName, config: data };
           this.categoryCopy = cloneDeep({ name: this.serviceName, config: data });
           if (this.isServiceAvailable && this.serviceType === 'Management') {
-            this.getPollingSchedulesID();
+            this.getPollingScheduleID();
           }
           this.ngProgress.done();
         },
