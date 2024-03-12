@@ -17,7 +17,7 @@ import { BehaviorSubject, of, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../../services/doc.service';
 import { ConfigurationGroupComponent } from '../../../configuration-manager/configuration-group/configuration-group.component';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../../utils';
-import { Service } from '../../../../../models';
+import { Service, Schedule } from '../../../../../models';
 import { AdditionalServicesUtils } from '../additional-services-utils.service';
 
 @Component({
@@ -99,9 +99,11 @@ export class AdditionalServiceModalComponent {
     this.serviceProcessName = serviceInfo.process;
     this.serviceType = serviceInfo.type;
     this.packageName = serviceInfo.package;
-    this.isInstalled =  serviceInfo.isInstalled;  
+    this.isInstalled =  serviceInfo.isInstalled;
     if (pollingScheduleID) {
       this.pollingScheduleID = pollingScheduleID;
+    } else if (this.isServiceAvailable && !pollingScheduleID && (this.serviceType === 'Management')) {
+      this.getPollingSchedulesID();
     }
     this.btnText = 'Add';
     if (this.isServiceAvailable) {
@@ -112,6 +114,20 @@ export class AdditionalServiceModalComponent {
     if (this.serviceType) {
       this.getServiceByType();
     }
+  }
+
+  public getPollingSchedulesID() {
+    this.schedulesService.getSchedules().
+      subscribe((data: Schedule) => {
+        this.pollingScheduleID = data['schedules'].find(s => s.processName === 'manage')?.id;
+      },
+        (error) => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -289,18 +305,18 @@ export class AdditionalServiceModalComponent {
   }
 
   public getCategory(): void {
-    /** request started */
     this.ngProgress.start();
     this.configService.getCategory(this.serviceName).
       subscribe(
         (data) => {
           this.category = { name: this.serviceName, config: data };
           this.categoryCopy = cloneDeep({ name: this.serviceName, config: data });
-          /** request completed */
+          if (this.isServiceAvailable && this.serviceType === 'Management') {
+            this.getPollingSchedulesID();
+          }
           this.ngProgress.done();
         },
         error => {
-          /** request completed */
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
