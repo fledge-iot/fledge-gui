@@ -126,4 +126,8 @@ export class ShowConfigurationComponent implements OnInit {
   togglePassword(input: any): any {
     input.type = input.type === 'password' ? 'text' : 'password';
   }
+
+  listTypeFormState(state: boolean) {
+    this.formStatusEvent.emit({ 'status': state, 'group': this.group });
+  }
 }

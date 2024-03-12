@@ -86,7 +86,10 @@
                       </button>
                     </div>
                   </div>
-
+                  <ng-container *ngSwitchCase="'LIST'">
+                    <app-list-type-configuration [configuration]="configuration" [formGroup]="form"
+                      (formState)="listTypeFormState($event)"></app-list-type-configuration>
+                  </ng-container>
                   <div *ngSwitchCase="'ACL'" class="select is-small">
                     <select [id]="configuration.key" [formControlName]="configuration.key">
                       <!-- all acls -->
@@ -95,7 +98,6 @@
                       </option>
                     </select>
                   </div>
-
                   <input *ngSwitchCase="'URL'" [formControlName]="configuration.key" [id]="configuration.key"
                     [type]="configuration.type" class="input is-fullwidth is-small" />
 
