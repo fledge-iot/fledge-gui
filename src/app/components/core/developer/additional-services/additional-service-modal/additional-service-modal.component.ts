@@ -102,7 +102,7 @@ export class AdditionalServiceModalComponent {
     this.isInstalled =  serviceInfo.isInstalled;
     if (pollingScheduleID) {
       this.pollingScheduleID = pollingScheduleID;
-    } else if (this.isServiceAvailable && !pollingScheduleID && (this.serviceType === 'Management')) {
+    } else if (this.isServiceAvailable && (this.serviceType === 'Management')) {
       this.getPollingScheduleID();
     }
     this.btnText = 'Add';
