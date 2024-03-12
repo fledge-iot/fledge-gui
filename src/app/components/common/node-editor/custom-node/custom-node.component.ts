@@ -419,6 +419,10 @@ export class CustomNodeComponent implements OnChanges {
     this.flowEditorService.removeFilter.next({ id: this.nodeId });
   }
 
+  showReadingsPerAsset() {
+    this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: false, showFilterConfiguration: false, showLogs: false, showReadings: true, serviceName: this.service.name });
+  }
+
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.addFilterSubscription?.unsubscribe();

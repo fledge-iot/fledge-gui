@@ -119,6 +119,12 @@
             (click)="showLogsInQuickview()">
             <i class="far fa-xs fa-file-alt"></i>
           </span>
+          <span *ngIf="isServiceNode && from=='south'"
+            class="icon is-small has-tooltip-bottom has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon ml-3"
+            data-tooltip="Show readings" data-show="quickview" data-target="quickviewDefault"
+            (click)="showReadingsPerAsset()">
+            <i class="fa fa-xs fa-chart-line"></i>
+          </span>
         </div>
       </ng-container>
       <div class="is-pulled-right">
@@ -143,6 +149,11 @@
                 <ng-container *ngIf="!source">
                   <a class="dropdown-item" (click)="openServiceDetails()">
                     <span>Details</span>
+                  </a>
+                </ng-container>
+                <ng-container *ngIf="isServiceNode && from=='south'">
+                  <a class="dropdown-item" data-show="quickview" data-target="quickviewDefault" (click)="showReadingsPerAsset()">
+                    <span>Readings</span>
                   </a>
                 </ng-container>
                 <a *ngIf="rolesService.hasEditPermissions()" class="dropdown-item" (click)="deleteFilterOrService()">

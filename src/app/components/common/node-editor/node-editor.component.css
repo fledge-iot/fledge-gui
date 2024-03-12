@@ -12,3 +12,13 @@
 .breadcrumb {
   display: inline-block;
 }
+
+.readings-count {
+  vertical-align: middle;
+  max-width: max-content;
+}
+
+.deprecate {
+  padding-right: 10px;
+  color: #363636;
+}

@@ -2,6 +2,7 @@ import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, Vi
 import { createEditor, getUpdatedFilterPipeline, deleteConnection, removeNode, updateNode, updateFilterNode } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
+  AssetsService,
   ConfigurationControlService,
   ConfigurationService,
   FileUploaderService,
@@ -22,6 +23,7 @@ import { cloneDeep, isEmpty } from 'lodash';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import { NorthTask } from '../../core/north/north-task';
 import Utils, { POLLING_INTERVAL } from '../../../utils';
+import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 
 @Component({
   selector: 'app-node-editor',
@@ -48,6 +50,7 @@ export class NodeEditorComponent implements OnInit {
   showFilterConfiguration: boolean = false;
   showLogs: boolean = false;
   showTaskSchedule = false;
+  showReadings = false;
   service: Service;
   task: NorthTask;
   services: Service[] = [];
@@ -74,6 +77,7 @@ export class NodeEditorComponent implements OnInit {
   isAlive: boolean;
 
   taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };
+  selectedAsset = '';
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -90,6 +94,8 @@ export class NodeEditorComponent implements OnInit {
     private dialogService: DialogService,
     private northService: NorthService,
     private ping: PingService,
+    public developerFeaturesService: DeveloperFeaturesService,
+    private assetService: AssetsService,
     private router: Router) {
     this.route.params.subscribe(params => {
       this.from = params.from;
@@ -121,6 +127,7 @@ export class NodeEditorComponent implements OnInit {
       this.showFilterConfiguration = data.showFilterConfiguration;
       this.showLogs = data.showLogs;
       this.showTaskSchedule = data.showTaskSchedule;
+      this.showReadings = data.showReadings;
       this.serviceName = data.serviceName;
       if (this.showPluginConfiguration) {
         this.getCategory();
@@ -139,6 +146,9 @@ export class NodeEditorComponent implements OnInit {
       if (this.showFilterConfiguration) {
         this.quickviewFilterName = data.filterName;
         this.getFilterCategory()
+      }
+      if(this.showReadings) {
+        this.service = this.services.find(service => (service.name == this.serviceName));
       }
     });
 
@@ -322,6 +332,7 @@ export class NodeEditorComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
         const services = data.services as Service[];
+        this.services = services;
         data = {
           from: this.from,
           source: this.source,
@@ -710,6 +721,31 @@ export class NodeEditorComponent implements OnInit {
     this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
   }
 
+  selectAsset(assetName: string) {
+    this.selectedAsset = assetName;
+  }
+
+  deprecateAsset(assetName: string) {
+    /** request started */
+    this.ngProgress.start();
+    this.assetService.deprecateAssetTrackEntry(this.serviceName, assetName, 'Ingest')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (data: any) => {
+          /** request completed */
+          this.ngProgress.done();
+          this.toastService.success(data.success);
+          this.closeModal('asset-tracking-dialog');
+        }, error => {
+          /** request completed but error */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.toastService.error(error.statusText);
+          }
+        });
+  }
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.filterSubscription.unsubscribe();

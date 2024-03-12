@@ -74,6 +74,28 @@
     <ng-container *ngIf="showTaskSchedule">
       <app-task-schedule [taskSchedule]="taskSchedule"></app-task-schedule>
     </ng-container>
+    <ng-container *ngIf="showReadings">
+      <table class="table is-narrow is-responsive">
+        <tr *ngFor='let data of service?.assets'>
+            <td>
+              <a *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()"
+                class="deprecate"
+                (click)="selectAsset(data?.asset);openModal('asset-tracking-dialog')">
+                <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow"
+                  data-tooltip="Deprecate asset">
+                  <i class="fa fa-sm fa-eraser" aria-hidden="true"></i>
+                </span>
+              </a>
+              <small>{{data.asset}}</small>
+            </td>
+            <td>
+            </td>
+            <td class="readings-count">
+              <small class="level-right">{{data.count | number}}</small>
+            </td>
+        </tr>
+      </table>
+    </ng-container>
   </app-quickview>
 </div>
 
@@ -109,3 +131,17 @@
   </footer>
 </app-confirmation-dialog>
 <!-- <app-task-schedule #taskScheduleComponent [taskSchedule]="taskSchedule"></app-task-schedule> -->
+
+<app-confirmation-dialog id="asset-tracking-dialog">
+  <header class="modal-card-head">
+    <span class="modal-card-title is-size-6">Deprecate</span>
+    <button class="delete" aria-label="close" (click)="closeModal('asset-tracking-dialog')"></button>
+  </header>
+  <section class="modal-card-body">
+    Are you sure, <b>{{selectedAsset}}</b> will be deprecated if this action is continued?
+  </section>
+  <footer class="modal-card-foot">
+    <button class="button is-small" (click)="closeModal('asset-tracking-dialog')">Cancel</button>
+    <button class="button is-small is-danger" (click)="deprecateAsset(selectedAsset)">Yes</button>
+  </footer>
+</app-confirmation-dialog>
