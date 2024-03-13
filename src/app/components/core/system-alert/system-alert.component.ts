@@ -31,11 +31,7 @@ export class SystemAlertComponent {
       this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))
       .subscribe((pingTime: number) => {
-        if (pingTime === -1) {
-          this.isManualRefresh = true;
-        } else {
-          this.isManualRefresh = false;
-        }
+        this.isManualRefresh = pingTime === -1 ? true : false;
       });
     }
 
@@ -65,9 +61,13 @@ export class SystemAlertComponent {
     this.showSpinner = false;
   }
 
-  public toggleDropdown() { 
+  public toggleDropdown() {
+    if (this.alertsCount === 0) {
+      return;
+    }
     const dropDown = document.querySelector('#system-alert-dd');
     dropDown.classList.toggle('is-active');
+    // if dropdown is opened, get all alerts
     if (dropDown.classList.contains('is-active')) {
       this.showLoadingSpinner();
       this.getAlerts();
@@ -78,6 +78,9 @@ export class SystemAlertComponent {
     this.systemAlertService.getAlerts().
     subscribe(
       (data: SystemAlerts) => {
+        setTimeout(() => {
+          this.hideLoadingSpinner();
+        }, 500);
         data.alerts.forEach(alert => {
           alert['buttonText'] = this.getButtonText(alert.message);
         });
@@ -86,6 +89,7 @@ export class SystemAlertComponent {
       },
       error => {
         this.hideLoadingSpinner();
+        // to close the dropdown, which already opened
         this.toggleDropdown();
         if (error.status === 0) {
           console.log('service down ', error);
@@ -134,7 +138,6 @@ export class SystemAlertComponent {
     this.sortByKey = 'time';
     
     this.systemAlerts = systemAlerts;
-    this.hideLoadingSpinner();
   }
 
   performAction(alert: SystemAlert) {
