@@ -1,7 +1,9 @@
-import { Component, Input, EventEmitter, HostListener } from '@angular/core';
-import { AlertService, ProgressBarService, RolesService, SystemAlertService } from '../../../services';
+import { Component, Input, EventEmitter, HostListener, SimpleChanges } from '@angular/core';
+import { AlertService, ProgressBarService, RolesService, SystemAlertService, PingService } from '../../../services';
 import { SystemAlert, SystemAlerts } from './../../../models/system-alert';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-system-alert',
@@ -15,20 +17,41 @@ export class SystemAlertComponent {
   expectedButtonLabels = ['Show Logs', 'Upgrade'];
   sortByKey = 'time';
   showSpinner = true;
+  isManualRefresh = false;
   public reenableButton = new EventEmitter<boolean>(false);
 
+  destroy$: Subject<boolean> = new Subject<boolean>();
   constructor(
     private alertService: AlertService,
     private router: Router,
+    private ping: PingService,
     private systemAlertService: SystemAlertService,
     public ngProgress: ProgressBarService,
     private rolesService: RolesService) {
-  }
+      this.ping.pingIntervalChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((pingTime: number) => {
+        if (pingTime === -1) {
+          this.isManualRefresh = true;
+        } else {
+          this.isManualRefresh = false;
+        }
+      });
+    }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const dropDown = document.querySelector('#system-alert-dd');
     if (dropDown.classList.contains('is-active')) {
       dropDown.classList.remove('is-active');
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    const dropDown = document.querySelector('#system-alert-dd');
+    if (dropDown.classList.contains('is-active')) {
+      if (!this.isManualRefresh && changes.alertsCount.currentValue !== changes.alertsCount.previousValue) {
+        this.getAlerts();
+      }
     }
   }
 
@@ -42,7 +65,7 @@ export class SystemAlertComponent {
     this.showSpinner = false;
   }
 
-  public toggleDropdown() {
+  public toggleDropdown() { 
     const dropDown = document.querySelector('#system-alert-dd');
     dropDown.classList.toggle('is-active');
     if (dropDown.classList.contains('is-active')) {
@@ -58,6 +81,7 @@ export class SystemAlertComponent {
         data.alerts.forEach(alert => {
           alert['buttonText'] = this.getButtonText(alert.message);
         });
+        this.alertsCount = data.alerts.length;
         this.groupByUrgencySortedByTime(data.alerts);
       },
       error => {
@@ -80,10 +104,6 @@ export class SystemAlertComponent {
   }
 
   groupByUrgencySortedByTime(alerts = []) {
-    // don't need to pass alerts array as param when clicking on 'Sort by Urgency' link, so assign "this.systemAlerts" to alerts variable in that case
-    if (alerts.length === 0) {
-      alerts = this.systemAlerts;
-    }
     const urgencyOrder = { "Critical": 0, "High": 1, "Normal": 2, "Low": 3 };
     
     // Group by urgency
@@ -107,7 +127,9 @@ export class SystemAlertComponent {
       alerts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
     });
     
+    // convert array of arrays into array of objects
     const systemAlerts = groupedByUrgency.reduce((a, value) => a.concat(value), []);
+    
     // toggle the next possible button text
     this.sortByKey = 'time';
     
