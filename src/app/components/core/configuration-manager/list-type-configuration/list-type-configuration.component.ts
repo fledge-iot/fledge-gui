@@ -24,12 +24,9 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('list item', this.configuration);
     this.form = this.rootFormGroup.control;
-    // console.log('form', this.form);
     let val = this.configuration?.value ? this.configuration.value : this.configuration.default;
     val = JSON.parse(val) as [];
-    console.log('val ', val);
     for (let i = 0; i < val.length; i++) {
       const element = val[i];
       this.initListItem(element);
@@ -37,20 +34,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.onValChanges();
   }
 
-  // ngAfterViewInit() {
-  //   console.log("form status", this.listItems.invalid);
-  //   if (this.listItems.invalid) {
-  //     console.log("parent form 123 ", this.configuration.key, this.form.controls[this.configuration.key]);
-  //     const control = this.form.controls[this.configuration.key];
-  //     control.valueChanges.subscribe(() => {
-  //       control.setErrors({ invalid: true });
-  //       control.updateValueAndValidity();
-  //       this.cdRef.detectChanges();
-  //     });
-  //   }
-  //   console.log("parent form ", this.form);
-  //   //this.formState.emit(this.listItems.valid);
-  // }
+  ngAfterViewInit() { }
 
   get listItems() {
     return this.listItemsForm.get('listItems') as FormArray;
@@ -64,27 +48,23 @@ export class ListTypeConfigurationComponent implements OnInit {
   addListItem() {
     const controlsLength = this.listItems.length;
     const listSize = +this.configuration?.listSize;
-    // console.log('list size', listSize);
-    // console.log('list controlLength', controlsLength);
-    if (controlsLength < listSize) {
-      this.initListItem();
+    if (controlsLength > listSize) {
+      return;
     }
+    this.initListItem();
   }
 
 
   removeListItem(index: number) {
     this.listItems.removeAt(index);
-    // console.log(this.listItems.value);
   }
 
   onValChanges(): void {
     this.listItems.valueChanges.subscribe((val) => {
       val = filter(val)
-
       console.log('main form value', this.listItemsForm);
       this.form.get(this.configuration.key)?.patchValue(JSON.stringify(val))
-
-      // this.formState.emit(this.listItems.valid);
+      this.formState.emit(this.listItems.valid);
     })
   }
 }

@@ -88,7 +88,7 @@
                   </div>
                   <ng-container *ngSwitchCase="'LIST'">
                     <app-list-type-configuration [configuration]="configuration" [formGroup]="form"
-                      (formState)="listTypeFormState($event)"></app-list-type-configuration>
+                      (formState)="listTypeFormState($event, configuration.key)"></app-list-type-configuration>
                   </ng-container>
                   <div *ngSwitchCase="'ACL'" class="select is-small">
                     <select [id]="configuration.key" [formControlName]="configuration.key">
