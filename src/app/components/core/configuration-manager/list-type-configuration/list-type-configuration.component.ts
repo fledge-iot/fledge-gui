@@ -34,7 +34,8 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.onValChanges();
   }
 
-  ngAfterViewInit() { }
+  ngAfterViewInit() {
+  }
 
   get listItems() {
     return this.listItemsForm.get('listItems') as FormArray;
@@ -43,6 +44,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   initListItem(v = '') {
     const listItem = new FormControl(v, [CustomValidator.nospaceValidator]);
     this.listItems.push(listItem);
+    this.cdRef.detectChanges();
   }
 
   addListItem() {
@@ -52,6 +54,7 @@ export class ListTypeConfigurationComponent implements OnInit {
       return;
     }
     this.initListItem();
+    this.formState.emit(this.listItems.valid);
   }
 
 
@@ -62,7 +65,6 @@ export class ListTypeConfigurationComponent implements OnInit {
   onValChanges(): void {
     this.listItems.valueChanges.subscribe((val) => {
       val = filter(val)
-      console.log('main form value', this.listItemsForm);
       this.form.get(this.configuration.key)?.patchValue(JSON.stringify(val))
       this.formState.emit(this.listItems.valid);
     })

@@ -127,16 +127,8 @@ export class ShowConfigurationComponent implements OnInit {
     input.type = input.type === 'password' ? 'text' : 'password';
   }
 
-  listTypeFormState(state: boolean, key) {
-    console.log('key', key);
-    console.log('state', state);
-    // console.log('form', this.form);
-    setTimeout(() => {
-      const control = this.form.controls[key];
-      control.setErrors({ incorrect: true });
-      console.log('control', control);
-      this.formStatusEvent.emit({ 'status': state, 'group': this.group });
-    }, 10);
-    console.log('form', this.form);
+  listTypeFormState(state: boolean) {
+    this.formStatusEvent.emit({ 'status': state, 'group': this.group });
+
   }
 }
