@@ -14,7 +14,7 @@
           </div>
         </div>
         <div class="field">
-          <div class="control">
+          <div class="control" *ngIf="i != 0">
             <span class="icon">
               <button class="delete is-small" (click)="removeListItem(i)"></button>
             </span>
@@ -31,7 +31,7 @@
       </span>
     </div>
   </ng-container>
-  <div class="field" *ngIf="listItems.length < configuration?.listSize">
+  <div class="field">
     <p class="control">
       <button class="button px-0 pt-1 is-small is-link is-light has-background-white" (click)="addListItem()">
         <span class="icon is-small pt-1 mr-0">
