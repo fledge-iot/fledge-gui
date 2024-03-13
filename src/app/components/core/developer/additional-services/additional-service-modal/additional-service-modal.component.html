@@ -3,7 +3,7 @@
   <div class="modal-card">
     <header class="modal-card-head">
       <span *ngIf="isServiceAvailable" class="modal-card-title is-size-6">{{serviceName}}
-        <button class="button is-small" id="refresh-check" title="Reload" (click)="getCategory()">
+        <button class="button is-small" id="refresh-check" title="Reload" (click)="refreshService(true)">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
         <p class="help has-text-grey modal-subtitle mt-0">{{serviceType !== 'BucketStorage' ? serviceType : 'Bucket Storage'}} Service</p> 

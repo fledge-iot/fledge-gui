@@ -1,12 +1,16 @@
 import { Component, ViewChild, Output, HostListener, EventEmitter } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subject, Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import {
   ProgressBarService, AlertService, ServicesApiService, SchedulesService,
   ConfigurationService,
   RolesService,
   ConfigurationControlService,
-  FileUploaderService
+  FileUploaderService,
+  PingService,
+  SharedService
 } from '../../../../../services';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 
@@ -44,6 +48,9 @@ export class AdditionalServiceModalComponent {
   initialDelay = 1000;
   state$ = new BehaviorSubject<any>(null);
   service = <Service>{};
+  isManualRefresh = false;
+
+  servicesInfoSubscription: Subscription;
 
   @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
@@ -60,6 +67,7 @@ export class AdditionalServiceModalComponent {
   fromNavbar: boolean;
   public reenableButton = new EventEmitter<boolean>(false);
 
+  destroy$: Subject<boolean> = new Subject<boolean>();
   constructor(
     public activatedRoute: ActivatedRoute,
     private router: Router,
@@ -71,6 +79,8 @@ export class AdditionalServiceModalComponent {
     public alertService: AlertService,
     private docService: DocService,
     private dialogService: DialogService,
+    private ping: PingService,
+    public sharedService: SharedService,
     private fileUploaderService: FileUploaderService,
     private configurationControlService: ConfigurationControlService,
     private additionalServicesUtils: AdditionalServicesUtils,
@@ -87,9 +97,38 @@ export class AdditionalServiceModalComponent {
             }, 0);
           }                          
        })
+      this.refreshService();
     }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.ping.pingIntervalChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((pingTime: number) => {
+        if (pingTime === -1) {
+          this.isManualRefresh = true;
+        } else {
+          this.isManualRefresh = false;
+        }
+      });
+  }
+
+  refreshService(refresh = false) {
+    if (refresh && this.isManualRefresh) {
+      this.additionalServicesUtils.getAllServiceStatus();
+    }
+    this.servicesInfoSubscription = this.sharedService.allServicesInfo.subscribe(servicesInfo => {
+      if (servicesInfo && this.serviceType) {
+        this.service = servicesInfo.find(s => s.type === this.serviceType);
+        this.isServiceEnabled = ["shutdown", "disabled", "installed", ""].includes(this.service.status) ? false : true;
+      }
+      if (this.isServiceAvailable && this.serviceType === 'Management' && this.isServiceEnabled) {
+        this.getPollingScheduleID();
+      }
+    });
+    if (refresh) {
+      this.getCategory();
+    }
+  }
 
   getServiceInfo(serviceInfo, pollingScheduleID, from = null) {
     this.navigateFromParent = from;
@@ -102,7 +141,7 @@ export class AdditionalServiceModalComponent {
     this.isInstalled =  serviceInfo.isInstalled;
     if (pollingScheduleID) {
       this.pollingScheduleID = pollingScheduleID;
-    } else if (this.isServiceAvailable && (this.serviceType === 'Management')) {
+    } else if (this.isServiceAvailable && this.serviceType === 'Management' && this.isServiceEnabled) {
       this.getPollingScheduleID();
     }
     this.btnText = 'Add';
@@ -194,7 +233,7 @@ export class AdditionalServiceModalComponent {
           this.isServiceAvailable = true;
           this.btnText = 'Save';
           this.toggleModal(false);
-          this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceProcessName);
+          this.getUpdatedState('addService');
         },
         (error) => {
           this.ngProgress.done();
@@ -344,10 +383,19 @@ export class AdditionalServiceModalComponent {
     this.servicesApiService.getServiceByType(this.serviceType)
       .pipe(
         take(1),
-        // checking the response object for service.
-        // if service.status !== 'running'/'shutdown' then
-        // throw an error to re-fetch:
+        // checking the response object for service  
         tap((response: any) => {
+          // if param value is 'addService' then, check if service is not added yet
+          // throw an error to re-fetch:
+          if (status === 'addService') {
+            if (!response['services']) {
+              i++;
+              throw response;
+            }
+            return;
+          }
+          // if service.status !== 'running'/'shutdown' then
+          // throw an error to re-fetch:
           if (response['services'][0].status !== status) {
             i++;
             throw response;
@@ -553,5 +601,11 @@ export class AdditionalServiceModalComponent {
       this.docService.goToSetPointControlDocLink('control-dispatcher-service');
     }
     return;
+  }
+
+  ngOnDestroy() {
+    this.servicesInfoSubscription.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }

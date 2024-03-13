@@ -78,11 +78,13 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         this.userName = value.userName;
         this.isAuthOptional = value.isAuth;
         this.pingService();
+        this.getServiceStatus(false);
       });
   }
 
   ngOnInit() {
     this.pingService();
+    this.getServiceStatus(false);
     this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))
       .subscribe((pingTime: number) => {
@@ -137,8 +139,10 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.changeDetectorRef.detectChanges();
   }
 
-  public getServiceStatus() {
-    this.showLoadingSpinner();
+  public getServiceStatus(isLoadingSpinner = true) {
+    if (isLoadingSpinner) {
+      this.showLoadingSpinner();
+    }  
     this.servicesApiService.getAllServices()
       .pipe(takeUntil(this.destroy$))
       .subscribe(
@@ -183,11 +187,15 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
             this.servicesRecord.push(bucketStorageService[0]);
           }
           this.sharedService.allServicesInfo.next(this.servicesRecord);
-          this.hideLoadingSpinner();
+          if (isLoadingSpinner) {
+            this.hideLoadingSpinner();
+          }
         },
         (error) => {
           this.servicesRecord = [];
-          this.hideLoadingSpinner();
+          if (isLoadingSpinner) {
+            this.hideLoadingSpinner();
+          }
           console.log('service down ', error);
         });
   }
@@ -340,6 +348,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stop();
     this.timer = setInterval(function () {
       this.pingService();
+      this.getServiceStatus(false);
     }.bind(this), pingInterval);
   }
 

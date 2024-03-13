@@ -1,8 +1,10 @@
 import { Component, OnInit, ViewChild, EventEmitter, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import { forkJoin, timer, of, Subscription } from 'rxjs';
 import { concatMap, delayWhen, retryWhen, take, tap, map } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
-import { AlertService, ProgressBarService, RolesService, ServicesApiService, SchedulesService, ResponseHandler } from '../../../../services';
+import { AlertService, ProgressBarService, RolesService, ServicesApiService, SchedulesService, ResponseHandler, PingService } from '../../../../services';
 import { SharedService } from '../../../../services/shared.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { AdditionalServiceModalComponent } from './additional-service-modal/additional-service-modal.component';
@@ -66,12 +68,15 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   servicesInfoSubscription: Subscription;
   viewPort: any = '';
   pollingScheduleID: string;
+  isManualRefresh = false;
 
   service;
+  allServicesInfo;
   public reenableButton = new EventEmitter<boolean>(false);
   @ViewChild(AdditionalServiceModalComponent, { static: true }) serviceModal: AdditionalServiceModalComponent;
   @ViewChildren(AdditionalServicesContextMenuComponent) contextMenus: QueryList<AdditionalServicesContextMenuComponent>;
   
+  destroy$: Subject<boolean> = new Subject<boolean>();
   constructor(
     public sharedService: SharedService,
     private alertService: AlertService,
@@ -81,16 +86,32 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     public rolesService: RolesService,
     public schedulesService: SchedulesService,
     private response: ResponseHandler,
+    private ping: PingService,
     private additionalServicesUtils: AdditionalServicesUtils,
   ) {}
 
   ngOnInit() {
+    this.ping.pingIntervalChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((pingTime: number) => {
+        if (pingTime === -1) {
+          this.isManualRefresh = true;
+        } else {
+          this.isManualRefresh = false;
+        }
+      });
     this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
       this.viewPort = viewport;
     });
+
+    if (this.isManualRefresh) {
+      this.additionalServicesUtils.getAllServiceStatus();
+    }
+
     // Update state of services according to the response of '/service' endpoint response 
     this.servicesInfoSubscription = this.sharedService.allServicesInfo.subscribe(servicesInfo => {
       if (servicesInfo) {
+        this.allServicesInfo = servicesInfo;
         this.installedServicePkgs.forEach(function (p) {
           servicesInfo.forEach(function (s) {
             if (p.name === s.name) {
@@ -118,7 +139,14 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.checkSchedulesAndServices();
   }
 
-  public checkSchedulesAndServices() {
+  refreshServices() {
+    if (this.isManualRefresh) {
+      this.additionalServicesUtils.getAllServiceStatus();
+    }
+    this.checkSchedulesAndServices();
+  }
+
+  public checkSchedulesAndServices() { 
     this.schedulesService.getSchedules().
       subscribe((data: Schedule) => {
         this.ngProgress.start();
@@ -150,33 +178,22 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   }
 
   public getAllServices() {
-   this.servicesApiService.getAllServices().
-      subscribe((data: Service) => {
-        this.servicesRegistry = data['services'].filter((s) => this.expectedServices.some(es => es.type == s.type));
-        const addedServices = this.servicesSchedules.filter(sch => this.servicesRegistry.some(({name}) => sch.name === name));      
-        // If we get expected services in the response of /service API then no need to make other (/installed, /available) API calls
-        if (addedServices.length === this.expectedServices.length) {
-          this.availableServicePkgs = [];
-          let serviceTypes = [];
-          this.expectedServices.forEach(function (s) {
-            serviceTypes.push(s["process"]);
-          });
-          this.getInstalledServices(serviceTypes);
-          this.hideLoadingText();
-          this.ngProgress.done();
-        } else {
-          this.showServices();
-        }
-      },
-        (error) => {
-          /** request done */
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    this.servicesRegistry = this.allServicesInfo.filter((s) => this.expectedServices.some(es => es.type == s.type));
+    const addedServices = this.servicesSchedules.filter(sch => this.servicesRegistry.some(({name}) => sch.name === name));      
+
+    // If we get expected services in the response of /service API then no need to make other (/installed, /available) API calls
+    if (addedServices.length === this.expectedServices.length) {
+      this.availableServicePkgs = [];
+      let serviceTypes = [];
+      this.expectedServices.forEach(function (s) {
+        serviceTypes.push(s["process"]);
+      });
+      this.getInstalledServices(serviceTypes);
+      this.hideLoadingText();
+      this.ngProgress.done();
+    } else {
+      this.showServices();
+    }
   }
 
   showServices() {
@@ -431,5 +448,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     this.viewPortSubscription.unsubscribe();
     this.servicesInfoSubscription.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }
