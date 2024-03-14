@@ -331,9 +331,9 @@ export class ConfigurationControlService {
             validity: element.validity,
           });
           listItem.items = element.items;
-          listItem.minimum = element.minimum;
-          listItem.maximum = element.maximum;
-          listItem.length = element.length;
+          listItem.minimum = element?.minimum;
+          listItem.maximum = element?.maximum;
+          listItem.length = element?.length;
           listItem.listSize = element?.listSize;
           configurations.push(listItem);
           break;

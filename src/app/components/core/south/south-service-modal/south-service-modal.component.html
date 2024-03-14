@@ -18,7 +18,7 @@
             [plugin]="service?.plugin.name" [serviceStatus]="service['schedule_enabled']" [from]="'south'"
             (changedConfigEvent)="getChangedConfig($event)"
             (changedAdvanceConfigEvent)="getChangedAdvanceConfiguration($event)"
-            (formStatusEvent)="validConfigurationForm = $event">
+            (formStatusEvent)="checkConfigFormState($event)">
           </app-configuration-group>
           <div *ngIf="service" class="columns column-container">
             <div class="column enable-text">
@@ -59,8 +59,9 @@
                   <button class="button is-small" (click)="navToSouth()">Cancel</button>
                 </p>
                 <p class="control">
-                  <button [disabled]="checkFormState()" [appDisableUntilResponse]="reenableButton"
-                    class="button is-small is-link" (click)="save()">Save</button>
+                  <button [disabled]="checkFormState() || !validConfigurationForm"
+                    [appDisableUntilResponse]="reenableButton" class="button is-small is-link"
+                    (click)="save()">Save</button>
                 </p>
               </div>
             </div>

@@ -528,6 +528,10 @@ export class SouthServiceModalComponent implements OnInit {
     }
   }
 
+  checkConfigFormState(state = true) {
+    this.validConfigurationForm = state;
+  }
+
   checkFormState() {
     const serviceStateChanged = this.svcCheckbox?.value !== this.service?.schedule_enabled
     const noChange = isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration) && !this.unsavedChangesInFilterForm && !serviceStateChanged;
