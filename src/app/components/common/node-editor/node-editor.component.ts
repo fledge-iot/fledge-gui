@@ -127,11 +127,11 @@ export class NodeEditorComponent implements OnInit {
   }
   ngOnInit(): void {
     this.subscription = this.flowEditorService.showItemsInQuickview.pipe(skip(1)).subscribe(data => {
-      this.showPluginConfiguration = data.showPluginConfiguration;
-      this.showFilterConfiguration = data.showFilterConfiguration;
-      this.showLogs = data.showLogs;
-      this.showTaskSchedule = data.showTaskSchedule;
-      this.showReadings = data.showReadings;
+      this.showPluginConfiguration = data.showPluginConfiguration ? true: false;
+      this.showFilterConfiguration = data.showFilterConfiguration ? true: false;
+      this.showLogs = data.showLogs ? true: false;
+      this.showTaskSchedule = data.showTaskSchedule ? true: false;
+      this.showReadings = data.showReadings ? true: false;
       this.serviceName = data.serviceName;
       if (this.showPluginConfiguration) {
         this.getCategory();
