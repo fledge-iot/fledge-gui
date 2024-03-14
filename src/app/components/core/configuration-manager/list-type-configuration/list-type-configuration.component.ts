@@ -31,10 +31,7 @@ export class ListTypeConfigurationComponent implements OnInit {
       const element = val[i];
       this.initListItem(element);
     }
-    this.onValChanges();
-  }
-
-  ngAfterViewInit() {
+    this.onControlValueChanges();
   }
 
   get listItems() {
@@ -57,15 +54,23 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.formState.emit(this.listItems.valid);
   }
 
-
   removeListItem(index: number) {
     this.listItems.removeAt(index);
   }
 
-  onValChanges(): void {
-    this.listItems.valueChanges.subscribe((val) => {
-      val = filter(val)
-      this.form.get(this.configuration.key)?.patchValue(JSON.stringify(val))
+  onControlValueChanges(): void {
+    this.listItems.valueChanges.subscribe((value) => {
+      value = filter(value); // remove empty, undefined, null values
+      // float value conversion
+      if (this.configuration?.items == 'float') {
+        value = value?.map((num: any) => {
+          if (Number.isInteger(+num)) {
+            return Number.parseFloat(num).toFixed(1); // update Integer value to single decimal point. e.g. 2 => 2.0
+          }
+          return num;
+        });
+      }
+      this.form.get(this.configuration.key)?.patchValue(JSON.stringify(value))
       this.formState.emit(this.listItems.valid);
     })
   }

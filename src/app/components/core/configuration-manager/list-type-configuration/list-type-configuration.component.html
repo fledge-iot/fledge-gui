@@ -3,9 +3,10 @@
     <div formArrayName="listItems" class="field">
       <div class="columns">
         <div class="column is-11">
-          <input *ngIf="configuration.items == 'integer' || configuration.items == 'float'" class="input is-small"
-            type="text" formControlName="{{i}}" [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum"
-            appNumberOnly>
+          <input *ngIf="configuration.items == 'integer'" class="input is-small" type="text" formControlName="{{i}}"
+            [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appIntegerOnly>
+          <input *ngIf="configuration.items == 'float'" class="input is-small" type="text" formControlName="{{i}}"
+            [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appFloatOnly>
           <input *ngIf="configuration.items == 'string'" class="input is-small" type="text" formControlName="{{i}}"
             [attr.maxLength]="configuration?.length">
         </div>
