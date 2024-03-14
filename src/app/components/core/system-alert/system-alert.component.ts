@@ -62,16 +62,39 @@ export class SystemAlertComponent {
   }
 
   public toggleDropdown() {
-    if (this.alertsCount === 0) {
-      return;
-    }
     const dropDown = document.querySelector('#system-alert-dd');
-    dropDown.classList.toggle('is-active');
-    // if dropdown is opened, get all alerts
     if (dropDown.classList.contains('is-active')) {
+      dropDown.classList.remove('is-active');
+      return;
+    } else {
+      dropDown.classList.add('is-active');
+    }
+
+    // If ping is Manual or alertsCount is 0 then first call ping to update alerts count and get alerts
+    // list if alertCount > 0
+    if (this.isManualRefresh || this.alertsCount === 0) {
+      this.getUpdatedAlerts();
+    } else {
       this.showLoadingSpinner();
       this.getAlerts();
-    }
+    }   
+  }
+
+  getUpdatedAlerts() {
+    this.ping.pingService().then(data => {
+      this.alertsCount = data['alerts'];
+      if (this.alertsCount > 0) {
+        this.showLoadingSpinner();
+        this.getAlerts();
+      }
+    })
+    .catch((error) => {     
+      if (error.status === 0) {
+        console.log('service down ', error);
+      } else {
+        this.alertService.error(error.statusText);
+      }
+    });
   }
 
   getAlerts() {
@@ -85,7 +108,7 @@ export class SystemAlertComponent {
           alert['buttonText'] = this.getButtonText(alert.message);
         });
         this.alertsCount = data.alerts.length;
-        this.groupByUrgencySortedByTime(data.alerts);
+        this.groupByUrgencySortedByTime(data.alerts);      
       },
       error => {
         this.hideLoadingSpinner();

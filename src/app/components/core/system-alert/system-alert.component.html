@@ -50,7 +50,7 @@
         <div *ngIf="alertsCount > 1 || isManualRefresh" class="columns dropdown-item bottom-row">
           <div class="column px-2 py-0 is-7">
             <p class="control">
-              <button class="button is-small pl-1" id="refresh-tree" (click)="getAlerts()">
+              <button *ngIf="isManualRefresh" class="button is-small pl-1" id="refresh-alerts" (click)="getAlerts()">
                 <span class="icon is-small is-pulled-left">
                   <i class="fa fa-sm fa-sync" title="Reload"></i>
                 </span>
