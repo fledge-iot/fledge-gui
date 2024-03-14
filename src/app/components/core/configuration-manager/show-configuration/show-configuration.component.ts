@@ -130,11 +130,10 @@ export class ShowConfigurationComponent implements OnInit {
   listTypeFormState(state: boolean, key: string) {
     if (!state) {
       this.form.controls[key].setErrors({ 'invalid': true });
-      this.form.updateValueAndValidity();
     } else {
       this.form.controls[key].setErrors(null);
-      this.form.updateValueAndValidity();
     }
+    this.form.updateValueAndValidity();
     this.formStatusEvent.emit({ 'status': this.form.valid, 'group': this.group });
   }
 }

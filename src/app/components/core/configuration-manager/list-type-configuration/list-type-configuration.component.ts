@@ -25,12 +25,11 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   ngOnInit() {
     this.form = this.rootFormGroup.control;
-    let val = this.configuration?.value ? this.configuration.value : this.configuration.default;
-    val = JSON.parse(val) as [];
-    for (let i = 0; i < val.length; i++) {
-      const element = val[i];
+    let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
+    values = JSON.parse(values) as [];
+    values.forEach(element => {
       this.initListItem(element);
-    }
+    });
     this.onControlValueChanges();
   }
 
@@ -46,7 +45,7 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   addListItem() {
     const controlsLength = this.listItems.length;
-    const listSize = +this.configuration?.listSize;
+    const listSize = this.configuration?.listSize > 0 ? +this.configuration.listSize : 999; // max threshold limit for new item creation
     if (controlsLength > listSize) {
       return;
     }
