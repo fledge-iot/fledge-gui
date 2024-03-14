@@ -7,6 +7,7 @@ import {
   ConfigurationService,
   FileUploaderService,
   FilterService,
+  GenerateCsvService,
   NorthService,
   PingService,
   ProgressBarService,
@@ -22,7 +23,7 @@ import { FlowEditorService } from './flow-editor.service';
 import { cloneDeep, isEmpty } from 'lodash';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import { NorthTask } from '../../core/north/north-task';
-import Utils, { POLLING_INTERVAL } from '../../../utils';
+import Utils, { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
 import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 
 @Component({
@@ -45,6 +46,7 @@ export class NodeEditorComponent implements OnInit {
   private connectionSubscription: Subscription;
   private serviceSubscription: Subscription;
   private removeFilterSubscription: Subscription;
+  private exportReadingSubscription: Subscription;
 
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
@@ -78,6 +80,7 @@ export class NodeEditorComponent implements OnInit {
 
   taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };
   selectedAsset = '';
+  MAX_RANGE = MAX_INT_SIZE / 2;
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -96,6 +99,7 @@ export class NodeEditorComponent implements OnInit {
     private ping: PingService,
     public developerFeaturesService: DeveloperFeaturesService,
     private assetService: AssetsService,
+    public generateCsv: GenerateCsvService,
     private router: Router) {
     this.route.params.subscribe(params => {
       this.from = params.from;
@@ -186,6 +190,11 @@ export class NodeEditorComponent implements OnInit {
     this.serviceSubscription = this.flowEditorService.serviceInfo.pipe(skip(1)).subscribe(data => {
       this.openModal('delete-service-dialog');
       this.deleteServiceName = data.name;
+    });
+
+    this.exportReadingSubscription = this.flowEditorService.exportReading.pipe(skip(1)).subscribe(data => {
+      let service = this.services.find(service => (service.name == data.serviceName));
+      this.getAssetReadings(service);
     });
 
     this.isAlive = true;
@@ -746,12 +755,64 @@ export class NodeEditorComponent implements OnInit {
           }
         });
   }
+
+  getAssetReadings(service: Service) {
+    const fileName = service.name + '-readings';
+    const assets = service.assets;
+    const assetRecord: any = [];
+    if (assets.length === 0) {
+      this.toastService.error('No readings to export.');
+      return;
+    }
+    this.toastService.info('Exporting readings to ' + fileName);
+    assets.forEach((ast: any) => {
+      let limit = ast.count;
+      let offset = 0;
+      if (ast.count > this.MAX_RANGE) {
+        limit = this.MAX_RANGE;
+        const chunkCount = Math.ceil(ast.count / this.MAX_RANGE);
+        let lastChunkLimit = (ast.count % this.MAX_RANGE);
+        if (lastChunkLimit === 0) {
+          lastChunkLimit = this.MAX_RANGE;
+        }
+        for (let j = 0; j < chunkCount; j++) {
+          if (j !== 0) {
+            offset = (this.MAX_RANGE * j);
+          }
+          if (j === (chunkCount - 1)) {
+            limit = lastChunkLimit;
+          }
+          assetRecord.push({ asset: ast.asset, limit: limit, offset: offset });
+        }
+      } else {
+        assetRecord.push({ asset: ast.asset, limit: limit, offset: offset });
+      }
+    });
+    this.exportReadings(assetRecord, fileName);
+  }
+
+  exportReadings(assets: [], fileName: string) {
+    let assetReadings = [];
+    this.assetService.getMultiAssetsReadings(assets).
+      subscribe(
+        (result: any) => {
+          this.reenableButton.emit(false);
+          assetReadings = [].concat.apply([], result);
+          this.generateCsv.download(assetReadings, fileName, 'service');
+        },
+        error => {
+          this.reenableButton.emit(false);
+          console.log('error in response', error);
+        });
+  }
+
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.filterSubscription.unsubscribe();
     this.connectionSubscription.unsubscribe();
     this.serviceSubscription.unsubscribe();
     this.removeFilterSubscription.unsubscribe();
+    this.exportReadingSubscription.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }

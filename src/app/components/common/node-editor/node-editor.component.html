@@ -113,6 +113,8 @@
             </tr>
           </tbody>
         </table>
+        <button [appDisableUntilResponse]="reenableButton"
+          class="button is-small" (click)="getAssetReadings(service)">Export Readings</button>
       </div>
     </ng-container>
   </app-quickview>

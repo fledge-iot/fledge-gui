@@ -156,6 +156,11 @@
                     <span>Readings</span>
                   </a>
                 </ng-container>
+                <ng-container *ngIf="isServiceNode && from=='south' && service.readingCount>0">
+                  <a class="dropdown-item" (click)="getAssetReadings()">
+                    <span>Export Readings</span>
+                  </a>
+                </ng-container>
                 <a *ngIf="rolesService.hasEditPermissions()" class="dropdown-item" (click)="deleteFilterOrService()">
                   <span>Delete</span>
                 </a>
