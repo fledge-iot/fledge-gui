@@ -12,24 +12,3 @@
 .breadcrumb {
   display: inline-block;
 }
-
-.readings-count {
-  vertical-align: middle;
-  max-width: max-content;
-}
-
-.deprecate {
-  padding-right: 10px;
-  color: #363636;
-}
-
-.table {
-  font-size: 0.9em;
-}
-
-.readings-breadcrumb {
-  padding-top: 0.85rem;
-  margin-top: 10px;
-  font-size: 0.95rem;
-  margin-bottom: 0.25rem !important;
-}

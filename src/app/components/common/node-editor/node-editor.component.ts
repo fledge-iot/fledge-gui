@@ -97,7 +97,6 @@ export class NodeEditorComponent implements OnInit {
     private dialogService: DialogService,
     private northService: NorthService,
     private ping: PingService,
-    public developerFeaturesService: DeveloperFeaturesService,
     private assetService: AssetsService,
     public generateCsv: GenerateCsvService,
     private router: Router) {
@@ -730,8 +729,9 @@ export class NodeEditorComponent implements OnInit {
     this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
   }
 
-  selectAsset(assetName: string) {
-    this.selectedAsset = assetName;
+  selectAsset(event) {
+    this.selectedAsset = event.assetName;
+    this.openModal('asset-tracking-dialog');
   }
 
   deprecateAsset(assetName: string) {

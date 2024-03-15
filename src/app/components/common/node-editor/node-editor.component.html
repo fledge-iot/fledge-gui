@@ -75,47 +75,7 @@
       <app-task-schedule [taskSchedule]="taskSchedule"></app-task-schedule>
     </ng-container>
     <ng-container *ngIf="showReadings">
-      <div class="container is-fluid">
-        <nav class="breadcrumb readings-breadcrumb" aria-label="breadcrumbs">
-          <ul>
-            <li class="is-active"><a>{{serviceName}}</a></li>
-            <li class="is-active">
-              <a href="#" aria-current="page">Readings</a>
-            </li>
-          </ul>
-        </nav>
-        <table class="table is-responsive mt-4">
-          <thead>
-            <tr>
-              <th class="align-th">Asset</th>
-              <th></th>
-              <th class="align-th">Readings Count</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor='let data of service?.assets'>
-                <td>
-                  <a *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()"
-                    class="deprecate"
-                    (click)="selectAsset(data?.asset);openModal('asset-tracking-dialog')">
-                    <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow"
-                      data-tooltip="Deprecate asset">
-                      <i class="bi bi-eraser"></i>
-                    </span>
-                  </a>
-                  <small>{{data.asset}}</small>
-                </td>
-                <td>
-                </td>
-                <td class="readings-count">
-                  <small class="level-right">{{data.count | number}}</small>
-                </td>
-            </tr>
-          </tbody>
-        </table>
-        <button [appDisableUntilResponse]="reenableButton"
-          class="button is-small" (click)="getAssetReadings(service)">Export Readings</button>
-      </div>
+      <app-asset-tracker [service]="service" (selectedAsset)="selectAsset($event)"></app-asset-tracker>
     </ng-container>
   </app-quickview>
 </div>
