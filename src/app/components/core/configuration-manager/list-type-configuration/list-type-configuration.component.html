@@ -28,9 +28,9 @@
   </ng-container>
   <div class="field">
     <p class="control" *ngIf="!configuration.listSize || configuration.listSize != listItems.controls.length ">
-      <button class="button px-0 pt-1 is-small is-link is-light has-background-white" (click)="addListItem()">
-        <span class="icon is-small pt-1 mr-0">
-          <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+      <button class="button px-0 pt-1 is-small is-ghost" (click)="addListItem()">
+        <span class="icon is-small mr-0">
+          <i class="bi bi-plus bi-sm"></i>
         </span>
         <span>Add new item</span>
       </button>
