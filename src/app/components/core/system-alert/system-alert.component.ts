@@ -66,27 +66,27 @@ export class SystemAlertComponent {
     if (dropDown.classList.contains('is-active')) {
       dropDown.classList.remove('is-active');
       return;
-    } else {
-      dropDown.classList.add('is-active');
-    }
+    } 
 
     // If ping is Manual or alertsCount is 0 then first call ping to update alerts count and get alerts
     // list if alertCount > 0
     if (this.isManualRefresh || this.alertsCount === 0) {
-      this.getUpdatedAlerts();
+      this.getUpdatedAlerts(dropDown);
     } else {
+      dropDown.classList.add('is-active');
       this.showLoadingSpinner();
       this.getAlerts();
     }   
   }
 
-  getUpdatedAlerts() {
+  getUpdatedAlerts(dropDown) {
     this.ping.pingService().then(data => {
       this.alertsCount = data['alerts'];
       if (this.alertsCount > 0) {
+        dropDown.classList.add('is-active');
         this.showLoadingSpinner();
         this.getAlerts();
-      }
+      }   
     })
     .catch((error) => {     
       if (error.status === 0) {
