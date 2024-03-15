@@ -2,15 +2,12 @@ import { Component, ViewChild, Output, HostListener, EventEmitter } from '@angul
 import { FormBuilder, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import {
   ProgressBarService, AlertService, ServicesApiService, SchedulesService,
   ConfigurationService,
   RolesService,
   ConfigurationControlService,
-  FileUploaderService,
-  PingService,
-  SharedService
+  FileUploaderService
 } from '../../../../../services';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 
@@ -42,7 +39,6 @@ export class AdditionalServiceModalComponent {
   initialDelay = 1000;
   state$ = new BehaviorSubject<any>(null);
   service = <Service>{};
-  isManualRefresh = false;
 
   serviceInfo = {};
 
@@ -61,7 +57,6 @@ export class AdditionalServiceModalComponent {
   fromNavbar: boolean;
   public reenableButton = new EventEmitter<boolean>(false);
 
-  destroy$: Subject<boolean> = new Subject<boolean>();
   constructor(
     public activatedRoute: ActivatedRoute,
     private router: Router,
@@ -73,8 +68,6 @@ export class AdditionalServiceModalComponent {
     public alertService: AlertService,
     private docService: DocService,
     private dialogService: DialogService,
-    private ping: PingService,
-    public sharedService: SharedService,
     private fileUploaderService: FileUploaderService,
     private configurationControlService: ConfigurationControlService,
     private additionalServicesUtils: AdditionalServicesUtils,
@@ -93,17 +86,7 @@ export class AdditionalServiceModalComponent {
        })
     }
 
-  ngOnInit() {
-    this.ping.pingIntervalChanged
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((pingTime: number) => {
-        if (pingTime === -1) {
-          this.isManualRefresh = true;
-        } else {
-          this.isManualRefresh = false;
-        }
-      });
-  }
+  ngOnInit() {}
 
   refreshService() {
     this.getSchedule(true);
@@ -114,7 +97,6 @@ export class AdditionalServiceModalComponent {
     this.navigateFromParent = from;
     this.serviceName = serviceInfo.name ? serviceInfo.name : '';
     this.serviceInfo = serviceInfo;
-    console.log('isEnabled', this.serviceInfo['isEnabled'])
 
     if (pollingScheduleID) {
       this.pollingScheduleID = pollingScheduleID;
@@ -582,10 +564,5 @@ export class AdditionalServiceModalComponent {
       this.docService.goToSetPointControlDocLink('control-dispatcher-service');
     }
     return;
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(true);
-    this.destroy$.unsubscribe();
   }
 }
