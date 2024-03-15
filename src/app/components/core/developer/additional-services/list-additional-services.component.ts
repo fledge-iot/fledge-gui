@@ -104,39 +104,22 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
       this.viewPort = viewport;
     });
 
-    if (this.isManualRefresh) {
+    // Update state of services according to the response of '/service' endpoint response
+    this.getUpdatedServicesInfo();
+
+    this.showLoadingText();
+    this.checkSchedulesAndServices();
+  }
+
+  getUpdatedServicesInfo(refreshServices = false) {
+    if (this.isManualRefresh || refreshServices) {
       this.additionalServicesUtils.getAllServiceStatus();
     }
-
-    // Update state of services according to the response of '/service' endpoint response 
     this.servicesInfoSubscription = this.sharedService.allServicesInfo.subscribe(servicesInfo => {
       if (servicesInfo) {
         this.allServicesInfo = servicesInfo;
-        this.installedServicePkgs.forEach(function (p) {
-          servicesInfo.forEach(function (s) {
-            if (p.name === s.name) {
-              p.state = s.status;
-            } else if (p.type === s.type) {
-              p.name = s.name;
-              p.state = s.status;
-              p.added = true;
-            }
-          });
-        });
-        this.availableServicePkgs.forEach(function (p) {
-          servicesInfo.forEach(function (s) {
-            if (p.type === s.type) {
-              p.name = s.name;
-              p.state = s.status;
-              p.added = true;
-            }
-          });
-        });
       }
-
     });
-    this.showLoadingText();
-    this.checkSchedulesAndServices();
   }
 
   refreshServices() {
@@ -178,6 +161,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   }
 
   public getAllServices() {
+    this.getUpdatedServicesInfo();
     this.servicesRegistry = this.allServicesInfo.filter((s) => this.expectedServices.some(es => es.type == s.type));
     const addedServices = this.servicesSchedules.filter(sch => this.servicesRegistry.some(({name}) => sch.name === name));      
 
@@ -318,7 +302,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
         this.reenableButton.emit(false);
         this.alertService.success(data["result"], true);
         this.closeModal('delete-confirmation-dialog');
-        this.closeServiceModal();   
+        this.getUpdatedServicesInfo(true);
         this.getData();
       },
       (error) => {
@@ -331,13 +315,6 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
         }
       }
     );
-  }
-
-  closeServiceModal() {
-    const serviceModal = <HTMLDivElement>document.getElementById('additional-service-modal');
-    if (serviceModal) {
-      this.serviceModal.toggleModal(false);
-    }
   }
 
   applyClass(serviceStatus: string) {

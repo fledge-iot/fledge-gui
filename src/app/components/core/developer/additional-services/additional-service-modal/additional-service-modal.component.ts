@@ -1,7 +1,6 @@
 import { Component, ViewChild, Output, HostListener, EventEmitter } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject } from 'rxjs';
 import {
   ProgressBarService, AlertService, ServicesApiService, SchedulesService,
   ConfigurationService,
@@ -40,7 +39,8 @@ export class AdditionalServiceModalComponent {
   state$ = new BehaviorSubject<any>(null);
   service = <Service>{};
 
-  serviceInfo = {};
+  serviceInfo = { added: false, type: '', isEnabled: false, schedule_process: '', process: '', package: '',
+                  isInstalled: false};
 
   @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
@@ -100,17 +100,17 @@ export class AdditionalServiceModalComponent {
 
     if (pollingScheduleID) {
       this.pollingScheduleID = pollingScheduleID;
-    } else if (this.serviceInfo['added'] && this.serviceInfo['type'] === 'Management' && this.serviceInfo['isEnabled']) {
+    } else if (this.serviceInfo.added && this.serviceInfo.type === 'Management' && this.serviceInfo.isEnabled) {
       // to get polling schedule ID
       this.getSchedule();
     }
     this.btnText = 'Add';
-    if (this.serviceInfo['added']) {
+    if (this.serviceInfo.added) {
       this.showDeleteBtn = true;
       this.btnText = 'Save';
       this.getCategory();
     }
-    if (this.serviceInfo['type']) {
+    if (this.serviceInfo.type) {
       this.getServiceByType();
     }
   }
@@ -119,10 +119,10 @@ export class AdditionalServiceModalComponent {
     this.schedulesService.getSchedules().
       subscribe((data: Schedule) => {
         if (refresh) {
-          const schedule = data['schedules'].find(s => s.processName === this.serviceInfo['schedule_process']);
-          this.serviceInfo['isEnabled'] = schedule['enabled'];
+          const schedule = data['schedules'].find(s => s.processName === this.serviceInfo.schedule_process);
+          this.serviceInfo.isEnabled = schedule['enabled'];
         }
-        if (this.serviceInfo['added'] && this.serviceInfo['type'] === 'Management' && this.serviceInfo['isEnabled']) {
+        if (this.serviceInfo.added && this.serviceInfo.type === 'Management' && this.serviceInfo.isEnabled) {
           this.pollingScheduleID = data['schedules'].find(s => s.processName === 'manage')?.id;
         }     
       },
@@ -138,7 +138,7 @@ export class AdditionalServiceModalComponent {
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     if (!this.serviceInstallationState) {
       this.toggleModal(false, false);
-      this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo['process']);
+      this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo.process);
     }
   }
 
@@ -167,7 +167,7 @@ export class AdditionalServiceModalComponent {
 
   public getServiceByType() {
     this.ngProgress.start();
-    this.servicesApiService.getServiceByType(this.serviceInfo['type'])
+    this.servicesApiService.getServiceByType(this.serviceInfo.type)
       .subscribe((res: Service) => {
         this.ngProgress.done();
         this.service = res['services'][0];
@@ -185,7 +185,7 @@ export class AdditionalServiceModalComponent {
     const name = formValues.serviceName;
     const payload = {
       name: name,
-      type: this.serviceInfo['type'].toLowerCase(),
+      type: this.serviceInfo.type.toLowerCase(),
       enabled: formValues.enabled
     };
     if (!installationState) {
@@ -196,7 +196,7 @@ export class AdditionalServiceModalComponent {
         () => {
           this.ngProgress.done();
           this.alertService.success('Service added successfully.', true);
-          this.serviceInfo['added'] = true;
+          this.serviceInfo.added = true;
           this.btnText = 'Save';
           this.toggleModal(false);
           this.getUpdatedState('addService');
@@ -204,7 +204,7 @@ export class AdditionalServiceModalComponent {
         (error) => {
           this.ngProgress.done();
           this.toggleModal(false);
-          this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo['process']);
+          this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo.process);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -278,13 +278,13 @@ export class AdditionalServiceModalComponent {
     this.serviceInstallationState = true;
     const servicePayload = {
       format: 'repository',
-      name: this.serviceInfo['package'],
+      name: this.serviceInfo.package,
       version: ''
     };
 
     /** request started */
     this.ngProgress.start();
-    this.alertService.activityMessage('Installing '+ this.serviceInfo['type'] +' service...', true);
+    this.alertService.activityMessage('Installing '+ this.serviceInfo.type +' service...', true);
     this.servicesApiService.installService(servicePayload).
       subscribe(
         (data: any) => {
@@ -343,7 +343,7 @@ export class AdditionalServiceModalComponent {
 
   getUpdatedState(status) {
     let i = 1;
-    this.servicesApiService.getServiceByType(this.serviceInfo['type'])
+    this.servicesApiService.getServiceByType(this.serviceInfo.type)
       .pipe(
         take(1),
         // checking the response object for service  
@@ -372,7 +372,7 @@ export class AdditionalServiceModalComponent {
                 this.ngProgress.done();
                 this.toggleModal(false);
                 this.reenableButton.emit(false);
-                this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo['process']);
+                this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo.process);
                 throw serviceStatus.error;
               }
             }),
@@ -389,7 +389,7 @@ export class AdditionalServiceModalComponent {
                 this.ngProgress.done();
                 this.toggleModal(false);
                 this.reenableButton.emit(false);   
-                this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo['process']);
+                this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo.process);
                 return;
               }
               return of(o);
@@ -399,12 +399,12 @@ export class AdditionalServiceModalComponent {
         this.ngProgress.done();
         this.toggleModal(false);
         this.reenableButton.emit(false);
-        this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo['process']);
+        this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo.process);
       });
   }
 
   disableService() {
-    this.additionalServicesUtils.disableService(this.serviceName, this.fromNavbar, this.serviceInfo['process']);
+    this.additionalServicesUtils.disableService(this.serviceName, this.fromNavbar, this.serviceInfo.process);
     this.getUpdatedState('shutdown');
   }
 
@@ -433,7 +433,7 @@ export class AdditionalServiceModalComponent {
   }
 
   public addServiceEvent() {
-    if (!this.serviceInfo['isInstalled']) {
+    if (!this.serviceInfo.isInstalled) {
       this.installService();
     } else {
       this.addService(false);
@@ -442,7 +442,7 @@ export class AdditionalServiceModalComponent {
 
   stateUpdate() {
     this.state$.next(this.form.value);
-    if (!this.serviceInfo['added']) {
+    if (!this.serviceInfo.added) {
       this.addServiceEvent();
     } else {
       if (!this.form.controls['enabled'].value) {
@@ -477,7 +477,7 @@ export class AdditionalServiceModalComponent {
   }
 
   save() {
-    if (!this.serviceInfo['added'] && !this.form.controls['serviceName'].value) {
+    if (!this.serviceInfo.added && !this.form.controls['serviceName'].value) {
       this.alertService.error('Missing service name');
       return;
     }
@@ -485,14 +485,14 @@ export class AdditionalServiceModalComponent {
     if (!isEmpty(this.changedConfig) && this.categoryCopy?.name) {
       this.updateConfiguration(this.categoryCopy?.name, this.changedConfig);
       this.toggleModal(false);
-      this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo['process']);
+      this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo.process);
     }
     if (!isEmpty(this.advancedConfiguration)) {
       this.advancedConfiguration.forEach(element => {
         this.updateConfiguration(element.key, element.config);
       });
       this.toggleModal(false);
-      this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo['process']);
+      this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo.process);
     }
   }
 
@@ -551,16 +551,16 @@ export class AdditionalServiceModalComponent {
   }
 
   navToAdditionalService() {
-    this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo['process']);
+    this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo.process);
   }
 
   goToLink() {
     // ReadTheDoc is not available for Bucket and Management Services
     // TODO: FOGL-5650/FOGL-6589
-    if (this.serviceInfo['process'] === 'notification') {
-      this.docService.goToServiceDocLink('configuring-the-service', 'fledge-service-' + this.serviceInfo['process']);
+    if (this.serviceInfo.process === 'notification') {
+      this.docService.goToServiceDocLink('configuring-the-service', 'fledge-service-' + this.serviceInfo.process);
     }
-    if (this.serviceInfo['process'] === 'dispatcher') {
+    if (this.serviceInfo.process === 'dispatcher') {
       this.docService.goToSetPointControlDocLink('control-dispatcher-service');
     }
     return;
