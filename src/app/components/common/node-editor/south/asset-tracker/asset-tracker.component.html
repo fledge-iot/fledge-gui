@@ -7,12 +7,12 @@
         </li>
       </ul>
     </nav>
-    <table class="table is-responsive mt-4">
+    <table class="table is-responsive mt-6 ml-2">
       <thead>
         <tr>
           <th class="align-th">Asset</th>
           <th></th>
-          <th class="align-th">Readings Count</th>
+          <th class="align-th">Readings</th>
         </tr>
       </thead>
       <tbody>
@@ -37,5 +37,5 @@
       </tbody>
     </table>
     <button [appDisableUntilResponse]="reenableButton"
-      class="button is-small" (click)="getAssetReadings(service)">Export Readings</button>
+      class="button is-small is-ghost" (click)="getAssetReadings(service)">Export Readings</button>
   </div>
