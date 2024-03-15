@@ -146,7 +146,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.checkSchedulesAndServices();
   }
 
-  public checkSchedulesAndServices() { 
+  public checkSchedulesAndServices() {
     this.schedulesService.getSchedules().
       subscribe((data: Schedule) => {
         this.ngProgress.start();
@@ -437,7 +437,6 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   afterStateUpdate() {
     this.reenableButton.emit(false);
     this.closeModal('confirmation-dialog');
-    this.closeServiceModal();
     this.checkSchedulesAndServices();
   }
 

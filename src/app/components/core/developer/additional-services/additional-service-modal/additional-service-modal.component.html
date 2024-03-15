@@ -2,19 +2,19 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <span *ngIf="isServiceAvailable" class="modal-card-title is-size-6">{{serviceName}}
+      <span *ngIf="serviceInfo['added']" class="modal-card-title is-size-6">{{serviceName}}
         <button class="button is-small" id="refresh-check" title="Reload" (click)="refreshService(true)">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
-        <p class="help has-text-grey modal-subtitle mt-0">{{serviceType !== 'BucketStorage' ? serviceType : 'Bucket Storage'}} Service</p> 
+        <p class="help has-text-grey modal-subtitle mt-0">{{serviceInfo['type'] !== 'BucketStorage' ? serviceInfo['type'] : 'Bucket Storage'}} Service</p> 
       </span>
-      <span *ngIf="!isServiceAvailable" class="modal-card-title is-size-6">{{serviceType !== 'BucketStorage' ? serviceType : 'Bucket Storage'}} Service
+      <span *ngIf="!serviceInfo['added']" class="modal-card-title is-size-6">{{serviceInfo['type'] !== 'BucketStorage' ? serviceInfo['type'] : 'Bucket Storage'}} Service
       </span>
       <button class="delete" aria-label="close" (click)="toggleModal(false, false); navToAdditionalService();"></button>
     </header>
     <section class="modal-card-body">
       <form name="additional-service-form" id="serviceForm" #fg="ngForm">
-        <div *ngIf="!isServiceAvailable" class="columns is-mobile">
+        <div *ngIf="!serviceInfo['added']" class="columns is-mobile">
           <div class="column">
             <div class="field is-horizontal">
               <div class="field-label has-text-left service-label">
@@ -22,9 +22,9 @@
               </div>
               <div class="field-body">
                 <div class="field is-narrow">
-                  <input *ngIf="!isServiceAvailable" type="text" class="input is-small"
+                  <input *ngIf="!serviceInfo['added']" type="text" class="input is-small"
                     name="serviceName" [(ngModel)]="serviceName"
-                    [placeholder]= "(serviceType !== 'BucketStorage' ? serviceType : 'Bucket Storage') +' Service'" required trim="blur" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"/>
+                    [placeholder]= "(serviceInfo['type'] !== 'BucketStorage' ? serviceInfo['type'] : 'Bucket Storage') +' Service'" required trim="blur" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"/>
                   <small
                     *ngIf="(fg?.touched || fg?.controls['serviceName']?.dirty) && fg?.controls['serviceName']?.hasError('required')"
                     class="help is-danger level-left">*required</small>
@@ -40,14 +40,14 @@
           </app-configuration-group>
           <div class="columns">
             <div class="column">
-              <div class="field is-horizontal" [ngClass]="{'enable-div': isServiceAvailable}">
-                <div class="field-label has-text-left" [ngClass]="{'service-label':!isServiceAvailable === true}">
+              <div class="field is-horizontal" [ngClass]="{'enable-div': serviceInfo['added']}">
+                <div class="field-label has-text-left" [ngClass]="{'service-label':!serviceInfo['added'] === true}">
                   <label class="label">Enabled</label>
                 </div>
                 <div class="field-body">
                   <div class="field">
-                    <input class="checkbox" name="enabled" type="checkbox" [checked]="isServiceEnabled" [value]="isServiceEnabled"
-                      [(ngModel)]="isServiceEnabled" [disabled]="!rolesService.hasEditPermissions()">
+                    <input class="checkbox" name="enabled" type="checkbox" [checked]="serviceInfo['isEnabled']" [value]="serviceInfo['isEnabled']"
+                      [(ngModel)]="serviceInfo['isEnabled']" [disabled]="!rolesService.hasEditPermissions()">
                   </div>
                 </div>
               </div>
@@ -57,7 +57,7 @@
       </form>
       <hr class="hr-text" data-content="" *ngIf="rolesService.hasEditPermissions()">
       <div class="columns margin-bottom">
-        <div *ngIf="isServiceAvailable" class="column is-pulled-left is-8">
+        <div *ngIf="serviceInfo['added']" class="column is-pulled-left is-8">
           <div class="field is-horizontal" *ngIf="service?.protocol">
             <div class="field-label has-text-left service-info-text">
               <label class="label service-info pb-0 pt-1">Service Info</label>
@@ -84,8 +84,8 @@
           </div>
         </div>
       </div>
-      <hr *ngIf="isServiceAvailable && showDeleteBtn" class="hr-text" data-content="">
-      <div class="columns margin-bottom" *ngIf="isServiceAvailable && showDeleteBtn">
+      <hr *ngIf="serviceInfo['added'] && showDeleteBtn" class="hr-text" data-content="">
+      <div class="columns margin-bottom" *ngIf="serviceInfo['added'] && showDeleteBtn">
         <div class="column">
           <div class="field is-grouped is-pulled-left service-info-text">
             <p class="control">
@@ -99,7 +99,7 @@
                 <i class="far fa-file-alt"></i>
               </span>
             </p>
-            <p class="control" *ngIf="serviceType === 'Management' && pollingScheduleID && isServiceEnabled">
+            <p class="control" *ngIf="serviceInfo['type'] === 'Management' && pollingScheduleID && serviceInfo['isEnabled']">
               <a class="button is-ghost title-name pl-0 pb-2" [routerLink]="['/schedules', pollingScheduleID]" [queryParams]="{ from: 'additional-services' }">
                 Polling Schedule
               </a>
