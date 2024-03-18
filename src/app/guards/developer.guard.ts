@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { DeveloperFeaturesService } from '../services/developer-features.service';
-import { RolesGuard } from './roles.gurad';
 import { RolesService } from '../services';
 
 @Injectable()
