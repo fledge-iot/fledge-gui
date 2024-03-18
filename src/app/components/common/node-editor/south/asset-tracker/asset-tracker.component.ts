@@ -16,7 +16,9 @@ export class AssetTrackerComponent {
   destroy$: Subject<boolean> = new Subject<boolean>();
   public reenableButton = new EventEmitter<boolean>(false);
   @Input()service;
+  @Input()isAlive;
   @Output() selectedAsset = new EventEmitter<Object>();
+  @Output() reloadReadings = new EventEmitter<Object>();
   MAX_RANGE = MAX_INT_SIZE / 2;
 
   constructor(public developerFeaturesService: DeveloperFeaturesService,
@@ -80,6 +82,10 @@ export class AssetTrackerComponent {
           this.reenableButton.emit(false);
           console.log('error in response', error);
         });
+  }
+
+  reload() {
+    this.reloadReadings.emit(true);
   }
 
   ngOnDestroy() {

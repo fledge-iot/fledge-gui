@@ -75,7 +75,8 @@
       <app-task-schedule [taskSchedule]="taskSchedule"></app-task-schedule>
     </ng-container>
     <ng-container *ngIf="showReadings">
-      <app-asset-tracker [service]="service" (selectedAsset)="selectAsset($event)"></app-asset-tracker>
+      <app-asset-tracker [service]="readingService" [isAlive]="isAlive" (selectedAsset)="selectAsset($event)"
+      (reloadReadings)="getSouthervices()"></app-asset-tracker>
     </ng-container>
   </app-quickview>
 </div>

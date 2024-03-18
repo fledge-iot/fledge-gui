@@ -54,6 +54,7 @@ export class NodeEditorComponent implements OnInit {
   showTaskSchedule = false;
   showReadings = false;
   service: Service;
+  readingService: Service;
   task: NorthTask;
   services: Service[] = [];
   tasks: NorthTask[] = [];
@@ -151,7 +152,7 @@ export class NodeEditorComponent implements OnInit {
         this.getFilterCategory()
       }
       if(this.showReadings) {
-        this.service = this.services.find(service => (service.name == this.serviceName));
+        this.readingService = this.services.find(service => (service.name == this.serviceName));
       }
     });
 
@@ -341,6 +342,7 @@ export class NodeEditorComponent implements OnInit {
       .subscribe((data: any) => {
         const services = data.services as Service[];
         this.services = services;
+        this.readingService = this.services.find(service => (service.name == this.serviceName));
         data = {
           from: this.from,
           source: this.source,
@@ -807,6 +809,7 @@ export class NodeEditorComponent implements OnInit {
   }
 
   ngOnDestroy() {
+    this.isAlive = false;
     this.subscription.unsubscribe();
     this.filterSubscription.unsubscribe();
     this.connectionSubscription.unsubscribe();
