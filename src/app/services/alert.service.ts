@@ -4,7 +4,11 @@ import { Observable, Subject } from 'rxjs';
 
 export const DARK_ALERTS = 1;
 
-@Injectable()
+@Injectable(
+  {
+    providedIn: 'root'
+  }
+)
 export class AlertService {
   private subject = new Subject<any>();
   private keepAfterNavigationChange = false;
