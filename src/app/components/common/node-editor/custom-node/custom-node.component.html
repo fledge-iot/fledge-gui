@@ -62,7 +62,7 @@
     <div>
       <ng-container *ngIf="isServiceNode && from != 'north'">
         <readings-count *ngIf="service" [readingCount]="service.readingCount"
-          [assetCount]="service.assetCount"></readings-count>
+          [assetCount]="service.assetCount" [serviceName]="service.name"></readings-count>
       </ng-container>
       <ng-container *ngIf="isServiceNode && from == 'north'">
         <div class="reading-details">
