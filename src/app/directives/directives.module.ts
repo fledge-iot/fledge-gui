@@ -11,12 +11,25 @@ import { AccessControlDirective } from './access-control.directive';
 import { DisableUntilResponseDirective } from './disable-until-response.directive';
 import { IntegerOnlyDirective } from './integer-only.directive';
 import { EmptySpaceValidatorDirective } from './empty-space-validator.directive';
+import { FloatOnlyDirective } from './float-only.directive';
 
 @NgModule({
   imports: [],
-  declarations: [NumberOnlyDirective, CustomMinDirective, EqualValidatorDirective, InputMaskDirective,
-    InputTrimDirective, CustomMinDirective, CustomMaxDirective, CustomJsonDirective, AccessControlDirective, DisableUntilResponseDirective, IntegerOnlyDirective, EmptySpaceValidatorDirective],
-  exports: [NumberOnlyDirective, EqualValidatorDirective, InputMaskDirective, InputTrimDirective,
-    CustomMinDirective, CustomMaxDirective, CustomJsonDirective, AccessControlDirective, DisableUntilResponseDirective, IntegerOnlyDirective, EmptySpaceValidatorDirective]
+  declarations: [
+    NumberOnlyDirective, CustomMinDirective,
+    EqualValidatorDirective, InputMaskDirective,
+    InputTrimDirective, CustomMinDirective,
+    CustomMaxDirective, CustomJsonDirective,
+    AccessControlDirective, DisableUntilResponseDirective,
+    IntegerOnlyDirective, EmptySpaceValidatorDirective,
+    FloatOnlyDirective
+  ],
+  exports: [
+    NumberOnlyDirective, EqualValidatorDirective,
+    InputMaskDirective, InputTrimDirective,
+    CustomMinDirective, CustomMaxDirective,
+    CustomJsonDirective, AccessControlDirective,
+    DisableUntilResponseDirective, IntegerOnlyDirective,
+    EmptySpaceValidatorDirective, FloatOnlyDirective]
 })
 export class DirectivesModule { }
