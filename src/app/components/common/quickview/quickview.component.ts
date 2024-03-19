@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import * as bulmaQuickview from './../../../../../node_modules/bulma-quickview/dist/js/bulma-quickview.min.js'
 
 @Component({
@@ -9,6 +9,7 @@ import * as bulmaQuickview from './../../../../../node_modules/bulma-quickview/d
 export class QuickviewComponent implements OnInit {
 
   @ViewChild('quickView') quickView;
+  @Input() showReadings;
 
   constructor() {
   }
@@ -27,6 +28,16 @@ export class QuickviewComponent implements OnInit {
         clearInterval(intervalId)
       }
     }, 100)
+  }
+
+  ngOnChanges() {
+    if(this.showReadings){
+      this.quickView.nativeElement.style.width = '35%';
+      return;
+    }
+    if(this.quickView){
+      this.quickView.nativeElement.style.width = '66%';
+    }
   }
 
 }
