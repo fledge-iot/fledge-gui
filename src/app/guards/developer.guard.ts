@@ -17,6 +17,7 @@ export class DeveloperGuard {
       if (isDeveloper) {
         return true;
       }
+      this.router.navigateByUrl('');
       return false;
     }
     this.router.navigateByUrl('');
