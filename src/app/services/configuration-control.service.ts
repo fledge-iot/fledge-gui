@@ -123,6 +123,13 @@ export class ACLConfig extends ConfigurationBase<string> {
   override controlType = 'ACL';
 }
 
+export class ListConfig extends ConfigurationBase<string> {
+  override controlType = 'LIST';
+  public listSize = '';
+  public items: '';
+}
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -310,6 +317,25 @@ export class ConfigurationControlService {
             editorOptions: this.setEditorConfig(element.type),
             validity: element.validity
           }));
+          break;
+        case 'LIST':
+          const listItem = new ListConfig({
+            key: key,
+            type: 'list',
+            label: this.setDisplayName(element),
+            description: element.description,
+            value: element.value,
+            readonly: element.readonly,
+            mandatory: element.mandatory,
+            order: element.order,
+            validity: element.validity,
+          });
+          listItem.items = element.items;
+          listItem.minimum = element?.minimum;
+          listItem.maximum = element?.maximum;
+          listItem.length = element?.length;
+          listItem.listSize = element?.listSize;
+          configurations.push(listItem);
           break;
         case 'IPV4':
         case 'IPV6':

@@ -64,7 +64,6 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     private cdRef: ChangeDetectorRef
   ) {
     this.route.queryParams.subscribe(params => {
-      console.log('page', params);
       if (params['source']) {
         this.source = params['source'];
       }
