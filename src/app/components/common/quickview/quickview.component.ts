@@ -9,6 +9,7 @@ import * as bulmaQuickview from './../../../../../node_modules/bulma-quickview/d
 export class QuickviewComponent implements OnInit {
 
   @ViewChild('quickView') quickView;
+  @ViewChild('quickViewBlock') quickViewBlock;
   @Input() showReadings;
 
   constructor() {
@@ -33,10 +34,12 @@ export class QuickviewComponent implements OnInit {
   ngOnChanges() {
     if(this.showReadings){
       this.quickView.nativeElement.style.width = '35%';
+      this.quickViewBlock.nativeElement.style.width = '80%';
       return;
     }
     if(this.quickView){
       this.quickView.nativeElement.style.width = '66%';
+      this.quickViewBlock.nativeElement.style.width = '95%';
     }
   }
 
