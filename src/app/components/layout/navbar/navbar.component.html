@@ -307,7 +307,7 @@
   </div>
   <div class="navbar-end">
     <div class="navbar-item">
-      <div *ngIf="pingInfo.isAlive && !pingInfo.isSafeMode && (isAuthOptional || isUserLoggedIn)">
+      <div *ngIf="pingInfo.isAlive && !pingInfo.isSafeMode && !rolesService.hasDataViewRole() && (isAuthOptional || isUserLoggedIn)">
         <app-system-alert [alertsCount]='pingInfo.alertsCount'></app-system-alert>  
       </div>
     </div>

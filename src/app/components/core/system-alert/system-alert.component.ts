@@ -43,6 +43,7 @@ export class SystemAlertComponent {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    this.alertsCount = changes.alertsCount.currentValue;
     const dropDown = document.querySelector('#system-alert-dd');
     if (dropDown.classList.contains('is-active')) {
       if (!this.isManualRefresh && changes.alertsCount.currentValue !== changes.alertsCount.previousValue) {
@@ -68,9 +69,8 @@ export class SystemAlertComponent {
       return;
     } 
 
-    // If ping is Manual or alertsCount is 0 then first call ping to update alerts count and get alerts
-    // list if alertCount > 0
-    if (this.isManualRefresh || this.alertsCount === 0) {
+    // If ping is Manual then first call ping to update alerts count and get alerts list if alertCount > 0
+    if (this.isManualRefresh) {
       this.getUpdatedAlerts(dropDown);
     } else {
       dropDown.classList.add('is-active');

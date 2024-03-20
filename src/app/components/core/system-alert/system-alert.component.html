@@ -58,7 +58,7 @@
               <button *ngIf="alertsCount > 1" class="button is-small pl-0 is-ghost" (click)="sortByKey === 'time' ? sortByTimestamp() : groupByUrgencySortedByTime(this.systemAlerts)">Sort by {{sortByKey}}</button>
             </p>
           </div>
-          <div *ngIf="alertsCount > 1" class="column px-3 py-0">
+          <div *ngIf="alertsCount > 1 && rolesService.hasEditPermissions()" class="column px-3 py-0">
             <p class="control">
               <button class="button is-small pr-0 is-ghost is-pulled-right" (click)="deleteAllAlerts()" [appDisableUntilResponse]="reenableButton">Hide all</button>           
             </p>
