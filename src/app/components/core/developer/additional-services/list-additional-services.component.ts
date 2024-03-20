@@ -9,7 +9,7 @@ import { SharedService } from '../../../../services/shared.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { AdditionalServiceModalComponent } from './additional-service-modal/additional-service-modal.component';
 import { AdditionalServicesContextMenuComponent } from './additional-services-context-menu/additional-services-context-menu.component';
-import { AvailableServices, Schedule, Service } from '../../../../models';
+import { AvailableServices, Schedule } from '../../../../models';
 import { AdditionalServicesUtils } from './additional-services-utils.service';
 
 @Component({
@@ -65,13 +65,13 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
 
   showLoading = false;
   viewPortSubscription: Subscription;
-  servicesInfoSubscription: Subscription;
   viewPort: any = '';
   pollingScheduleID: string;
   isManualRefresh = false;
 
   service;
   allServicesInfo;
+  public timer: any = '';
   public reenableButton = new EventEmitter<boolean>(false);
   @ViewChild(AdditionalServiceModalComponent, { static: true }) serviceModal: AdditionalServiceModalComponent;
   @ViewChildren(AdditionalServicesContextMenuComponent) contextMenus: QueryList<AdditionalServicesContextMenuComponent>;
@@ -96,37 +96,71 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
       .subscribe((pingTime: number) => {
         if (pingTime === -1) {
           this.isManualRefresh = true;
+          this.stop();
         } else {
           this.isManualRefresh = false;
+          this.start(pingTime);
         }
       });
     this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
       this.viewPort = viewport;
     });
 
-    // Update state of services according to the response of '/service' endpoint response
-    this.getUpdatedServicesInfo();
-
     this.showLoadingText();
-    this.checkSchedulesAndServices();
+    this.getAllServiceStatus(false);
   }
 
-  getUpdatedServicesInfo(refreshServices = false) {
-    if (this.isManualRefresh || refreshServices) {
-      this.additionalServicesUtils.getAllServiceStatus();
-    }
-    this.servicesInfoSubscription = this.sharedService.allServicesInfo.subscribe(servicesInfo => {
-      if (servicesInfo) {
-        this.allServicesInfo = servicesInfo;
-      }
-    });
+  public start(pingInterval) {
+    this.stop();
+    this.timer = setInterval(function () {
+      this.getAllServiceStatus(true);
+    }.bind(this), pingInterval);
   }
 
-  refreshServices() {
-    if (this.isManualRefresh) {
-      this.additionalServicesUtils.getAllServiceStatus();
-    }
-    this.checkSchedulesAndServices();
+  public stop() {
+    clearInterval(this.timer);
+  }
+
+  public getAllServiceStatus(autoRefresh) {
+    this.servicesApiService.getAllServices()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (data: any) => {
+          const servicesRecord = [];
+          const servicesData = data.services;
+          const notificationService = servicesData.filter((el => (el.type === 'Notification')));
+          const managementService = servicesData.filter((el => (el.type === 'Management')));
+          const dispatcherService = servicesData.filter((el => (el.type === 'Dispatcher')));
+          const bucketStorageService = servicesData.filter((el => (el.type === 'BucketStorage')));
+          if (notificationService.length) {
+            servicesRecord.push(notificationService[0]);
+          }
+          if (managementService.length) {
+            servicesRecord.push(managementService[0]);
+          }
+          if (dispatcherService.length) {
+            servicesRecord.push(dispatcherService[0]);
+          }
+          if (bucketStorageService.length) {
+            servicesRecord.push(bucketStorageService[0]);
+          }
+          this.allServicesInfo = servicesRecord;
+          this.sharedService.allServicesInfo.next(servicesRecord);
+
+          if (autoRefresh) {
+            let serviceTypes = [];
+            this.allServicesInfo.forEach(function (s) {
+              serviceTypes.push(s["type"].toLowerCase());
+            });
+            this.servicesRegistry = this.allServicesInfo.filter((s) => this.expectedServices.some(es => es.type == s.type));
+            this.getInstalledServices(serviceTypes);
+          } else {
+            this.checkSchedulesAndServices();
+          }        
+        },
+        (error) => {
+          console.log('service down ', error);
+        });
   }
 
   public checkSchedulesAndServices() {
@@ -161,7 +195,6 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   }
 
   public getAllServices() {
-    this.getUpdatedServicesInfo();
     this.servicesRegistry = this.allServicesInfo.filter((s) => this.expectedServices.some(es => es.type == s.type));
     const addedServices = this.servicesSchedules.filter(sch => this.servicesRegistry.some(({name}) => sch.name === name));      
 
@@ -197,7 +230,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
             ...{ 'available': available }
           });
           this.getInstalledServices(installed["services"]);
-          this.getAvaiableServices(available["services"]);
+          this.getAvailableServices(available["services"]);
           this.hideLoadingText();
           return result;
         })
@@ -260,7 +293,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.installedServicePkgs = addedServices.sort((a, b) => a.type.localeCompare(b.type)).concat(servicesToAdd.sort((a, b) => a.type.localeCompare(b.type)));
   }
 
-  public getAvaiableServices(services) {
+  public getAvailableServices(services) {
     let svcs = services;
     const availableServices = this.expectedServices.filter(
       (s) => svcs.includes(s.package)
@@ -290,7 +323,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
 
   getData(handleEvent = true) {
     if (handleEvent) {
-      this.checkSchedulesAndServices();
+      this.getAllServiceStatus(false);
     }
   }
 
@@ -302,7 +335,6 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
         this.reenableButton.emit(false);
         this.alertService.success(data["result"], true);
         this.closeModal('delete-confirmation-dialog');
-        this.getUpdatedServicesInfo(true);
         this.getData();
       },
       (error) => {
@@ -414,7 +446,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   afterStateUpdate() {
     this.reenableButton.emit(false);
     this.closeModal('confirmation-dialog');
-    this.checkSchedulesAndServices();
+    this.getAllServiceStatus(false);
   }
 
   setService(service) {
@@ -422,8 +454,8 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    clearInterval(this.timer);
     this.viewPortSubscription.unsubscribe();
-    this.servicesInfoSubscription.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }
