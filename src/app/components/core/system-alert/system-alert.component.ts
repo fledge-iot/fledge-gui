@@ -2,8 +2,6 @@ import { Component, Input, EventEmitter, HostListener, SimpleChanges } from '@an
 import { AlertService, ProgressBarService, RolesService, SystemAlertService, PingService } from '../../../services';
 import { SystemAlert, SystemAlerts } from './../../../models/system-alert';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-system-alert',
@@ -13,27 +11,20 @@ import { takeUntil } from 'rxjs/operators';
 
 export class SystemAlertComponent {
   @Input() alertsCount: number;
+  @Input() isManualRefresh: boolean;
   systemAlerts = SystemAlerts['alerts'];
   expectedButtonLabels = ['Show Logs', 'Upgrade'];
   sortByKey = 'time';
   showSpinner = true;
-  isManualRefresh = false;
   public reenableButton = new EventEmitter<boolean>(false);
 
-  destroy$: Subject<boolean> = new Subject<boolean>();
   constructor(
     private alertService: AlertService,
     private router: Router,
     private ping: PingService,
     private systemAlertService: SystemAlertService,
     public ngProgress: ProgressBarService,
-    private rolesService: RolesService) {
-      this.ping.pingIntervalChanged
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((pingTime: number) => {
-        this.isManualRefresh = pingTime === -1 ? true : false;
-      });
-    }
+    private rolesService: RolesService) {}
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const dropDown = document.querySelector('#system-alert-dd');
@@ -43,7 +34,13 @@ export class SystemAlertComponent {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.alertsCount = changes.alertsCount.currentValue;
+    if (changes?.alertsCount) {
+      this.alertsCount = changes.alertsCount?.currentValue;
+    }
+    if (changes?.isManualRefresh) {
+      this.isManualRefresh = changes.isManualRefresh?.currentValue;
+    }
+
     const dropDown = document.querySelector('#system-alert-dd');
     if (dropDown.classList.contains('is-active')) {
       if (!this.isManualRefresh && changes.alertsCount.currentValue !== changes.alertsCount.previousValue) {
@@ -204,6 +201,11 @@ export class SystemAlertComponent {
         // Remove from local arrays of systemAlerts
         this.systemAlerts = this.systemAlerts.filter(alert => alert.key !== key);
         --this.alertsCount;
+
+        if (this.alertsCount === 0) {
+          const dropDown = document.querySelector('#system-alert-dd');
+          dropDown.classList.remove('is-active'); 
+        }
         this.alertService.success(data.message, true);
       },
       error => {
@@ -227,6 +229,8 @@ export class SystemAlertComponent {
         this.reenableButton.emit(false);
         this.alertsCount = 0;
         this.systemAlerts = [];
+        const dropDown = document.querySelector('#system-alert-dd');
+        dropDown.classList.remove('is-active');
         this.alertService.success(data.message, true);
       },
       error => {
