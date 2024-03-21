@@ -1,5 +1,5 @@
 <div class="reading-details">
-    <ng-container *ngIf="readingsCount && readingsCount!==0; else zeroReadingTemplate">
+    <ng-container *ngIf="+readingCount!==0; else zeroReadingTemplate">
         <small class="reading has-tooltip-top has-tooltip-arrow"
           data-tooltip="Reading count"  data-show="quickview" data-target="quickviewDefault"
           (click)="showReadingsPerAsset()">{{readingCount}}</small>
