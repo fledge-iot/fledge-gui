@@ -148,12 +148,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
           this.sharedService.allServicesInfo.next(servicesRecord);
 
           if (autoRefresh) {
-            let serviceTypes = [];
-            this.allServicesInfo.forEach(function (s) {
-              serviceTypes.push(s["type"].toLowerCase());
-            });
-            this.servicesRegistry = this.allServicesInfo.filter((s) => this.expectedServices.some(es => es.type == s.type));
-            this.getInstalledServices(serviceTypes);
+            this.updateWithServiceInfo(servicesRecord, this.installedServicePkgs);
           } else {
             this.checkSchedulesAndServices();
           }        
@@ -161,6 +156,15 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
         (error) => {
           console.log('service down ', error);
         });
+  }
+
+  updateWithServiceInfo(servicesRecord, installedServicePkgs) {
+    servicesRecord.forEach(function (s) {
+      if (s.name && installedServicePkgs.length > 0) {
+        const service = installedServicePkgs.find(svc => svc.name === s.name);
+        service.state = s.status;
+      }
+    });
   }
 
   public checkSchedulesAndServices() {
