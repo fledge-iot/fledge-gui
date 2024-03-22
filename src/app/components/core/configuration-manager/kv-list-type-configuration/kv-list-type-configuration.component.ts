@@ -70,7 +70,8 @@ export class KvListTypeConfigurationComponent implements OnInit {
           if (+item.value && Number.isInteger(+item.value)) {
             item.value = Number.parseFloat(item.value).toFixed(1); // update Integer value to single decimal point. e.g. 2 => 2.0
           } else {
-            item.value = Number.parseFloat('0').toFixed(1); // set default 0.0 if no value passed in the input field
+            if (item.value.trim() == '')
+              item.value = Number.parseFloat('0').toFixed(1); // set default 0.0 if no value passed in the input field
           }
         }
         transformedObject[item.key] = item.value;
