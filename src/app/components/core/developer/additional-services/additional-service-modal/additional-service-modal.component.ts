@@ -30,6 +30,7 @@ export class AdditionalServiceModalComponent {
   serviceName = '';
   btnText = 'Add';
   showDeleteBtn = true;
+  isEnabled: boolean;
 
   serviceInstallationState = false;
 
@@ -97,10 +98,11 @@ export class AdditionalServiceModalComponent {
     this.navigateFromParent = from;
     this.serviceName = serviceInfo.name ? serviceInfo.name : '';
     this.serviceInfo = serviceInfo;
+    this.isEnabled = serviceInfo.isEnabled;
 
     if (pollingScheduleID) {
       this.pollingScheduleID = pollingScheduleID;
-    } else if (this.serviceInfo.added && this.serviceInfo.type === 'Management' && this.serviceInfo.isEnabled) {
+    } else if (this.serviceInfo.added && this.serviceInfo.type === 'Management' && this.isEnabled) {
       // to get polling schedule ID
       this.getSchedule();
     }
@@ -120,9 +122,9 @@ export class AdditionalServiceModalComponent {
       subscribe((data: Schedule) => {
         if (refresh) {
           const schedule = data['schedules'].find(s => s.processName === this.serviceInfo.schedule_process);
-          this.serviceInfo.isEnabled = schedule['enabled'];
+          this.isEnabled = schedule['enabled'];
         }
-        if (this.serviceInfo.added && this.serviceInfo.type === 'Management' && this.serviceInfo.isEnabled) {
+        if (this.serviceInfo.added && this.serviceInfo.type === 'Management' && this.isEnabled) {
           this.pollingScheduleID = data['schedules'].find(s => s.processName === 'manage')?.id;
         }     
       },

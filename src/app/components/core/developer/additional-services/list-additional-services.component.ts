@@ -273,7 +273,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
         if (foundSchedule !== undefined) {
           replacement.name = foundSchedule.name;
           replacement.added = true;
-          replacement.state = foundSchedule.enabled === true ? 'running' : 'disabled';
+          replacement.state = foundSchedule.enabled === true ? 'running' : 'shutdown';
           atIndex = idx;
         } else {
           replacement.name = '';

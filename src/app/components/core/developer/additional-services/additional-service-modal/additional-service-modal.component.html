@@ -46,8 +46,8 @@
                 </div>
                 <div class="field-body">
                   <div class="field">
-                    <input class="checkbox" name="enabled" type="checkbox" [checked]="serviceInfo.isEnabled" [value]="serviceInfo.isEnabled"
-                      [(ngModel)]="serviceInfo.isEnabled" [disabled]="!rolesService.hasEditPermissions()">
+                    <input class="checkbox" name="enabled" type="checkbox" [checked]="isEnabled" [value]="isEnabled"
+                      [(ngModel)]="isEnabled" [disabled]="!rolesService.hasEditPermissions()">
                   </div>
                 </div>
               </div>
@@ -99,7 +99,7 @@
                 <i class="far fa-file-alt"></i>
               </span>
             </p>
-            <p class="control" *ngIf="serviceInfo.type === 'Management' && pollingScheduleID && serviceInfo.isEnabled">
+            <p class="control" *ngIf="serviceInfo.type === 'Management' && pollingScheduleID && isEnabled">
               <a class="button is-ghost title-name pl-0 pb-2" [routerLink]="['/schedules', pollingScheduleID]" [queryParams]="{ from: 'additional-services' }">
                 Polling Schedule
               </a>
