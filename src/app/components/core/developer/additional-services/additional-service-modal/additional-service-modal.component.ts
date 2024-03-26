@@ -447,10 +447,10 @@ export class AdditionalServiceModalComponent {
     if (!this.serviceInfo.added) {
       this.addServiceEvent();
     } else {
-      if (!this.form.controls['enabled'].value) {
+      if (this.isEnabled && !this.form.controls['enabled'].value) {
         this.disableService();
       }
-      if (this.form.controls['enabled'].value) {
+      if (!this.isEnabled && this.form.controls['enabled'].value) {
         this.enableService();
       }
     }
