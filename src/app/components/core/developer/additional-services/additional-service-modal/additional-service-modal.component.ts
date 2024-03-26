@@ -28,9 +28,10 @@ import { AdditionalServicesUtils } from '../additional-services-utils.service';
 export class AdditionalServiceModalComponent {
   category: any;
   serviceName = '';
+  enabled: Boolean;
   btnText = 'Add';
   showDeleteBtn = true;
-  isEnabled: boolean;
+  isServiceEnabled = false;
 
   serviceInstallationState = false;
 
@@ -98,14 +99,16 @@ export class AdditionalServiceModalComponent {
     this.navigateFromParent = from;
     this.serviceName = serviceInfo.name ? serviceInfo.name : '';
     this.serviceInfo = serviceInfo;
-    this.isEnabled = serviceInfo.isEnabled;
+    this.isServiceEnabled = serviceInfo.isEnabled;
 
     if (pollingScheduleID) {
       this.pollingScheduleID = pollingScheduleID;
-    } else if (this.serviceInfo.added && this.serviceInfo.type === 'Management' && this.isEnabled) {
+    } else if (this.serviceInfo.added && this.serviceInfo.type === 'Management' && this.isServiceEnabled) {
       // to get polling schedule ID
       this.getSchedule();
     }
+
+    this.enabled = this.isServiceEnabled;
     this.btnText = 'Add';
     if (this.serviceInfo.added) {
       this.showDeleteBtn = true;
@@ -122,9 +125,9 @@ export class AdditionalServiceModalComponent {
       subscribe((data: Schedule) => {
         if (refresh) {
           const schedule = data['schedules'].find(s => s.processName === this.serviceInfo.schedule_process);
-          this.isEnabled = schedule['enabled'];
+          this.isServiceEnabled = schedule['enabled'];
         }
-        if (this.serviceInfo.added && this.serviceInfo.type === 'Management' && this.isEnabled) {
+        if (this.serviceInfo.added && this.serviceInfo.type === 'Management' && this.isServiceEnabled) {
           this.pollingScheduleID = data['schedules'].find(s => s.processName === 'manage')?.id;
         }     
       },
@@ -399,6 +402,9 @@ export class AdditionalServiceModalComponent {
           ))
       ).subscribe(() => {
         this.ngProgress.done();
+        if (status === 'running' || status === 'shutdown') {
+          this.isServiceEnabled = !this.isServiceEnabled;
+        }
         this.toggleModal(false);
         this.reenableButton.emit(false);
         this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo.process);
@@ -447,10 +453,10 @@ export class AdditionalServiceModalComponent {
     if (!this.serviceInfo.added) {
       this.addServiceEvent();
     } else {
-      if (this.isEnabled && !this.form.controls['enabled'].value) {
+      if (this.isServiceEnabled && !this.form.controls['enabled'].value) {
         this.disableService();
       }
-      if (!this.isEnabled && this.form.controls['enabled'].value) {
+      if (!this.isServiceEnabled && this.form.controls['enabled'].value) {
         this.enableService();
       }
     }
