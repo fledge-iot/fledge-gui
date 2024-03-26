@@ -10,7 +10,7 @@ export class QuickviewComponent implements OnInit {
 
   @ViewChild('quickView') quickView;
   @ViewChild('quickViewBlock') quickViewBlock;
-  @Input() showReadings;
+  @Input() showReadings: boolean;
 
   constructor() {
   }

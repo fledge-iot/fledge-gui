@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Subject } from 'rxjs';
 import { RolesService } from '../../../../../services';
 import { DeveloperFeaturesService } from '../../../../../services/developer-features.service';
+import { Service } from '../../../../core/south/south-service';
 
 @Component({
   selector: 'app-asset-tracker',
@@ -10,10 +11,9 @@ import { DeveloperFeaturesService } from '../../../../../services/developer-feat
 })
 export class AssetTrackerComponent {
 
-  destroy$: Subject<boolean> = new Subject<boolean>();
   @Input() reenableButton = new EventEmitter<boolean>(false);
-  @Input()service;
-  @Input()isAlive;
+  @Input() service: Service;
+  @Input() isAlive: boolean;
   @Output() selectedAsset = new EventEmitter<Object>();
   @Output() reloadReadings = new EventEmitter<Object>();
   @Output() exportReading = new EventEmitter<Object>();
@@ -32,10 +32,5 @@ export class AssetTrackerComponent {
 
   reload() {
     this.reloadReadings.emit(true);
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next(true);
-    this.destroy$.unsubscribe();
   }
 }
