@@ -98,6 +98,14 @@
   font-size: 0.8rem;
 }
 
+.custom-tooltip::before {
+  left: 20% !important;
+}
+
+.custom-tooltip::after {
+  left: 20% !important;
+}
+
 .service-details {
   display: flex;
   justify-content: center;

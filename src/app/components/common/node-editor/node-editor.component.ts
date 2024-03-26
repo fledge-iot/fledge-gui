@@ -2,10 +2,12 @@ import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, Vi
 import { createEditor, getUpdatedFilterPipeline, deleteConnection, removeNode, updateNode, updateFilterNode } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
+  AssetsService,
   ConfigurationControlService,
   ConfigurationService,
   FileUploaderService,
   FilterService,
+  GenerateCsvService,
   NorthService,
   PingService,
   ProgressBarService,
@@ -21,7 +23,8 @@ import { FlowEditorService } from './flow-editor.service';
 import { cloneDeep, isEmpty } from 'lodash';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import { NorthTask } from '../../core/north/north-task';
-import Utils, { POLLING_INTERVAL } from '../../../utils';
+import Utils, { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
+import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 
 @Component({
   selector: 'app-node-editor',
@@ -43,12 +46,15 @@ export class NodeEditorComponent implements OnInit {
   private connectionSubscription: Subscription;
   private serviceSubscription: Subscription;
   private removeFilterSubscription: Subscription;
+  private exportReadingSubscription: Subscription;
 
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
   showLogs: boolean = false;
   showTaskSchedule = false;
+  showReadings = false;
   service: Service;
+  readingService: Service;
   task: NorthTask;
   services: Service[] = [];
   tasks: NorthTask[] = [];
@@ -74,6 +80,8 @@ export class NodeEditorComponent implements OnInit {
   isAlive: boolean;
 
   taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };
+  selectedAsset = '';
+  MAX_RANGE = MAX_INT_SIZE / 2;
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -90,6 +98,8 @@ export class NodeEditorComponent implements OnInit {
     private dialogService: DialogService,
     private northService: NorthService,
     private ping: PingService,
+    private assetService: AssetsService,
+    public generateCsv: GenerateCsvService,
     private router: Router) {
     this.route.params.subscribe(params => {
       this.from = params.from;
@@ -117,10 +127,11 @@ export class NodeEditorComponent implements OnInit {
   }
   ngOnInit(): void {
     this.subscription = this.flowEditorService.showItemsInQuickview.pipe(skip(1)).subscribe(data => {
-      this.showPluginConfiguration = data.showPluginConfiguration;
-      this.showFilterConfiguration = data.showFilterConfiguration;
-      this.showLogs = data.showLogs;
-      this.showTaskSchedule = data.showTaskSchedule;
+      this.showPluginConfiguration = data.showPluginConfiguration ? true: false;
+      this.showFilterConfiguration = data.showFilterConfiguration ? true: false;
+      this.showLogs = data.showLogs ? true: false;
+      this.showTaskSchedule = data.showTaskSchedule ? true: false;
+      this.showReadings = data.showReadings ? true: false;
       this.serviceName = data.serviceName;
       if (this.showPluginConfiguration) {
         this.getCategory();
@@ -139,6 +150,9 @@ export class NodeEditorComponent implements OnInit {
       if (this.showFilterConfiguration) {
         this.quickviewFilterName = data.filterName;
         this.getFilterCategory()
+      }
+      if(this.showReadings) {
+        this.readingService = this.services.find(service => (service.name == this.serviceName));
       }
     });
 
@@ -176,6 +190,11 @@ export class NodeEditorComponent implements OnInit {
     this.serviceSubscription = this.flowEditorService.serviceInfo.pipe(skip(1)).subscribe(data => {
       this.openModal('delete-service-dialog');
       this.deleteServiceName = data.name;
+    });
+
+    this.exportReadingSubscription = this.flowEditorService.exportReading.pipe(skip(1)).subscribe(data => {
+      let service = this.services.find(service => (service.name == data.serviceName));
+      this.getAssetReadings(service);
     });
 
     this.isAlive = true;
@@ -322,6 +341,8 @@ export class NodeEditorComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
         const services = data.services as Service[];
+        this.services = services;
+        this.readingService = this.services.find(service => (service.name == this.serviceName));
         data = {
           from: this.from,
           source: this.source,
@@ -710,12 +731,91 @@ export class NodeEditorComponent implements OnInit {
     this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
   }
 
+  selectAsset(event) {
+    this.selectedAsset = event.assetName;
+    this.openModal('asset-tracking-dialog');
+  }
+
+  deprecateAsset(assetName: string) {
+    /** request started */
+    this.ngProgress.start();
+    this.assetService.deprecateAssetTrackEntry(this.serviceName, assetName, 'Ingest')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (data: any) => {
+          /** request completed */
+          this.ngProgress.done();
+          this.toastService.success(data.success);
+          this.closeModal('asset-tracking-dialog');
+        }, error => {
+          /** request completed but error */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.toastService.error(error.statusText);
+          }
+        });
+  }
+
+  getAssetReadings(service: Service) {
+    const fileName = service.name + '-readings';
+    const assets = service.assets;
+    const assetRecord: any = [];
+    if (assets.length === 0) {
+      this.toastService.error('No readings to export.');
+      return;
+    }
+    this.toastService.info('Exporting readings to ' + fileName);
+    assets.forEach((ast: any) => {
+      let limit = ast.count;
+      let offset = 0;
+      if (ast.count > this.MAX_RANGE) {
+        limit = this.MAX_RANGE;
+        const chunkCount = Math.ceil(ast.count / this.MAX_RANGE);
+        let lastChunkLimit = (ast.count % this.MAX_RANGE);
+        if (lastChunkLimit === 0) {
+          lastChunkLimit = this.MAX_RANGE;
+        }
+        for (let j = 0; j < chunkCount; j++) {
+          if (j !== 0) {
+            offset = (this.MAX_RANGE * j);
+          }
+          if (j === (chunkCount - 1)) {
+            limit = lastChunkLimit;
+          }
+          assetRecord.push({ asset: ast.asset, limit: limit, offset: offset });
+        }
+      } else {
+        assetRecord.push({ asset: ast.asset, limit: limit, offset: offset });
+      }
+    });
+    this.exportReadings(assetRecord, fileName);
+  }
+
+  exportReadings(assets: [], fileName: string) {
+    let assetReadings = [];
+    this.assetService.getMultiAssetsReadings(assets).
+      subscribe(
+        (result: any) => {
+          this.reenableButton.emit(false);
+          assetReadings = [].concat.apply([], result);
+          this.generateCsv.download(assetReadings, fileName, 'service');
+        },
+        error => {
+          this.reenableButton.emit(false);
+          console.log('error in response', error);
+        });
+  }
+
   ngOnDestroy() {
+    this.isAlive = false;
     this.subscription.unsubscribe();
     this.filterSubscription.unsubscribe();
     this.connectionSubscription.unsubscribe();
     this.serviceSubscription.unsubscribe();
     this.removeFilterSubscription.unsubscribe();
+    this.exportReadingSubscription.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }

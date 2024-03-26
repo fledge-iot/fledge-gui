@@ -12,6 +12,12 @@ export class PluginControl extends ClassicPreset.Control {
   }
 }
 
+export class PluginVersionControl extends ClassicPreset.Control {
+  constructor(public pluginVersion: string) {
+    super();
+  }
+}
+
 export class StatusControl extends ClassicPreset.Control {
   constructor(public status: string) {
     super();

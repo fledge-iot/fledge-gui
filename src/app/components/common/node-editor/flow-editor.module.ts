@@ -16,6 +16,7 @@ import { PluginService } from '../../../services/plugin.service';
 import { AddTaskWizardComponent } from '../../core/north/add-task-wizard/add-task-wizard.component';
 import { ReadingsCountComponent } from './south/asset-readings/readings-count.component';
 import { DirectivesModule } from '../../../directives/directives.module';
+import { AssetTrackerComponent } from './south/asset-tracker/asset-tracker.component';
 
 const routes: Routes = [
   {
@@ -47,7 +48,8 @@ const routes: Routes = [
     CustomSocketComponent,
     CustomConnectionComponent,
     ReadingsCountComponent,
-    RefDirective],
+    RefDirective,
+    AssetTrackerComponent],
   imports: [
     RouterModule.forChild(routes),
     CommonModule,
