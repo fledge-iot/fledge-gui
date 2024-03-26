@@ -119,9 +119,9 @@
             (click)="showLogsInQuickview()">
             <i class="bi bi-file-earmark-text bi-xs"></i>
           </span>
-          <span *ngIf="isServiceNode && from=='south' && service.readingCount>0"
+          <span *ngIf="isServiceNode && from=='south'" [hidden]="service.readingCount==0"
             class="icon is-small has-tooltip-bottom has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon ml-3"
-            data-tooltip="Show readings" data-show="quickview" data-target="quickviewDefault"
+            data-tooltip="Show readings" [attr.data-show]="'quickview'" [attr.data-target]="'quickviewDefault'"
             (click)="showReadingsPerAsset()">
             <i class="bi bi-table bi-xs"></i>
           </span>
@@ -151,8 +151,8 @@
                     <span>Details</span>
                   </a>
                 </ng-container>
-                <ng-container *ngIf="isServiceNode && from=='south' && service.readingCount>0">
-                  <a class="dropdown-item" data-show="quickview" data-target="quickviewDefault" (click)="showReadingsPerAsset()">
+                <ng-container *ngIf="isServiceNode && from=='south'">
+                  <a class="dropdown-item" [attr.data-show]="'quickview'" [attr.data-target]="'quickviewDefault'" [hidden]="service.readingCount==0" (click)="showReadingsPerAsset()">
                     <span>Readings</span>
                   </a>
                 </ng-container>
