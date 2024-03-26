@@ -15,8 +15,8 @@
           <input *ngIf="configuration.items == 'enumeration'" class="input is-small" type="text" formControlName="value"
             [attr.maxLength]="configuration?.length">
         </div>
-        <div class="column is-1 pl-0 pt-3">
-          <span class="icon" *ngIf="i != 0">
+        <div class="column is-1 pl-2 pt-2">
+          <span class="icon">
             <button class="delete is-small" (click)="removeListItem(i)"></button>
           </span>
         </div>

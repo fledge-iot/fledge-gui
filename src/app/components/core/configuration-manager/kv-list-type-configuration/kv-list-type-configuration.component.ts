@@ -77,7 +77,6 @@ export class KvListTypeConfigurationComponent implements OnInit {
         transformedObject[item.key] = item.value;
       });
 
-      console.log(transformedObject);
       this.form.get(this.configuration.key)?.patchValue(JSON.stringify(transformedObject))
       this.formState.emit(this.kvListItems.valid);
     })
