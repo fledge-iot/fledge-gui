@@ -56,12 +56,13 @@
           </ng-template>
         </div>
       </div>
-      <span *ngIf="data.label!=='Filter'" class="help-text">{{helpText}}</span>
+      <span *ngIf="isFilterNode && data.label!=='Filter'" class="help-text">{{helpText}}</span>
+      <span *ngIf="isServiceNode" class="help-text has-tooltip-bottom custom-tooltip has-tooltip-arrow tooltip is-hovered" [attr.data-tooltip]="pluginVersion">{{helpText}}</span>
     </div>
     <div>
       <ng-container *ngIf="isServiceNode && from != 'north'">
         <readings-count *ngIf="service" [readingCount]="service.readingCount"
-          [assetCount]="service.assetCount"></readings-count>
+          [assetCount]="service.assetCount" [serviceName]="service.name"></readings-count>
       </ng-container>
       <ng-container *ngIf="isServiceNode && from == 'north'">
         <div class="reading-details">
@@ -110,13 +111,19 @@
         <div class="is-pulled-left ml-2 icon-margin">
           <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered"
             data-tooltip="Help" (click)="goToLink()">
-            <i class="far fa-xs fa-question-circle"></i>
+            <i class="bi bi-question-circle bi-xs"></i>
           </span>
           <span *ngIf="isServiceNode"
             class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon ml-3"
             data-tooltip="Show logs" data-show="quickview" data-target="quickviewDefault"
             (click)="showLogsInQuickview()">
-            <i class="far fa-xs fa-file-alt"></i>
+            <i class="bi bi-file-earmark-text bi-xs"></i>
+          </span>
+          <span *ngIf="isServiceNode && from=='south'" [hidden]="service.readingCount==0"
+            class="icon is-small has-tooltip-bottom has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon ml-3"
+            data-tooltip="Show readings" [attr.data-show]="'quickview'" [attr.data-target]="'quickviewDefault'"
+            (click)="showReadingsPerAsset()">
+            <i class="bi bi-table bi-xs"></i>
           </span>
         </div>
       </ng-container>
@@ -142,6 +149,16 @@
                 <ng-container *ngIf="!source">
                   <a class="dropdown-item" (click)="openServiceDetails()">
                     <span>Details</span>
+                  </a>
+                </ng-container>
+                <ng-container *ngIf="isServiceNode && from=='south'">
+                  <a class="dropdown-item" [attr.data-show]="'quickview'" [attr.data-target]="'quickviewDefault'" [hidden]="service.readingCount==0" (click)="showReadingsPerAsset()">
+                    <span>Readings</span>
+                  </a>
+                </ng-container>
+                <ng-container *ngIf="isServiceNode && from=='south' && service.readingCount>0">
+                  <a class="dropdown-item" (click)="getAssetReadings()">
+                    <span>Export Readings</span>
                   </a>
                 </ng-container>
                 <a *ngIf="rolesService.hasEditPermissions()" class="dropdown-item" (click)="deleteFilterOrService()">

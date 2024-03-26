@@ -26,7 +26,7 @@ import { North } from "./nodes/north";
 import { AddTask } from "./nodes/add-task";
 import { RolesService } from "../../../services/roles.service"
 import { Service } from "../../core/south/south-service";
-import { ReadingControl } from "./controls/south-custom-control";
+import { AssetControl, ReadingControl } from "./controls/south-custom-control";
 import { SentReadingsControl } from './controls/north-custom-control';
 import { EnabledControl, NameControl, PluginControl, StatusControl } from './controls/common-custom-control';
 import { NorthTask } from '../../core/north/north-task';
@@ -458,20 +458,24 @@ export function updateFilterNode(filterConfiguration) {
 
 export function updateNode(data) {
   editor.getNodes().forEach(async (node) => {
+    const assetControls = node.controls.assetCountControl as AssetControl
     const readingControl = node.controls.readingCountControl as ReadingControl;
     const enabledControl = node.controls.enabledControl as EnabledControl;
     const statusControl = node.controls.statusControl as StatusControl;
     if (!isEmpty(node.controls)) {
       if (node.label == 'South') {
         const service = data.services.find(s => s.name === node.controls.nameControl['name'])
+        let assetCount = service.assets.length;
         let readingCount = service.assets.reduce((total, asset) => {
           return total + asset.count;
         }, 0)
 
+        assetControls.count = assetCount;
         readingControl.count = readingCount;
         enabledControl.enabled = service.schedule_enabled;
         statusControl.status = service.status;
 
+        area.update("control", assetControls.id);
         area.update("control", readingControl.id);
         area.update("control", enabledControl.id);
         area.update("control", statusControl.id);
