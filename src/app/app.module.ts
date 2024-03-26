@@ -109,7 +109,10 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
   providers: [
     AuthRequiredGuard,
     DataViewRoleGuard,
-    AlertService,
+    {
+      provide: 'ALERT_SERVICE',
+      useExisting: AlertService,
+    },
     AuthService,
     ConfigurationService,
     AuditService,
@@ -131,7 +134,10 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     PingService,
     NorthService,
     SchedulesService,
-    ProgressBarService,
+    {
+      provide: 'PROGRESS_SERVICE',
+      useExisting: ProgressBarService,
+    },
     UserService,
     {
       provide: HTTP_INTERCEPTORS,

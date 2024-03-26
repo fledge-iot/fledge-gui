@@ -51,3 +51,9 @@
 .bottom-row {
     height: 7vh;
 }
+
+#refresh-alerts {
+    vertical-align: middle;
+    background: none;
+    border: none;
+}
