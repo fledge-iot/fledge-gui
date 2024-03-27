@@ -66,6 +66,6 @@ const routes: Routes = [
     RouterModule.forChild(routes)
   ],
   providers: [DeveloperGuard],
-  exports: [AdditionalServiceModalComponent]
+  exports: []
 })
 export class DeveloperModule { }

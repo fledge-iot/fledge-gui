@@ -1,6 +1,5 @@
 import { Component, ViewChild, HostListener, EventEmitter } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
-import { pairwise, startWith } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   ProgressBarService, AlertService, ServicesApiService, SchedulesService,
@@ -487,16 +486,15 @@ export class AdditionalServiceModalComponent {
     this.stateUpdate();
     if (!isEmpty(this.changedConfig) && this.categoryCopy?.name) {
       this.updateConfiguration(this.categoryCopy?.name, this.changedConfig);
-      this.toggleModal(false);
-      this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
+      this.toggleModal(false);   
     }
     if (!isEmpty(this.advancedConfiguration)) {
       this.advancedConfiguration.forEach(element => {
         this.updateConfiguration(element.key, element.config);
       });
       this.toggleModal(false);
-      this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
     }
+    this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
   }
 
   /**
