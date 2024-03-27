@@ -1,0 +1,44 @@
+<div class="container is-fluid">
+    <nav class="breadcrumb readings-breadcrumb" aria-label="breadcrumbs">
+      <ul>
+        <li class="is-active"><a>{{service.name}}</a></li>
+        <li class="is-active">
+          <a href="#" aria-current="page">Readings</a>
+        </li>
+      </ul>
+    </nav>
+    <button type="button" *ngIf="!isAlive" (click)="reload()" title="Reload" class="button is-small" id="refresh-check">
+        <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+    </button>
+    <table class="table is-responsive mt-6 ml-2">
+      <thead>
+        <tr>
+          <th class="align-th">Asset</th>
+          <th></th>
+          <th class="align-th">Readings</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor='let data of service?.assets'>
+            <td>
+              <a *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()"
+                class="deprecate"
+                (click)="selectAsset(data?.asset)">
+                <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow"
+                  data-tooltip="Deprecate asset">
+                  <i class="bi bi-eraser"></i>
+                </span>
+              </a>
+              <span>{{data.asset}}</span>
+            </td>
+            <td>
+            </td>
+            <td class="readings-count">
+              <span class="level-right">{{data.count | number}}</span>
+            </td>
+        </tr>
+      </tbody>
+    </table>
+    <button [appDisableUntilResponse]="reenableButton"
+      class="button is-small is-ghost" (click)="exportReadings()">Export Readings</button>
+  </div>

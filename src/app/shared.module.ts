@@ -20,6 +20,7 @@ import { AddServiceWizardComponent } from './components/core/south/add-service-w
 import { AddTaskWizardComponent } from './components/core/north/add-task-wizard/add-task-wizard.component';
 import { TaskScheduleComponent } from './components/core/north/task-schedule/task-schedule.component';
 import { ListTypeConfigurationComponent } from './components/core/configuration-manager/list-type-configuration/list-type-configuration.component';
+import { KvListTypeConfigurationComponent } from './components/core/configuration-manager/kv-list-type-configuration/kv-list-type-configuration.component';
 
 @NgModule({
   imports: [
@@ -35,6 +36,7 @@ import { ListTypeConfigurationComponent } from './components/core/configuration-
     ConfigurationGroupComponent,
     BucketConfigurationComponent,
     ListTypeConfigurationComponent,
+    KvListTypeConfigurationComponent,
     ShowConfigurationComponent,
     PluginPersistDataComponent,
     PluginModalComponent,

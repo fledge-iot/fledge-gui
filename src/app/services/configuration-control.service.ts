@@ -129,6 +129,12 @@ export class ListConfig extends ConfigurationBase<string> {
   public items: '';
 }
 
+export class KVListConfig extends ConfigurationBase<string> {
+  override controlType = 'KVLIST';
+  public listSize = '';
+  public items: '';
+}
+
 
 
 @Injectable({
@@ -337,6 +343,27 @@ export class ConfigurationControlService {
           listItem.listSize = element?.listSize;
           configurations.push(listItem);
           break;
+
+        case 'KVLIST':
+          const kvListItem = new KVListConfig({
+            key: key,
+            type: 'kvlist',
+            label: this.setDisplayName(element),
+            description: element.description,
+            value: element.value,
+            readonly: element.readonly,
+            mandatory: element.mandatory,
+            order: element.order,
+            validity: element.validity,
+          });
+          kvListItem.items = element.items;
+          kvListItem.minimum = element?.minimum;
+          kvListItem.maximum = element?.maximum;
+          kvListItem.length = element?.length;
+          kvListItem.listSize = element?.listSize;
+          configurations.push(kvListItem);
+          break;
+
         case 'IPV4':
         case 'IPV6':
         default:
