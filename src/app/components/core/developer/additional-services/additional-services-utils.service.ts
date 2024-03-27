@@ -59,27 +59,25 @@ export class AdditionalServicesUtils {
       );
     }
 
-    navToAdditionalServicePage(fromNavbar, serviceProcessName) {
-      if (fromNavbar) {
-        let routeToNavigate = '/developer/options/additional-services';
-        if (!this.isDeveloperFeatureOn()) {
-          switch (serviceProcessName) {
-            case 'notification':
-              routeToNavigate = '/notification';
-              break;
-            case 'bucket':
-              routeToNavigate = '/mlmodels';
-              break;
-            case 'dispatcher':
-              routeToNavigate = '/control-dispatcher/acl';
-              break;
-            default:
-              routeToNavigate = '';
-              break;
-          }
-        }
-        this.router.navigate([routeToNavigate]);
+    navToAdditionalServicePage(fromListPage, serviceProcessName) {
+      let routeToNavigate = '/developer/options/additional-services';
+      if (!fromListPage) {
+        switch (serviceProcessName) {
+          case 'notification':
+            routeToNavigate = '/notification';
+            break;
+          case 'bucket':
+            routeToNavigate = '/mlmodels';
+            break;
+          case 'dispatcher':
+            routeToNavigate = '/control-dispatcher/acl';
+            break;
+          default:
+            routeToNavigate = '';
+            break;
+        }      
       }
+      this.router.navigate([routeToNavigate]);
       return;
     }
 

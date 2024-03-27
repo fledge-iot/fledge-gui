@@ -10,7 +10,7 @@
       </span>
       <span *ngIf="!serviceInfo.added" class="modal-card-title is-size-6">{{serviceInfo.type !== 'BucketStorage' ? serviceInfo.type : 'Bucket Storage'}} Service
       </span>
-      <button class="delete" aria-label="close" (click)="toggleModal(false, false); navToAdditionalService();"></button>
+      <button class="delete" aria-label="close" (click)="toggleModal(false); navToAdditionalService();"></button>
     </header>
     <section class="modal-card-body">
       <form name="additional-service-form" id="serviceForm" #fg="ngForm">
@@ -46,8 +46,7 @@
                 </div>
                 <div class="field-body">
                   <div class="field">
-                    <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [value]="enabled"
-                      [(ngModel)]="enabled" [disabled]="!rolesService.hasEditPermissions()">
+                    <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [(ngModel)]="enabled" [disabled]="!rolesService.hasEditPermissions()">
                   </div>
                 </div>
               </div>
@@ -75,7 +74,7 @@
           <div class="is-pulled-right field is-grouped">
             <p class="control">
               <button [disabled]="serviceInstallationState" class="button is-small" id="cancel"
-                (click)="toggleModal(false, false); navToAdditionalService();">Cancel</button>
+                (click)="toggleModal(false); navToAdditionalService();">Cancel</button>
             </p>
             <p class="control">
               <button [disabled]="serviceInstallationState || fg.controls['serviceName']?.invalid || !validForm"
@@ -99,7 +98,7 @@
                 <i class="far fa-file-alt"></i>
               </span>
             </p>
-            <p class="control" *ngIf="serviceInfo.type === 'Management' && pollingScheduleID && isEnabled">
+            <p class="control" *ngIf="serviceInfo.type === 'Management' && pollingScheduleID && isServiceEnabled">
               <a class="button is-ghost title-name pl-0 pb-2" [routerLink]="['/schedules', pollingScheduleID]" [queryParams]="{ from: 'additional-services' }">
                 Polling Schedule
               </a>

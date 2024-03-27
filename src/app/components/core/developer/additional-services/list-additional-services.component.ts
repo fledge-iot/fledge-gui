@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewChild, EventEmitter, OnDestroy, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnInit, EventEmitter, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import { forkJoin, timer, of, Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 import { concatMap, delayWhen, retryWhen, take, tap, map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -7,7 +8,6 @@ import { takeUntil } from 'rxjs/operators';
 import { AlertService, ProgressBarService, RolesService, ServicesApiService, SchedulesService, ResponseHandler, PingService } from '../../../../services';
 import { SharedService } from '../../../../services/shared.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
-import { AdditionalServiceModalComponent } from './additional-service-modal/additional-service-modal.component';
 import { AdditionalServicesContextMenuComponent } from './additional-services-context-menu/additional-services-context-menu.component';
 import { AvailableServices, Schedule } from '../../../../models';
 import { AdditionalServicesUtils } from './additional-services-utils.service';
@@ -70,10 +70,8 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   isManualRefresh = false;
 
   service;
-  allServicesInfo;
   public timer: any = '';
   public reenableButton = new EventEmitter<boolean>(false);
-  @ViewChild(AdditionalServiceModalComponent, { static: true }) serviceModal: AdditionalServiceModalComponent;
   @ViewChildren(AdditionalServicesContextMenuComponent) contextMenus: QueryList<AdditionalServicesContextMenuComponent>;
   
   destroy$: Subject<boolean> = new Subject<boolean>();
@@ -87,6 +85,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     public schedulesService: SchedulesService,
     private response: ResponseHandler,
     private ping: PingService,
+    private router: Router,
     private additionalServicesUtils: AdditionalServicesUtils,
   ) {}
 
@@ -144,11 +143,11 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
           if (bucketStorageService.length) {
             servicesRecord.push(bucketStorageService[0]);
           }
-          this.allServicesInfo = servicesRecord;
+          this.servicesRegistry = servicesRecord;
           this.sharedService.allServicesInfo.next(servicesRecord);
 
           if (autoRefresh) {
-            this.updateWithServiceInfo(servicesRecord, this.installedServicePkgs);
+            this.syncServicesStatus(servicesRecord, this.installedServicePkgs);
           } else {
             this.checkSchedulesAndServices();
           }        
@@ -158,7 +157,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
         });
   }
 
-  updateWithServiceInfo(servicesRecord, installedServicePkgs) {
+  syncServicesStatus(servicesRecord, installedServicePkgs) {
     servicesRecord.forEach(function (s) {
       if (s.name && installedServicePkgs.length > 0) {
         const service = installedServicePkgs.find(svc => svc.name === s.name);
@@ -168,9 +167,9 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   }
 
   public checkSchedulesAndServices() {
+    this.ngProgress.start();
     this.schedulesService.getSchedules().
-      subscribe((data: Schedule) => {
-        this.ngProgress.start();
+      subscribe((data: Schedule) => {      
         this.servicesSchedules = data['schedules'].filter((sch) => this.expectedServices.some(es => es.schedule_process == sch.processName));
         this.pollingScheduleID = data['schedules'].find(s => s.processName === 'manage')?.id;
         
@@ -181,11 +180,11 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
           this.expectedServices.forEach(function (s) {
             serviceTypes.push(s["process"]);
           });
-          this.getInstalledServices(serviceTypes);
+          this.installedAndAddedServices(serviceTypes);
           this.hideLoadingText();
           this.ngProgress.done();         
         } else {
-          this.getAllServices();
+          this.checkServices();
         }
       },
         (error) => {
@@ -198,10 +197,9 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
         });
   }
 
-  public getAllServices() {
-    this.servicesRegistry = this.allServicesInfo.filter((s) => this.expectedServices.some(es => es.type == s.type));
-    const addedServices = this.servicesSchedules.filter(sch => this.servicesRegistry.some(({name}) => sch.name === name));      
-
+  public checkServices() {
+    const addedServices = this.servicesSchedules.filter(sch => this.servicesRegistry.some(({name}) => sch.name === name));
+    
     // If we get expected services in the response of /service API then no need to make other (/installed, /available) API calls
     if (addedServices.length === this.expectedServices.length) {
       this.availableServicePkgs = [];
@@ -209,7 +207,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
       this.expectedServices.forEach(function (s) {
         serviceTypes.push(s["process"]);
       });
-      this.getInstalledServices(serviceTypes);
+      this.installedAndAddedServices(serviceTypes);
       this.hideLoadingText();
       this.ngProgress.done();
     } else {
@@ -233,7 +231,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
             ...{ 'installed': installed },
             ...{ 'available': available }
           });
-          this.getInstalledServices(installed["services"]);
+          this.installedAndAddedServices(installed["services"]);
           this.getAvailableServices(available["services"]);
           this.hideLoadingText();
           return result;
@@ -256,7 +254,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
       });
   }
 
-  public getInstalledServices(services) {
+  public installedAndAddedServices(services) {
     let svcs = services.filter(
       (s) => !["south", "north", "storage"].includes(s)
     );
@@ -305,10 +303,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.availableServicePkgs = availableServices.sort((a, b) => a.type.localeCompare(b.type))
   }
 
-  /**
-    * Open Settings modal
-    */
-   openServiceModal(service) {
+  openServiceModal(service) {
     if (!service) {
       this.alertService.warning('No package available to install');
       return;
@@ -320,9 +315,11 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
       service.isInstalled = true;
     }
     service.isEnabled = ["shutdown", "disabled", "installed", ""].includes(service.state) ? false : true;
-    this.serviceModal.toggleModal(true);
+    service['pollingScheduleID'] = this.pollingScheduleID;
+    service['fromListPage'] = true;
+
     this.setService(service);
-    this.serviceModal.getServiceInfo(service, this.pollingScheduleID);
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...service }});
   }
 
   getData(handleEvent = true) {

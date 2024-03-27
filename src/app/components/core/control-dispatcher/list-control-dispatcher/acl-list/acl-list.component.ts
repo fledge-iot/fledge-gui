@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AlertService, SharedService, ProgressBarService, RolesService } from '../../../../../services';
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
@@ -6,7 +7,6 @@ import { DialogService } from '../../../../common/confirmation-dialog/dialog.ser
 import { orderBy } from 'lodash';
 import { AclService } from '../../../../../services/acl.service';
 import { DocService } from '../../../../../services/doc.service';
-import { AdditionalServiceModalComponent } from '../../../developer/additional-services/additional-service-modal/additional-service-modal.component';
 import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
@@ -16,7 +16,6 @@ import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/ad
 })
 export class AclListComponent implements OnInit {
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
-  @ViewChild(AdditionalServiceModalComponent, { static: true }) additionalServiceModalComponent: AdditionalServiceModalComponent;
   @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
 
   controlAcls: any = [];
@@ -34,6 +33,7 @@ export class AclListComponent implements OnInit {
     private alertService: AlertService,
     private dialogService: DialogService,
     public docService: DocService,
+    private router: Router,
     public rolesService: RolesService,
     public sharedService: SharedService,
     private ngProgress: ProgressBarService) {
@@ -147,8 +147,7 @@ export class AclListComponent implements OnInit {
    * Open Configure Service modal
    */
   openServiceConfigureModal() {
-    this.additionalServiceModalComponent.toggleModal(true);
-    this.additionalServiceModalComponent.getServiceInfo(this.serviceInfo, null, 'dispatcher');
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
   }
 
   goToLink(urlSlug: string) {

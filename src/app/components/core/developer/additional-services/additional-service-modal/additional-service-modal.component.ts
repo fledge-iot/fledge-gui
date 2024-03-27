@@ -1,5 +1,6 @@
-import { Component, ViewChild, Output, HostListener, EventEmitter } from '@angular/core';
+import { Component, ViewChild, HostListener, EventEmitter } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
+import { pairwise, startWith } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   ProgressBarService, AlertService, ServicesApiService, SchedulesService,
@@ -47,7 +48,6 @@ export class AdditionalServiceModalComponent {
   @ViewChild('fg') form: NgForm;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
   @ViewChild('configComponent') configComponent: ConfigurationGroupComponent;
-  @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
   changedConfig: any;
   categoryCopy: { name: string; config: Object; };
@@ -55,8 +55,7 @@ export class AdditionalServiceModalComponent {
   validForm = true;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
   pollingScheduleID: string;
-  navigateFromParent: string;
-  fromNavbar: boolean;
+  fromListPage: boolean;
   public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(
@@ -76,10 +75,8 @@ export class AdditionalServiceModalComponent {
     public rolesService: RolesService) {
       this.activatedRoute.paramMap
       .pipe(map(() => window.history.state)).subscribe(res=>{
-          if (res?.name) {
-            this.fromNavbar = true;
-            res['added'] = true;
-            res['isInstalled'] = true;
+          if (res?.process) {
+            this.fromListPage = res.fromListPage;
             this.getServiceInfo(res, res?.pollingScheduleID);
             setTimeout(() => {
               this.toggleModal(true);
@@ -95,8 +92,7 @@ export class AdditionalServiceModalComponent {
     this.getCategory();
   }
 
-  getServiceInfo(serviceInfo, pollingScheduleID, from = null) {
-    this.navigateFromParent = from;
+  getServiceInfo(serviceInfo, pollingScheduleID) {
     this.serviceName = serviceInfo.name ? serviceInfo.name : '';
     this.serviceInfo = serviceInfo;
     this.isServiceEnabled = serviceInfo.isEnabled;
@@ -142,12 +138,12 @@ export class AdditionalServiceModalComponent {
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     if (!this.serviceInstallationState) {
-      this.toggleModal(false, false);
-      this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo.process);
+      this.toggleModal(false);
+      this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
     }
   }
 
-  public toggleModal(isOpen: Boolean, eventToHandle = true) {
+  public toggleModal(isOpen: Boolean) {
     this.serviceInstallationState = false;
     this.reenableButton.emit(false);
     const serviceModal = <HTMLDivElement>document.getElementById('additional-service-modal');
@@ -163,7 +159,6 @@ export class AdditionalServiceModalComponent {
         serviceModal.classList.add('is-active');
         return;
       }
-      this.notify.emit(eventToHandle);
       serviceModal.classList.remove('is-active');
       this.category = '';
       this.service = <Service>{};
@@ -209,7 +204,7 @@ export class AdditionalServiceModalComponent {
         (error) => {
           this.ngProgress.done();
           this.toggleModal(false);
-          this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo.process);
+          this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -377,7 +372,7 @@ export class AdditionalServiceModalComponent {
                 this.ngProgress.done();
                 this.toggleModal(false);
                 this.reenableButton.emit(false);
-                this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo.process);
+                this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
                 throw serviceStatus.error;
               }
             }),
@@ -394,7 +389,7 @@ export class AdditionalServiceModalComponent {
                 this.ngProgress.done();
                 this.toggleModal(false);
                 this.reenableButton.emit(false);   
-                this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo.process);
+                this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
                 return;
               }
               return of(o);
@@ -407,12 +402,12 @@ export class AdditionalServiceModalComponent {
         }
         this.toggleModal(false);
         this.reenableButton.emit(false);
-        this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo.process);
+        this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
       });
   }
 
   disableService() {
-    this.additionalServicesUtils.disableService(this.serviceName, this.fromNavbar, this.serviceInfo.process);
+    this.additionalServicesUtils.disableService(this.serviceName, this.fromListPage, this.serviceInfo.process);
     this.getUpdatedState('shutdown');
   }
 
@@ -493,14 +488,14 @@ export class AdditionalServiceModalComponent {
     if (!isEmpty(this.changedConfig) && this.categoryCopy?.name) {
       this.updateConfiguration(this.categoryCopy?.name, this.changedConfig);
       this.toggleModal(false);
-      this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo.process);
+      this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
     }
     if (!isEmpty(this.advancedConfiguration)) {
       this.advancedConfiguration.forEach(element => {
         this.updateConfiguration(element.key, element.config);
       });
       this.toggleModal(false);
-      this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo.process);
+      this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
     }
   }
 
@@ -559,7 +554,7 @@ export class AdditionalServiceModalComponent {
   }
 
   navToAdditionalService() {
-    this.additionalServicesUtils.navToAdditionalServicePage(this.fromNavbar, this.serviceInfo.process);
+    this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
   }
 
   goToLink() {

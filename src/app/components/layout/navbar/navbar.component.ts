@@ -458,7 +458,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   navToServiceConfiguration(service) {
     let serviceInfo = {
       name: service.name,
-      isEnabled: service.status === 'running' ? true : false
+      isEnabled: service.status === 'running' ? true : false,
+      added: true,
+      isInstalled: true
     }
     switch (service.type) {
       case 'Northbound':
