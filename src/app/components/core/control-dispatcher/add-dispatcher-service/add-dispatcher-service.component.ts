@@ -111,8 +111,6 @@ export class AddDispatcherServiceComponent implements OnInit {
       isEnabled: this.dispatcherServiceEnabled,
       added: this.dispatcherServiceAdded,
       process: 'dispatcher',
-      type: 'Dispatcher',
-      package: 'fledge-service-dispatcher',
       isInstalled: this.dispatcherServiceInstalled,
       isOpen: isOpenModal
     }

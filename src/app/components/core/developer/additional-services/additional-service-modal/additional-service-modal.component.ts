@@ -70,10 +70,15 @@ export class AdditionalServiceModalComponent {
     private additionalServicesUtils: AdditionalServicesUtils,
     public rolesService: RolesService) {
       this.activatedRoute.paramMap
-      .pipe(map(() => window.history.state)).subscribe(res=>{
-          if (res?.process) {
-            this.fromListPage = res.fromListPage;
-            this.getServiceInfo(res, res?.pollingScheduleID);
+      .pipe(map(() => window.history.state)).subscribe(service=>{
+          if (service?.process) {
+            this.fromListPage = service.fromListPage;
+            const openedServiceModal = this.additionalServicesUtils.expectedServices.find(es => es.process === service.process);
+            service.type = openedServiceModal.type;
+            service.schedule_process = openedServiceModal.schedule_process;
+            service.package = openedServiceModal.package;
+            
+            this.getServiceInfo(service, service?.pollingScheduleID);
             setTimeout(() => {
               this.toggleModal(true);
             }, 0);
@@ -116,7 +121,8 @@ export class AdditionalServiceModalComponent {
       subscribe((data: Schedule) => {
         if (refresh) {
           const schedule = data['schedules'].find(s => s.processName === this.serviceInfo.schedule_process);
-          this.isServiceEnabled = schedule['enabled'];
+          this.isServiceEnabled = this.serviceInfo.isEnabled = schedule['enabled'];
+          this.serviceInfo.isEnabled = this.isServiceEnabled;
         }
         if (this.serviceInfo.added && this.serviceInfo.type === 'Management' && this.isServiceEnabled) {
           this.pollingScheduleID = data['schedules'].find(s => s.processName === 'manage')?.id;
@@ -482,8 +488,9 @@ export class AdditionalServiceModalComponent {
       this.alertService.error('Missing service name');
       return;
     }
+    
     // If form value is not changed then return
-    if (!this.form.dirty || (this.isServiceEnabled === this.form.controls['enabled'].value)) {
+    if ((this.isServiceEnabled === this.form.controls['enabled'].value) && isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration)) {
       this.toggleModal(false);
       this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
       this.alertService.error('Nothing to save');  

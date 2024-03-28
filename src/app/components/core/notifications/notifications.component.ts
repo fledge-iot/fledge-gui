@@ -266,8 +266,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       isEnabled: this.isNotificationServiceEnabled,
       added: this.isNotificationServiceAvailable,
       process: 'notification',
-      type: 'Notification',
-      package: 'fledge-service-notification',
       isInstalled: this.notificationServiceInstalled
     }
     this.showConfigureModal = true;

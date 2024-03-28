@@ -18,45 +18,6 @@ import { AdditionalServicesUtils } from './additional-services-utils.service';
   styleUrls: ["./list-additional-services.component.css"],
 })
 export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
-  expectedServices = [
-    {
-      "package": "fledge-service-notification",
-      "process": "notification",
-      "schedule_process": "notification_c",
-      "type": "Notification",
-      "name": "",
-      "state": "",
-      "added": false
-    },
-    {
-      "package": "fledge-service-bucket",
-      "process": "bucket",
-      "schedule_process": "bucket_storage_c",
-      "type": "BucketStorage",
-      "name": "",
-      "state": "",
-      "added": false
-    },
-    {
-      "package": "fledge-service-management",
-      "process": "management",
-      "schedule_process": "management",
-      "type": "Management",
-      "name": "",
-      "state": "",
-      "added": false
-    },
-    {
-      "package": "fledge-service-dispatcher",
-      "process": "dispatcher",
-      "schedule_process": "dispatcher_c",
-      "type": "Dispatcher",
-      "name": "",
-      "state": "",
-      "added": false
-    }
-  ];
-
   installedServicePkgs = [];
   availableServicePkgs = [];
 
@@ -170,14 +131,14 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.ngProgress.start();
     this.schedulesService.getSchedules().
       subscribe((data: Schedule) => {      
-        this.servicesSchedules = data['schedules'].filter((sch) => this.expectedServices.some(es => es.schedule_process == sch.processName));
+        this.servicesSchedules = data['schedules'].filter((sch) => this.additionalServicesUtils.expectedServices.some(es => es.schedule_process == sch.processName));
         this.pollingScheduleID = data['schedules'].find(s => s.processName === 'manage')?.id;
         
         // If schedule of all services available then no need to make other API calls
-        if (this.servicesSchedules?.length === this.expectedServices.length) {
+        if (this.servicesSchedules?.length === this.additionalServicesUtils.expectedServices.length) {
           this.availableServicePkgs = [];
           let serviceTypes = [];
-          this.expectedServices.forEach(function (s) {
+          this.additionalServicesUtils.expectedServices.forEach(function (s) {
             serviceTypes.push(s["process"]);
           });
           this.installedAndAddedServices(serviceTypes);
@@ -202,10 +163,10 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     const addedServices = this.servicesSchedules.filter(sch => this.servicesRegistry.some(({name}) => sch.name === name));
     
     // If we get expected services in the response of /service API then no need to make other (/installed, /available) API calls
-    if (addedServices.length === this.expectedServices.length) {
+    if (addedServices.length === this.additionalServicesUtils.expectedServices.length) {
       this.availableServicePkgs = [];
       let serviceTypes = [];
-      this.expectedServices.forEach(function (s) {
+      this.additionalServicesUtils.expectedServices.forEach(function (s) {
         serviceTypes.push(s["process"]);
       });
       this.installedAndAddedServices(serviceTypes);
@@ -259,7 +220,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     let svcs = services.filter(
       (s) => !["south", "north", "storage"].includes(s)
     );
-    this.installedServicePkgs = this.expectedServices.filter(
+    this.installedServicePkgs = this.additionalServicesUtils.expectedServices.filter(
       (s) => svcs.includes(s.process)
     );
     let replacement;
@@ -298,7 +259,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
 
   public getAvailableServices(services) {
     let svcs = services;
-    const availableServices = this.expectedServices.filter(
+    const availableServices = this.additionalServicesUtils.expectedServices.filter(
       (s) => svcs.includes(s.package)
     );
     this.availableServicePkgs = availableServices.sort((a, b) => a.type.localeCompare(b.type))

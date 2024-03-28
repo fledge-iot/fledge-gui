@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
-import { sortBy } from 'lodash';
-import { takeUntil } from 'rxjs/operators';
 import { SchedulesService, ProgressBarService, AlertService, ServicesApiService } from '../../../../services';
 import { SharedService } from '../../../../services/shared.service';
 
@@ -11,7 +9,46 @@ import { SharedService } from '../../../../services/shared.service';
   })
 
 export class AdditionalServicesUtils {
-    destroy$: Subject<boolean> = new Subject<boolean>();
+  destroy$: Subject<boolean> = new Subject<boolean>();
+
+  expectedServices = [
+    {
+      "package": "fledge-service-notification",
+      "process": "notification",
+      "schedule_process": "notification_c",
+      "type": "Notification",
+      "name": "",
+      "state": "",
+      "added": false
+    },
+    {
+      "package": "fledge-service-bucket",
+      "process": "bucket",
+      "schedule_process": "bucket_storage_c",
+      "type": "BucketStorage",
+      "name": "",
+      "state": "",
+      "added": false
+    },
+    {
+      "package": "fledge-service-management",
+      "process": "management",
+      "schedule_process": "management",
+      "type": "Management",
+      "name": "",
+      "state": "",
+      "added": false
+    },
+    {
+      "package": "fledge-service-dispatcher",
+      "process": "dispatcher",
+      "schedule_process": "dispatcher_c",
+      "type": "Dispatcher",
+      "name": "",
+      "state": "",
+      "added": false
+    }
+  ];
 
     constructor(
         private router: Router,
