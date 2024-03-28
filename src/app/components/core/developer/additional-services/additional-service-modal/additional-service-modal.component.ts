@@ -482,18 +482,27 @@ export class AdditionalServiceModalComponent {
       this.alertService.error('Missing service name');
       return;
     }
+    // If form value is not changed then return
+    if (!this.form.dirty || (this.isServiceEnabled === this.form.controls['enabled'].value)) {
+      this.toggleModal(false);
+      this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
+      this.alertService.error('Nothing to save');  
+      return;
+    }
     this.stateUpdate();
+
     if (!isEmpty(this.changedConfig) && this.categoryCopy?.name) {
       this.updateConfiguration(this.categoryCopy?.name, this.changedConfig);
-      this.toggleModal(false);   
+      this.toggleModal(false);
+      this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);   
     }
     if (!isEmpty(this.advancedConfiguration)) {
       this.advancedConfiguration.forEach(element => {
         this.updateConfiguration(element.key, element.config);
       });
       this.toggleModal(false);
+      this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
     }
-    this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
   }
 
   /**
