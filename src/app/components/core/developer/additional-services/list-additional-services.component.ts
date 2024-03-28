@@ -184,6 +184,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
           this.hideLoadingText();
           this.ngProgress.done();         
         } else {
+          // If schedule of all services are not available then check expected external services in /service API
           this.checkServices();
         }
       },

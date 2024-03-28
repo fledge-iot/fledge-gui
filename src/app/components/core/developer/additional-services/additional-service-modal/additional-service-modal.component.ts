@@ -3,11 +3,8 @@ import { FormBuilder, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   ProgressBarService, AlertService, ServicesApiService, SchedulesService,
-  ConfigurationService,
-  RolesService,
-  ConfigurationControlService,
-  FileUploaderService
-} from '../../../../../services';
+  ConfigurationService, RolesService, ConfigurationControlService,
+  FileUploaderService} from '../../../../../services';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 
 import { AlertDialogComponent } from '../../../../common/alert-dialog/alert-dialog.component';
@@ -28,7 +25,6 @@ import { AdditionalServicesUtils } from '../additional-services-utils.service';
 export class AdditionalServiceModalComponent {
   category: any;
   serviceName = '';
-  enabled: Boolean;
   btnText = 'Add';
   showDeleteBtn = true;
   isServiceEnabled = false;
@@ -41,6 +37,7 @@ export class AdditionalServiceModalComponent {
   state$ = new BehaviorSubject<any>(null);
   service = <Service>{};
 
+  // service info object passed by another component while redirecting to additional services modal
   serviceInfo = { added: false, type: '', isEnabled: false, schedule_process: '', process: '', package: '',
                   isInstalled: false};
 
@@ -103,7 +100,6 @@ export class AdditionalServiceModalComponent {
       this.getSchedule();
     }
 
-    this.enabled = this.isServiceEnabled;
     this.btnText = 'Add';
     if (this.serviceInfo.added) {
       this.showDeleteBtn = true;
@@ -396,9 +392,12 @@ export class AdditionalServiceModalComponent {
           ))
       ).subscribe(() => {
         this.ngProgress.done();
+
+        // toggle the value of variable after enabling/disabling the service
         if (status === 'running' || status === 'shutdown') {
           this.isServiceEnabled = !this.isServiceEnabled;
         }
+
         this.toggleModal(false);
         this.reenableButton.emit(false);
         this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);

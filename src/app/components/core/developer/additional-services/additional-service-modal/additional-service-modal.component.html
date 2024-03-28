@@ -46,7 +46,7 @@
                 </div>
                 <div class="field-body">
                   <div class="field">
-                    <input class="checkbox" name="enabled" type="checkbox" [checked]="enabled" [(ngModel)]="enabled" [disabled]="!rolesService.hasEditPermissions()">
+                    <input class="checkbox" name="enabled" type="checkbox" [checked]="serviceInfo.isEnabled" [(ngModel)]="serviceInfo.isEnabled" [disabled]="!rolesService.hasEditPermissions()">
                   </div>
                 </div>
               </div>
