@@ -10,7 +10,7 @@
         </li>
       </ul>
     </nav>
-    <button class="button is-small" id="refresh-check" title="Reload" (click)="checkSchedulesAndServices()">
+    <button class="button is-small" id="refresh-check" title="Reload" (click)="getAllServiceStatus(false)">
       <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
     </button>
   </div>
@@ -74,7 +74,6 @@
     </div>
   </div>
 </div>
-<app-additional-service-modal (notify)="getData($event)"></app-additional-service-modal>
 
 <app-confirmation-dialog id="delete-confirmation-dialog">
   <header class="modal-card-head">
