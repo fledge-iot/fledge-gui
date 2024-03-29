@@ -494,7 +494,7 @@ export class AdditionalServiceModalComponent {
     }
     
     // If form value is not changed then return
-    if ((this.isServiceEnabled === this.form.controls['enabled'].value) && isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration)) {
+    if (this.serviceInfo.added && (this.isServiceEnabled === this.form.controls['enabled'].value) && isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration)) {
       this.toggleModal(false);
       this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
       this.alertService.error('Nothing to save');  
