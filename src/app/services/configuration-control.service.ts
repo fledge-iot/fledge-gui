@@ -123,6 +123,19 @@ export class ACLConfig extends ConfigurationBase<string> {
   override controlType = 'ACL';
 }
 
+export class ListConfig extends ConfigurationBase<string> {
+  override controlType = 'LIST';
+  public listSize = '';
+  public items: '';
+}
+
+export class KVListConfig extends ConfigurationBase<string> {
+  override controlType = 'KVLIST';
+  public listSize = '';
+  public items: '';
+}
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -311,6 +324,46 @@ export class ConfigurationControlService {
             validity: element.validity
           }));
           break;
+        case 'LIST':
+          const listItem = new ListConfig({
+            key: key,
+            type: 'list',
+            label: this.setDisplayName(element),
+            description: element.description,
+            value: element.value,
+            readonly: element.readonly,
+            mandatory: element.mandatory,
+            order: element.order,
+            validity: element.validity,
+          });
+          listItem.items = element.items;
+          listItem.minimum = element?.minimum;
+          listItem.maximum = element?.maximum;
+          listItem.length = element?.length;
+          listItem.listSize = element?.listSize;
+          configurations.push(listItem);
+          break;
+
+        case 'KVLIST':
+          const kvListItem = new KVListConfig({
+            key: key,
+            type: 'kvlist',
+            label: this.setDisplayName(element),
+            description: element.description,
+            value: element.value,
+            readonly: element.readonly,
+            mandatory: element.mandatory,
+            order: element.order,
+            validity: element.validity,
+          });
+          kvListItem.items = element.items;
+          kvListItem.minimum = element?.minimum;
+          kvListItem.maximum = element?.maximum;
+          kvListItem.length = element?.length;
+          kvListItem.listSize = element?.listSize;
+          configurations.push(kvListItem);
+          break;
+
         case 'IPV4':
         case 'IPV6':
         default:

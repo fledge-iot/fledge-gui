@@ -32,6 +32,8 @@ export class CustomNodeComponent implements OnChanges {
   @Input() emit!: (data: any) => void;
   @Input() rendered!: () => void;
 
+  nodeTypes = ['South', 'North', 'Filter', 'AddService', 'AddTask', 'Storage'];
+
   seed = 0;
   source;
   from = '';
@@ -45,7 +47,8 @@ export class CustomNodeComponent implements OnChanges {
     pluginName: "",
     assetCount: "",
     readingCount: "",
-    schedule_enabled: false
+    schedule_enabled: false,
+    pluginVersion: ""
   }
   task = {
     name: "",
@@ -58,9 +61,10 @@ export class CustomNodeComponent implements OnChanges {
     processName: "",
     repeat: "",
     sent: "",
-    taskStatus: {}
+    taskStatus: {},
+    pluginVersion: ""
   }
-  filter = { pluginName: '', enabled: 'false', name: '', color: '' }
+  filter = { pluginName: '', enabled: 'false', name: '', color: '', pluginVersion: "" }
   isServiceNode: boolean = false;
   subscription: Subscription;
   addFilterSubscription: Subscription;
@@ -72,6 +76,7 @@ export class CustomNodeComponent implements OnChanges {
   showPlusIcon = false;
   showDeleteIcon = false;
   nodeId = '';
+  pluginVersion = '';
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -120,9 +125,11 @@ export class CustomNodeComponent implements OnChanges {
             this.task.sent = this.service.readingCount = this.data.controls.sentReadingControl['sent'];
             this.task.execution = this.data.controls.executionControl['execution'];
             this.task.enabled = this.data.controls.enabledControl['enabled'];
+            this.task.pluginVersion = this.service.pluginVersion = this.data.controls.pluginVersionControl['pluginVersion'];
             this.isEnabled = this.task.enabled;
             this.helpText = this.task.plugin;
             this.pluginName = this.task.plugin;
+            this.pluginVersion = this.task.pluginVersion;
           }
         } else {
           if (!isEmpty(this.data.controls)) {
@@ -132,9 +139,11 @@ export class CustomNodeComponent implements OnChanges {
             this.service.readingCount = this.data.controls.readingCountControl['count'];
             this.service.status = this.data.controls.statusControl['status'];
             this.service.schedule_enabled = this.data.controls.enabledControl['enabled'];
+            this.service.pluginVersion = this.data.controls.pluginVersionControl['pluginVersion'];
             this.isEnabled = this.service.schedule_enabled;
             this.helpText = this.service.pluginName;
             this.pluginName = this.service.pluginName;
+            this.pluginVersion = this.service.pluginVersion;
           }
         }
       }
@@ -172,6 +181,17 @@ export class CustomNodeComponent implements OnChanges {
         })
       }
     }
+
+    if (!this.nodeTypes.includes(this.data?.label) && !isEmpty(this.data.controls)) {
+      if (this.filter.name == this.data.label) {
+        this.filter.enabled = this.data?.controls?.enabledControl['enabled'];
+        if (this.filter.enabled === 'true') {
+          this.isEnabled = true;
+        } else if (this.filter.enabled === 'false') {
+          this.isEnabled = false;
+        }
+      }
+    }
     if (this.data.label === 'AddService') {
       this.data.label = "";
     }
@@ -202,15 +222,15 @@ export class CustomNodeComponent implements OnChanges {
 
   showConfigurationInQuickview() {
     if (this.isServiceNode) {
-      this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: true, showFilterConfiguration: false, showLogs: false, serviceName: this.service.name });
+      this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: true, serviceName: this.service.name });
     }
     else {
-      this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: false, showFilterConfiguration: true, showLogs: false, serviceName: this.source, filterName: this.filter.name });
+      this.flowEditorService.showItemsInQuickview.next({ showFilterConfiguration: true, serviceName: this.source, filterName: this.filter.name });
     }
   }
 
   showLogsInQuickview() {
-    this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: false, showFilterConfiguration: false, showLogs: true, serviceName: this.service.name });
+    this.flowEditorService.showItemsInQuickview.next({ showLogs: true, serviceName: this.service.name });
   }
 
   navToSyslogs() {
@@ -302,7 +322,7 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   openTaskSchedule() {
-    this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: false, showFilterConfiguration: false, showLogs: false, showTaskSchedule: true, serviceName: this.service.name });
+    this.flowEditorService.showItemsInQuickview.next({ showTaskSchedule: true, serviceName: this.service.name });
   }
 
   openServiceDetails() {
@@ -318,6 +338,7 @@ export class CustomNodeComponent implements OnChanges {
     this.configService.
       updateBulkConfiguration(catName, { enable: String(this.isEnabled) })
       .subscribe(() => {
+        this.data.controls.enabledControl['enabled'] = JSON.stringify(this.isEnabled);
         if (this.isEnabled) {
           this.toastService.success(`${this.filter.name} filter enabled`);
         }
@@ -394,8 +415,16 @@ export class CustomNodeComponent implements OnChanges {
         });
   }
 
-  removeFilter(){
-    this.flowEditorService.removeFilter.next({id: this.nodeId});
+  removeFilter() {
+    this.flowEditorService.removeFilter.next({ id: this.nodeId });
+  }
+
+  showReadingsPerAsset() {
+    this.flowEditorService.showItemsInQuickview.next({ showReadings: true, serviceName: this.service.name });
+  }
+
+  getAssetReadings() {
+    this.flowEditorService.exportReading.next({serviceName: this.service.name});
   }
 
   ngOnDestroy() {
