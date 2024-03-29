@@ -68,25 +68,29 @@ export class AdditionalServiceModalComponent {
     private fileUploaderService: FileUploaderService,
     private configurationControlService: ConfigurationControlService,
     private additionalServicesUtils: AdditionalServicesUtils,
-    public rolesService: RolesService) {
-      this.activatedRoute.paramMap
-      .pipe(map(() => window.history.state)).subscribe(service=>{
-          if (service?.process) {
-            this.fromListPage = service.fromListPage;
-            const openedServiceModal = this.additionalServicesUtils.expectedServices.find(es => es.process === service.process);
-            service.type = openedServiceModal.type;
-            service.schedule_process = openedServiceModal.schedule_process;
-            service.package = openedServiceModal.package;
-            
-            this.getServiceInfo(service, service?.pollingScheduleID);
-            setTimeout(() => {
-              this.toggleModal(true);
-            }, 0);
-          }                          
-       })
-    }
+    public rolesService: RolesService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.activatedRoute.paramMap
+    .pipe(map(() => window.history.state)).subscribe(service=>{
+      if (service?.process) {
+        this.fromListPage = service.fromListPage;
+        
+        const openedServiceModal = this.additionalServicesUtils.expectedServices.find(es => es.process === service.process);
+        service.type = openedServiceModal.type;
+        service.schedule_process = openedServiceModal.schedule_process;
+        service.package = openedServiceModal.package;
+        
+        this.getServiceInfo(service, service?.pollingScheduleID);
+        setTimeout(() => {
+          this.toggleModal(true);
+        }, 0);
+      } else {
+        // if user navigates without passing 'service' object
+        this.router.navigate(['/developer/options/additional-services']);
+      }                
+    })
+  }
 
   refreshService() {
     this.getSchedule(true);
