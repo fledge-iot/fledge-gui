@@ -12,8 +12,8 @@ import {
 } from "../controls/common-custom-control";
 
 export class South extends ClassicPreset.Node {
-  height = 100;
-  width = 200;
+  height = 94;
+  width = 198;
   parent?: string;
 
   constructor(socket: ClassicPreset.Socket, service) {
