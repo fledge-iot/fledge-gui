@@ -66,8 +66,7 @@
 
                     <ngx-codemirror *ngSwitchCase="'CODE'" [formControlName]="configuration.key" #codeEditor
                       [ngClass]="{'readonly-editor': form.controls[configuration.key]?.status === 'DISABLED' }"
-                      [options]="configuration.editorOptions" [autoFocus]="true"
-                      [jsonValue]="form.controls[configuration.key]">
+                      [options]="configuration.editorOptions" [autoFocus]="true">
                     </ngx-codemirror>
 
                     <div class="field has-addons " *ngSwitchCase="'PASSWORD'">
