@@ -4,8 +4,8 @@ import { FilterColorControl } from "./controls/filter-custom-control";
 
 
 export class Filter extends ClassicPreset.Node {
-  height = 100;
-  width = 200;
+  height = 90;
+  width = 198;
   parent?: string;
 
   constructor(socket: ClassicPreset.Socket, filterConfig) {

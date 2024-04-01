@@ -168,12 +168,12 @@ export class CustomNodeComponent implements OnChanges {
         }
       }
       else {
-        this.elRef.nativeElement.style.borderWidth = "3px";
         this.addFilterSubscription = this.flowEditorService.showAddFilterIcon.subscribe((data) => {
           if (data) {
             if (data.addedFiltersIdColl.includes(this.nodeId)) {
               this.elRef.nativeElement.style.outline = "#EA9999 dashed 2px";
-              this.elRef.nativeElement.style.borderWidth = "2px";
+              this.elRef.nativeElement.style.borderWidth = "0px";
+              this.elRef.nativeElement.style.height = "auto";
               this.showPlusIcon = true;
               this.showDeleteIcon = true;
             }
