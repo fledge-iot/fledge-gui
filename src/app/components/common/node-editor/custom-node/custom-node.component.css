@@ -2,10 +2,10 @@
   display: block;
   background: white;
   border: 2px solid silver;
-  border-radius: 12px;
+  border-radius: 6px;
   cursor: pointer;
   box-sizing: border-box;
-  width: 200px;
+  width: 198px;
   height: auto;
   position: relative;
   user-select: none;
@@ -22,10 +22,10 @@
 }
 
 :host .title {
-  font-size: 16px;
-  padding: 6px 6px 0px 6px;
+  font-size: 14px;
+  padding: 4px 4px 0px 4px;
   margin-bottom: 0px;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 :host .output {
@@ -95,7 +95,7 @@
 .help-text {
   display: block;
   color: grey;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
 }
 
 .custom-tooltip::before {
