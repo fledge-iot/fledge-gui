@@ -9,8 +9,8 @@ import {
 import { ExecutionControl, SentReadingsControl } from "../controls/north-custom-control";
 
 export class North extends ClassicPreset.Node {
-  height = 100;
-  width = 200;
+  height = 94;
+  width = 198;
   parent?: string;
 
   constructor(socket: ClassicPreset.Socket, task) {
