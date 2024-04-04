@@ -249,7 +249,7 @@ export class SystemAlertComponent {
     if (message.includes('restarted')) {
       return "Show Logs";
     }
-    if (message.includes('upgrade')) {
+    if (message.includes('updates') || message.includes('update')) {
       return "Upgrade";
     }
   }
