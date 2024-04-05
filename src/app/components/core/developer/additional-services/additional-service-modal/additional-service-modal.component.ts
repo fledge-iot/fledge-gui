@@ -115,7 +115,7 @@ export class AdditionalServiceModalComponent {
       this.btnText = 'Save';
       this.getCategory();
     }
-    if (this.serviceInfo.type) {
+    if (this.serviceInfo.type && this.serviceName) {
       this.getServiceByType();
     }
   }
@@ -369,8 +369,8 @@ export class AdditionalServiceModalComponent {
             throw response;
           }
         }),
-        retryWhen(result =>
-          result.pipe(
+        retryWhen(result =>     
+          result.pipe(           
             // only if a server returned an error, stop trying and pass the error down
             tap(serviceStatus => {
               if (serviceStatus.error) {
@@ -378,7 +378,9 @@ export class AdditionalServiceModalComponent {
                 this.toggleModal(false);
                 this.reenableButton.emit(false);
                 this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
-                throw serviceStatus.error;
+                if ((status !== 'addService') || (status === 'addService' && i > 3)) {
+                  throw serviceStatus.error;
+                }                
               }
             }),
             delayWhen(() => {
@@ -402,7 +404,6 @@ export class AdditionalServiceModalComponent {
           ))
       ).subscribe(() => {
         this.ngProgress.done();
-
         // toggle the value of variable after enabling/disabling the service
         if (status === 'running' || status === 'shutdown') {
           this.isServiceEnabled = !this.isServiceEnabled;
@@ -415,7 +416,7 @@ export class AdditionalServiceModalComponent {
   }
 
   disableService() {
-    this.additionalServicesUtils.disableService(this.serviceName, this.fromListPage, this.serviceInfo.process);
+    this.additionalServicesUtils.disableService(this.serviceName);
     this.getUpdatedState('shutdown');
   }
 

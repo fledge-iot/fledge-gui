@@ -77,12 +77,11 @@ export class AdditionalServicesUtils {
         );
     }
 
-    disableService(serviceName, fromNavbar = false, serviceProcessName = null) {
+    disableService(serviceName) {
       this.ngProgress.start();
       this.schedulesService.disableScheduleByName(serviceName).subscribe(
         (data) => {
           this.ngProgress.done();
-          this.navToAdditionalServicePage(fromNavbar, serviceProcessName);
           this.alertService.success(data["message"], true);
         },
         (error) => {
