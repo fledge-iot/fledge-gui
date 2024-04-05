@@ -101,8 +101,8 @@ export class SystemAlertComponent {
         setTimeout(() => {
           this.hideLoadingSpinner();
         }, 500);
-        data.alerts.forEach(alert => {
-          alert['buttonText'] = this.getButtonText(alert.message);
+          data.alerts.forEach(alert => {
+          alert['buttonText'] = this.getButtonText(alert);
         });
         this.alertsCount = data.alerts.length;
         this.groupByUrgencySortedByTime(data.alerts);      
@@ -245,13 +245,14 @@ export class SystemAlertComponent {
     );
   }
 
-  getButtonText(message: string) {
-    if (message.includes('restarted')) {
-      return "Show Logs";
-    }
-    if (message.includes('updates') || message.includes('update')) {
+  getButtonText(alert: SystemAlert) {
+    if (alert.key && alert.key === 'package_updates') {
       return "Upgrade";
     }
+    if (alert.message.includes('restarted')) {
+      return "Show Logs";
+    }
+    
   }
 
   applyClass(urgency: string) {
