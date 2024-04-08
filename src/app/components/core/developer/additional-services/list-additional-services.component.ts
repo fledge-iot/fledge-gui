@@ -359,7 +359,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
 
   getUpdatedState(status) {
     let i = 1;
-    const initialDelay = 1000;
+    const initialDelay = 1500;
     const expectedStatus = status;
     this.servicesApiService.getServiceByType(this.service.type)
       .pipe(

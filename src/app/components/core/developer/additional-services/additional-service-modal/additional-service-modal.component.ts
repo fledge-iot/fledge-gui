@@ -33,7 +33,7 @@ export class AdditionalServiceModalComponent {
 
   increment = 1;
   maxRetry = 15;
-  initialDelay = 1000;
+  initialDelay = 1500;
   state$ = new BehaviorSubject<any>(null);
   service = <Service>{};
 
