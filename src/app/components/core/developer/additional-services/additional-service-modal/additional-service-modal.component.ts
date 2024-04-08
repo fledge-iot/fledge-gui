@@ -33,7 +33,7 @@ export class AdditionalServiceModalComponent {
 
   increment = 1;
   maxRetry = 15;
-  initialDelay = 1500;
+  initialDelay = 1000;
   state$ = new BehaviorSubject<any>(null);
   service = <Service>{};
 
@@ -204,7 +204,7 @@ export class AdditionalServiceModalComponent {
           this.serviceInfo.added = true;
           this.btnText = 'Save';
           this.toggleModal(false);
-          this.getUpdatedState('addService');
+          this.getUpdatedState('addService', payload.name);         
         },
         (error) => {
           this.ngProgress.done();
@@ -343,81 +343,83 @@ export class AdditionalServiceModalComponent {
     }
     this.additionalServicesUtils.enableService(serviceName);
     // enabling service takes time to get the updated state from API
-    this.getUpdatedState('running');
+    this.getUpdatedState(true);
   }
 
-  getUpdatedState(status) {
+  getUpdatedState(status, name = null) {
     let i = 1;
-    this.servicesApiService.getServiceByType(this.serviceInfo.type)
-      .pipe(
-        take(1),
-        // checking the response object for service  
-        tap((response: any) => {
-          // if param value is 'addService' then, check if service is not added yet
-          // throw an error to re-fetch:
-          if (status === 'addService') {
-            if (!response['services']) {
-              i++;
-              throw response;
-            }
-            return;
-          }
-          // if service.status !== 'running'/'shutdown' then
-          // throw an error to re-fetch:
-          if (response['services'][0].status !== status) {
+    this.schedulesService.getSchedules()
+    .pipe(
+      take(1),
+      // checking the response object for schedule  
+      tap((response: any) => {
+        const serviceName = name ? name : this.serviceName;
+        const schedule = response['schedules'].find(s => s.name === serviceName);
+        // if param value is 'addService' then, check if schedule is not available yet
+        // throw an error to re-fetch:
+        if (status === 'addService') {           
+          if (!schedule) {
             i++;
             throw response;
           }
-        }),
-        retryWhen(result =>     
-          result.pipe(           
-            // only if a server returned an error, stop trying and pass the error down
-            tap(serviceStatus => {
-              if (serviceStatus.error) {
-                this.ngProgress.done();
-                this.toggleModal(false);
-                this.reenableButton.emit(false);
-                this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
-                if ((status !== 'addService') || (status === 'addService' && i > 3)) {
-                  throw serviceStatus.error;
-                }                
-              }
-            }),
-            delayWhen(() => {
-              const delay = i * this.initialDelay;
-              console.log(new Date().toLocaleString(), `retrying after ${delay} msec...`);             
-              return timer(delay);
-            }), // delay between api calls
-            // Set the number of attempts.
-            take(3),
-            // Throw error after exceed number of attempts
-            concatMap(o => {
-              if (i > 3) {
-                this.ngProgress.done();
-                this.toggleModal(false);
-                this.reenableButton.emit(false);   
-                this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
-                return;
-              }
-              return of(o);
-            }),
-          ))
-      ).subscribe(() => {
-        this.ngProgress.done();
-        // toggle the value of variable after enabling/disabling the service
-        if (status === 'running' || status === 'shutdown') {
-          this.isServiceEnabled = !this.isServiceEnabled;
+          return;
+        } else {
+          // if schedule.enabled !== status then
+          // throw an error to re-fetch:
+          if (schedule.enabled !== status) {
+            i++;
+            throw response;
+          }
         }
+        
+      }),
+      retryWhen(result =>     
+        result.pipe(   
+          // only if a server returned an error, stop trying and pass the error down
+          tap(scheduleStatus => {
+            if (scheduleStatus.error) {
+              this.ngProgress.done();
+              this.toggleModal(false);
+              this.reenableButton.emit(false);
+              this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
+              throw scheduleStatus.error;                
+            }
+          }),
+          delayWhen(() => {
+            const delay = i * this.initialDelay;
+            console.log(new Date().toLocaleString(), `retrying after ${delay} msec...`);             
+            return timer(delay);
+          }), // delay between api calls
+          // Set the number of attempts.
+          take(3),
+          // Throw error after exceed number of attempts
+          concatMap(o => {
+            if (i > 3) {
+              this.ngProgress.done();
+              this.toggleModal(false);
+              this.reenableButton.emit(false);   
+              this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
+              return;
+            }
+            return of(o);
+          }),
+        ))
+    ).subscribe(() => {
+      this.ngProgress.done();
+      // toggle the value of variable after enabling/disabling the service
+      if (status !== 'addService') {
+        this.isServiceEnabled = !this.isServiceEnabled;
+      }
 
-        this.toggleModal(false);
-        this.reenableButton.emit(false);
-        this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
-      });
+      this.toggleModal(false);
+      this.reenableButton.emit(false);
+      this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
+    });
   }
 
   disableService() {
     this.additionalServicesUtils.disableService(this.serviceName);
-    this.getUpdatedState('shutdown');
+    this.getUpdatedState(false);
   }
 
   deleteService(serviceName: string) {
