@@ -224,7 +224,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       this.isNotificationServiceAvailable = true;
       this.isNotificationServiceEnabled = true;
       if (service.status.toLowerCase() === 'shutdown') {
-        this.isNotificationServiceEnabled = false;
+        // confirm enabled state in schedule, (after enabling the service, it takes time to reflect in service API but schedule API gives early updated state)
+        this.getSchedules();
       }
     } else {
       this.getSchedules();
@@ -244,9 +245,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
           }
           this.notificationServiceName = schedule.name;
           this.isNotificationServiceAvailable = true;
-          if (schedule.enabled) {
-            this.isNotificationServiceEnabled = true;
-          }
+          this.isNotificationServiceEnabled = schedule.enabled;
         },
         error => {
           if (error.status === 0) {
