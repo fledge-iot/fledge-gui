@@ -1,4 +1,5 @@
 import { Component, OnInit, EventEmitter, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { ControlAPIFlowService, ProgressBarService, RolesService, SharedService, AlertService } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
@@ -10,8 +11,6 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { APIFlow, User } from '../../../../../../src/app/models';
-import { AdditionalServiceModalComponent } from '../../developer/additional-services/additional-service-modal/additional-service-modal.component';
-
 import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
@@ -21,7 +20,6 @@ import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-d
 })
 
 export class APIFlowComponent implements OnInit {
-  @ViewChild(AdditionalServiceModalComponent, { static: true }) additionalServiceModalComponent: AdditionalServiceModalComponent;
   @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
 
     apiFlows = [];
@@ -56,6 +54,7 @@ export class APIFlowComponent implements OnInit {
         private ngProgress: ProgressBarService,
         private fb: UntypedFormBuilder,
         public sharedService: SharedService,
+        private router: Router,
         private controlUtilsService: ControlUtilsService,
         public rolesService: RolesService) {
             this.apiFlowForm = this.fb.group({
@@ -265,7 +264,7 @@ export class APIFlowComponent implements OnInit {
       delete event.isOpen;
       this.serviceInfo = event;
       if (this.showConfigureModal) {
-        this.openServiceConfigureModal();
+       this.openServiceConfigureModal(); 
       }
     }
 
@@ -273,8 +272,7 @@ export class APIFlowComponent implements OnInit {
      * Open Configure Service modal
      */
     openServiceConfigureModal() {
-      this.additionalServiceModalComponent.toggleModal(true);
-      this.additionalServiceModalComponent.getServiceInfo(this.serviceInfo, null, 'dispatcher');
+      this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
     }
 
     closeModal(id: string) {

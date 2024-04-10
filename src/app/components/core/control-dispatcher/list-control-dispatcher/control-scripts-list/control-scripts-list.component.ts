@@ -1,12 +1,12 @@
 import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 import { orderBy } from 'lodash';
 import { AlertService, ProgressBarService, RolesService } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import { DocService } from '../../../../../services/doc.service';
-import { AdditionalServiceModalComponent } from '../../../developer/additional-services/additional-service-modal/additional-service-modal.component';
 import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
@@ -17,7 +17,6 @@ import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/ad
 export class ControlScriptsListComponent implements OnInit {
   controlScripts: any = [];
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
-  @ViewChild(AdditionalServiceModalComponent, { static: true }) additionalServiceModalComponent: AdditionalServiceModalComponent;
   @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
 
   script;
@@ -33,6 +32,7 @@ export class ControlScriptsListComponent implements OnInit {
     private dialogService: DialogService,
     public docService: DocService,
     private ngProgress: ProgressBarService,
+    private router: Router,
     public rolesService: RolesService) {
     this.subscription = this.controlService.triggerRefreshEvent.subscribe(tab => {
       if (tab === 'scripts') {
@@ -117,8 +117,7 @@ export class ControlScriptsListComponent implements OnInit {
    * Open Configure Service modal
    */
   openServiceConfigureModal() {
-    this.additionalServiceModalComponent.toggleModal(true);
-    this.additionalServiceModalComponent.getServiceInfo(this.serviceInfo, null, 'dispatcher');
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
   }
 
   onNotify(handleEvent) {
