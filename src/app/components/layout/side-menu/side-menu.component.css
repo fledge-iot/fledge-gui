@@ -1,11 +1,11 @@
 .menu-list {
   background-color: white !important;
-  position: relative;
   width: 100%; 
-  height: 100%;
   margin-right: 1%;
   box-shadow: 0 0 0.1em rgba(85, 85, 85, 0.5);
   overflow-y: auto !important;
+  max-height: 92vh;
+  height: 100vh; 
 }
 
 .menu-toogle-icon {
@@ -27,17 +27,4 @@ ul:has(section.disabled) {
 
 .sidebar-icon {
   vertical-align: 0.1em !important;
-}
-
-.menu { 
-  position: relative;
-  height: 92vh;
-}
-
-.menu::after { 
-  content:'';
-  position: absolute;
-  height: calc(100% - 20px);
-  top: 10px;
-  width: 5px;
 }
