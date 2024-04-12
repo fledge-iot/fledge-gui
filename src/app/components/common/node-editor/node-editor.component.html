@@ -9,6 +9,9 @@
           <li *ngIf="from=='north'">
             <a [routerLink]="['/flow/editor/north']">North</a>
           </li>
+          <li *ngIf="from=='notification'">
+            <a [routerLink]="['/flow/editor/notification']">Notification</a>
+          </li>
           <li [ngClass]="{'is-active' : !source || !isAddFilterWizard}" *ngIf="source">
             <a [routerLink]="['/flow/editor', from, source, 'details']">
               {{source ? source : 'Add'}}

@@ -112,6 +112,8 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   ngOnChanges(): void {
+    console.log('data5', this.data);
+    console.log('from', this.from);
     this.nodeId = this.data.id;
     if (this.data.label === 'South' || this.data.label === 'North') {
       if (this.source !== '') {

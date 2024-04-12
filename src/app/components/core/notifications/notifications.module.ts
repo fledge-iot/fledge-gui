@@ -17,6 +17,7 @@ import { DeveloperModule } from '../developer/developer.module';
 import { ServiceResolver } from '../../../resolver/service.resolver';
 import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
 import { PaginationModule } from '../../common/pagination/pagination.module';
+import { FlowEditorModule } from '../../common/node-editor/flow-editor.module';
 
 const routes: Routes = [
   {
@@ -49,7 +50,8 @@ const routes: Routes = [
     SharedModule,
     NumberInputDebounceModule,
     PaginationModule,
-    DeveloperModule
+    DeveloperModule,
+    FlowEditorModule
   ],
   providers: [RolesGuard, ServicesApiService, NotificationsService],
 })

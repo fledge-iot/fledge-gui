@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy, EventEmitter } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, UntypedFormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { cloneDeep, sortBy } from 'lodash';
 
@@ -48,6 +48,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   public notificationType: string;
   private subscription: Subscription;
 
+  public source = '';
+
   notificationForm = new UntypedFormGroup({
     name: new UntypedFormControl(),
     description: new UntypedFormControl(),
@@ -76,10 +78,17 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
     private sharedService: SharedService,
+    private route: ActivatedRoute,
     private docService: DocService,
     private configurationControlService: ConfigurationControlService,
     private fileUploaderService: FileUploaderService,
-    private router: Router) { }
+    private router: Router) {
+      this.route.queryParams.subscribe(params => {
+        if (params['source']) {
+          this.source = params['source'];
+        }
+      });
+    }
 
   ngOnInit() {
     this.getNotificationPlugins();
@@ -469,7 +478,12 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
           if (deliveryScriptFiles.length > 0) {
             this.uploadScript(`delivery${name}`, deliveryScriptFiles);
           }
-          this.router.navigate(['/notification']);
+          if (this.source === 'notification') {
+            this.router.navigate(['/flow/editor/notification', data['name'], 'details'])
+          }
+          else {
+            this.router.navigate(['/notification']);
+          }
         },
         (error) => {
           /** request done */
