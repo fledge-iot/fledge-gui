@@ -18,6 +18,7 @@ export class PerfMonComponent implements OnInit {
 
   counters = []
   services = []
+  selectedCounter = "All"
 
   constructor(
     public sharedService: SharedService,
@@ -33,6 +34,17 @@ export class PerfMonComponent implements OnInit {
       });
     this.getMonitors();
   }
+
+  setCounter(e){ 
+    this.selectedCounter = e.target.value;
+    if (e.target.value !== 'All'){
+      // FIXME
+      this.perfMonitors = this.perfMonitors.filter(item => e.target.value == item.monitor)
+    } else {
+      // TODO: Use proper data structure and Reset locally
+      this.getMonitors();
+    }
+  } 
 
   getMonitors() {
     this.ngProgress.start();
