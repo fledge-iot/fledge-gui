@@ -16,7 +16,7 @@
 
 ### Changed
 
-- Updated sidebar icons and internal pages icon with bootstrap icons [#383](https://github.com/fledge-iot/fledge-gui/pull/383) and [#384](https://github.com/fledge-iot/fledge-gui/pull/384)
+- Added sidebar menu icons and updated internal pages icon with bootstrap icons [#383](https://github.com/fledge-iot/fledge-gui/pull/383) and [#384](https://github.com/fledge-iot/fledge-gui/pull/384)
 
 
 ### Fixed
