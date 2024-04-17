@@ -175,12 +175,6 @@ table.scroll tbody {
   color: #707070;
 }
 
-.fledge-logo {
-  width: 34px;
-  height: 20px;
-  background: url(./assets/fledge.png) center center no-repeat;
-}
-
 .navbar-menu {
   box-shadow: none !important;
 }
@@ -291,7 +285,8 @@ a.dropdown-item:hover {
 }
 
 #refresh-check,
-#refresh-tree {
+#refresh-tree,
+#config-icon {
   vertical-align: middle;
   background: none;
   border: none;
@@ -390,12 +385,24 @@ span.tooltip {
   line-height: 1;
 }
 
+.bi-xs {
+  font-size: 0.75rem;
+}
+
 .bi-sm {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .bi-md {
   font-size: 1rem;
+}
+
+.bi-lg {
+  font-size: 1.15rem;
+}
+
+.bi-xl {
+  font-size: 1.35rem;
 }
 
 .bi:hover {
@@ -430,6 +437,26 @@ span.tooltip {
 
 .card-header-title {
   font-weight: 500;
+}
+
+.cog-icon {
+  margin: auto;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.required-field {
+  border-color: red;
+}
+
+.message.is-warning {
+  margin-bottom: 0px !important;
+}
+
+.message.is-warning .message-body {
+padding: 1em 0.75em !important
 }
 
 /*****************/

@@ -65,10 +65,6 @@ span.is-small {
     min-height: 22vh;
 }
 
-[hidden] {
-    display: none !important;
-}
-
 .allow-list-text {
     font-size: 0.7em;
     color: gray;

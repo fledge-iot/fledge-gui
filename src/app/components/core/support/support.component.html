@@ -10,7 +10,7 @@
       <div *ngIf="rolesService.hasEditPermissions()">
         <a class="button is-light fix-pad" (click)="requestNewBundle()">
           <p *ngIf="viewPort !== 'mobile'" class="add-btn">Request New  &nbsp;</p>
-          <i class="fa fa-xs fa-file-archive" aria-hidden="true"></i>
+          <i class="bi bi-file-medical bi-sm" aria-hidden="true"></i>
         </a>    
         <span class="icon is-small tooltip has-tooltip-left has-tooltip-arrow is-hovered help-pad" data-tooltip="Help" (click)="goToLink()">
           <i class="far fa-question-circle"></i>

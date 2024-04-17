@@ -538,7 +538,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
 
   goToNotificationTypeLink() {
     const urlSlug = 'notification-types';
-    this.docService.goToNotificationDocLink(urlSlug);
+    this.docService.goToServiceDocLink(urlSlug, 'fledge-service-notification');
   }
 
   checkRuleFormValidity(formStatus: boolean) {

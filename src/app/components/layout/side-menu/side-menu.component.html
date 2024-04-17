@@ -3,34 +3,44 @@
     <section [ngClass]="{'disabled':  !isServiceRunning}" (click)="toggleSideMenu(); $event.preventDefault()">
       <li>
         <a id="dashboard" routerLinkActive="is-active" routerLink="/" [routerLinkActiveOptions]={exact:true}>
+          <span><i class="bi bi-speedometer2 bi-sm"></i> </span>
           Dashboard
         </a>
       </li>
       <li>
         <a id="asset" routerLinkActive="is-active" routerLink='/asset'>
+          <span><i class="bi bi-graph-up bi-xs"></i></span>
           Assets &amp; Readings
         </a>
       </li>
       <article requiredViewEditorRole>
         <li>
-          <a id=" south" routerLinkActive="is-active" routerLink='/south'>
+          <a id=" south" routerLinkActive="is-active"
+            [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/south']: ['/south']">
+            <span><i class="bi bi-pc-display-horizontal bi-xs sidebar-icon"></i></span>
             South
           </a>
         </li>
         <li>
-          <a id="north" routerLinkActive="is-active" routerLink='/north'>
+          <a id="north" routerLinkActive="is-active"
+            [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/north']: ['/north']">
+            <span><i class="bi bi-cloud-upload bi-sm"></i></span>
             North
           </a>
         </li>
         <li>
           <a id="notification" routerLinkActive="is-active" routerLink='/notification'>
+            <span><i class="bi bi-lightning-charge bi-sm"></i></span>
             Notifications
           </a>
         </li>
         <li>
           <a type="button" [ngClass]="{'has-background-light':  isControlListOpen }" id="control"
             (click)="isControlListOpen = !isControlListOpen; ; $event.stopPropagation()">
-            <span>Control</span>
+            <span>
+              <i class="bi bi-controller bi-sm"></i>
+              Control
+            </span>
             <span class="icon is-small menu-toogle-icon is-pulled-right"
               [title]="isControlListOpen ? 'Collapse' : 'Expand'">
               <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
@@ -60,37 +70,43 @@
             </ul>
           </div>
         </li>
-
         <li>
           <a id="configuration" routerLinkActive="is-active" routerLink='/configuration'>
+            <span><i class="bi bi-gear-wide-connected bi-sm"></i></span>
             Configuration
           </a>
         </li>
         <li>
           <a id="schedules" routerLinkActive="is-active" routerLink='/schedules'>
+            <span><i class="bi bi-calendar2-week bi-xs sidebar-icon"></i></span>
             Schedules
           </a>
         </li>
         <li>
           <a id="certificate" routerLinkActive="is-active" routerLink='/certificate'>
+            <span><i class="bi bi-filetype-key bi-sm"></i></span>
             Certificate Store
           </a>
         </li>
         <li>
-          <ng-container *ngFor="let mfe of microfrontends"><a *ngIf="mfe?.displayName" routerLinkActive="is-active"
-              [routerLink]="mfe.routePath">
+          <ng-container *ngFor="let mfe of microfrontends">
+
+            <a *ngIf="mfe?.displayName" routerLinkActive="is-active" [routerLink]="mfe.routePath">
+              <span *ngIf="mfe.displayName === 'ML Models'"><i class="bi bi-bucket bi-sm"></i></span>
               {{mfe.displayName}}</a>
           </ng-container>
         </li>
         <li>
           <a *ngIf="rolesService.hasEditPermissions()" id="backup-restore" routerLinkActive="is-active"
             routerLink='/backup-restore'>
+            <span><i class="bi bi-database-gear bi-sm"></i></span>
             Backup &amp; Restore
           </a>
         </li>
         <li>
           <a type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
             (click)="isLogsListOpen = !isLogsListOpen; $event.stopPropagation()">
+            <span><i class="bi bi-file-earmark-text bi-sm mr-1"></i></span>
             <span>Logs</span>
             <span class="icon is-small menu-toogle-icon is-pulled-right"
               [title]="isLogsListOpen ? 'Collapse' : 'Expand'">
@@ -120,18 +136,21 @@
         </li>
         <li>
           <a id="user-management" *ngIf="isAdmin" routerLinkActive="is-active" routerLink='/user-management'>
+            <span><i class="bi bi-people bi-sm"></i></span>
             User Management
           </a>
         </li>
 
         <li>
           <a id="support" routerLinkActive="is-active" routerLink='/support'>
+            <span><i class="bi bi-file-medical bi-sm"></i></span>
             Support
           </a>
         </li>
         <li>
-          <a id="developer" routerLinkActive="is-active" routerLink='/developer'
+          <a id="developer" routerLinkActive="is-active" routerLink='/developer/options'
             *ngIf="developerFeaturesService.getDeveloperFeatureControl() &&  rolesService.hasEditPermissions()">
+            <span><i class="bi bi-code-slash bi-sm"></i></span>
             Developer
           </a>
         </li>
@@ -140,11 +159,13 @@
     <li>
       <a id="setting" routerLinkActive="is-active" routerLink='/setting'
         (click)="toggleSideMenu(); $event.preventDefault()">
+        <span><i class="bi bi-gear bi-sm"></i></span>
         Settings
       </a>
     </li>
     <li>
       <a id="help" (click)="goToLink()" (click)="toggleSideMenu(); $event.preventDefault()">
+        <span><i class="bi bi-question-circle bi-sm"></i></span>
         Help
       </a>
     </li>

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef, EventEmitter } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { cloneDeep, sortBy } from 'lodash';
 
@@ -31,6 +31,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   public schedulesName = [];
   public showSpinner = false;
   private subscription: Subscription;
+  public source = '';
 
   // to hold child form state
   validConfigurationForm = true;
@@ -53,6 +54,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     private pluginService: PluginService,
     private alertService: AlertService,
     private router: Router,
+    private route: ActivatedRoute,
     private schedulesService: SchedulesService,
     private ngProgress: ProgressBarService,
     private sharedService: SharedService,
@@ -60,7 +62,13 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     private configurationControlService: ConfigurationControlService,
     private fileUploaderService: FileUploaderService,
     private cdRef: ChangeDetectorRef
-  ) { }
+  ) {
+    this.route.queryParams.subscribe(params => {
+      if (params['source']) {
+        this.source = params['source'];
+      }
+    });
+  }
 
   ngOnInit() {
     this.getSchedules();
@@ -86,7 +94,11 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     const last = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = last.getAttribute('id');
     if (+id === 1) {
-      this.router.navigate(['/south']);
+      if (this.source) {
+        this.router.navigate(['/flow/editor/south'])
+      } else {
+        this.router.navigate(['/south']);
+      }
       return;
     }
     last.classList.remove('is-active');
@@ -158,17 +170,18 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
     switch (+id) {
       case 1:
-        nxtButton.textContent = 'Next';
-        previousButton.textContent = 'Previous';
-
         // To verify if service with given name already exist
         const isServiceNameExist = this.schedulesName.some(item => {
           return formValues['name'].trim() === item.name;
         });
         if (isServiceNameExist) {
           this.alertService.error('A service/task already exists with this name.');
+          this.reenableButton.emit(false);
           return false;
         }
+        nxtButton.textContent = 'Next';
+        previousButton.textContent = 'Previous';
+
         // check if configuration form is valid or invalid
         this.validConfigurationForm ? nxtButton.disabled = false : nxtButton.disabled = true;
         break;
@@ -221,7 +234,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
    * Method to add service
    * @param payload  to pass in request
    */
-  public addService() {
+  addService() {
     let config = this.serviceForm?.value['config'];
     const payload = {
       name: this.serviceForm.value['name'].trim(),
@@ -247,7 +260,12 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
             const name = payload.name
             this.uploadScript(name, files);
           }
-          this.router.navigate(['/south']);
+          if (this.source === 'flowEditor') {
+            this.router.navigate(['/flow/editor/south', response['name'], 'details']);
+          }
+          else {
+            this.router.navigate(['/south']);
+          }
         },
         (error) => {
           /** request done */

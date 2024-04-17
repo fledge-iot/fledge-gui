@@ -1,3 +1,40 @@
+## v2.4.0 [2024-04-17]
+
+### Added
+
+- [FOGL-8583]: Added user interface support for kvlist with primitive value types(string, integer, float) config item types [#401](https://github.com/fledge-iot/fledge-gui/pull/401)
+
+- [FOGL-8476]: Added user interface support for list config item types [#397](https://github.com/fledge-iot/fledge-gui/pull/397)
+
+- [FOGL-8492]: Added flow editor feature for north service/task [#382](https://github.com/fledge-iot/fledge-gui/pull/382)
+
+- [FOGL-8375]: Added a new page for managing additional services within an instance [#360](https://github.com/fledge-iot/fledge-gui/pull/360)
+
+- [FOGL-8306]: Added a feature to show system alerts. GUI now shows the system alerts via an icon in the navigation bar [#389](https://github.com/fledge-iot/fledge-gui/pull/389)
+
+- [FOGL-7947]: Added tab navigator buttons in plugin configuration page when there are configuration groups [#372](https://github.com/fledge-iot/fledge-gui/pull/372)
+
+### Changed
+
+- Added sidebar menu icons and updated internal pages icon with bootstrap icons [#383](https://github.com/fledge-iot/fledge-gui/pull/383) and [#384](https://github.com/fledge-iot/fledge-gui/pull/384)
+
+
+### Fixed
+
+- [FOGL-8578] Fixed codemirror JSON editor error for code type config item [#402](https://github.com/fledge-iot/fledge-gui/pull/402)
+
+- [FOGL-8509] Made last side menu options visible when all options are in expanded state [#408](https://github.com/fledge-iot/fledge-gui/pull/408)
+
+- [FOGL-8446] Fixed Control Pipeline disconnected filter discard issue [#387](https://github.com/fledge-iot/fledge-gui/pull/387)
+
+- [FOGL-8401] Fixed create control script with an empty data in step values and order key [#370](https://github.com/fledge-iot/fledge-gui/pull/370)
+
+- [FOGL-8384] Fixed re-enable next button issue on north, south and filter wizard [#371](https://github.com/fledge-iot/fledge-gui/pull/371)
+
+### Others
+
+- Changed the size of fledge brand logo [#343](https://github.com/fledge-iot/fledge-gui/pull/403)
+
 ## v2.3.0 [2023-12-28]
 
 ### Added

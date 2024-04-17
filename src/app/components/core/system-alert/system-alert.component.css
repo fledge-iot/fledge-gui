@@ -1,0 +1,59 @@
+.icon-badge-container {
+    position:relative;
+}
+
+.icon-badge {
+    padding-right: 0.4rem;
+    padding-left: 0.4rem;
+    background-color: #f84a0a;
+    font-size: 0.7rem;
+    color: white;
+    text-align: center;
+    border-radius: 12%;
+    position: absolute;
+    top: -11px;
+    left: 11px;
+}
+
+.system-alert {
+    border: none;
+}
+
+.is-tiny {
+    font-size: 0.65rem !important;
+    border-radius: 3px;
+}
+
+.message-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+#system-alert-dd .dropdown-item {
+    width: 20rem;
+}
+
+.is-vertical-center {
+    display: flex;
+    align-items: center;
+}
+
+#alerts {
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: 2px;
+    border: lightgray solid 1px;
+}
+
+.bottom-row {
+    height: 7vh;
+}
+
+#refresh-alerts {
+    vertical-align: middle;
+    background: none;
+    border: none;
+}

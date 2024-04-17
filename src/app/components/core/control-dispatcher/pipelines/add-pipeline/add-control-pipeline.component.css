@@ -94,10 +94,6 @@
     vertical-align: inherit !important;
   }
 
-  [hidden] {
-    display: none !important;
-  }
-
   .filter-row {
     margin-bottom: 0;
   }
@@ -130,3 +126,5 @@
   .add-filter-div {
     cursor: not-allowed;
   }
+
+

@@ -12,6 +12,7 @@ import { FilterModule } from '../filter/filter.module';
 import { AddServiceWizardComponent } from './add-service-wizard/add-service-wizard.component';
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
 import { SouthComponent } from './south.component';
+import { FlowEditorModule } from '../../common/node-editor/flow-editor.module';
 
 const routes: Routes = [
   {
@@ -32,7 +33,6 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     SouthComponent,
-    AddServiceWizardComponent,
     SouthServiceModalComponent
   ],
   imports: [
@@ -44,7 +44,8 @@ const routes: Routes = [
     SharedModule,
     DirectivesModule,
     FilterModule,
-    PipesModule
+    PipesModule,
+    FlowEditorModule
   ],
   providers: [RolesGuard, ServicesApiService, PluginService, AssetsService, SchedulesService, FilterService],
 })

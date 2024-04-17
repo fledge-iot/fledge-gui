@@ -23,6 +23,8 @@ export class UpdateScheduleComponent implements OnInit {
   schedule: Schedule;
   scheduleId: string;
 
+  navigateFrom = '';
+
   public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(
@@ -52,6 +54,10 @@ export class UpdateScheduleComponent implements OnInit {
         this.getSchedule(this.scheduleId);
       }
     })
+
+    this.activatedRoute.queryParamMap.subscribe(params => {
+      this.navigateFrom = params.get('from');
+    });
   }
 
   ngOnInit() { }
@@ -252,6 +258,10 @@ export class UpdateScheduleComponent implements OnInit {
   }
 
   navToSchedulesPage() {
+    if (this.navigateFrom === 'additional-services') {
+      this.router.navigate(['/developer/options/additional-services']);
+      return;
+    }
     this.router.navigate(['schedules']);
   }
 }

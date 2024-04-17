@@ -11,7 +11,7 @@ import {
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
 import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
-import { NotificationServiceModalComponent } from './notification-service-modal/notification-service-modal.component';
+
 import { DocService } from '../../../services/doc.service';
 
 @Component({
@@ -20,8 +20,8 @@ import { DocService } from '../../../services/doc.service';
   styleUrls: ['./notifications.component.css'],
   providers: [ServicesApiService]
 })
-export class NotificationsComponent implements OnInit, OnDestroy {
 
+export class NotificationsComponent implements OnInit, OnDestroy {
   isNotificationServiceAvailable: boolean;
   isNotificationServiceEnabled: boolean;
   isNotificationModalOpen = false;
@@ -31,18 +31,17 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   viewPort: any = '';
 
   public notificationServiceRecord: any;
-  public availableServices = [];
+  public notificationServiceInstalled = false;
   private subscription: Subscription;
   private modalSub: Subscription;
   private viewPortSubscription: Subscription;
   public showSpinner = false;
-  public notificationServiceData = {};
+  public showConfigureModal = false;
 
   @ViewChild(NotificationModalComponent, { static: true }) notificationModal: NotificationModalComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
-  @ViewChild(NotificationServiceModalComponent, { static: true }) notificationServiceModal: NotificationServiceModalComponent;
-
+  
   constructor(
     public servicesApiService: ServicesApiService,
     public schedulesService: SchedulesService,
@@ -71,14 +70,15 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   public async checkNotificationServiceStatus(refresh: boolean = false) {
-    await this.getInstalledServicesList();
-    if (this.availableServices.includes('notification')) {
+    await this.getInstalledServicesList();  
+    if (this.notificationServiceInstalled) {
       if (refresh) {
         this.checkServiceStatus();
         return;
       }
       this.checkInstalledServices();
     } else {
+      this.notificationServiceInstalled = false;
       this.isNotificationServiceAvailable = false;
       this.isNotificationServiceEnabled = false;
     }
@@ -91,7 +91,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       then(data => {
         /** request done */
         this.ngProgress.done();
-        this.availableServices = data['services'];
+        this.notificationServiceInstalled = data['services'].includes('notification');
       })
       .catch(error => {
         /** request done */
@@ -224,15 +224,12 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       this.isNotificationServiceAvailable = true;
       this.isNotificationServiceEnabled = true;
       if (service.status.toLowerCase() === 'shutdown') {
-        this.isNotificationServiceEnabled = false;
+        // confirm enabled state in schedule, (after enabling the service, it takes time to reflect in service API but schedule API gives early updated state)
+        this.getSchedules();
       }
     } else {
       this.getSchedules();
     }
-  }
-
-  public enableNotificationService() {
-    this.notificationServiceModal.enableNotificationService(this.notificationServiceName);
   }
 
   public getSchedules(): void {
@@ -248,9 +245,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
           }
           this.notificationServiceName = schedule.name;
           this.isNotificationServiceAvailable = true;
-          if (schedule.enabled) {
-            this.isNotificationServiceEnabled = true;
-          }
+          this.isNotificationServiceEnabled = schedule.enabled;
         },
         error => {
           if (error.status === 0) {
@@ -260,21 +255,30 @@ export class NotificationsComponent implements OnInit, OnDestroy {
           }
         });
   }
-
+  
   /**
-   * Open Notification Settings modal
+   * Open Configure Service modal
    */
-  openNotificationServiceModal() {
-    this.notificationServiceData = {
-      notificationServiceAvailable: this.isNotificationServiceAvailable,
-      notificationServiceEnabled: this.isNotificationServiceEnabled,
-      notificationServiceName: this.notificationServiceName
-    };
-    this.notificationServiceModal.toggleModal(true);
+   openServiceConfigureModal() {
+    const serviceInfo = {
+      name: this.notificationServiceName,
+      isEnabled: this.isNotificationServiceEnabled,
+      added: this.isNotificationServiceAvailable,
+      process: 'notification',
+      isInstalled: this.notificationServiceInstalled
+    }
+    this.showConfigureModal = true;
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
+  }
+
+  onNotifyConfigureModal(handleEvent) {
+    if (handleEvent) {
+      this.checkNotificationServiceStatus(true);
+    }
   }
 
   goToLink(urlSlug: string) {
-    this.docService.goToNotificationDocLink(urlSlug);
+    this.docService.goToServiceDocLink(urlSlug, 'fledge-service-notification');
   }
 
   ngOnDestroy() {

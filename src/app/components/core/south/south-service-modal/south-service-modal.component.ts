@@ -42,6 +42,7 @@ export class SouthServiceModalComponent implements OnInit {
 
   assetReadings = [];
   public isAddFilterWizard;
+  public source = '';
 
   confirmationDialogData = {};
   MAX_RANGE = MAX_INT_SIZE / 2;
@@ -92,6 +93,11 @@ export class SouthServiceModalComponent implements OnInit {
         this.getSouthboundServices(true);
       }
     })
+    this.activatedRoute.queryParams.subscribe(params => {
+      if (params['source']) {
+        this.source = params['source'];
+      }
+    });
   }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -511,6 +517,19 @@ export class SouthServiceModalComponent implements OnInit {
 
   navToSouthPage() {
     this.router.navigate(['/south']);
+  }
+
+  navToSouth() {
+    if (this.source === 'flowEditor') {
+      this.router.navigate(['/flow/editor', 'south', this.serviceName, 'details'])
+    }
+    else {
+      this.router.navigate(['/south']);
+    }
+  }
+
+  checkConfigFormState(state = true) {
+    this.validConfigurationForm = state;
   }
 
   checkFormState() {

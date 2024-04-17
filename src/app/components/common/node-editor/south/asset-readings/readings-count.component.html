@@ -1,0 +1,14 @@
+<div class="reading-details">
+  <small class="reading has-tooltip-top has-tooltip-arrow"
+    data-tooltip="Reading count"  data-show="quickview" data-target="quickviewDefault"
+    (click)="showReadingsPerAsset()" [hidden]="+readingCount==0">{{readingCount}}</small>
+  <small class="asset has-tooltip-top has-tooltip-arrow"
+    data-tooltip="Asset count"  data-show="quickview" data-target="quickviewDefault"
+    (click)="showReadingsPerAsset()" [hidden]="+readingCount==0">{{assetCount}}</small>
+  <ng-container *ngIf="+readingCount==0">
+    <small class="reading has-tooltip-top has-tooltip-arrow"
+      data-tooltip="Reading count">{{readingCount}}</small>
+    <small class="asset has-tooltip-top has-tooltip-arrow"
+      data-tooltip="Asset count">{{assetCount}}</small>
+  </ng-container>
+</div>

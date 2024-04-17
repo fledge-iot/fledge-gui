@@ -1,4 +1,5 @@
-import { Component, OnInit, EventEmitter } from '@angular/core';
+import { Component, OnInit, EventEmitter, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { ControlAPIFlowService, ProgressBarService, RolesService, SharedService, AlertService } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
@@ -10,6 +11,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { APIFlow, User } from '../../../../../../src/app/models';
+import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
     selector: 'app-api-flow',
@@ -18,13 +20,16 @@ import { APIFlow, User } from '../../../../../../src/app/models';
 })
 
 export class APIFlowComponent implements OnInit {
+  @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
+
     apiFlows = [];
 
     // To show Entry point name and description on modal, we need these variables
     epName: string = '';
     description: string = '';
 
-
+    isServiceAvailable = false;
+    
     loggedInUsername: string;
     allUsers: User[];
   
@@ -37,6 +42,9 @@ export class APIFlowComponent implements OnInit {
 
     public reenableButton = new EventEmitter<boolean>(false);
 
+    showConfigureModal = false;
+    serviceInfo: {};
+
     constructor(
         private alertService: AlertService,
         private controlAPIFlowService: ControlAPIFlowService,
@@ -46,6 +54,7 @@ export class APIFlowComponent implements OnInit {
         private ngProgress: ProgressBarService,
         private fb: UntypedFormBuilder,
         public sharedService: SharedService,
+        private router: Router,
         private controlUtilsService: ControlUtilsService,
         public rolesService: RolesService) {
             this.apiFlowForm = this.fb.group({
@@ -241,6 +250,29 @@ export class APIFlowComponent implements OnInit {
       this.description = af.description;
       this.reenableButton.emit(false);
       this.dialogService.open(id);
+    }
+
+    onNotify(handleEvent) {
+      if (handleEvent) {
+        this.addDispatcherServiceComponent.getInstalledServicesList();
+      }
+      return;
+    }
+
+    getServiceDetail(event) {
+      this.showConfigureModal = event.isOpen;
+      delete event.isOpen;
+      this.serviceInfo = event;
+      if (this.showConfigureModal) {
+       this.openServiceConfigureModal(); 
+      }
+    }
+
+    /**
+     * Open Configure Service modal
+     */
+    openServiceConfigureModal() {
+      this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
     }
 
     closeModal(id: string) {

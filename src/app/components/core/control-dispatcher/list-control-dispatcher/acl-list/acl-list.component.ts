@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AlertService, SharedService, ProgressBarService, RolesService } from '../../../../../services';
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
@@ -6,6 +7,7 @@ import { DialogService } from '../../../../common/confirmation-dialog/dialog.ser
 import { orderBy } from 'lodash';
 import { AclService } from '../../../../../services/acl.service';
 import { DocService } from '../../../../../services/doc.service';
+import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
   selector: 'app-acl-list',
@@ -13,18 +15,25 @@ import { DocService } from '../../../../../services/doc.service';
   styleUrls: ['./acl-list.component.css']
 })
 export class AclListComponent implements OnInit {
-  controlAcls: any = [];
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
+  @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
+
+  controlAcls: any = [];
+  
   acl;
+  isServiceAvailable = false;
   private subscription: Subscription;
 
   public reenableButton = new EventEmitter<boolean>(false);
+  showConfigureModal = false;
+  serviceInfo = {};
 
   constructor(
     private aclService: AclService,
     private alertService: AlertService,
     private dialogService: DialogService,
     public docService: DocService,
+    private router: Router,
     public rolesService: RolesService,
     public sharedService: SharedService,
     private ngProgress: ProgressBarService) {
@@ -125,8 +134,31 @@ export class AclListComponent implements OnInit {
       });
   }
 
+  getServiceDetail(event) {
+    this.showConfigureModal = event.isOpen;
+    delete event.isOpen;
+    this.serviceInfo = event;
+    if (this.showConfigureModal) {
+      this.openServiceConfigureModal();
+    }
+  }
+
+  /**
+   * Open Configure Service modal
+   */
+  openServiceConfigureModal() {
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
+  }
+
   goToLink(urlSlug: string) {
     this.docService.goToSetPointControlDocLink(urlSlug);
+  }
+
+  onNotify(handleEvent) {
+    if (handleEvent) {
+      this.addDispatcherServiceComponent.getInstalledServicesList();
+    }
+    return;
   }
 
   public ngOnDestroy(): void {
