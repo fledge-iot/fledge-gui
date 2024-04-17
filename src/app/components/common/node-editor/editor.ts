@@ -8,6 +8,7 @@ import { AutoArrangePlugin, Presets as ArrangePresets, ArrangeAppliers } from "r
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from "rete-context-menu-plugin";
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
 import { CustomNodeComponent } from "./custom-node/custom-node.component";
+import { CustomNotificationNodeComponent } from "./custom-notification-node/custom-notification-node.component";
 import { HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
 import { addCustomBackground } from "./custom-background";
 import { easeInOut } from "popmotion";
@@ -44,7 +45,6 @@ class Connection<A extends Node, B extends Node> extends ClassicPreset.Connectio
 let editor = new NodeEditor<Schemes>();
 let area: AreaPlugin<Schemes, AreaExtra>;
 export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, data) {
-  console.log('data66', data);
   const socket = new ClassicPreset.Socket("socket");
   editor = new NodeEditor<Schemes>();
   area = new AreaPlugin<Schemes, AreaExtra>(container);
@@ -126,7 +126,9 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
       customize: {
 
         node() {
-          console.log('from9999', data.from);
+          if (data.from == 'notification') {
+            return CustomNotificationNodeComponent;
+          }
           return CustomNodeComponent;
         },
         connection() {
@@ -298,11 +300,7 @@ async function createNotificationNodesAndConnections(socket: ClassicPreset.Socke
   area: AreaPlugin<Schemes, AreaExtra>,
   rolesService: RolesService,
   data: any) {
-    console.log('data1234', data);
   if (data.source) {
-    // Storage Node
-    // const db = new Storage(socket);
-    // await editor.addNode(db);
 
     // Notification Node
     const plugin = new Notification(socket, data.notification);

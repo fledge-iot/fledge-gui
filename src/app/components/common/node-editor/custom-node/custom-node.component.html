@@ -174,7 +174,7 @@
   <ng-template #addServiceTemplate>
     <div class="add-service">
       <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
-        [attr.data-tooltip]="from == 'north'? 'Add Instance': (from == 'notification' ? 'Add Notification'  :'Add Service')" (click)="navToAddServicePage()">
+        [attr.data-tooltip]="from == 'north'? 'Add Instance': 'Add Service'" (click)="navToAddServicePage()">
         <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
       </span>
     </div>

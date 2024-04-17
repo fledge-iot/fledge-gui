@@ -64,14 +64,6 @@ export class CustomNodeComponent implements OnChanges {
     taskStatus: {},
     pluginVersion: ""
   }
-  notification = {
-    name: "",
-    channel: "",
-    enable: false,
-    notificationType: "",
-    retriggerTime: "",
-    rule: ""
-  }
   filter = { pluginName: '', enabled: 'false', name: '', color: '', pluginVersion: "" }
   isServiceNode: boolean = false;
   subscription: Subscription;
@@ -120,8 +112,6 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   ngOnChanges(): void {
-    console.log('data5', this.data);
-    console.log('from', this.from);
     this.nodeId = this.data.id;
     if (this.data.label === 'South' || this.data.label === 'North') {
       if (this.source !== '') {
@@ -203,7 +193,7 @@ export class CustomNodeComponent implements OnChanges {
       }
     }
     
-    const labels = ['AddService', 'AddTask', 'AddNotification'];
+    const labels = ['AddService', 'AddTask'];
     if (labels.includes(this.data.label)) {
       this.data.label = "";
     }

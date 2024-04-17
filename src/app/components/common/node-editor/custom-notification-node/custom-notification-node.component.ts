@@ -23,10 +23,10 @@ import { NorthTask } from "../../../core/north/north-task";
   templateUrl: './custom-notification-node.component.html',
   styleUrls: ['./custom-notification-node.component.css'],
   host: {
-    "data-testid": "node"
+    "data-testid": "notification-node"
   }
 })
-export class CustomNodeComponent implements OnChanges {
+export class CustomNotificationNodeComponent implements OnChanges {
 
   @Input() data!: ClassicPreset.Node;
   @Input() emit!: (data: any) => void;
@@ -90,8 +90,6 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   ngOnChanges(): void {
-    console.log('data5', this.data);
-    console.log('from', this.from);
     this.nodeId = this.data.id;
     if (this.data.label === 'Notification') {
       if (this.source !== '') {
@@ -102,7 +100,7 @@ export class CustomNodeComponent implements OnChanges {
             this.notification.name = this.data.controls.nameControl['name'];
             this.notification.channel = this.data.controls.channelControl['pluginName'];
             this.notification.rule = this.data.controls.ruleControl['pluginName'];
-            this.notification.enable = this.data.controls.enabledControl['enable'];
+            this.notification.enable = this.data.controls.enabledControl['enabled'];
             this.isEnabled = this.notification.enable;
           }
         }
@@ -113,8 +111,7 @@ export class CustomNodeComponent implements OnChanges {
       }
     }
 
-    const labels = ['AddNotification'];
-    if (labels.includes(this.data.label)) {
+    if (this.data.label = 'AddNotification') {
       this.data.label = "";
     }
 
@@ -141,9 +138,6 @@ export class CustomNodeComponent implements OnChanges {
     if (this.isNotificationNode) {
       this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: true, serviceName: this.notification.name });
     }
-    // else {
-    //   this.flowEditorService.showItemsInQuickview.next({ showFilterConfiguration: true, serviceName: this.source, filterName: this.filter.name });
-    // }
   }
 
   showLogsInQuickview() {
@@ -162,48 +156,9 @@ export class CustomNodeComponent implements OnChanges {
     this.router.navigate(['/notification']);
   }
 
-  // toggleEnabled(isEnabled) {
-  //   this.isEnabled = isEnabled;
-  //   if (this.isNotificationNode) {
-  //     if (this.isEnabled) {
-  //       this.enableSchedule(this.notification.name);
-  //     }
-  //     else {
-  //       this.disableSchedule(this.notification.name);
-  //     }
-  //   }
-  //   // if (this.isFilterNode) {
-  //   //   this.updateFilterConfiguration();
-  //   // }
-  // }
-
-  // public disableSchedule(serviceName) {
-  //   this.schedulesService.disableScheduleByName(serviceName)
-  //     .subscribe((data: any) => {
-  //       this.toastService.success(data.message);
-  //     },
-  //       error => {
-  //         if (error.status === 0) {
-  //           console.log('service down ', error);
-  //         } else {
-  //           this.toastService.error(error.statusText);
-  //         }
-  //       });
-  // }
-
-  // public enableSchedule(serviceName) {
-  //   this.schedulesService.enableScheduleByName(serviceName)
-  //     .subscribe((data: any) => {
-  //       this.toastService.success(data.message);
-  //     },
-  //       error => {
-  //         if (error.status === 0) {
-  //           console.log('service down ', error);
-  //         } else {
-  //           this.toastService.error(error.statusText);
-  //         }
-  //       });
-  // }
+  toggleEnabled(isEnabled) {
+    console.log('isEnabled', isEnabled);
+  }
 
   goToLink() {
     if (this.isNotificationNode) {
@@ -223,120 +178,19 @@ export class CustomNodeComponent implements OnChanges {
     }
   }
 
-  deleteFilterOrService() {
+  deleteNotification() {
     if (this.isNotificationNode) {
       this.flowEditorService.serviceInfo.next({ name: this.notification.name })
     }
-    // if (this.isFilterNode) {
-    //   this.flowEditorService.filterInfo.next({ name: this.filter.name })
-    // }
   }
-
-  // openTaskSchedule() {
-  //   this.flowEditorService.showItemsInQuickview.next({ showTaskSchedule: true, serviceName: this.service.name });
-  // }
 
   openNotificationDetails() {
     this.router.navigate(['/flow/editor', this.from, this.notification.name, 'details']);
   }
 
-  navToAddServicePage() {
+  navToAddNotificationPage() {
     this.router.navigate(['/flow/editor', this.from, 'add'], { queryParams: { source: 'flowEditor' } });
   }
-
-  // updateFilterConfiguration() {
-  //   let catName = `${this.source}_${this.filter.name}`;
-  //   this.configService.
-  //     updateBulkConfiguration(catName, { enable: String(this.isEnabled) })
-  //     .subscribe(() => {
-  //       this.data.controls.enabledControl['enabled'] = JSON.stringify(this.isEnabled);
-  //       if (this.isEnabled) {
-  //         this.toastService.success(`${this.filter.name} filter enabled`);
-  //       }
-  //       else {
-  //         this.toastService.success(`${this.filter.name} filter disabled`);
-  //       }
-  //     },
-  //       (error) => {
-  //         if (error.status === 0) {
-  //           console.log('service down ', error);
-  //         } else {
-  //           this.toastService.error(error.statusText);
-  //         }
-  //       });
-  // }
-
-  // getNorthboundTasks() {
-  //   this.northService.getNorthTasks(true)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe((data: any) => {
-  //       const tasks = data as NorthTask[];
-  //       this.fetchedTask = tasks.find(task => (task.name == this.service.name));
-  //       if (this.fetchedTask) {
-  //         this.service.status = this.fetchedTask?.status;
-  //         let readingCount = this.fetchedTask.sent;
-  //         this.service.readingCount = readingCount;
-  //         this.service.schedule_enabled = this.fetchedTask.enabled;
-  //         if (this.service.schedule_enabled === true) {
-  //           this.isEnabled = true;
-  //         }
-  //         else {
-  //           this.isEnabled = false;
-  //         }
-  //       }
-  //     },
-  //       error => {
-  //         if (error.status === 0) {
-  //           console.log('service down ', error);
-  //         } else {
-  //           this.toastService.error(error.statusText);
-  //         }
-  //       });
-  // }
-
-  // getSouthboundServices() {
-  //   this.servicesApiService.getSouthServices(true)
-  //     .pipe(takeUntil(this.destroy$))
-  //     .subscribe((data: any) => {
-  //       const services = data.services as Service[];
-  //       this.fetchedService = services.find(service => (service.name == this.service.name));
-  //       if (this.fetchedService) {
-  //         this.service.status = this.fetchedService.status;
-  //         let assetCount = this.fetchedService.assets.length;
-  //         let readingCount = this.fetchedService.assets.reduce((total, asset) => {
-  //           return total + asset.count;
-  //         }, 0)
-  //         this.service.assetCount = assetCount;
-  //         this.service.readingCount = readingCount;
-  //         this.service.schedule_enabled = this.fetchedService.schedule_enabled;
-  //         if (this.service.schedule_enabled === true) {
-  //           this.isEnabled = true;
-  //         }
-  //         else {
-  //           this.isEnabled = false;
-  //         }
-  //       }
-  //     },
-  //       error => {
-  //         if (error.status === 0) {
-  //           console.log('service down ', error);
-  //         } else {
-  //           this.toastService.error(error.statusText);
-  //         }
-  //       });
-  // }
-
-  // removeFilter() {
-  //   this.flowEditorService.removeFilter.next({ id: this.nodeId });
-  // }
-
-  // showReadingsPerAsset() {
-  //   this.flowEditorService.showItemsInQuickview.next({ showReadings: true, serviceName: this.service.name });
-  // }
-
-  // getAssetReadings() {
-  //   this.flowEditorService.exportReading.next({serviceName: this.service.name});
-  // }
 
   ngOnDestroy() {
     this.subscription.unsubscribe();

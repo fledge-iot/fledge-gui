@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NodeEditorComponent } from './node-editor.component';
 import { CustomNodeComponent } from './custom-node/custom-node.component';
+import { CustomNotificationNodeComponent } from './custom-notification-node/custom-notification-node.component';
 import { CustomSocketComponent } from './custom-socket/custom-socket.component';
 import { CustomConnectionComponent } from './custom-connection/custom-connection.component';
 import { RefDirective } from './ref.directive';
@@ -51,6 +52,7 @@ const routes: Routes = [
   declarations: [
     NodeEditorComponent,
     CustomNodeComponent,
+    CustomNotificationNodeComponent,
     CustomSocketComponent,
     CustomConnectionComponent,
     ReadingsCountComponent,
@@ -68,6 +70,7 @@ const routes: Routes = [
   ],
   exports: [NodeEditorComponent,
     CustomNodeComponent,
+    CustomNotificationNodeComponent,
     CustomSocketComponent,
     CustomConnectionComponent,
     RefDirective],
