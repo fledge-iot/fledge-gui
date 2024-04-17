@@ -32,7 +32,7 @@ export class CustomNodeComponent implements OnChanges {
   @Input() emit!: (data: any) => void;
   @Input() rendered!: () => void;
 
-  nodeTypes = ['South', 'North', 'Filter', 'AddService', 'AddTask', 'Storage'];
+  nodeTypes = ['South', 'North', 'Filter', 'Notification', 'AddService', 'AddTask', 'AddNotification', 'Storage'];
 
   seed = 0;
   source;
@@ -63,6 +63,14 @@ export class CustomNodeComponent implements OnChanges {
     sent: "",
     taskStatus: {},
     pluginVersion: ""
+  }
+  notification = {
+    name: "",
+    channel: "",
+    enable: false,
+    notificationType: "",
+    retriggerTime: "",
+    rule: ""
   }
   filter = { pluginName: '', enabled: 'false', name: '', color: '', pluginVersion: "" }
   isServiceNode: boolean = false;
@@ -194,12 +202,12 @@ export class CustomNodeComponent implements OnChanges {
         }
       }
     }
-    if (this.data.label === 'AddService') {
+    
+    const labels = ['AddService', 'AddTask', 'AddNotification'];
+    if (labels.includes(this.data.label)) {
       this.data.label = "";
     }
-    if (this.data.label === 'AddTask') {
-      this.data.label = "";
-    }
+
     if (this.data.label === 'Storage') {
       this.elRef.nativeElement.style.borderColor = "#999999";
     }
