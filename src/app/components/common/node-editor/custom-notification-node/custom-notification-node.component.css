@@ -106,7 +106,7 @@
   left: 20% !important;
 }
 
-.service-details {
+.notification-details {
   display: flex;
   justify-content: center;
   padding: 0px 4px 4px 4px;
@@ -140,7 +140,7 @@
   margin-left: -5px;
 }
 
-.add-service {
+.add-notification {
   height: 92px;
   width: 198px;
   display: flex;

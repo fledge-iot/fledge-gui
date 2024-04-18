@@ -32,7 +32,7 @@ export class CustomNodeComponent implements OnChanges {
   @Input() emit!: (data: any) => void;
   @Input() rendered!: () => void;
 
-  nodeTypes = ['South', 'North', 'Filter', 'Notification', 'AddService', 'AddTask', 'AddNotification', 'Storage'];
+  nodeTypes = ['South', 'North', 'Filter', 'AddService', 'AddTask', 'Storage'];
 
   seed = 0;
   source;

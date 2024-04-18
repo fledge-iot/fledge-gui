@@ -4,19 +4,12 @@ import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import {
-  ConfigurationService,
-  NorthService, PingService,
-  RolesService,
-  SchedulesService,
-  ServicesApiService,
-  ToastService
+  ConfigurationService, PingService,
+  RolesService, ToastService
 } from "../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
 import { Subject, Subscription } from "rxjs";
-import { takeUntil } from "rxjs/operators";
-import { Service } from "../../../core/south/south-service";
-import { NorthTask } from "../../../core/north/north-task";
 
 @Component({
   selector: 'app-custom-notification-node',
@@ -31,8 +24,6 @@ export class CustomNotificationNodeComponent implements OnChanges {
   @Input() data!: ClassicPreset.Node;
   @Input() emit!: (data: any) => void;
   @Input() rendered!: () => void;
-
-  nodeTypes = ['Notification', 'AddNotification'];
 
   seed = 0;
   source;
@@ -68,11 +59,8 @@ export class CustomNotificationNodeComponent implements OnChanges {
     private router: Router,
     private route: ActivatedRoute,
     public flowEditorService: FlowEditorService,
-    private configService: ConfigurationService,
-    private toastService: ToastService,
     public rolesService: RolesService,
-    private elRef: ElementRef,
-    private ping: PingService) {
+    private elRef: ElementRef) {
     this.route.params.subscribe(params => {
       this.from = params.from;
       this.source = params.name;
@@ -104,6 +92,7 @@ export class CustomNotificationNodeComponent implements OnChanges {
             this.isEnabled = this.notification.enable;
           }
         }
+        console.log('notification', this.notification);
       }
       else {
         this.elRef.nativeElement.style.borderColor = "#EA9999";
@@ -111,10 +100,7 @@ export class CustomNotificationNodeComponent implements OnChanges {
       }
     }
 
-    if (this.data.label = 'AddNotification') {
-      this.data.label = "";
-    }
-
+    console.log('data', this.data);
     this.cdr.detectChanges();
     requestAnimationFrame(() => this.rendered());
     this.seed++; // force render sockets
@@ -148,10 +134,6 @@ export class CustomNotificationNodeComponent implements OnChanges {
     this.router.navigate(['logs/syslog'], { queryParams: { source: this.notification.name } });
   }
 
-  // addFilter() {
-  //   this.flowEditorService.filterInfo.next({ name: "newPipelineFilter" });
-  // }
-
   navToNotificationPage() {
     this.router.navigate(['/notification']);
   }
@@ -164,9 +146,6 @@ export class CustomNotificationNodeComponent implements OnChanges {
     if (this.isNotificationNode) {
       this.docService.goToPluginLink({ name: this.pluginName, type: this.from });
     }
-    // else {
-    //   this.docService.goToPluginLink({ name: this.pluginName, type: 'Filter' });
-    // }
   }
 
   applyNotificationStatusCustomCss(notificationStatus: string) {
