@@ -6,7 +6,7 @@
 
 - [FOGL-8476]: Added user interface support for list config item types [#397](https://github.com/fledge-iot/fledge-gui/pull/397)
 
-- [FOGL-8492]: Added visual programming feature for South and North Pages as Flow Editor [#382](https://github.com/fledge-iot/fledge-gui/pull/382)
+- [FOGL-8492]: Added visual programming feature for South and North Pages as Flow Editor [#359](https://github.com/fledge-iot/fledge-gui/pull/359) and [#382](https://github.com/fledge-iot/fledge-gui/pull/382) 
 
 - [FOGL-8375]: Added a new page for managing additional services within an instance [#360](https://github.com/fledge-iot/fledge-gui/pull/360)
 
