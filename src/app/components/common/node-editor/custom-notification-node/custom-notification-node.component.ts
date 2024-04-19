@@ -3,10 +3,7 @@ import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
-import {
-  ConfigurationService, PingService,
-  RolesService, ToastService
-} from "../../../../services";
+import { RolesService } from "../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
 import { Subject, Subscription } from "rxjs";
@@ -88,19 +85,17 @@ export class CustomNotificationNodeComponent implements OnChanges {
             this.notification.name = this.data.controls.nameControl['name'];
             this.notification.channel = this.data.controls.channelControl['pluginName'];
             this.notification.rule = this.data.controls.ruleControl['pluginName'];
+            this.notification.notificationType = this.data.controls.notificationTypeControl['type'];
             this.notification.enable = this.data.controls.enabledControl['enabled'];
             this.isEnabled = this.notification.enable;
           }
         }
-        console.log('notification', this.notification);
       }
       else {
         this.elRef.nativeElement.style.borderColor = "#EA9999";
         this.elRef.nativeElement.style.borderWidth = "6px";
       }
     }
-
-    console.log('data', this.data);
     this.cdr.detectChanges();
     requestAnimationFrame(() => this.rendered());
     this.seed++; // force render sockets
@@ -121,9 +116,10 @@ export class CustomNotificationNodeComponent implements OnChanges {
   }
 
   showConfigurationInQuickview() {
-    if (this.isNotificationNode) {
-      this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: true, serviceName: this.notification.name });
-    }
+    // TODO: show config
+    // if (this.isNotificationNode) {
+    //   this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: true, serviceName: this.notification.name });
+    // }
   }
 
   showLogsInQuickview() {
@@ -145,15 +141,6 @@ export class CustomNotificationNodeComponent implements OnChanges {
   goToLink() {
     if (this.isNotificationNode) {
       this.docService.goToPluginLink({ name: this.pluginName, type: this.from });
-    }
-  }
-
-  applyNotificationStatusCustomCss(notificationStatus: string) {
-    if (notificationStatus?.toLowerCase() === 'true') {
-      return 'has-text-success';
-    }
-    if (notificationStatus?.toLowerCase() === 'false') {
-      return 'has-text-grey-lighter';
     }
   }
 

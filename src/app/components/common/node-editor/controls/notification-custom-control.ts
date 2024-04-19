@@ -12,3 +12,9 @@ export class ChannelControl extends ClassicPreset.Control {
     }
 }
 
+export class NotificationTypeControl extends ClassicPreset.Control {
+    constructor(public type: string) {
+      super();
+    }
+}
+

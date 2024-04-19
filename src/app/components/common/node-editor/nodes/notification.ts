@@ -5,10 +5,10 @@ import {
   PluginControl,
   StatusControl
 } from "../controls/common-custom-control";
-import { RuleControl, ChannelControl } from "../controls/notification-custom-control";
+import { RuleControl, ChannelControl, NotificationTypeControl } from "../controls/notification-custom-control";
 
 export class Notification extends ClassicPreset.Node {
-  height = 94;
+  height = 92;
   width = 198;
   parent?: string;
 
@@ -20,11 +20,13 @@ export class Notification extends ClassicPreset.Node {
       const deliveryPlugin = new ChannelControl(notification.channel);
       const rulePlugin = new RuleControl(notification.rule);
       const enabled = new EnabledControl(notification.enable);
+      const notificationType = new NotificationTypeControl(notification.notificationType);
 
       this.addControl('nameControl', name);
       this.addControl('channelControl', deliveryPlugin);
       this.addControl('ruleControl', rulePlugin);
       this.addControl('enabledControl', enabled);
+      this.addControl('notificationTypeControl', notificationType);
     }
   }
 }

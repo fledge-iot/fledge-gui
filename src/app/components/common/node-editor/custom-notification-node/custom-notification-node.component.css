@@ -6,7 +6,7 @@
   cursor: pointer;
   box-sizing: border-box;
   width: 198px;
-  height: auto;
+  height: 92px;
   position: relative;
   user-select: none;
 }
@@ -15,8 +15,6 @@
   background: whitesmoke;
 }
 
-:host:hover .reading,
-:host:hover .asset,
 :host:hover .trash-icon {
   visibility: visible !important;
 }
@@ -112,16 +110,6 @@
   padding: 0px 4px 4px 4px;
 }
 
-.reading-details {
-  display: flex;
-  justify-content: center;
-}
-
-.reading {
-  font-size: 14px;
-  visibility: hidden;
-}
-
 .output-container {
   margin-top: -30px;
 }
@@ -130,10 +118,6 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
-
-.storage-input {
-  margin-top: 16px;
 }
 
 .health-icon {
@@ -172,22 +156,6 @@
 .icon-margin {
   margin-top: 2px;
 }
-
-.north-storage-output {
-  margin-left: 13px;
-  margin-top: 8px;
-}
-
-.north-storage-icon {
-  margin-top: 4px;
-  margin-left: 30px;
-}
-
-.south-storage-icon{
-  margin-top: 4px;
-  margin-left: 10px;
-}
-
 
 .trash-icon {
   visibility: hidden !important;

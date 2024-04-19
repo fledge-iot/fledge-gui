@@ -180,7 +180,11 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     const id = last.getAttribute('id');
 
     if (+id === 1) {
-      this.router.navigate(['/notification']);
+      if (this.source) {
+        this.router.navigate(['/flow/editor/notification'])
+      } else {
+        this.router.navigate(['/notification']);
+      }
       return;
     }
     last.classList.remove('is-active');
