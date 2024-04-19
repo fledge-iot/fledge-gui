@@ -2,11 +2,11 @@
 
 ### Added
 
-- [FOGL-8583]: Added user interface support for kvlist with primitive value types(string, integer, float) config item types [#401](https://github.com/fledge-iot/fledge-gui/pull/401)
+- [FOGL-8583]: Added user interface support for kvlist with primitive value types (string, integer, float) config item types [#401](https://github.com/fledge-iot/fledge-gui/pull/401)
 
 - [FOGL-8476]: Added user interface support for list config item types [#397](https://github.com/fledge-iot/fledge-gui/pull/397)
 
-- [FOGL-8492]: Added flow editor feature for north service/task [#382](https://github.com/fledge-iot/fledge-gui/pull/382)
+- [FOGL-8492]: Added visual programming feature for South and North Pages as Flow Editor [#382](https://github.com/fledge-iot/fledge-gui/pull/382)
 
 - [FOGL-8375]: Added a new page for managing additional services within an instance [#360](https://github.com/fledge-iot/fledge-gui/pull/360)
 
@@ -33,7 +33,7 @@
 
 ### Others
 
-- Changed the size of fledge brand logo [#343](https://github.com/fledge-iot/fledge-gui/pull/403)
+- Changed the size of fledge brand logo [#403](https://github.com/fledge-iot/fledge-gui/pull/403)
 
 ## v2.3.0 [2023-12-28]
 
