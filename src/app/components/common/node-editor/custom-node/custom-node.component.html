@@ -38,7 +38,7 @@
             </div>
           </ng-container>
           <ng-template #southServiceTemplate>
-            <ng-container *ngIf="data.label==='South' || data.label==='North' || data.label==='Notification'">
+            <ng-container *ngIf="data.label==='South' || data.label==='North'">
               <button *ngIf="rolesService.hasEditPermissions()" class="btn small-btn add-btn is-pulled-right"
                 (click)="addService()">
                 <span class="ml-2 has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Choose plugin">

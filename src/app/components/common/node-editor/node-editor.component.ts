@@ -107,12 +107,8 @@ export class NodeEditorComponent implements OnInit {
     public generateCsv: GenerateCsvService,
     private router: Router) {
     this.route.params.subscribe(params => {
-      console.log('params', params);
-
       this.from = params.from;
       this.source = params.name;
-      console.log('from', this.from);
-      console.log('source', this.source);
       if (this?.from === 'south') {
         this.getSouthboundServices();
       }
@@ -262,7 +258,6 @@ export class NodeEditorComponent implements OnInit {
         notifications: this.notifications,
         filterConfigurations: this.filterConfigurations,
       }
-      console.log('source22', this.source);
       let isServiceExist = true;
       if (this.initialApiCallsStack.length > 0) {
         this.ngProgress.start();
@@ -304,7 +299,6 @@ export class NodeEditorComponent implements OnInit {
                 if (r.services) {
                     const services = r.services as Service[];
                     this.services = services;
-                    console.log('services', services);
                     this.service = services.find(service => (service.name == this.source));
                     data.services = services;
                     data.service = this.service;
@@ -312,9 +306,6 @@ export class NodeEditorComponent implements OnInit {
                 if (r.notifications) {
                   const notifications = r.notifications as Notification[];
                   this.notifications = notifications;
-
-                  console.log('notifications', notifications);
-
                   this.notification = notifications.find(n => (n.name == this.source));
                   data.notifications = notifications;
                   data.notification = this.notification;
@@ -381,7 +372,6 @@ export class NodeEditorComponent implements OnInit {
         const services = data.services as Service[];
         this.services = services;
         this.readingService = this.services.find(service => (service.name == this.serviceName));
-        console.log('south data', data);
         data = {
           from: this.from,
           source: this.source,
@@ -409,15 +399,11 @@ export class NodeEditorComponent implements OnInit {
         const notifications = data.notifications as Notification[];
         this.notifications = notifications;
         this.notification = notifications.find(n => (n.name == this.source));
-        // this.readingService = this.services.find(service => (service.name == this.serviceName));
-        console.log('notif data', data);
         data = {
           from: this.from,
           source: this.source,
-          // filterPipeline: this.filterPipeline,
           notification: this.notification,
           notifications: notifications
-          // filterConfigurations: this.filterConfigurations,
         }
         // refresh node data
         updateNode(data);
@@ -778,7 +764,26 @@ export class NodeEditorComponent implements OnInit {
   }
 
   deleteService() {
+    if(this.from === 'notification') {
+      this.deleteNotification();
+      return;
+    }
     this.servicesApiService.deleteService(this.deleteServiceName)
+      .subscribe((data: any) => {
+        this.toastService.success(data['result']);
+        this.router.navigate(['/flow/editor', this.from]);
+      },
+        (error) => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.toastService.error(error.statusText);
+          }
+        });
+  }
+
+  deleteNotification() {
+    this.notificationsService.deleteNotification(this.deleteServiceName)
       .subscribe((data: any) => {
         this.toastService.success(data['result']);
         this.router.navigate(['/flow/editor', this.from]);

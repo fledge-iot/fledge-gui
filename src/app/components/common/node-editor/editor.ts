@@ -528,7 +528,6 @@ export function updateNode(data) {
         area.update('node', node.id)
       }
       if (node.label == 'Notification') {
-        console.log('TODO: Notification')
         const channelControl = node.controls.channelControl as ChannelControl;
         const ruleControl = node.controls.ruleControl as RuleControl;
         const notification = data.notifications.find(n => n.name === node.controls.nameControl['name']);

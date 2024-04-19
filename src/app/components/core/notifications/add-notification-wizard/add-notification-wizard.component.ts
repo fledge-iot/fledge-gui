@@ -482,8 +482,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
           if (deliveryScriptFiles.length > 0) {
             this.uploadScript(`delivery${name}`, deliveryScriptFiles);
           }
-          if (this.source === 'notification') {
-            this.router.navigate(['/flow/editor/notification', data['name'], 'details'])
+          if (this.source === 'flowEditor') {
+            this.router.navigate(['/flow/editor/notification']);
           }
           else {
             this.router.navigate(['/notification']);

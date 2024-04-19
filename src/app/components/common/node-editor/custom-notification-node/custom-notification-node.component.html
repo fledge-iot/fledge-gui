@@ -2,39 +2,40 @@
   <ng-container *ngIf="data.label==='Notification'; else addNotificationTemplate">
     <div class="title" data-testid="title">
       <div class="is-flex is-justify-content-space-between is-align-items-baseline">
-        <div class="is-inline-flex is-align-items-baseline">         
+        <div class="is-inline-flex is-align-items-baseline">
           <span *ngIf="!source; else notificationNameTemplate" class="notification-name"
             (click)="openNotificationDetails()">{{data.controls?.nameControl?.name}}</span>
           <ng-template #notificationNameTemplate>
             <span>{{data.controls?.nameControl?.name}}</span>
           </ng-template>
-          <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered icon health-icon has-text-grey-light" [attr.data-tooltip]="notification.rule" *ngIf="isNotificationNode && notification.enable">
+          <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered icon health-icon has-text-grey-light"
+            [attr.data-tooltip]="notification.rule" *ngIf="isNotificationNode && notification.enable">
             <i class="fa-regular fa-lightbulb"></i>
           </span>
         </div>
         <div class="is-inline-flex">
-              <label class="checkbox">
-                <input type="checkbox" [checked]='isEnabled' (click)="toggleEnabled($event.target.checked)"
-                  [disabled]="!rolesService.hasEditPermissions()">
-              </label>
-              <button class="btn btn-icon pt-0" data-show="quickview" data-target="quickviewDefault"
-                data-toggle="quickview" (click)="showConfigurationInQuickview()">
-                <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Configuration">
-                  <i class="bi bi-gear-wide-connected bi-sm"></i>
-                </span>
-              </button>
+          <label class="checkbox">
+            <input type="checkbox" [checked]='isEnabled' (click)="toggleEnabled($event.target.checked)"
+              [disabled]="!rolesService.hasEditPermissions()">
+          </label>
+          <button class="btn btn-icon pt-0" data-show="quickview" data-target="quickviewDefault" data-toggle="quickview"
+            (click)="showConfigurationInQuickview()">
+            <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Configuration">
+              <i class="bi bi-gear-wide-connected bi-sm"></i>
+            </span>
+          </button>
         </div>
       </div>
     </div>
     <div>
-        <div class="is-flex is-justify-content-center">         
-          <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered has-text-grey-light" [attr.data-tooltip]="notification.channel">
-            <i class="bi bi-lightning-charge bi-lg no-hover"></i>
-          </span>
-          <!-- TODO: show below the 'bi-lightning-charge' icon -->
-          <!-- <span class="help-text">{{data.controls?.notificationTypeControl?.type}}</span>      -->
-        </div>
-            
+      <div class="is-flex is-justify-content-center">
+        <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered has-text-grey-light"
+          [attr.data-tooltip]="notification.channel">
+          <i class="bi bi-lightning-charge bi-lg no-hover"></i>
+        </span>
+        <!-- TODO: show below the 'bi-lightning-charge' icon -->
+        <!-- <span class="help-text">{{data.controls?.notificationTypeControl?.type}}</span>      -->
+      </div>
       <!-- <ng-container *ngIf="source">
         <div class="output is-pulled-right" *ngFor="let output of data.outputs | keyvalue: sortByIndex"
           [attr.data-testid]="'output-'+output.key"
@@ -60,54 +61,52 @@
       </ng-container>
     </div>
     <div>
-        <div class="is-pulled-left ml-2 icon-margin">
-          <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered"
-            data-tooltip="Help" (click)="goToLink()">
-            <i class="bi bi-question-circle bi-xs"></i>
-          </span>
-          <span *ngIf="isNotificationNode"
-            class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon ml-3"
-            data-tooltip="Show logs" data-show="quickview" data-target="quickviewDefault"
-            (click)="showLogsInQuickview()">
-            <i class="bi bi-file-earmark-text bi-xs"></i>
-          </span>
-          <!-- <span *ngIf="isNotificationNode && from=='notification'"
+      <div class="is-pulled-left ml-2 icon-margin">
+        <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered"
+          data-tooltip="Help" (click)="goToLink()">
+          <i class="bi bi-question-circle bi-xs"></i>
+        </span>
+        <span *ngIf="isNotificationNode"
+          class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon ml-3"
+          data-tooltip="Show logs" data-show="quickview" data-target="quickviewDefault" (click)="showLogsInQuickview()">
+          <i class="bi bi-file-earmark-text bi-xs"></i>
+        </span>
+        <!-- <span *ngIf="isNotificationNode && from=='notification'"
             class="icon is-small has-tooltip-bottom has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon ml-3"
             data-tooltip="Show readings" [attr.data-show]="'quickview'" [attr.data-target]="'quickviewDefault'">
             <i class="bi bi-table bi-xs"></i>
           </span> -->
-        </div>
+      </div>
       <div class="is-pulled-right">
-        
-          <div class="dropdown is-hoverable" *ngIf="!source || rolesService.hasEditPermissions()">
-            <div class="dropdown-trigger">
-              <button class="button is-white is-small pt-0 pb-0 dropdown-button" aria-haspopup="true"
-                aria-controls="dropdown-menu3">
-                <span class="icon is-small">
-                  <i class="fas fa-ellipsis-v fa-xs fa-fw" aria-hidden="true"></i>
-                </span>
-              </button>
-            </div>
-            <div class="dropdown-menu" id="dropdown-menu3" role="menu">
-              <div class="dropdown-content">
-                <ng-container *ngIf="!source">
-                  <!-- <a class="dropdown-item" (click)="openServiceDetails()">
+        <div class="dropdown is-hoverable" *ngIf="!source || rolesService.hasEditPermissions()">
+          <div class="dropdown-trigger">
+            <button class="button is-white is-small pt-0 pb-0 dropdown-button" aria-haspopup="true"
+              aria-controls="dropdown-menu3">
+              <span class="icon is-small">
+                <i class="fas fa-ellipsis-v fa-xs fa-fw" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+            <div class="dropdown-content">
+              <ng-container *ngIf="!source">
+                <!-- <a class="dropdown-item" (click)="openServiceDetails()">
                     <span>Details</span>
                   </a> -->
-                </ng-container>
-                <a *ngIf="rolesService.hasEditPermissions()" class="dropdown-item" (click)="deleteNotification()">
-                  <span>Delete</span>
-                </a>
-              </div>
+              </ng-container>
+              <a *ngIf="rolesService.hasEditPermissions()" class="dropdown-item" (click)="deleteNotification()">
+                <span>Delete</span>
+              </a>
             </div>
           </div>
+        </div>
       </div>
     </div>
   </ng-container>
   <ng-template #addNotificationTemplate>
     <div class="add-notification">
-      <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
-        data-tooltip="Add Notification" (click)="navToAddNotificationPage()">
+      <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Add Notification"
+        (click)="navToAddNotificationPage()">
         <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
       </span>
     </div>
