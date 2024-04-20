@@ -65,10 +65,10 @@ For **windows**, see details [here](docs/windows-nginx-deployment-guide.md)
 
 | Browser        | Tested Version   | Supported |
 | -------------- | ---------------- | --------- |
-| Safari (macOS) | 15.6.x           | latest 1  |
-| Chrome         | 118.0.x (64-bit) | latest 2  |
-| Firefox        | 118.0.x (64-bit) | latest 2  |
-| Microsoft Edge | 118.0.x (64-bit) | latest 2  |
+| Safari (macOS) | 16.6.x           | latest 1  |
+| Chrome         | 123.0.x (64-bit) | latest 2  |
+| Firefox        | 123.0.x (64-bit) | latest 2  |
+| Microsoft Edge | 123.0.x (64-bit) | latest 2  |
 
 [Changelog](docs/changelog.md)
 
@@ -78,4 +78,4 @@ For **windows**, see details [here](docs/windows-nginx-deployment-guide.md)
 
 See [Contributing Statement](CONTRIBUTING.md)
 
-> &copy; 2023 DIANOMIC SYSTEMS, INC. All Rights Reserved.
+> &copy; 2024 DIANOMIC SYSTEMS, INC. All Rights Reserved.
