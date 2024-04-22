@@ -2,7 +2,6 @@
   <ul class="menu-list">
     <section [ngClass]="{'disabled':  !isServiceRunning}" (click)="toggleSideMenu(); $event.preventDefault()">
       <li>
-
         <a id="dashboard" routerLinkActive="is-active" routerLink="/" [routerLinkActiveOptions]={exact:true}>
           <span><i class="bi bi-speedometer2 bi-sm"></i> </span>
           Dashboard
@@ -72,7 +71,6 @@
             </ul>
           </div>
         </li>
-
         <li>
           <a id="configuration" routerLinkActive="is-active" routerLink='/configuration'>
             <span><i class="bi bi-gear-wide-connected bi-sm"></i></span>
