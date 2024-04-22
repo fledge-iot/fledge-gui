@@ -136,8 +136,10 @@ export class NodeEditorComponent implements OnInit {
   }
   ngOnInit(): void {
     this.subscription = this.flowEditorService.showItemsInQuickview.pipe(skip(1)).subscribe(data => {
-      if (this.from !== 'notification') {
-        this.notificationNode();
+      if (this.from === 'notification') {
+        // TODO: Settings pending for notification node
+        // this.showLogs = data.showLogs ? true: false;
+        // this.serviceName = data.serviceName;
         return;
       }
       this.showPluginConfiguration = data.showPluginConfiguration ? true: false;
@@ -237,10 +239,6 @@ export class NodeEditorComponent implements OnInit {
         removeNode(data.id);
       }
     })
-  }
-
-  notificationNode() {
-    console.log('TODO: notificationNode Quickview')
   }
 
   ngAfterViewInit(): void {
@@ -807,6 +805,10 @@ export class NodeEditorComponent implements OnInit {
   }
 
   reload() {
+    if (this.from === 'notification') {
+      this.router.navigate(['/flow/editor/notification']);
+      return;
+    }
     this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
   }
 

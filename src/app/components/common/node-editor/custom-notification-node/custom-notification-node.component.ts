@@ -3,7 +3,7 @@ import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
-import { RolesService } from "../../../../services";
+import { RolesService, ConfigurationService, AlertService } from "../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
 import { Subject, Subscription } from "rxjs";
@@ -57,6 +57,8 @@ export class CustomNotificationNodeComponent implements OnChanges {
     private route: ActivatedRoute,
     public flowEditorService: FlowEditorService,
     public rolesService: RolesService,
+    public configurationService: ConfigurationService,
+    private alertService: AlertService,
     private elRef: ElementRef) {
     this.route.params.subscribe(params => {
       this.from = params.from;
@@ -86,7 +88,7 @@ export class CustomNotificationNodeComponent implements OnChanges {
             this.notification.channel = this.data.controls.channelControl['pluginName'];
             this.notification.rule = this.data.controls.ruleControl['pluginName'];
             this.notification.notificationType = this.data.controls.notificationTypeControl['type'];
-            this.notification.enable = this.data.controls.enabledControl['enabled'];
+            this.notification.enable = this.data.controls.enabledControl['enabled'] === 'true' ? true : false;
             this.isEnabled = this.notification.enable;
           }
         }
@@ -117,9 +119,7 @@ export class CustomNotificationNodeComponent implements OnChanges {
 
   showConfigurationInQuickview() {
     // TODO: show config
-    // if (this.isNotificationNode) {
-    //   this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: true, serviceName: this.notification.name });
-    // }
+    // this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: true, serviceName: this.notification.name });
   }
 
   showLogsInQuickview() {
@@ -127,7 +127,7 @@ export class CustomNotificationNodeComponent implements OnChanges {
   }
 
   navToSyslogs() {
-    this.router.navigate(['logs/syslog'], { queryParams: { source: this.notification.name } });
+    this.router.navigate(['logs/notifications'], { queryParams: { source: this.notification.name } });
   }
 
   navToNotificationPage() {
@@ -135,19 +135,30 @@ export class CustomNotificationNodeComponent implements OnChanges {
   }
 
   toggleEnabled(isEnabled) {
-    console.log('isEnabled', isEnabled);
+    this.isEnabled = isEnabled;
+    const payload = {
+      enable: this.isEnabled ? 'true' : 'false'
+    }
+    this.configurationService.updateBulkConfiguration(this.notification.name, payload)
+      .subscribe(() => {
+        this.alertService.success(`Instance successfully ${this.isEnabled ? 'enabled' : 'disabled'}.`, true);
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
   }
 
   goToLink() {
-    if (this.isNotificationNode) {
-      this.docService.goToPluginLink({ name: this.pluginName, type: this.from });
-    }
+    const urlSlug = 'notifications';
+    this.docService.goToServiceDocLink(urlSlug, 'fledge-service-notification');
   }
 
   deleteNotification() {
-    if (this.isNotificationNode) {
-      this.flowEditorService.serviceInfo.next({ name: this.notification.name })
-    }
+    this.flowEditorService.serviceInfo.next({ name: this.notification.name });
   }
 
   openNotificationDetails() {

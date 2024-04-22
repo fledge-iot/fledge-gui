@@ -24,7 +24,7 @@
           </li>
         </ul>
       </nav>
-      <ng-container *ngIf="source && !isAddFilterWizard">
+      <ng-container *ngIf="source && !isAddFilterWizard || from === 'notification'">
         <button type="button" (click)="reload()" class="button is-small" title="Reload" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
