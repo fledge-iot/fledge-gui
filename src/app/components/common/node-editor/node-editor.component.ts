@@ -72,8 +72,7 @@ export class NodeEditorComponent implements OnInit {
   changedConfig: any;
   changedFilterConfig: any;
   pluginConfiguration;
-  ruleConfiguration: any;
-  deliveryConfiguration: any;
+  
   filterPluginConfiguration;
   advancedConfiguration = [];
   public reenableButton = new EventEmitter<boolean>(false);
@@ -86,9 +85,13 @@ export class NodeEditorComponent implements OnInit {
   isAddFilterWizard: boolean = false;
   isAlive: boolean;
 
-  rulePluginChangedConfig: any;
-  deliveryPluginChangedConfig: any;
   notificationChangedConfig: any;
+  rulePluginChangedConfig: any;
+  ruleCategory: any;
+  deliveryCategory: any;
+  deliveryPluginChangedConfig: any;
+  ruleConfiguration: any;
+  deliveryConfiguration: any;
 
   taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };
   selectedAsset = '';
@@ -144,14 +147,15 @@ export class NodeEditorComponent implements OnInit {
   ngOnInit(): void {
     this.subscription = this.flowEditorService.showItemsInQuickview.pipe(skip(1)).subscribe(data => {
       if (this.from === 'notification') {
-        // TODO: Settings pending for notification node
         this.showNotificationConfiguration = data.showNotificationConfiguration ? true : false;
         this.showLogs = data.showLogs ? true: false;
         this.notification = data.notification;
         this.serviceName = data.notification.name;
-        this.getCategory();
-        this.getRuleConfiguration();
-        this.getDeliveryConfiguration();
+        if (this.showNotificationConfiguration) {
+          this.getCategory();
+          this.getRuleConfiguration();
+          this.getDeliveryConfiguration();
+        }     
         return;
       }
       this.showPluginConfiguration = data.showPluginConfiguration ? true: false;
@@ -346,48 +350,9 @@ export class NodeEditorComponent implements OnInit {
       }
     }
   }
-
-  public getRuleConfiguration(): void {
-    const notificationName = this.notification['name'];
-    this.configService.getCategory(`rule${notificationName}`).
-      subscribe(
-        (data) => {
-          if (!isEmpty(data)) {
-            this.ruleConfiguration = { key: `rule${notificationName}`, config: data };
-          }
-        },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.toastService.error(error.statusText);
-          }
-        });
-  }
-
-  public getDeliveryConfiguration(): void {
-    this.ngProgress.start();
-    const notificationName = this.notification['name'];
-    this.configService.getCategory(`delivery${notificationName}`).
-      subscribe(
-        (data) => {
-          if (!isEmpty(data)) {
-            this.deliveryConfiguration = { key: `delivery${notificationName}`, config: data };
-          }
-          this.ngProgress.done();
-        },
-        error => {
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.toastService.error(error.statusText);
-          }
-        });
-  }
-
+  
   getChangedNotificationConfig(changedConfiguration: any) {
-    this.notificationChangedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.category);
+    this.notificationChangedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.pluginConfiguration);
   }
 
   getChangedRuleConfig(changedConfiguration: any) {
@@ -524,6 +489,47 @@ export class NodeEditorComponent implements OnInit {
           }
         }
       );
+  }
+
+  public getRuleConfiguration(): void {
+    const notificationName = this.notification['name'];
+    this.configService.getCategory(`rule${notificationName}`).
+      subscribe(
+        (data) => {
+          if (!isEmpty(data)) {
+            this.ruleCategory = { key: `rule${notificationName}`, config: data };
+            this.ruleConfiguration = cloneDeep({ key: `rule${notificationName}`, config: data });
+          }
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.toastService.error(error.statusText);
+          }
+        });
+  }
+
+  public getDeliveryConfiguration(): void {
+    this.ngProgress.start();
+    const notificationName = this.notification['name'];
+    this.configService.getCategory(`delivery${notificationName}`).
+      subscribe(
+        (data) => {
+          if (!isEmpty(data)) {
+            this.deliveryCategory = { key: `delivery${notificationName}`, config: data };
+            this.deliveryConfiguration = cloneDeep({ key: `delivery${notificationName}`, config: data });
+          }
+          this.ngProgress.done();
+        },
+        error => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.toastService.error(error.statusText);
+          }
+        });
   }
 
   getFilterCategory() {
@@ -727,15 +733,15 @@ export class NodeEditorComponent implements OnInit {
   }
 
   saveNotificationConfiguration() {
-    if (!isEmpty(this.notificationChangedConfig) && this.category?.name) {
-      this.updateConfiguration(this.category?.name, this.notificationChangedConfig, 'plugin-config');
+    if (!isEmpty(this.notificationChangedConfig) && this.pluginConfiguration?.name) {
+      this.updateConfiguration(this.pluginConfiguration?.name, this.notificationChangedConfig, 'plugin-config');
     }
-    if (!isEmpty(this.ruleConfiguration) && this.ruleConfiguration?.key) {
-      this.updateConfiguration(this.ruleConfiguration?.key, this.rulePluginChangedConfig, 'plugin-config');
+    if (!isEmpty(this.ruleCategory) && this.ruleCategory?.key) {
+      this.updateConfiguration(this.ruleCategory?.key, this.rulePluginChangedConfig, 'plugin-config');
     }
 
-    if (!isEmpty(this.deliveryConfiguration) && this.deliveryConfiguration?.key) {
-      this.updateConfiguration(this.deliveryConfiguration?.key, this.deliveryPluginChangedConfig, 'plugin-config');
+    if (!isEmpty(this.deliveryCategory) && this.deliveryCategory?.key) {
+      this.updateConfiguration(this.deliveryCategory?.key, this.deliveryPluginChangedConfig, 'plugin-config');
     }
 
     if (this.apiCallsStack.length > 0) {
