@@ -119,15 +119,11 @@ export class CustomNotificationNodeComponent implements OnChanges {
 
   showConfigurationInQuickview() {
     // TODO: show config
-    // this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: true, serviceName: this.notification.name });
+    this.flowEditorService.showItemsInQuickview.next({ showNotificationConfiguration: true, notification: this.notification });
   }
 
   showLogsInQuickview() {
-    this.flowEditorService.showItemsInQuickview.next({ showLogs: true, serviceName: this.notification.name });
-  }
-
-  navToSyslogs() {
-    this.router.navigate(['logs/notifications'], { queryParams: { source: this.notification.name } });
+    this.flowEditorService.showItemsInQuickview.next({ showLogs: true, notification: this.notification.name });
   }
 
   navToNotificationPage() {

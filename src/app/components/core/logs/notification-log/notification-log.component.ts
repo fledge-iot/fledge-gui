@@ -32,8 +32,6 @@ export class NotificationLogComponent implements OnInit, OnDestroy {
   isInvalidLimit = false;
   searchTerm = '';
 
-  pageSource = '';
-
   public refreshInterval = POLLING_INTERVAL;
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -52,13 +50,6 @@ export class NotificationLogComponent implements OnInit, OnDestroy {
         }
         this.refreshInterval = timeInterval;
       });
-  
-    this.route.queryParams.subscribe(params => {
-      if (params['source']) {
-        this.pageSource = params['source'];
-        this.getNotificationLogs();
-      }
-    });
   }
 
   ngOnInit() {
@@ -69,6 +60,12 @@ export class NotificationLogComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.getNotificationLogs(true);
       });
+  }
+
+  ngOnChanges(){
+    if(this.sourceName){
+      this.searchTerm = this.sourceName;
+    }
   }
 
   /**

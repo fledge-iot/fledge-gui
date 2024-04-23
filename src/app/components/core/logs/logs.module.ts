@@ -57,6 +57,6 @@ const routes: Routes = [
   providers: [
 
   ],
-  exports: [SystemLogComponent]
+  exports: [SystemLogComponent, NotificationLogComponent]
 })
 export class LogsModule { }

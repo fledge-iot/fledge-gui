@@ -53,6 +53,7 @@ export class NodeEditorComponent implements OnInit {
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
   showLogs: boolean = false;
+  showNotificationConfiguration = false;
   showTaskSchedule = false;
   showReadings = false;
   service: Service;
@@ -71,6 +72,8 @@ export class NodeEditorComponent implements OnInit {
   changedConfig: any;
   changedFilterConfig: any;
   pluginConfiguration;
+  ruleConfiguration: any;
+  deliveryConfiguration: any;
   filterPluginConfiguration;
   advancedConfiguration = [];
   public reenableButton = new EventEmitter<boolean>(false);
@@ -82,6 +85,10 @@ export class NodeEditorComponent implements OnInit {
   quickviewFilterName = "";
   isAddFilterWizard: boolean = false;
   isAlive: boolean;
+
+  rulePluginChangedConfig: any;
+  deliveryPluginChangedConfig: any;
+  notificationChangedConfig: any;
 
   taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };
   selectedAsset = '';
@@ -138,8 +145,13 @@ export class NodeEditorComponent implements OnInit {
     this.subscription = this.flowEditorService.showItemsInQuickview.pipe(skip(1)).subscribe(data => {
       if (this.from === 'notification') {
         // TODO: Settings pending for notification node
-        // this.showLogs = data.showLogs ? true: false;
-        // this.serviceName = data.serviceName;
+        this.showNotificationConfiguration = data.showNotificationConfiguration ? true : false;
+        this.showLogs = data.showLogs ? true: false;
+        this.notification = data.notification;
+        this.serviceName = data.notification.name;
+        this.getCategory();
+        this.getRuleConfiguration();
+        this.getDeliveryConfiguration();
         return;
       }
       this.showPluginConfiguration = data.showPluginConfiguration ? true: false;
@@ -148,7 +160,7 @@ export class NodeEditorComponent implements OnInit {
       this.showTaskSchedule = data.showTaskSchedule ? true: false;
       this.showReadings = data.showReadings ? true: false;
       this.serviceName = data.serviceName;
-      if (this.showPluginConfiguration) {
+      if (this.showPluginConfiguration || this.showNotificationConfiguration) {
         this.getCategory();
       }
       if (this.showTaskSchedule) {
@@ -228,7 +240,7 @@ export class NodeEditorComponent implements OnInit {
           this.getNorthTasks();
         } 
         if (this.from == 'south') {
-          this.getSouthervices();
+          this.getSouthservices();
         }
         if (this.from == 'notification') {
           this.getNotifications();
@@ -335,6 +347,57 @@ export class NodeEditorComponent implements OnInit {
     }
   }
 
+  public getRuleConfiguration(): void {
+    const notificationName = this.notification['name'];
+    this.configService.getCategory(`rule${notificationName}`).
+      subscribe(
+        (data) => {
+          if (!isEmpty(data)) {
+            this.ruleConfiguration = { key: `rule${notificationName}`, config: data };
+          }
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.toastService.error(error.statusText);
+          }
+        });
+  }
+
+  public getDeliveryConfiguration(): void {
+    this.ngProgress.start();
+    const notificationName = this.notification['name'];
+    this.configService.getCategory(`delivery${notificationName}`).
+      subscribe(
+        (data) => {
+          if (!isEmpty(data)) {
+            this.deliveryConfiguration = { key: `delivery${notificationName}`, config: data };
+          }
+          this.ngProgress.done();
+        },
+        error => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.toastService.error(error.statusText);
+          }
+        });
+  }
+
+  getChangedNotificationConfig(changedConfiguration: any) {
+    this.notificationChangedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.category);
+  }
+
+  getChangedRuleConfig(changedConfiguration: any) {
+    this.rulePluginChangedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.ruleConfiguration);
+  }
+
+  getChangedDeliveryConfig(changedConfiguration: any) {
+    this.deliveryPluginChangedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.deliveryConfiguration);
+  }
+
   getNorthTasks() {
     this.northService.getNorthTasks(true)
       .pipe(takeUntil(this.destroy$))
@@ -363,7 +426,7 @@ export class NodeEditorComponent implements OnInit {
         });
   }
 
-  getSouthervices() {
+  getSouthservices() {
     this.servicesApiService.getSouthServices(true)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
@@ -443,9 +506,13 @@ export class NodeEditorComponent implements OnInit {
     /** request started */
     this.configService.getCategory(this.serviceName).
       subscribe(
-        (data) => {
+        (data: any) => {
           this.changedConfig = [];
           this.advancedConfiguration = [];
+          if (this.from === 'notification') {
+            data.channel['readonly'] = 'true';
+            data.rule['readonly'] = 'true';
+          }        
           this.category = { name: this.serviceName, config: data };
           this.pluginConfiguration = cloneDeep({ name: this.serviceName, config: data });
         },
@@ -655,6 +722,29 @@ export class NodeEditorComponent implements OnInit {
         });
         this.apiCallsStack = [];
         this.getFilterCategory();
+      });
+    }
+  }
+
+  saveNotificationConfiguration() {
+    if (!isEmpty(this.notificationChangedConfig) && this.category?.name) {
+      this.updateConfiguration(this.category?.name, this.notificationChangedConfig, 'plugin-config');
+    }
+    if (!isEmpty(this.ruleConfiguration) && this.ruleConfiguration?.key) {
+      this.updateConfiguration(this.ruleConfiguration?.key, this.rulePluginChangedConfig, 'plugin-config');
+    }
+
+    if (!isEmpty(this.deliveryConfiguration) && this.deliveryConfiguration?.key) {
+      this.updateConfiguration(this.deliveryConfiguration?.key, this.deliveryPluginChangedConfig, 'plugin-config');
+    }
+
+    if (this.apiCallsStack.length > 0) {
+      this.ngProgress.start();
+      forkJoin(this.apiCallsStack).subscribe(() => {
+        this.ngProgress.done();
+        this.reenableButton.emit(false);
+        this.toastService.success('Configuration updated successfully.');
+        this.apiCallsStack = [];
       });
     }
   }
