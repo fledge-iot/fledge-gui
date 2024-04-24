@@ -2,20 +2,10 @@ import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, Vi
 import { createEditor, getUpdatedFilterPipeline, deleteConnection, removeNode, updateNode, updateFilterNode } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  AssetsService,
-  ConfigurationControlService,
-  ConfigurationService,
-  FileUploaderService,
-  FilterService,
-  GenerateCsvService,
-  NorthService,
-  PingService,
-  ProgressBarService,
-  ResponseHandler,
-  RolesService,
-  NotificationsService,
-  ServicesApiService,
-  ToastService
+  AssetsService, ConfigurationControlService, ConfigurationService, FileUploaderService,
+  FilterService, GenerateCsvService, NorthService, PingService, ProgressBarService,
+  ResponseHandler, RolesService, NotificationsService,
+  ServicesApiService, ToastService
 } from './../../../services';
 import { catchError, delay, map, mergeMap, repeatWhen, skip, take, takeUntil, takeWhile } from 'rxjs/operators';
 import { Service } from '../../core/south/south-service';
@@ -25,8 +15,8 @@ import { cloneDeep, isEmpty } from 'lodash';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import { NorthTask } from '../../core/north/north-task';
 import { Notification } from '../../core/notifications/notification';
+import { NotificationServiceWarningComponent } from '../../core/notifications/notification-service-warning/notification-service-warning.component';
 import Utils, { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
-import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 
 @Component({
   selector: 'app-node-editor',
@@ -35,6 +25,7 @@ import { DeveloperFeaturesService } from '../../../services/developer-features.s
 })
 export class NodeEditorComponent implements OnInit {
 
+  @ViewChild(NotificationServiceWarningComponent, { static: true }) notificationServiceWarningComponent: NotificationServiceWarningComponent;
   @ViewChild("rete") container!: ElementRef;
   public source = '';
   public from = '';
@@ -92,6 +83,8 @@ export class NodeEditorComponent implements OnInit {
   deliveryPluginChangedConfig: any;
   ruleConfiguration: any;
   deliveryConfiguration: any;
+  showConfigureModal = false;
+  isServiceAvailable = false;
 
   taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };
   selectedAsset = '';
@@ -125,11 +118,11 @@ export class NodeEditorComponent implements OnInit {
       if (this?.from === 'north') {
         this.getNorthboundServices();
       }
-      if (this?.from === 'notification') {
+      if (this?.from === 'notifications') {
         this.getNotificationInstances();
       }
 
-      if (this?.from !== 'notification' && this.source) {
+      if (this?.from !== 'notifications' && this.source) {
         this.getFilterPipeline();
       }
     });
@@ -146,7 +139,7 @@ export class NodeEditorComponent implements OnInit {
   }
   ngOnInit(): void {
     this.subscription = this.flowEditorService.showItemsInQuickview.pipe(skip(1)).subscribe(data => {
-      if (this.from === 'notification') {
+      if (this.from === 'notifications') {
         this.showNotificationConfiguration = data.showNotificationConfiguration ? true : false;
         this.showLogs = data.showLogs ? true: false;
         this.notification = data.notification;
@@ -246,7 +239,7 @@ export class NodeEditorComponent implements OnInit {
         if (this.from == 'south') {
           this.getSouthservices();
         }
-        if (this.from == 'notification') {
+        if (this.from == 'notifications') {
           this.getNotifications();
         }
       });
@@ -474,7 +467,7 @@ export class NodeEditorComponent implements OnInit {
         (data: any) => {
           this.changedConfig = [];
           this.advancedConfiguration = [];
-          if (this.from === 'notification') {
+          if (this.from === 'notifications') {
             data.channel['readonly'] = 'true';
             data.rule['readonly'] = 'true';
           }        
@@ -858,7 +851,7 @@ export class NodeEditorComponent implements OnInit {
   }
 
   deleteService() {
-    if(this.from === 'notification') {
+    if(this.from === 'notifications') {
       this.deleteNotification();
       return;
     }
@@ -901,8 +894,8 @@ export class NodeEditorComponent implements OnInit {
   }
 
   reload() {
-    if (this.from === 'notification') {
-      this.router.navigate(['/flow/editor/notification']);
+    if (this.from === 'notifications') {
+      this.router.navigate(['/flow/editor/notifications']);
       return;
     }
     this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
@@ -983,6 +976,22 @@ export class NodeEditorComponent implements OnInit {
           this.reenableButton.emit(false);
           console.log('error in response', error);
         });
+  }
+
+  getServiceDetail(event) {
+    this.showConfigureModal = event.isOpen;
+    delete event.isOpen;
+    const serviceInfo = event;
+    if (this.showConfigureModal) {
+     this.openServiceConfigureModal(serviceInfo); 
+    }
+  }
+
+  /**
+     * Open Configure Service modal
+     */
+   openServiceConfigureModal(serviceInfo) {
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
   }
 
   ngOnDestroy() {

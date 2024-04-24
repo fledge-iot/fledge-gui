@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { SchedulesService, ProgressBarService, AlertService, ServicesApiService } from '../../../../services';
+import { FlowEditorService } from '../../../common/node-editor/flow-editor.service';
 import { SharedService } from '../../../../services/shared.service';
 
 @Injectable({
@@ -55,7 +56,7 @@ export class AdditionalServicesUtils {
         public schedulesService: SchedulesService,
         public servicesApiService: ServicesApiService,
         private ngProgress: ProgressBarService,
-        private sharedService: SharedService,
+        public flowEditorService: FlowEditorService,
         private alertService: AlertService){
     }
 
@@ -100,7 +101,7 @@ export class AdditionalServicesUtils {
       if (!fromListPage) {
         switch (serviceProcessName) {
           case 'notification':
-            routeToNavigate = '/notification';
+            routeToNavigate = this.flowEditorService.getFlowEditorStatus() ? '/flow/editor/notifications': '/notification';
             break;
           case 'bucket':
             routeToNavigate = '/mlmodels';

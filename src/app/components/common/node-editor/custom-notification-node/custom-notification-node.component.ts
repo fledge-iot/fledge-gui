@@ -82,7 +82,7 @@ export class CustomNotificationNodeComponent implements OnChanges {
       if (this.source !== '') {
         this.elRef.nativeElement.style.borderColor = "#0E9BD8";
         this.isNotificationNode = true;
-        if (this.from == 'notification') {
+        if (this.from == 'notifications') {
           if (!isEmpty(this.data.controls)) {
             this.notification.name = this.data.controls.nameControl['name'];
             this.notification.channel = this.data.controls.channelControl['pluginName'];

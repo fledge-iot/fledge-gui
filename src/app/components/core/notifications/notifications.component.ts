@@ -11,7 +11,7 @@ import {
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
 import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
-
+import { NotificationServiceWarningComponent } from './notification-service-warning/notification-service-warning.component';
 import { DocService } from '../../../services/doc.service';
 
 @Component({
@@ -29,6 +29,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   notificationInstances = [];
   notification: any;
   viewPort: any = '';
+  serviceInfo: {};
+  isServiceAvailable = false;
 
   public notificationServiceRecord: any;
   public notificationServiceInstalled = false;
@@ -41,7 +43,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   @ViewChild(NotificationModalComponent, { static: true }) notificationModal: NotificationModalComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
-  
+  @ViewChild(NotificationServiceWarningComponent, { static: true }) notificationServiceWarningComponent: NotificationServiceWarningComponent;
+
   constructor(
     public servicesApiService: ServicesApiService,
     public schedulesService: SchedulesService,
@@ -81,6 +84,15 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       this.notificationServiceInstalled = false;
       this.isNotificationServiceAvailable = false;
       this.isNotificationServiceEnabled = false;
+    }
+  }
+
+  getServiceDetail(event) {
+    this.showConfigureModal = event.isOpen;
+    delete event.isOpen;
+    this.serviceInfo = event;
+    if (this.showConfigureModal) {
+     this.openServiceConfigureModal(); 
     }
   }
 

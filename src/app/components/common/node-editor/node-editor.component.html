@@ -9,8 +9,8 @@
           <li *ngIf="from=='north'">
             <a [routerLink]="['/flow/editor/north']">North</a>
           </li>
-          <li *ngIf="from=='notification'">
-            <a [routerLink]="['/flow/editor/notification']">Notification</a>
+          <li *ngIf="from=='notifications'">
+            <a [routerLink]="['/flow/editor/notifications']">Notifications</a>
           </li>
           <li [ngClass]="{'is-active' : !source || !isAddFilterWizard}" *ngIf="source">
             <a [routerLink]="['/flow/editor', from, source, 'details']">
@@ -24,16 +24,22 @@
           </li>
         </ul>
       </nav>
-      <ng-container *ngIf="source && !isAddFilterWizard || from === 'notification'">
+      <ng-container *ngIf="source && !isAddFilterWizard">
         <button type="button" (click)="reload()" class="button is-small" title="Reload" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </ng-container>
     </div>
+    <!-- <div *ngIf="isServiceAvailable" class="cog-icon">
+      <app-notification-service-config (serviceConfigureModal)="openServiceConfigureModal()"></app-notification-service-config>
+    </div> -->
     <ng-container *ngIf="source && rolesService.hasEditPermissions() && !isAddFilterWizard">
       <button class="button is-small is-link mb-1" (click)="save()">Save</button>
     </ng-container>
   </div>
+  <ng-container *ngIf="from === 'notifications'">
+    <app-notification-service-warning (serviceStatusEvent)="isServiceAvailable = $event" (serviceConfigureModal)="getServiceDetail($event)"></app-notification-service-warning>
+  </ng-container>
   <ng-container *ngIf="!isAddFilterWizard">
     <div class="rete" #rete></div>
   </ng-container>
@@ -71,18 +77,18 @@
         </div>
       </div>
     </ng-container>
-    <ng-container *ngIf="showLogs && from !== 'notification'">
+    <ng-container *ngIf="showLogs && from !== 'notifications'">
       <app-system-log [sourceName]="serviceName"></app-system-log>
     </ng-container>
 
     <!-- Notification Log in Quickview -->
-    <ng-container *ngIf="showLogs && from === 'notification'">
+    <ng-container *ngIf="showLogs && from === 'notifications'">
       <app-notification-log [sourceName]="serviceName"></app-notification-log>
     </ng-container>
 
     <!-- Notification Instance Configuration in Quickview -->
-    <ng-container *ngIf="showNotificationConfiguration && from === 'notification'">
-      <app-configuration-group #notificationConfigView *ngIf="category" [sourceName]="serviceName" [category]="category" [from]="'notification'"
+    <ng-container *ngIf="showNotificationConfiguration && from === 'notifications'">
+      <app-configuration-group #notificationConfigView *ngIf="category" [sourceName]="serviceName" [category]="category" [from]="'notifications'"
         (changedConfigEvent)="getChangedNotificationConfig($event)"
         (formStatusEvent)="validConfigurationForm = $event">
       </app-configuration-group>
@@ -110,31 +116,17 @@
           </div>
         </div>
       </div>
-      <div class="columns" *ngIf="rolesService.hasEditPermissions()">
-        <div class="column">
-          <div class="field is-grouped is-pulled-right">
-            <p class="control">
-              <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
-            </p>
-            <p class="control">
-              <button class="button is-small is-link" (click)="saveNotificationConfiguration()" [appDisableUntilResponse]="reenableButton">Save</button>
-            </p>
+      <div class="container is-fluid" *ngIf="rolesService.hasEditPermissions()">
+        <div class="columns">
+          <div class="column">
+            <div class="field is-grouped is-pulled-left">
+              <p class="control">
+                <button class="button is-small is-link ml-4" (click)="saveNotificationConfiguration()" [appDisableUntilResponse]="reenableButton">Save</button>
+              </p>
+            </div>
           </div>
         </div>
       </div>
-      <!-- <hr class="hr-text" data-content=""> -->
-      <ng-container *ngIf="notification != undefined">
-        <p class="buttons is-pulled-left">
-          <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
-            data-tooltip="Help" (click)="goToLink()">
-            <i class="far fa-question-circle"></i>
-          </span>
-        </p>
-        <p class="buttons is-pulled-right" *ngIf="rolesService.hasEditPermissions()">
-          <button (click)="openModal('delete-notification-dialog')" class="button is-small"
-            [disabled]="!notification.notificationEnabled ? 'disabled' : null">Delete Instance</button>
-        </p>
-      </ng-container>
     </ng-container>
     <ng-container *ngIf="showTaskSchedule">
       <app-task-schedule [taskSchedule]="taskSchedule"></app-task-schedule>
@@ -150,12 +142,12 @@
 <app-confirmation-dialog id="delete-service-dialog" *ngIf="rolesService.hasEditPermissions()">
   <header class="modal-card-head">
     <span class="modal-card-title is-size-6">
-      {{ task && task?.execution == "task" ? "Delete Task": (from === 'notification' ? 'Delete Instance' : 'Delete Service')}}
+      {{ task && task?.execution == "task" ? "Delete Task": (from === 'notifications' ? 'Delete Instance' : 'Delete Service')}}
     </span>
     <button class="delete" aria-label="close" (click)="closeModal('delete-service-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Deleting {{deleteServiceName}} {{ task && task?.execution == "task"? 'task': (from === 'notification' ? 'instance' : 'service')}} cannot be undone. Continue?
+    Deleting {{deleteServiceName}} {{ task && task?.execution == "task"? 'task': (from === 'notifications' ? 'instance' : 'service')}} cannot be undone. Continue?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('delete-service-dialog')">Cancel</button>

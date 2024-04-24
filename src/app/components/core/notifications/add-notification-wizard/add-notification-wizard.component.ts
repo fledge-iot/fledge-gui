@@ -181,7 +181,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
 
     if (+id === 1) {
       if (this.source) {
-        this.router.navigate(['/flow/editor/notification']);
+        this.router.navigate(['/flow/editor/notifications']);
       } else {
         this.router.navigate(['/notification']);
       }
@@ -483,7 +483,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
             this.uploadScript(`delivery${name}`, deliveryScriptFiles);
           }
           if (this.source === 'flowEditor') {
-            this.router.navigate(['/flow/editor/notification']);
+            this.router.navigate(['/flow/editor/notifications']);
           }
           else {
             this.router.navigate(['/notification']);

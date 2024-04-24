@@ -1,5 +1,6 @@
 <div class="container is-fluid">
-  <div>
+  <app-notification-service-warning (serviceStatusEvent)="isServiceAvailable = $event" (serviceConfigureModal)="getServiceDetail($event)"></app-notification-service-warning>
+  <!-- <div>
     <ng-container *ngIf="isNotificationServiceEnabled === false">
       <article class="message is-warning">
         <div class="message-body">
@@ -22,7 +23,7 @@
         </div>
       </article>
     </ng-container>
-  </div>
+  </div> -->
   <div class="card">
     <header class="card-header">
       <div id="notification-service" class="card-header-title">
@@ -40,12 +41,15 @@
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Create Notification Instance &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </button>
-      <a *ngIf="isNotificationServiceAvailable || rolesService.hasEditPermissions()" class="button"
+      <!-- <a *ngIf="isNotificationServiceAvailable || rolesService.hasEditPermissions()" class="button"
         (click)="openServiceConfigureModal()" id="refresh-check">
         <span class="icon">
           <i class="bi bi-gear-wide-connected bi-sm" aria-hidden="true" title="Notification Service Configuration"></i>
         </span>
-      </a>
+      </a> -->
+      <div *ngIf="isServiceAvailable" class="cog-icon">
+        <app-notification-service-config (serviceConfigureModal)="openServiceConfigureModal()"></app-notification-service-config>
+    </div>
       <span *ngIf="isNotificationServiceEnabled"
         class="icon is-small tooltip is-pulled-right is-hovered help-pad" data-tooltip="Help"
         (click)="goToLink('using-the-notification-service')">

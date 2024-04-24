@@ -47,7 +47,6 @@ const routes: Routes = [
   }
 ]
 
-
 @NgModule({
   declarations: [
     NodeEditorComponent,
@@ -74,6 +73,6 @@ const routes: Routes = [
     CustomSocketComponent,
     CustomConnectionComponent,
     RefDirective],
-  providers: [RolesGuard, PluginService, NotificationsService],
+  providers: [RolesGuard, PluginService, NotificationsService]
 })
 export class FlowEditorModule { }

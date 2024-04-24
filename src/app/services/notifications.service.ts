@@ -10,6 +10,7 @@ export class NotificationsService {
   notifyServiceEmitter = new BehaviorSubject<any>(null);
 
   private GET_NOTIFICATION_URL = environment.BASE_URL + 'notification';
+  public triggerRefreshEvent: BehaviorSubject<string> = new BehaviorSubject<any>('');
 
   constructor(private http: HttpClient) { }
 

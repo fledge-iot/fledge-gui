@@ -126,7 +126,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
       customize: {
 
         node() {
-          if (data.from == 'notification') {
+          if (data.from == 'notifications') {
             return CustomNotificationNodeComponent;
           }
           return CustomNodeComponent;
@@ -190,7 +190,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     createNorthNodesAndConnections(socket, editor, arrange, area, rolesService, data);
     return;
   }
-  if (data.from == 'notification') {
+  if (data.from == 'notifications') {
     createNotificationNodesAndConnections(socket, editor, arrange, area, rolesService, data);
     return;
   }

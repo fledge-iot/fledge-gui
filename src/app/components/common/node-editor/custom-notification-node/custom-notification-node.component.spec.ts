@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CustomNodeComponent } from './custom-notification-node.component';
+import { CustomNotificationNodeComponent } from './custom-notification-node.component';
 
 describe('CustomNodeComponent', () => {
-  let component: CustomNodeComponent;
-  let fixture: ComponentFixture<CustomNodeComponent>;
+  let component: CustomNotificationNodeComponent;
+  let fixture: ComponentFixture<CustomNotificationNodeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CustomNodeComponent ]
+      declarations: [ CustomNotificationNodeComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CustomNodeComponent);
+    fixture = TestBed.createComponent(CustomNotificationNodeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
