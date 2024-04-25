@@ -160,3 +160,7 @@
 .trash-icon {
   visibility: hidden !important;
 }
+
+.icon-rule {
+  font-size: 0.8rem;
+}

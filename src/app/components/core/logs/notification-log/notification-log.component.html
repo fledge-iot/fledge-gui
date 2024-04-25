@@ -9,6 +9,12 @@
           </li>
         </ul>
       </nav>
+      <div *ngIf="refreshInterval !== -1" class="fix-pad auto-refresh">
+        <label class="checkbox">
+          <input class="checkmark" type="checkbox" [checked]='isAlive' (click)="toggleAutoRefresh($event)">
+          Auto Refresh
+        </label>
+      </div>
     </div>
     <ng-template #cardHeaderTemplate>
       <header class="card-header">
@@ -75,7 +81,7 @@
               </div>
             </div>
           </div>
-          <div class="column">
+          <div *ngIf="!sourceName" class="column">
             <label class="label">Search</label>
             <input [disabled]="notificationLogs?.length < 2" #nameField type="search"
               class="input is-fullwidth is-small" placeholder="search text by name" [(ngModel)]="searchTerm" />
