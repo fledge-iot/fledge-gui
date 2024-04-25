@@ -30,9 +30,13 @@
         </button>
       </ng-container>
     </div>
-    <!-- <div *ngIf="isServiceAvailable" class="cog-icon">
+    <div *ngIf="isServiceAvailable && from === 'notifications'">
       <app-notification-service-config (serviceConfigureModal)="openServiceConfigureModal()"></app-notification-service-config>
-    </div> -->
+      <span class="icon is-small tooltip is-pulled-right is-hovered help-pad" data-tooltip="Help"
+        (click)="goToLink('using-the-notification-service')">
+        <i class="far fa-question-circle"></i>
+      </span>
+    </div>
     <ng-container *ngIf="source && rolesService.hasEditPermissions() && !isAddFilterWizard">
       <button class="button is-small is-link mb-1" (click)="save()">Save</button>
     </ng-container>

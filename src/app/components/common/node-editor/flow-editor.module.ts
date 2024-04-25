@@ -41,7 +41,7 @@ const routes: Routes = [
     canActivate: [RolesGuard]
   },
   {
-    path: 'editor/notification/add',
+    path: 'editor/notifications/add',
     component: AddNotificationWizardComponent,
     canActivate: [RolesGuard]
   }

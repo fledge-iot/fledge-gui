@@ -13,15 +13,13 @@
         <div class="tabs" *ngIf="from !== 'config-manager'"
           [ngClass]="{'is-fullwidth': sourceName && groupTabs?.length > 1, 'is-boxed': !sourceName}">
           <ul>
-            <ng-container *ngIf="from !== 'notifications' && groups.length > 1">
-              <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
-                <h6 class="is-6 is-small-font">
-                  <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false}">
-                    {{g.group}}
-                  </a>
-                </h6>
-              </li>
-            </ng-container>
+            <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
+              <h6 class="is-6 is-small-font">
+                <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false}">
+                  {{g.group}}
+                </a>
+              </h6>
+            </li>
             <!-- Advanced and security group -->
             <li *ngFor="let g of dynamicCategoriesGroup" [ngClass]="{'is-active': selectedGroup == g.group}">
               <h6 class="is-6 is-small-font">

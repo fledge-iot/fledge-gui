@@ -12,6 +12,7 @@ import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.com
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
 import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
 import { NotificationServiceWarningComponent } from './notification-service-warning/notification-service-warning.component';
+import { NotificationServiceConfigComponent } from './notification-service-config/notification-service-config.component';
 import { DocService } from '../../../services/doc.service';
 
 @Component({
@@ -44,6 +45,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
   @ViewChild(NotificationServiceWarningComponent, { static: true }) notificationServiceWarningComponent: NotificationServiceWarningComponent;
+  @ViewChild(NotificationServiceConfigComponent, { static: true }) notificationServiceConfigComponent: NotificationServiceConfigComponent;
 
   constructor(
     public servicesApiService: ServicesApiService,

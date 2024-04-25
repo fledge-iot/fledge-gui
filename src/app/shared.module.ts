@@ -20,6 +20,7 @@ import { AddServiceWizardComponent } from './components/core/south/add-service-w
 import { AddTaskWizardComponent } from './components/core/north/add-task-wizard/add-task-wizard.component';
 import { TaskScheduleComponent } from './components/core/north/task-schedule/task-schedule.component';
 import { NotificationServiceWarningComponent } from './components/core/notifications/notification-service-warning/notification-service-warning.component';
+import { NotificationServiceConfigComponent } from './components/core/notifications/notification-service-config/notification-service-config.component';
 
 import { ListTypeConfigurationComponent } from './components/core/configuration-manager/list-type-configuration/list-type-configuration.component';
 import { KvListTypeConfigurationComponent } from './components/core/configuration-manager/kv-list-type-configuration/kv-list-type-configuration.component';
@@ -50,7 +51,8 @@ import { KvListTypeConfigurationComponent } from './components/core/configuratio
     AddServiceWizardComponent,
     AddTaskWizardComponent,
     TaskScheduleComponent,
-    NotificationServiceWarningComponent
+    NotificationServiceWarningComponent,
+    NotificationServiceConfigComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -65,7 +67,8 @@ import { KvListTypeConfigurationComponent } from './components/core/configuratio
     AddServiceWizardComponent,
     AddTaskWizardComponent,
     TaskScheduleComponent,
-    NotificationServiceWarningComponent
+    NotificationServiceWarningComponent,
+    NotificationServiceConfigComponent
   ]
 })
 export class SharedModule { }

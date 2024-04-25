@@ -81,7 +81,6 @@ export class NotificationServiceWarningComponent implements OnInit {
           if (schedule?.enabled) {
             this.notificationServiceEnabled = true;
           }
-          console.log('notificationServiceEnabled22', this.notificationServiceEnabled);
           this.serviceStatusEvent.emit(this.notificationServiceInstalled && this.notificationServiceAdded);      
           this.emitData();
         },

@@ -16,7 +16,9 @@ import { DialogService } from '../confirmation-dialog/dialog.service';
 import { NorthTask } from '../../core/north/north-task';
 import { Notification } from '../../core/notifications/notification';
 import { NotificationServiceWarningComponent } from '../../core/notifications/notification-service-warning/notification-service-warning.component';
+import { NotificationServiceConfigComponent } from '../../core/notifications/notification-service-config/notification-service-config.component';
 import Utils, { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
+import { DocService } from '../../../services/doc.service';
 
 @Component({
   selector: 'app-node-editor',
@@ -26,6 +28,7 @@ import Utils, { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
 export class NodeEditorComponent implements OnInit {
 
   @ViewChild(NotificationServiceWarningComponent, { static: true }) notificationServiceWarningComponent: NotificationServiceWarningComponent;
+  @ViewChild(NotificationServiceConfigComponent, { static: true }) notificationServiceConfigComponent: NotificationServiceConfigComponent;
   @ViewChild("rete") container!: ElementRef;
   public source = '';
   public from = '';
@@ -85,6 +88,7 @@ export class NodeEditorComponent implements OnInit {
   deliveryConfiguration: any;
   showConfigureModal = false;
   isServiceAvailable = false;
+  serviceInfo: {};
 
   taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };
   selectedAsset = '';
@@ -108,6 +112,7 @@ export class NodeEditorComponent implements OnInit {
     private ping: PingService,
     private assetService: AssetsService,
     public generateCsv: GenerateCsvService,
+    private docService: DocService,
     private router: Router) {
     this.route.params.subscribe(params => {
       this.from = params.from;
@@ -981,17 +986,21 @@ export class NodeEditorComponent implements OnInit {
   getServiceDetail(event) {
     this.showConfigureModal = event.isOpen;
     delete event.isOpen;
-    const serviceInfo = event;
+    this.serviceInfo = event;
     if (this.showConfigureModal) {
-     this.openServiceConfigureModal(serviceInfo); 
+     this.openServiceConfigureModal(); 
     }
+  }
+
+  goToLink(urlSlug) {
+    this.docService.goToServiceDocLink(urlSlug, 'fledge-service-notification');
   }
 
   /**
      * Open Configure Service modal
      */
-   openServiceConfigureModal(serviceInfo) {
-    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
+   openServiceConfigureModal() {
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
   }
 
   ngOnDestroy() {

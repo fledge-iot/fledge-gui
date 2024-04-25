@@ -4,6 +4,7 @@ import { DeveloperFeaturesService } from '../../../../services/developer-feature
 import { chain, cloneDeep, uniqWith } from 'lodash';
 import { TabHeader } from './tab-header-slider';
 import { TabNavigationComponent } from '../tab-navigation/tab-navigation.component';
+// import { FlowEditorService } from './../../../common/node-editor/flow-editor.service';
 
 @Component({
   selector: 'app-configuration-group',
@@ -46,6 +47,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     private configService: ConfigurationService,
     private configurationControlService: ConfigurationControlService,
     private alertService: AlertService
+    // public flowEditorService: FlowEditorService
   ) { }
 
   ngAfterViewInit() {

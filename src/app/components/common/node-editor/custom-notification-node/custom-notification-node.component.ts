@@ -156,10 +156,6 @@ export class CustomNotificationNodeComponent implements OnChanges {
     this.flowEditorService.serviceInfo.next({ name: this.notification.name });
   }
 
-  openNotificationDetails() {
-    this.router.navigate(['/flow/editor', this.from, this.notification.name, 'details']);
-  }
-
   navToAddNotificationPage() {
     this.router.navigate(['/flow/editor', this.from, 'add'], { queryParams: { source: 'flowEditor' } });
   }
