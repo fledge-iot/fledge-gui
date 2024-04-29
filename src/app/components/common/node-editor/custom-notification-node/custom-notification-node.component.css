@@ -6,7 +6,7 @@
   cursor: pointer;
   box-sizing: border-box;
   width: 198px;
-  height: 92px;
+  height: auto;
   position: relative;
   user-select: none;
 }
@@ -125,7 +125,7 @@
 }
 
 .add-notification {
-  height: 92px;
+  height: 110px;
   width: 198px;
   display: flex;
   justify-content: center;
@@ -163,4 +163,8 @@
 
 .icon-rule {
   font-size: 0.8rem;
+}
+
+.onhover-text {
+  height: 0.7rem;
 }

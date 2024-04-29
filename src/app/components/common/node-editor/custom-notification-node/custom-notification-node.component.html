@@ -3,17 +3,14 @@
     <div class="title" data-testid="title">
       <div class="is-flex is-justify-content-space-between is-align-items-baseline">
         <div class="is-inline-flex is-align-items-baseline">    
-          <span>{{data.controls?.nameControl?.name}}</span>   
-          <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered icon icon-rule has-text-grey-light"
-            [attr.data-tooltip]="notification.rule" *ngIf="isNotificationNode && notification.enable">
-            <i class="fa-regular fa-lightbulb"></i>
+          <span>{{data.controls?.nameControl?.name}}
+            <i class="fa-regular fa-lightbulb icon-rule has-text-grey-light" (mouseover)="showRule = true" (mouseleave)="showRule = false"></i>
+            <p class="onhover-text">
+              <span class="help-text" [hidden]="!showRule">{{notification.rule}}</span>
+            </p>
           </span>
         </div>
         <div class="is-inline-flex">
-          <label class="checkbox">
-            <input type="checkbox" [checked]='isEnabled' (click)="toggleEnabled($event.target.checked)"
-              [disabled]="!rolesService.hasEditPermissions()">
-          </label>
           <button class="btn btn-icon pt-0" data-show="quickview" data-target="quickviewDefault" data-toggle="quickview"
             (click)="showConfigurationInQuickview()">
             <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Configuration">
@@ -25,24 +22,15 @@
     </div>
     <div>
       <div class="is-flex is-justify-content-center">
-        <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered has-text-grey-light"
-          [attr.data-tooltip]="notification.channel">
-          <i class="bi bi-lightning-charge bi-lg no-hover"></i>
+        <span class="is-hovered has-text-grey-light">
+          <p class="onhover-text">
+            <span class="help-text" [hidden]="!showChannel">{{notification.channel}}</span>
+          </p>
+          <i class="bi bi-lightning-charge bi-lg no-hover pl-3" (mouseover)="showChannel = true" (mouseleave)="showChannel = false"></i>
+          <span class="help-text">{{data.controls?.notificationTypeControl?.type}}</span>
         </span>
-        <!-- TODO: show type and notify plugin name below 'bi-lightning-charge' icon -->
-        <!-- <span class="help-text">{{data.controls?.notificationTypeControl?.type}}</span>      -->
+             
       </div>
-      <ng-container *ngIf="source">
-        <div class="input is-pulled-left input-container custom-margin"
-          *ngFor="let input of data.inputs | keyvalue: sortByIndex" [attr.data-testid]="'input-'+input.key">
-          <div class="input-socket" refComponent
-            [data]="{type: 'socket', side: 'input', key: input.key, nodeId: data.id, payload: input.value?.socket, seed: seed }"
-            [emit]="emit" data-testid="input-socket" title="Destination"></div>
-          <div class="input-title" data-testid="input-title" *ngIf="!input.value?.control || !input.value?.showControl">
-            {{input.value?.label}}
-          </div>
-        </div>
-      </ng-container>
     </div>
     <div>
       <div class="is-pulled-left ml-2 icon-margin">
@@ -72,6 +60,9 @@
               </ng-container>
               <a *ngIf="rolesService.hasEditPermissions()" class="dropdown-item" (click)="deleteNotification()">
                 <span>Delete</span>
+              </a>
+              <a *ngIf="rolesService.hasEditPermissions()" class="dropdown-item" (click)="toggleState()">
+                <span>{{isEnabled ? 'Disable' : 'Enable'}}</span>
               </a>
             </div>
           </div>

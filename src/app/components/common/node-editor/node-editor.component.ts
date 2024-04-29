@@ -60,7 +60,7 @@ export class NodeEditorComponent implements OnInit {
   destroy$: Subject<boolean> = new Subject<boolean>();
   serviceName = '';
   filterName = '';
-  deleteServiceName = '';
+  dialogServiceName = '';
   isfilterPipelineFetched = false;
   selectedConnectionId = "";
   changedConfig: any;
@@ -89,6 +89,7 @@ export class NodeEditorComponent implements OnInit {
   showConfigureModal = false;
   isServiceAvailable = false;
   serviceInfo: {};
+  btnText = '';
 
   taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };
   selectedAsset = '';
@@ -217,8 +218,13 @@ export class NodeEditorComponent implements OnInit {
     });
 
     this.serviceSubscription = this.flowEditorService.serviceInfo.pipe(skip(1)).subscribe(data => {
-      this.openModal('delete-service-dialog');
-      this.deleteServiceName = data.name;
+      this.dialogServiceName = data.name;
+      if (!data.buttonText) {
+        this.openModal('delete-service-dialog');
+      } else {
+        this.openModal('state-change-dialog');
+        this.btnText = data.buttonText;
+      }    
     });
 
     this.exportReadingSubscription = this.flowEditorService.exportReading.pipe(skip(1)).subscribe(data => {
@@ -860,7 +866,7 @@ export class NodeEditorComponent implements OnInit {
       this.deleteNotification();
       return;
     }
-    this.servicesApiService.deleteService(this.deleteServiceName)
+    this.servicesApiService.deleteService(this.dialogServiceName)
       .subscribe((data: any) => {
         this.toastService.success(data['result']);
         this.router.navigate(['/flow/editor', this.from]);
@@ -875,7 +881,7 @@ export class NodeEditorComponent implements OnInit {
   }
 
   deleteNotification() {
-    this.notificationsService.deleteNotification(this.deleteServiceName)
+    this.notificationsService.deleteNotification(this.dialogServiceName)
       .subscribe((data: any) => {
         this.toastService.success(data['result']);
         this.router.navigate(['/flow/editor', this.from]);
@@ -994,6 +1000,24 @@ export class NodeEditorComponent implements OnInit {
 
   goToLink(urlSlug) {
     this.docService.goToServiceDocLink(urlSlug, 'fledge-service-notification');
+  }
+
+  toggleState(state) {
+    const payload = {
+      enable: state === 'Enable' ? 'true' : 'false'
+    }
+    this.configService.updateBulkConfiguration(this.dialogServiceName, payload)
+      .subscribe(() => {
+        this.toastService.success(`Instance successfully ${state === 'Enable' ? 'enabled' : 'disabled'}.`);
+        this.closeModal('state-change-dialog');
+      },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.toastService.error(error.statusText);
+          }
+        });
   }
 
   /**

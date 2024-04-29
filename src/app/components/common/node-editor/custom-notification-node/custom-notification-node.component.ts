@@ -156,6 +156,11 @@ export class CustomNotificationNodeComponent implements OnChanges {
     this.flowEditorService.serviceInfo.next({ name: this.notification.name });
   }
 
+  toggleState() {
+    const btnText = this.isEnabled ? 'Disable' : 'Enable';
+    this.flowEditorService.serviceInfo.next({ name: this.notification.name,  buttonText: btnText});
+  }
+
   navToAddNotificationPage() {
     this.router.navigate(['/flow/editor', this.from, 'add'], { queryParams: { source: 'flowEditor' } });
   }

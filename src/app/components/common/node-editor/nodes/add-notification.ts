@@ -1,8 +1,8 @@
 import { ClassicPreset } from "rete";
 
 export class AddNotification extends ClassicPreset.Node {
-  height = 100;
-  width = 200;
+  height = 110;
+  width = 198;
   parent?: string;
 
   constructor() {
