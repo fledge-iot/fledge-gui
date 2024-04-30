@@ -749,12 +749,21 @@ export class NodeEditorComponent implements OnInit {
     }
 
     if (this.apiCallsStack.length > 0) {
-      this.ngProgress.start();
-      forkJoin(this.apiCallsStack).subscribe(() => {
-        this.ngProgress.done();
-        this.reenableButton.emit(false);
-        this.toastService.success('Configuration updated successfully.');
+      forkJoin(this.apiCallsStack).subscribe((result) => {
+        result.forEach((r: any) => {
+          this.reenableButton.emit(false);
+          if (r.failed) {
+            if (r.error.status === 0) {
+              console.log('service down ', r.error);
+            } else {
+              this.toastService.error(r.error.statusText);
+            }
+          } else {
+            this.response.handleResponseMessage(r.type);
+          }
+        });
         this.apiCallsStack = [];
+        this.getCategory();
       });
     }
   }

@@ -23,10 +23,10 @@ export class CustomNotificationNodeComponent implements OnChanges {
   @Input() rendered!: () => void;
 
   seed = 0;
-  source;
   from = '';
   helpText = '';
   isEnabled: boolean = false;
+  showPluginName = false;
   
   notification = {
     name: "",
@@ -58,11 +58,9 @@ export class CustomNotificationNodeComponent implements OnChanges {
     public flowEditorService: FlowEditorService,
     public rolesService: RolesService,
     public configurationService: ConfigurationService,
-    private alertService: AlertService,
     private elRef: ElementRef) {
     this.route.params.subscribe(params => {
       this.from = params.from;
-      this.source = params.name;
     });
 
     this.router.routeReuseStrategy.shouldReuseRoute = function () {
@@ -79,23 +77,17 @@ export class CustomNotificationNodeComponent implements OnChanges {
   ngOnChanges(): void {
     this.nodeId = this.data.id;
     if (this.data.label === 'Notification') {
-      if (this.source !== '') {
-        this.elRef.nativeElement.style.borderColor = "#0E9BD8";
-        this.isNotificationNode = true;
-        if (this.from == 'notifications') {
-          if (!isEmpty(this.data.controls)) {
-            this.notification.name = this.data.controls.nameControl['name'];
-            this.notification.channel = this.data.controls.channelControl['pluginName'];
-            this.notification.rule = this.data.controls.ruleControl['pluginName'];
-            this.notification.notificationType = this.data.controls.notificationTypeControl['type'];
-            this.notification.enable = this.data.controls.enabledControl['enabled'] === 'true' ? true : false;
-            this.isEnabled = this.notification.enable;
-          }
+      this.elRef.nativeElement.style.borderColor = "#0E9BD8";
+      this.isNotificationNode = true;
+      if (this.from == 'notifications') {
+        if (!isEmpty(this.data.controls)) {
+          this.notification.name = this.data.controls.nameControl['name'];
+          this.notification.channel = this.data.controls.channelControl['pluginName'];
+          this.notification.rule = this.data.controls.ruleControl['pluginName'];
+          this.notification.notificationType = this.data.controls.notificationTypeControl['type'];
+          this.notification.enable = this.data.controls.enabledControl['enabled'] === 'true' ? true : false;
+          this.isEnabled = this.notification.enable;
         }
-      }
-      else {
-        this.elRef.nativeElement.style.borderColor = "#EA9999";
-        this.elRef.nativeElement.style.borderWidth = "6px";
       }
     }
     this.cdr.detectChanges();
@@ -127,24 +119,6 @@ export class CustomNotificationNodeComponent implements OnChanges {
 
   navToNotificationPage() {
     this.router.navigate(['/notification']);
-  }
-
-  toggleEnabled(isEnabled) {
-    this.isEnabled = isEnabled;
-    const payload = {
-      enable: this.isEnabled ? 'true' : 'false'
-    }
-    this.configurationService.updateBulkConfiguration(this.notification.name, payload)
-      .subscribe(() => {
-        this.alertService.success(`Instance successfully ${this.isEnabled ? 'enabled' : 'disabled'}.`, true);
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
   }
 
   goToLink() {

@@ -1,16 +1,19 @@
-<div class="node-container">
+<div class="node-container" (mouseover)="showPluginName = true" (mouseleave)="showPluginName = false">
   <ng-container *ngIf="data.label==='Notification'; else addNotificationTemplate">
     <div class="title" data-testid="title">
       <div class="is-flex is-justify-content-space-between is-align-items-baseline">
         <div class="is-inline-flex is-align-items-baseline">    
           <span>{{data.controls?.nameControl?.name}}
-            <i class="fa-regular fa-lightbulb icon-rule has-text-grey-light" (mouseover)="showRule = true" (mouseleave)="showRule = false"></i>
+            <i [ngClass]="isEnabled ? 'bulb-on': 'has-text-grey-light'" class="fa-regular fa-lightbulb icon-rule"></i>
             <p class="onhover-text">
-              <span class="help-text" [hidden]="!showRule">{{notification.rule}}</span>
+              <span class="help-text" [hidden]="!showPluginName">{{notification.rule}}</span>
             </p>
           </span>
         </div>
         <div class="is-inline-flex">
+          <label class="checkbox">
+            <input type="checkbox" [checked]="isEnabled" (click)="toggleState()" [disabled]="!rolesService.hasEditPermissions()">
+          </label>
           <button class="btn btn-icon pt-0" data-show="quickview" data-target="quickviewDefault" data-toggle="quickview"
             (click)="showConfigurationInQuickview()">
             <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Configuration">
@@ -24,9 +27,9 @@
       <div class="is-flex is-justify-content-center">
         <span class="is-hovered has-text-grey-light">
           <p class="onhover-text">
-            <span class="help-text" [hidden]="!showChannel">{{notification.channel}}</span>
+            <span class="help-text" [hidden]="!showPluginName">{{notification.channel}}</span>
           </p>
-          <i class="bi bi-lightning-charge bi-lg no-hover pl-3" (mouseover)="showChannel = true" (mouseleave)="showChannel = false"></i>
+          <i class="bi bi-lightning-charge bi-lg no-hover pl-3"></i>
           <span class="help-text">{{data.controls?.notificationTypeControl?.type}}</span>
         </span>
              
