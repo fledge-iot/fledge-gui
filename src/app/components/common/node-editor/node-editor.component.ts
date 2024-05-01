@@ -154,7 +154,7 @@ export class NodeEditorComponent implements OnInit {
           this.getCategory();
           this.getRuleConfiguration();
           this.getDeliveryConfiguration();
-        }     
+        }  
         return;
       }
       this.showPluginConfiguration = data.showPluginConfiguration ? true: false;
@@ -428,7 +428,7 @@ export class NodeEditorComponent implements OnInit {
       .subscribe((data: any) => {
         const notifications = data.notifications as Notification[];
         this.notifications = notifications;
-        this.notification = notifications.find(n => (n.name == this.source));
+        this.notification = notifications.find(n => (n.name == this.serviceName));
         data = {
           from: this.from,
           source: this.source,

@@ -53,7 +53,6 @@ export class NotificationServiceWarningComponent implements OnInit {
           this.serviceStatusEvent.emit(this.notificationServiceInstalled && this.notificationServiceAdded);
           this.emitData();
         }
-        console.log('notificationServiceEnabled', this.notificationServiceEnabled);
       })
       .catch(error => {
         /** request done */

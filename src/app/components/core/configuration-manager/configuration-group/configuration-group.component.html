@@ -11,7 +11,7 @@
     <nav id="group_navigation" class="groupNav dragscroll mouse-scroll" role="tablist">
       <div id="groupNavContents" class="nav" [ngClass]="{'groupNav_contents': !sourceName}">
         <div class="tabs" *ngIf="from !== 'config-manager'"
-          [ngClass]="{'is-fullwidth': sourceName && groupTabs?.length > 1, 'is-boxed': !sourceName}">
+          [ngClass]="{'is-fullwidth': sourceName && groupTabs?.length > 1 && from !== 'notifications' && !groupTabs.includes('Developer'), 'is-boxed': !sourceName}">
           <ul>
             <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
               <h6 class="is-6 is-small-font">

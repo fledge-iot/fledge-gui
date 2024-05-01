@@ -490,15 +490,12 @@ export function updateFilterNode(filterConfiguration) {
 }
 
 export function updateNode(data) {
-  console.log('updateNode data', editor.getNodes());
   editor.getNodes().forEach(async (node) => {
     const assetControls = node.controls.assetCountControl as AssetControl
     const readingControl = node.controls.readingCountControl as ReadingControl;
     const enabledControl = node.controls.enabledControl as EnabledControl;
     const statusControl = node.controls.statusControl as StatusControl;
-    console.log('node', node);
     if (!isEmpty(node.controls)) {
-      console.log('node', node);
       if (node.label == 'South') {
         const service = data.services.find(s => s.name === node.controls.nameControl['name'])
         let assetCount = service.assets.length;
