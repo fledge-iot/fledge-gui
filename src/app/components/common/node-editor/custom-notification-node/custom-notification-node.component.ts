@@ -3,7 +3,7 @@ import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
-import { RolesService, ConfigurationService, AlertService } from "../../../../services";
+import { RolesService, ConfigurationService } from "../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
 import { Subject, Subscription } from "rxjs";
@@ -34,7 +34,8 @@ export class CustomNotificationNodeComponent implements OnChanges {
     enable: false,
     notificationType: "",
     retriggerTime: "",
-    rule: ""
+    rule: "",
+    isDeleveryEnabled: false
   }
 
   isNotificationNode: boolean = false;
@@ -87,6 +88,8 @@ export class CustomNotificationNodeComponent implements OnChanges {
           this.notification.notificationType = this.data.controls.notificationTypeControl['type'];
           this.notification.enable = this.data.controls.enabledControl['enabled'] === 'true' ? true : false;
           this.isEnabled = this.notification.enable;
+          // TODO (OPTIMIZE): API call for bolt (delivery/notify plugin enable state) icon highlighting
+          this.isDeliveryEnabled();
         }
       }
     }
@@ -119,6 +122,22 @@ export class CustomNotificationNodeComponent implements OnChanges {
 
   navToNotificationPage() {
     this.router.navigate(['/notification']);
+  }
+
+  public isDeliveryEnabled(): void {
+    const notificationName = this.notification.name;
+    this.configurationService.getCategory(`delivery${notificationName}`).
+      subscribe(
+        (data) => {
+          if (!isEmpty(data)) {
+            this.notification.isDeleveryEnabled = data['enable'].value;
+          }
+        },
+        error => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          }
+        });
   }
 
   goToLink() {

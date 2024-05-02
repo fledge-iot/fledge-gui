@@ -1,9 +1,7 @@
 import { ClassicPreset } from "rete";
 import {
   EnabledControl,
-  NameControl,
-  PluginControl,
-  StatusControl
+  NameControl
 } from "../controls/common-custom-control";
 import { RuleControl, ChannelControl, NotificationTypeControl } from "../controls/notification-custom-control";
 

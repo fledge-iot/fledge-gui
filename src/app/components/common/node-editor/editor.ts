@@ -301,12 +301,10 @@ async function createNotificationNodesAndConnections(socket: ClassicPreset.Socke
   rolesService: RolesService,
   data: any) {
   if (data.source) {
-
     // Notification Node
     const plugin = new Notification(socket, data.notification);
     await editor.addNode(plugin);
-
-    
+  
     await arrange.layout();
     AreaExtensions.zoomAt(area, editor.getNodes());
   } else {

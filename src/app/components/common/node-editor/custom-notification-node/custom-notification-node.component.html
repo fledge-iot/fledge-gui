@@ -29,8 +29,8 @@
           <p class="onhover-text">
             <span class="help-text" [hidden]="!showPluginName">{{notification.channel}}</span>
           </p>
-          <i class="bi bi-lightning-charge bi-lg no-hover pl-3"></i>
-          <span class="help-text">{{data.controls?.notificationTypeControl?.type}}</span>
+          <i class="bi bi-lightning-charge bi-lg no-hover pl-3" [ngClass]="notification.isDeleveryEnabled === 'true' ? 'has-text-info': 'has-text-grey-light'"></i>
+          <span class="help-text">{{notification.notificationType}}</span>
         </span>
              
       </div>
