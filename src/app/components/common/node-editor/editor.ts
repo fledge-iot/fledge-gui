@@ -27,12 +27,11 @@ import { colors } from "./color-palette";
 import { North } from "./nodes/north";
 import { AddTask } from "./nodes/add-task";
 import { AddNotification } from "./nodes/add-notification";
-import { ChannelControl, RuleControl } from "./controls/notification-custom-control";
-import { RolesService } from "../../../services/roles.service"
-import { Service } from "../../core/south/south-service";
+import { ChannelControl, RuleControl, NotificationTypeControl } from "./controls/notification-custom-control";
+import { RolesService } from "../../../services/roles.service";
 import { AssetControl, ReadingControl } from "./controls/south-custom-control";
 import { SentReadingsControl } from './controls/north-custom-control';
-import { EnabledControl, NameControl, PluginControl, StatusControl } from './controls/common-custom-control';
+import { EnabledControl, StatusControl } from './controls/common-custom-control';
 import { NorthTask } from '../../core/north/north-task';
 
 
@@ -525,14 +524,17 @@ export function updateNode(data) {
       if (node.label == 'Notification') {
         const channelControl = node.controls.channelControl as ChannelControl;
         const ruleControl = node.controls.ruleControl as RuleControl;
+        const notificationTypeControl = node.controls.notificationTypeControl as NotificationTypeControl;
         const notification = data.notifications.find(n => n.name === node.controls.nameControl['name']);
         channelControl.pluginName = notification.channel;
         ruleControl.pluginName = notification.rule;
         enabledControl.enabled = notification.enable;
+        notificationTypeControl.type = notification.notificationType;
 
         area.update("control", channelControl.id);
         area.update("control", ruleControl.id);
         area.update("control", enabledControl.id);
+        area.update("control", notificationTypeControl.id);
         area.update('node', node.id)
       }
     }

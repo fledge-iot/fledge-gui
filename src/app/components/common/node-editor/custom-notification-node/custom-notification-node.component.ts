@@ -35,7 +35,7 @@ export class CustomNotificationNodeComponent implements OnChanges {
     notificationType: "",
     retriggerTime: "",
     rule: "",
-    isDeleveryEnabled: false
+    isDeliveryEnabled: false
   }
 
   isNotificationNode: boolean = false;
@@ -130,7 +130,7 @@ export class CustomNotificationNodeComponent implements OnChanges {
       subscribe(
         (data) => {
           if (!isEmpty(data)) {
-            this.notification.isDeleveryEnabled = data['enable'].value;
+            this.notification.isDeliveryEnabled = data['enable'].value;
           }
         },
         error => {

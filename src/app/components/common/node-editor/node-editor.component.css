@@ -52,3 +52,7 @@ hr {
 .help-pad {
   margin: 12px 7px !important;
 }
+
+.notification-hr {
+  margin: 0.7rem !important;
+}

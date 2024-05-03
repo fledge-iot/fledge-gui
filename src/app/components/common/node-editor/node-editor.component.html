@@ -96,7 +96,7 @@
         (changedConfigEvent)="getChangedNotificationConfig($event)"
         (formStatusEvent)="validConfigurationForm = $event">
       </app-configuration-group>
-      <hr *ngIf="notification != undefined" class="hr-text" [attr.data-content]="'Rule - ' + notification.rule">
+      <hr *ngIf="notification != undefined" class="hr-text notification-hr" [attr.data-content]="'Rule - ' + notification.rule">
       <div class="columns">
         <div class="column">
           <div class="field">
@@ -107,7 +107,7 @@
           </div>
         </div>
       </div>
-      <hr *ngIf="notification != undefined" class="hr-text"
+      <hr *ngIf="notification != undefined" class="hr-text notification-hr"
         [attr.data-content]="'Delivery Channel - ' + notification.channel">
       <div class="columns">
         <div class="column">

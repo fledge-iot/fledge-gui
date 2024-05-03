@@ -890,12 +890,17 @@ export class NodeEditorComponent implements OnInit {
   }
 
   deleteNotification() {
+    this.ngProgress.start();
     this.notificationsService.deleteNotification(this.dialogServiceName)
       .subscribe((data: any) => {
+        this.ngProgress.done();
+        this.reenableButton.emit(false);
         this.toastService.success(data['result']);
         this.router.navigate(['/flow/editor', this.from]);
       },
         (error) => {
+          this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -1015,12 +1020,18 @@ export class NodeEditorComponent implements OnInit {
     const payload = {
       enable: state === 'Enable' ? 'true' : 'false'
     }
+    this.ngProgress.start();
     this.configService.updateBulkConfiguration(this.dialogServiceName, payload)
+      .pipe(delay(1000))
       .subscribe(() => {
+        this.ngProgress.done();
+        this.reenableButton.emit(false);
         this.toastService.success(`Instance successfully ${state === 'Enable' ? 'enabled' : 'disabled'}.`);
         this.closeModal('state-change-dialog');
       },
         error => {
+          this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
