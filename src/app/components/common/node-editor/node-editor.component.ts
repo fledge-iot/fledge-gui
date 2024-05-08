@@ -16,7 +16,7 @@ import { DialogService } from '../confirmation-dialog/dialog.service';
 import { NorthTask } from '../../core/north/north-task';
 import { Notification } from '../../core/notifications/notification';
 import { NotificationServiceWarningComponent } from '../../core/notifications/notification-service-warning/notification-service-warning.component';
-import { NotificationServiceConfigComponent } from '../../core/notifications/notification-service-config/notification-service-config.component';
+import { ServiceConfigComponent } from '../../core/notifications/service-config/service-config.component';
 import Utils, { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
 import { DocService } from '../../../services/doc.service';
 
@@ -28,7 +28,7 @@ import { DocService } from '../../../services/doc.service';
 export class NodeEditorComponent implements OnInit {
 
   @ViewChild(NotificationServiceWarningComponent, { static: true }) notificationServiceWarningComponent: NotificationServiceWarningComponent;
-  @ViewChild(NotificationServiceConfigComponent, { static: true }) notificationServiceConfigComponent: NotificationServiceConfigComponent;
+  @ViewChild(ServiceConfigComponent, { static: true }) notificationServiceConfigComponent: ServiceConfigComponent;
   @ViewChild("rete") container!: ElementRef;
   public source = '';
   public from = '';

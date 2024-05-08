@@ -48,7 +48,7 @@
         </span>
       </a> -->
       <div *ngIf="isServiceAvailable" class="cog-icon">
-        <app-notification-service-config (serviceConfigureModal)="openServiceConfigureModal()"></app-notification-service-config>
+        <app-service-config (serviceConfigureModal)="openServiceConfigureModal()"></app-service-config>
     </div>
       <span *ngIf="isNotificationServiceEnabled"
         class="icon is-small tooltip is-pulled-right is-hovered help-pad" data-tooltip="Help"
