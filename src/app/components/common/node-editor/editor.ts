@@ -199,6 +199,7 @@ async function createNorthNodesAndConnections(socket: ClassicPreset.Socket,
 
     let fpLen = data.filterPipeline.length;
     let previousNode = db;
+    let colorNumber = 0;
     for (let i = 0; i < fpLen; i++) {
       let pipelineItem = data.filterPipeline[i];
       if (typeof (pipelineItem) === "string") {
@@ -209,6 +210,24 @@ async function createNorthNodesAndConnections(socket: ClassicPreset.Socket,
           new ClassicPreset.Connection(previousNode, "port", nextFilterNode, "port")
         );
         previousNode = nextFilterNode;
+      }
+      else {
+        let piLen = pipelineItem.length;
+        let tempNode = previousNode;
+        for (let j = 0; j < piLen; j++) {
+          let nextNodeConfig = data.filterConfigurations.find((f: any) => f.filterName === pipelineItem[j])
+          nextNodeConfig.color = colors[colorNumber];
+          let nextNode = new Filter(socket, nextNodeConfig);
+          await editor.addNode(nextNode);
+          await editor.addConnection(
+            new ClassicPreset.Connection(tempNode, "port", nextNode, "port")
+          );
+          tempNode = nextNode;
+        }
+        await editor.addConnection(
+          new ClassicPreset.Connection(tempNode, "port", plugin, "port")
+        );
+        colorNumber = (colorNumber + 1) % (colors.length);
       }
     }
     await editor.addConnection(
