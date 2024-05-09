@@ -43,6 +43,9 @@ class Connection<A extends Node, B extends Node> extends ClassicPreset.Connectio
 
 let editor = new NodeEditor<Schemes>();
 let area: AreaPlugin<Schemes, AreaExtra>;
+let isServiceEnabled: boolean;
+
+
 export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, data) {
   const socket = new ClassicPreset.Socket("socket");
   editor = new NodeEditor<Schemes>();
@@ -190,6 +193,10 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     return;
   }
   if (data.from == 'notifications') {
+    this.notificationServiceSubscription = flowEditorService.notificationServicesInfo.subscribe(service => {
+      isServiceEnabled = service.isEnabled;  
+      updateNode(data);
+    });
     createNotificationNodesAndConnections(socket, editor, arrange, area, rolesService, data);
     return;
   }
@@ -345,8 +352,10 @@ async function nodesGrid(area: AreaPlugin<Schemes,
   }
   if (rolesService.hasEditPermissions()) {
     const service = from == 'south' ? new AddService() : from == 'north' ? new AddTask() : new AddNotification();
-    await editor.addNode(service);
-    await area.translate(service.id, { x: 250 * j, y: 150 * k });
+    if (['south', 'north'].includes(from) || (from === 'notifications' && isServiceEnabled)) {   
+      await editor.addNode(service);
+      await area.translate(service.id, { x: 250 * j, y: 150 * k });
+    }
   }
 }
 

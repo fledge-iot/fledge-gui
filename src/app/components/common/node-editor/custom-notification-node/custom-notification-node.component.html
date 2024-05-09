@@ -59,7 +59,7 @@
           </div>
           <div *ngIf="rolesService.hasEditPermissions()" class="dropdown-menu" id="dropdown-menu3" role="menu">
             <div class="dropdown-content">
-              <a class="dropdown-item" (click)="deleteNotification()">
+              <a *ngIf="isServiceEnabled" class="dropdown-item" (click)="deleteNotification()">
                 <span>Delete</span>
               </a>
               <a class="dropdown-item" (click)="toggleState()">
@@ -72,7 +72,7 @@
     </div>
   </ng-container>
   <ng-template #addNotificationTemplate>
-    <div class="add-notification">
+    <div *ngIf="isServiceEnabled" class="add-notification">
       <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Add Notification Instance"
         (click)="navToAddNotificationPage()">
         <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>

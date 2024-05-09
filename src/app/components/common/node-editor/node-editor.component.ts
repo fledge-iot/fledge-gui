@@ -43,7 +43,7 @@ export class NodeEditorComponent implements OnInit {
   private serviceSubscription: Subscription;
   private removeFilterSubscription: Subscription;
   private exportReadingSubscription: Subscription;
-
+  
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
   showLogs: boolean = false;
@@ -351,6 +351,7 @@ export class NodeEditorComponent implements OnInit {
               createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
             }
           });
+        
       }
     }
   }
@@ -1007,6 +1008,7 @@ export class NodeEditorComponent implements OnInit {
     this.showConfigureModal = event.isOpen;
     delete event.isOpen;
     this.serviceInfo = event;
+    this.flowEditorService.notificationServicesInfo.next(this.serviceInfo);
     if (this.showConfigureModal) {
      this.openServiceConfigureModal(); 
     }
