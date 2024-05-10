@@ -1008,7 +1008,16 @@ export class NodeEditorComponent implements OnInit {
     this.showConfigureModal = event.isOpen;
     delete event.isOpen;
     this.serviceInfo = event;
-    this.flowEditorService.notificationServicesInfo.next(this.serviceInfo);
+    const data = {
+      from: this.from,
+      notification: this.notification,
+      notifications: this.notifications,
+      isServiceEnabled: this.serviceInfo['isEnabled']
+    }
+    const el = this.container.nativeElement;
+    if (el) {
+      createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
+    }
     if (this.showConfigureModal) {
      this.openServiceConfigureModal(); 
     }

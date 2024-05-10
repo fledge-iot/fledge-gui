@@ -15,7 +15,6 @@ export class FlowEditorService {
   public serviceInfo: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public removeFilter: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public exportReading: BehaviorSubject<any> = new BehaviorSubject<any>(false);
-  public notificationServicesInfo: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   constructor() { }
 
   public flowEditorControl(visible: boolean) {

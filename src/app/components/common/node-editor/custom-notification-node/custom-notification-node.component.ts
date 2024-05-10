@@ -41,14 +41,12 @@ export class CustomNotificationNodeComponent implements OnChanges {
   isNotificationNode: boolean = false;
 
   subscription: Subscription;
-  notificationServiceSubscription: Subscription;
   pluginName = '';
   destroy$: Subject<boolean> = new Subject<boolean>();
   
   showPlusIcon = false;
   showDeleteIcon = false;
   nodeId = '';
-  isServiceEnabled = false;
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -74,9 +72,6 @@ export class CustomNotificationNodeComponent implements OnChanges {
       if (event instanceof NavigationEnd) {
         this.router.navigated = false;
       }
-    });
-    this.notificationServiceSubscription = this.flowEditorService.notificationServicesInfo.subscribe(data => {
-      this.isServiceEnabled = data.isEnabled;   
     });
   }
 
@@ -165,7 +160,6 @@ export class CustomNotificationNodeComponent implements OnChanges {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    this.notificationServiceSubscription.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }

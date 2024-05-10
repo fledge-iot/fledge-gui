@@ -43,7 +43,6 @@ class Connection<A extends Node, B extends Node> extends ClassicPreset.Connectio
 
 let editor = new NodeEditor<Schemes>();
 let area: AreaPlugin<Schemes, AreaExtra>;
-let isServiceEnabled: boolean;
 
 
 export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, data) {
@@ -193,11 +192,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     return;
   }
   if (data.from == 'notifications') {
-    this.notificationServiceSubscription = flowEditorService.notificationServicesInfo.subscribe(service => {
-      isServiceEnabled = service.isEnabled;  
-      updateNode(data);
-    });
-    createNotificationNodesAndConnections(socket, editor, arrange, area, rolesService, data);
+    nodesGrid(area, data.notifications, socket, rolesService, data.from, data.isServiceEnabled);
     return;
   }
 }
@@ -300,24 +295,6 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
   }
 }
 
-async function createNotificationNodesAndConnections(socket: ClassicPreset.Socket,
-  editor: NodeEditor<Schemes>,
-  arrange: AutoArrangePlugin<Schemes, never>,
-  area: AreaPlugin<Schemes, AreaExtra>,
-  rolesService: RolesService,
-  data: any) {
-  if (data.source) {
-    // Notification Node
-    const plugin = new Notification(socket, data.notification);
-    await editor.addNode(plugin);
-  
-    await arrange.layout();
-    AreaExtensions.zoomAt(area, editor.getNodes());
-  } else {
-    nodesGrid(area, data.notifications, socket, rolesService, data.from);
-  }
-}
-
 function setCustomBackground(area: AreaPlugin<Schemes, AreaExtra>,) {
   addCustomBackground(area);
   // AreaExtensions.simpleNodesOrder(area);
@@ -334,7 +311,7 @@ async function nodesGrid(area: AreaPlugin<Schemes,
   AreaExtra>, nodeItems: [],
   socket: ClassicPreset.Socket,
   rolesService: RolesService,
-  from: string) {
+  from: string, isServiceEnabled = null) {
   const canvasWidth = area.container.parentElement.clientWidth;
   const itemCount = Math.round(canvasWidth / 275);
   let j = 0;
