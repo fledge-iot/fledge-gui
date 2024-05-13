@@ -23,9 +23,7 @@ export class CustomNotificationNodeComponent implements OnChanges {
   @Input() rendered!: () => void;
 
   seed = 0;
-  from = '';
   helpText = '';
-  isEnabled: boolean = false;
   showPluginName = false;
   
   notification = {
@@ -35,7 +33,8 @@ export class CustomNotificationNodeComponent implements OnChanges {
     notificationType: "",
     retriggerTime: "",
     rule: "",
-    isDeliveryEnabled: false
+    isDeliveryEnabled: false,
+    isServiceEnabled: false
   }
 
   isNotificationNode: boolean = false;
@@ -60,10 +59,6 @@ export class CustomNotificationNodeComponent implements OnChanges {
     public rolesService: RolesService,
     public configurationService: ConfigurationService,
     private elRef: ElementRef) {
-    this.route.params.subscribe(params => {
-      this.from = params.from;
-    });
-
     this.router.routeReuseStrategy.shouldReuseRoute = function () {
       return false;
     };
@@ -79,20 +74,20 @@ export class CustomNotificationNodeComponent implements OnChanges {
     this.nodeId = this.data.id;
     if (this.data.label === 'Notification') {
       this.elRef.nativeElement.style.borderColor = "#0E9BD8";
-      this.isNotificationNode = true;
-      if (this.from == 'notifications') {
+      this.isNotificationNode = true;    
+      if ('notifications' == 'notifications') {
         if (!isEmpty(this.data.controls)) {
           this.notification.name = this.data.controls.nameControl['name'];
           this.notification.channel = this.data.controls.channelControl['pluginName'];
           this.notification.rule = this.data.controls.ruleControl['pluginName'];
           this.notification.notificationType = this.data.controls.notificationTypeControl['type'];
           this.notification.enable = this.data.controls.enabledControl['enabled'] === 'true' ? true : false;
-          this.isEnabled = this.notification.enable;
+          this.notification.isServiceEnabled = this.data.controls.serviceStatusControl['enabled'];
           // TODO (OPTIMIZE): API call for bolt (delivery/notify plugin enable state) icon highlighting
           this.isDeliveryEnabled();
         }
       }
-    }
+    } 
     this.cdr.detectChanges();
     requestAnimationFrame(() => this.rendered());
     this.seed++; // force render sockets
@@ -109,7 +104,7 @@ export class CustomNotificationNodeComponent implements OnChanges {
   }
 
   addService() {
-    this.router.navigate(['flow/editor', this.from, 'add'], { queryParams: { source: 'flowEditor' } });
+    this.router.navigate(['flow/editor', 'notifications', 'add'], { queryParams: { source: 'flowEditor' } });
   }
 
   showConfigurationInQuickview() {
@@ -150,12 +145,12 @@ export class CustomNotificationNodeComponent implements OnChanges {
   }
 
   toggleState() {
-    const btnText = this.isEnabled ? 'Disable' : 'Enable';
+    const btnText = this.notification.enable ? 'Disable' : 'Enable';
     this.flowEditorService.serviceInfo.next({ name: this.notification.name,  buttonText: btnText});
   }
 
   navToAddNotificationPage() {
-    this.router.navigate(['/flow/editor', this.from, 'add'], { queryParams: { source: 'flowEditor' } });
+    this.router.navigate(['/flow/editor', 'notifications', 'add'], { queryParams: { source: 'flowEditor' } });
   }
 
   ngOnDestroy() {

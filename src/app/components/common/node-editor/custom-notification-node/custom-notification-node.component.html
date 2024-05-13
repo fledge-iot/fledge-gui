@@ -4,7 +4,7 @@
       <div class="is-flex is-justify-content-space-between is-align-items-baseline">
         <div class="is-inline-flex is-align-items-baseline">    
           <span>{{data.controls?.nameControl?.name}}
-            <i [ngClass]="isEnabled ? 'bulb-on': 'has-text-grey-light'" class="fa-regular fa-lightbulb icon-rule"></i>
+            <i [ngClass]="notification.enable ? 'bulb-on': 'has-text-grey-light'" class="fa-regular fa-lightbulb icon-rule"></i>
             <p class="onhover-text">
               <span class="help-text" [hidden]="!showPluginName">{{notification.rule}}</span>
             </p>
@@ -12,7 +12,7 @@
         </div>
         <div class="is-inline-flex">
           <label class="checkbox">
-            <input type="checkbox" [checked]="isEnabled" (click)="toggleState()" [disabled]="!rolesService.hasEditPermissions()">
+            <input type="checkbox" [checked]="notification.enable" (click)="toggleState()" [disabled]="!rolesService.hasEditPermissions()">
           </label>
           <button class="btn btn-icon pt-0" data-show="quickview" data-target="quickviewDefault" data-toggle="quickview"
             (click)="showConfigurationInQuickview()">
@@ -59,11 +59,11 @@
           </div>
           <div *ngIf="rolesService.hasEditPermissions()" class="dropdown-menu" id="dropdown-menu3" role="menu">
             <div class="dropdown-content">
-              <a *ngIf="isServiceEnabled" class="dropdown-item" (click)="deleteNotification()">
+              <a *ngIf="notification.isServiceEnabled" class="dropdown-item" (click)="deleteNotification()">
                 <span>Delete</span>
               </a>
               <a class="dropdown-item" (click)="toggleState()">
-                <span>{{isEnabled ? 'Disable' : 'Enable'}}</span>
+                <span>{{notification.enable ? 'Disable' : 'Enable'}}</span>
               </a>
             </div>
           </div>

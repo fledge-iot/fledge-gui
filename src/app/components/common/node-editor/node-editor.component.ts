@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
-import { createEditor, getUpdatedFilterPipeline, deleteConnection, removeNode, updateNode, updateFilterNode } from './editor';
+import { createEditor, getUpdatedFilterPipeline, deleteConnection, removeNode, addEmptyNode, updateNode, updateFilterNode } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   AssetsService, ConfigurationControlService, ConfigurationService, FileUploaderService,
@@ -434,7 +434,8 @@ export class NodeEditorComponent implements OnInit {
           from: this.from,
           source: this.source,
           notification: this.notification,
-          notifications: notifications
+          notifications: notifications,
+          isServiceEnabled: this.serviceInfo['isEnabled']
         }
         // refresh node data
         updateNode(data);
@@ -1014,9 +1015,9 @@ export class NodeEditorComponent implements OnInit {
       notifications: this.notifications,
       isServiceEnabled: this.serviceInfo['isEnabled']
     }
-    const el = this.container.nativeElement;
-    if (el) {
-      createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
+    updateNode(data);
+    if (data.isServiceEnabled) {
+      addEmptyNode(this.rolesService);
     }
     if (this.showConfigureModal) {
      this.openServiceConfigureModal(); 

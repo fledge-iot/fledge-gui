@@ -27,7 +27,7 @@ import { colors } from "./color-palette";
 import { North } from "./nodes/north";
 import { AddTask } from "./nodes/add-task";
 import { AddNotification } from "./nodes/add-notification";
-import { ChannelControl, RuleControl, NotificationTypeControl } from "./controls/notification-custom-control";
+import { ChannelControl, RuleControl, NotificationTypeControl, ServiceStatusControl } from "./controls/notification-custom-control";
 import { RolesService } from "../../../services/roles.service";
 import { AssetControl, ReadingControl } from "./controls/south-custom-control";
 import { SentReadingsControl } from './controls/north-custom-control';
@@ -192,7 +192,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     return;
   }
   if (data.from == 'notifications') {
-    nodesGrid(area, data.notifications, socket, rolesService, data.from, data.isServiceEnabled);
+    nodesGrid(area, data.notifications, socket, rolesService, data.from);
     return;
   }
 }
@@ -311,7 +311,7 @@ async function nodesGrid(area: AreaPlugin<Schemes,
   AreaExtra>, nodeItems: [],
   socket: ClassicPreset.Socket,
   rolesService: RolesService,
-  from: string, isServiceEnabled = null) {
+  from: string) {
   const canvasWidth = area.container.parentElement.clientWidth;
   const itemCount = Math.round(canvasWidth / 275);
   let j = 0;
@@ -328,8 +328,8 @@ async function nodesGrid(area: AreaPlugin<Schemes,
     }
   }
   if (rolesService.hasEditPermissions()) {
-    const service = from == 'south' ? new AddService() : from == 'north' ? new AddTask() : new AddNotification();
-    if (['south', 'north'].includes(from) || (from === 'notifications' && isServiceEnabled)) {   
+    const service = from == 'south' ? new AddService() : new AddTask();
+    if (['south', 'north'].includes(from)) {
       await editor.addNode(service);
       await area.translate(service.id, { x: 250 * j, y: 150 * k });
     }
@@ -360,7 +360,6 @@ export function getUpdatedFilterPipeline() {
       }
     }
   }
-
 
   for (let i = 0; i < connections.length; i++) {
     if (connections[i].source === connections[i].target) {
@@ -508,6 +507,7 @@ export function updateNode(data) {
         area.update('node', node.id)
       }
       if (node.label == 'Notification') {
+        const serviceStatusControl = node.controls.serviceStatusControl as ServiceStatusControl;
         const channelControl = node.controls.channelControl as ChannelControl;
         const ruleControl = node.controls.ruleControl as RuleControl;
         const notificationTypeControl = node.controls.notificationTypeControl as NotificationTypeControl;
@@ -521,10 +521,36 @@ export function updateNode(data) {
         area.update("control", ruleControl.id);
         area.update("control", enabledControl.id);
         area.update("control", notificationTypeControl.id);
+        if (data.isServiceEnabled) {
+          serviceStatusControl.enabled = data.isServiceEnabled;
+          area.update("control", serviceStatusControl.id);
+        }
         area.update('node', node.id)
       }
     }
   });
+}
+
+export async function addEmptyNode(rolesService) {
+  let nodes = editor.getNodes();
+  const canvasWidth = area.container.parentElement.clientWidth;
+  const itemCount = Math.round(canvasWidth / 275);
+  let j = 0;
+  let k = 0;
+  // TODO: OPTIMIZE in better way to get the value of j, k for positioning new node at right place
+  for (let i = 0; i < nodes.length; i++) {
+    if (j < itemCount) {
+      j++;
+      if (j == itemCount) {
+        j = 0; k++;
+      }
+    }
+  }
+  if (rolesService.hasEditPermissions()) {
+    const node =  new AddNotification();
+    await editor.addNode(node);
+    await area.translate(node.id, { x: 250 * j, y: 150 * k }); 
+  }
 }
 
 export function deleteConnection(connectionId) {

@@ -18,3 +18,9 @@ export class NotificationTypeControl extends ClassicPreset.Control {
     }
 }
 
+export class ServiceStatusControl extends ClassicPreset.Control {
+  constructor(public enabled: boolean) {
+    super();
+  }
+}
+
