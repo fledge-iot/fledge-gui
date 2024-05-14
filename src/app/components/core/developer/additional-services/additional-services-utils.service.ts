@@ -95,6 +95,7 @@ export class AdditionalServicesUtils {
     );
   }
 
+  // Called from ml model to access additional service modal
   navToAdditinalServiceModal(service: any) {
     this.router.navigate(['/developer/options/additional-services/config'], { state: { ...service } });
   }
