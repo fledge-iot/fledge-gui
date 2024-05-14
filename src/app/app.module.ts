@@ -47,6 +47,7 @@ import { ProgressBarService } from './services/progress-bar.service';
 import { DashboardModule } from './components/core/dashboard/dashboard.module';
 import { Router } from '@angular/router';
 import { LogsModule } from './components/core/logs/logs.module';
+import { AdditionalServicesUtils } from './components/core/developer/additional-services/additional-services-utils.service';
 
 export function pingServiceFactory(ping: PingService, sharedService: SharedService, router: Router): Function {
   return () => ping.pingService()
@@ -143,6 +144,10 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
       provide: HTTP_INTERCEPTORS,
       useClass: HttpsRequestInterceptor,
       multi: true,
+    },
+    {
+      provide: 'ADDITIONAL_SERVICE',
+      useExisting: AdditionalServicesUtils
     }
   ],
   bootstrap: [AppComponent]
