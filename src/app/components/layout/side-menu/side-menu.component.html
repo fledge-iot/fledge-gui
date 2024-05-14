@@ -38,8 +38,10 @@
           <a type="button" [ngClass]="{'has-background-light':  isControlListOpen }" id="control"
             (click)="isControlListOpen = !isControlListOpen; ; $event.stopPropagation()">
             <span>
-              <i class="bi bi-controller bi-sm"></i>
-              Control
+              <svg id="control-dispatch">
+                <use xlink:href="assets/control-dispatch.svg#control-dispatch" />
+              </svg>
+                Control     
             </span>
             <span class="icon is-small menu-toogle-icon is-pulled-right"
               [title]="isControlListOpen ? 'Collapse' : 'Expand'">
