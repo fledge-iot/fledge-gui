@@ -145,7 +145,7 @@ table.scroll tbody {
 .logo {
   width: 100px;
   height: 100px;
-  background: url(./assets/icons/favicon.ico) center center no-repeat;
+  background: url(./assets/favicon.ico) center center no-repeat;
 }
 
 .cat-desc {
