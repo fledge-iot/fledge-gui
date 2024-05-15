@@ -36,18 +36,20 @@
         </li>
         <li>
           <a type="button" [ngClass]="{'has-background-light':  isControlListOpen }" id="control"
-            (click)="isControlListOpen = !isControlListOpen; ; $event.stopPropagation()">
-            <span>
-              <svg id="control-dispatch">
-                <use xlink:href="assets/control-dispatch.svg#control-dispatch" />
-              </svg>
-                Control     
-            </span>
-            <span class="icon is-small menu-toogle-icon is-pulled-right"
-              [title]="isControlListOpen ? 'Collapse' : 'Expand'">
-              <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
-                aria-hidden="true"></i>
-            </span>
+            (click)="isControlListOpen = !isControlListOpen; ; $event.stopPropagation()" class="px-2">
+            <div class="is-flex is-align-items-center">
+              <span class="pr-1">
+                <svg id="control-dispatch">
+                  <use xlink:href="assets/icons/control-dispatch.svg#control-dispatch" />
+                </svg>
+              </span>
+              <span class="is-flex-grow-3">Control</span>
+              <span class="icon is-small menu-toogle-icon is-pulled-right"
+                [title]="isControlListOpen ? 'Collapse' : 'Expand'">
+                <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
+                  aria-hidden="true"></i>
+              </span>
+            </div>
           </a>
           <div [hidden]="!isControlListOpen">
             <ul>

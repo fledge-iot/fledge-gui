@@ -145,7 +145,7 @@ table.scroll tbody {
 .logo {
   width: 100px;
   height: 100px;
-  background: url(./assets/favicon.ico) center center no-repeat;
+  background: url(./assets/icons/favicon.ico) center center no-repeat;
 }
 
 .cat-desc {
@@ -456,7 +456,7 @@ span.tooltip {
 }
 
 .message.is-warning .message-body {
-padding: 1em 0.75em !important
+  padding: 1em 0.75em !important
 }
 
 /*****************/

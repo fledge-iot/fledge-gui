@@ -7,7 +7,7 @@
     </div>
     <div *ngIf="viewPort !== 'mobile'">
       <div class="navbar-item">
-        <img src="assets/fledge.png" alt="" width="32" />
+        <img src="assets/icons/fledge.png" alt="" width="32" />
         &nbsp;
         <b>
           <a *ngIf="!pingInfo.version" href="/" style="color: #363636;">Fledge</a>
@@ -307,8 +307,9 @@
   </div>
   <div class="navbar-end">
     <div class="navbar-item">
-      <div *ngIf="pingInfo.isAlive && !pingInfo.isSafeMode && !rolesService.hasDataViewRole() && (isAuthOptional || isUserLoggedIn)">
-        <app-system-alert [alertsCount]='pingInfo.alertsCount' [isManualRefresh]='isManualRefresh'></app-system-alert>  
+      <div
+        *ngIf="pingInfo.isAlive && !pingInfo.isSafeMode && !rolesService.hasDataViewRole() && (isAuthOptional || isUserLoggedIn)">
+        <app-system-alert [alertsCount]='pingInfo.alertsCount' [isManualRefresh]='isManualRefresh'></app-system-alert>
       </div>
     </div>
     <div *ngIf='isUserLoggedIn' class="navbar-item user-dropdown">
