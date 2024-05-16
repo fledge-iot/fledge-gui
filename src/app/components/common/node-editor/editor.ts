@@ -187,13 +187,16 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
   data: any) {
 
   if (data.source) {
-    // South node
-    const plugin = data.from == 'south' ? new South(socket, data.service) : new North(socket, data.task);;
-    await editor.addNode(plugin);
-
-    // Storage node
     const db = new Storage(socket);
-    await editor.addNode(db);
+    const plugin = data.from == 'south' ? new South(socket, data.service) : new North(socket, data.task);;
+    //  FIX ME: Array index based change
+    if (data.from == 'south') {
+      await editor.addNode(plugin);
+      await editor.addNode(db);
+    } else {
+      await editor.addNode(db);
+      await editor.addNode(plugin);
+    }
 
     let fpLen = data.filterPipeline.length;
     const lastNode = data.from == 'south' ? db : plugin;
