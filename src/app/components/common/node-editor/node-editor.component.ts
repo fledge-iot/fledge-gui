@@ -1,12 +1,13 @@
-import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
-import { createEditor, getUpdatedFilterPipeline, deleteConnection, removeNode, addEmptyNode, updateNode, updateFilterNode } from './editor';
+import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild, SimpleChanges } from '@angular/core';
+import { createEditor, getUpdatedFilterPipeline, deleteConnection, removeNode, updateNode, updateFilterNode } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   AssetsService, ConfigurationControlService, ConfigurationService, FileUploaderService,
   FilterService, GenerateCsvService, NorthService, PingService, ProgressBarService,
   ResponseHandler, RolesService, NotificationsService,
-  ServicesApiService, ToastService
+  ServicesApiService, ToastService, SharedService
 } from './../../../services';
+import { AdditionalServicesUtils } from '../../core/developer/additional-services/additional-services-utils.service';
 import { catchError, delay, map, mergeMap, repeatWhen, skip, take, takeUntil, takeWhile } from 'rxjs/operators';
 import { Service } from '../../core/south/south-service';
 import { EMPTY, Subject, Subscription, forkJoin, interval, of } from 'rxjs';
@@ -43,6 +44,7 @@ export class NodeEditorComponent implements OnInit {
   private serviceSubscription: Subscription;
   private removeFilterSubscription: Subscription;
   private exportReadingSubscription: Subscription;
+  private serviceDetailsSubscription: Subscription;
   
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
@@ -87,8 +89,8 @@ export class NodeEditorComponent implements OnInit {
   ruleConfiguration: any;
   deliveryConfiguration: any;
   showConfigureModal = false;
-  isServiceAvailable = false;
-  serviceInfo: {};
+  serviceInfo = {added: false, type: '', isEnabled: true, schedule_process: '', process: '', package: '', name: '',
+                  isInstalled: false, isAvailable: false};
   btnText = '';
 
   taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };
@@ -114,6 +116,8 @@ export class NodeEditorComponent implements OnInit {
     private assetService: AssetsService,
     public generateCsv: GenerateCsvService,
     private docService: DocService,
+    private additionalServicesUtils: AdditionalServicesUtils,
+    public sharedService: SharedService,
     private router: Router) {
     this.route.params.subscribe(params => {
       this.from = params.from;
@@ -125,6 +129,7 @@ export class NodeEditorComponent implements OnInit {
         this.getNorthboundServices();
       }
       if (this?.from === 'notifications') {
+        this.additionalServicesUtils.getAllServiceStatus(false);
         this.getNotificationInstances();
       }
 
@@ -274,6 +279,7 @@ export class NodeEditorComponent implements OnInit {
         tasks: this.tasks,
         notification: this.notification,
         notifications: this.notifications,
+        isServiceEnabled: this.serviceInfo.isEnabled,
         filterConfigurations: this.filterConfigurations,
       }
       let isServiceExist = true;
@@ -322,11 +328,31 @@ export class NodeEditorComponent implements OnInit {
                     data.service = this.service;
                 }
                 if (r.notifications) {
-                  const notifications = r.notifications as Notification[];
-                  this.notifications = notifications;
-                  this.notification = notifications.find(n => (n.name == this.source));
-                  data.notifications = notifications;
-                  data.notification = this.notification;
+                  this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
+                    if (service) {
+                      const notificationServiceDetail = service.find(s => s.process == 'notification');
+                      if (notificationServiceDetail) {
+                        this.serviceInfo = notificationServiceDetail;
+                        this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(notificationServiceDetail?.state) ? false : true;
+                        this.serviceInfo.isInstalled = true;
+                        this.serviceInfo.isAvailable = notificationServiceDetail?.added;
+                        this.serviceInfo.name = notificationServiceDetail?.name;
+                      } else {
+                        this.serviceInfo.isEnabled = false;
+                        this.serviceInfo.isInstalled = false;
+                        this.serviceInfo.isAvailable = false;
+                        this.serviceInfo.name = '';
+                      }
+                      const notifications = r.notifications as Notification[];
+                      this.notifications = notifications;
+                      this.notification = notifications.find(n => (n.name == this.source));
+                      data.notifications = notifications;
+                      data.notification = this.notification;
+                      data.isServiceEnabled = this.serviceInfo.isEnabled;
+
+                      createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
+                    }       
+                  });
                 }
                 if (r.result) {
                   this.filterPipeline = r.result.pipeline as string[];
@@ -348,10 +374,12 @@ export class NodeEditorComponent implements OnInit {
               });
             }
             else {
-              createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
+              if (this.from !== 'notifications') {
+                createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
+              }
+              
             }
-          });
-        
+          });       
       }
     }
   }
@@ -435,7 +463,7 @@ export class NodeEditorComponent implements OnInit {
           source: this.source,
           notification: this.notification,
           notifications: notifications,
-          isServiceEnabled: this.serviceInfo['isEnabled']
+          isServiceEnabled: this.serviceInfo.isEnabled
         }
         // refresh node data
         updateNode(data);
@@ -1009,16 +1037,7 @@ export class NodeEditorComponent implements OnInit {
     this.showConfigureModal = event.isOpen;
     delete event.isOpen;
     this.serviceInfo = event;
-    const data = {
-      from: this.from,
-      notification: this.notification,
-      notifications: this.notifications,
-      isServiceEnabled: this.serviceInfo['isEnabled']
-    }
-    updateNode(data);
-    if (data.isServiceEnabled) {
-      addEmptyNode(this.rolesService);
-    }
+
     if (this.showConfigureModal) {
      this.openServiceConfigureModal(); 
     }
@@ -1067,6 +1086,9 @@ export class NodeEditorComponent implements OnInit {
     this.serviceSubscription.unsubscribe();
     this.removeFilterSubscription.unsubscribe();
     this.exportReadingSubscription.unsubscribe();
+    if (this.from === 'notifications') {
+      this.serviceDetailsSubscription.unsubscribe();
+    }
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }

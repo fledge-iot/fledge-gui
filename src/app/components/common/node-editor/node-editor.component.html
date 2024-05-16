@@ -30,7 +30,7 @@
         </button>
       </ng-container>
     </div>
-    <div *ngIf="isServiceAvailable && from === 'notifications'">
+    <div *ngIf="serviceInfo.isEnabled && serviceInfo.isInstalled && from === 'notifications'">
       <app-service-config (serviceConfigureModal)="openServiceConfigureModal()"></app-service-config>
       <span class="icon is-small tooltip is-pulled-right is-hovered help-pad" data-tooltip="Help"
         (click)="goToLink('using-the-notification-service')">
@@ -42,7 +42,8 @@
     </ng-container>
   </div>
   <ng-container *ngIf="from === 'notifications'">
-    <app-notification-service-warning (serviceStatusEvent)="isServiceAvailable = $event" (serviceConfigureModal)="getServiceDetail($event)"></app-notification-service-warning>
+    <app-notification-service-warning [isEnabled]="serviceInfo.isEnabled" [isInstalled]="serviceInfo.isInstalled" [isAvailable]="serviceInfo.isAvailable"
+    [serviceName]="serviceInfo.name" (serviceConfigureModal)="getServiceDetail($event)"></app-notification-service-warning>
   </ng-container>
   <ng-container *ngIf="!isAddFilterWizard">
     <div class="rete" #rete></div>

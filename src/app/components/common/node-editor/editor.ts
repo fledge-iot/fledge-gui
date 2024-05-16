@@ -34,7 +34,6 @@ import { SentReadingsControl } from './controls/north-custom-control';
 import { EnabledControl, StatusControl } from './controls/common-custom-control';
 import { NorthTask } from '../../core/north/north-task';
 
-
 type Node = South | North | Filter | Notification;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 type AreaExtra = AngularArea2D<Schemes> | MinimapExtra | ContextMenuExtra;
@@ -192,7 +191,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     return;
   }
   if (data.from == 'notifications') {
-    nodesGrid(area, data.notifications, socket, rolesService, data.from);
+    nodesGrid(area, data.notifications, socket, rolesService, data.from, data.isServiceEnabled);
     return;
   }
 }
@@ -311,7 +310,7 @@ async function nodesGrid(area: AreaPlugin<Schemes,
   AreaExtra>, nodeItems: [],
   socket: ClassicPreset.Socket,
   rolesService: RolesService,
-  from: string) {
+  from: string, isServiceAvailable = null) {
   const canvasWidth = area.container.parentElement.clientWidth;
   const itemCount = Math.round(canvasWidth / 275);
   let j = 0;
@@ -328,8 +327,8 @@ async function nodesGrid(area: AreaPlugin<Schemes,
     }
   }
   if (rolesService.hasEditPermissions()) {
-    const service = from == 'south' ? new AddService() : new AddTask();
-    if (['south', 'north'].includes(from)) {
+    const service = from == 'south' ? new AddService() : from == 'north' ? new AddTask() : new AddNotification();
+    if (['south', 'north'].includes(from) || isServiceAvailable) {
       await editor.addNode(service);
       await area.translate(service.id, { x: 250 * j, y: 150 * k });
     }
@@ -529,28 +528,6 @@ export function updateNode(data) {
       }
     }
   });
-}
-
-export async function addEmptyNode(rolesService) {
-  let nodes = editor.getNodes();
-  const canvasWidth = area.container.parentElement.clientWidth;
-  const itemCount = Math.round(canvasWidth / 275);
-  let j = 0;
-  let k = 0;
-  // TODO: OPTIMIZE in better way to get the value of j, k for positioning new node at right place
-  for (let i = 0; i < nodes.length; i++) {
-    if (j < itemCount) {
-      j++;
-      if (j == itemCount) {
-        j = 0; k++;
-      }
-    }
-  }
-  if (rolesService.hasEditPermissions()) {
-    const node =  new AddNotification();
-    await editor.addNode(node);
-    await area.translate(node.id, { x: 250 * j, y: 150 * k }); 
-  }
 }
 
 export function deleteConnection(connectionId) {
