@@ -24,7 +24,6 @@ import { cloneDeep, isEmpty } from 'lodash';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import { NorthTask } from '../../core/north/north-task';
 import Utils, { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
-import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 
 @Component({
   selector: 'app-node-editor',
@@ -127,11 +126,11 @@ export class NodeEditorComponent implements OnInit {
   }
   ngOnInit(): void {
     this.subscription = this.flowEditorService.showItemsInQuickview.pipe(skip(1)).subscribe(data => {
-      this.showPluginConfiguration = data.showPluginConfiguration ? true: false;
-      this.showFilterConfiguration = data.showFilterConfiguration ? true: false;
-      this.showLogs = data.showLogs ? true: false;
-      this.showTaskSchedule = data.showTaskSchedule ? true: false;
-      this.showReadings = data.showReadings ? true: false;
+      this.showPluginConfiguration = data.showPluginConfiguration ? true : false;
+      this.showFilterConfiguration = data.showFilterConfiguration ? true : false;
+      this.showLogs = data.showLogs ? true : false;
+      this.showTaskSchedule = data.showTaskSchedule ? true : false;
+      this.showReadings = data.showReadings ? true : false;
       this.serviceName = data.serviceName;
       if (this.showPluginConfiguration) {
         this.getCategory();
@@ -151,7 +150,7 @@ export class NodeEditorComponent implements OnInit {
         this.quickviewFilterName = data.filterName;
         this.getFilterCategory()
       }
-      if(this.showReadings) {
+      if (this.showReadings) {
         this.readingService = this.services.find(service => (service.name == this.serviceName));
       }
     });
@@ -165,10 +164,6 @@ export class NodeEditorComponent implements OnInit {
         if (this.isfilterPipelineFetched) {
           let updatedPipeline = getUpdatedFilterPipeline();
           if (updatedPipeline && updatedPipeline.length > 0) {
-            if (this.from === 'north' && this.isFilterPipelineComplex(updatedPipeline)) {
-              console.log("Complex pipeline not allowed on north side");
-              return;
-            }
             this.updatedFilterPipeline = updatedPipeline;
             console.log(this.updatedFilterPipeline);
             this.flowEditorService.pipelineInfo.next(this.updatedFilterPipeline);
@@ -464,10 +459,6 @@ export class NodeEditorComponent implements OnInit {
   save() {
     let updatedPipeline = getUpdatedFilterPipeline();
     if (updatedPipeline && updatedPipeline.length > 0) {
-      if (this.from === 'north' && this.isFilterPipelineComplex(updatedPipeline)) {
-        console.log("Complex pipeline not allowed on north side");
-        return;
-      }
       this.updatedFilterPipeline = updatedPipeline;
       if (this.isPipelineUpdated() && this.isEachFilterConfigured()) {
         this.updateFilterPipeline();
