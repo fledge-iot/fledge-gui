@@ -3,6 +3,7 @@
 export class APIFlow {
   name: string;
   description: string;
+  permitted: boolean;
   type: string;
   operation_name?: string;
   destination: string;

@@ -43,7 +43,7 @@
           margin-left: auto;
 }
 
-.fa-power-off {
+.bi-power {
           color: rgb(178, 34, 34);
 }
 
@@ -82,6 +82,10 @@
   font-size: 0.8rem;
 }
 
+.logout-icon {
+  padding-left: 0.1rem;
+}
+
 .child-icon {
   font-size: 0.7rem;
 }
@@ -95,4 +99,13 @@
  .help {
   margin-top: 0px;
   font-size: 0.6rem;
+ }
+
+ .ghost {
+  color:  #4a4a4a;
+  text-decoration: underline;
+ }
+
+ .ghost:hover {
+  color: #485fc7;
  }

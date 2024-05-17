@@ -12,6 +12,7 @@ import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.comp
 import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 import { DialogService } from '../../common/confirmation-dialog/dialog.service';
 import { Service } from './south-service';
+import { FlowEditorService } from '../../common/node-editor/flow-editor.service';
 
 
 @Component({
@@ -33,9 +34,7 @@ export class SouthComponent implements OnInit, OnDestroy {
   selectedService = '';
   eventsTrack = [];
 
-  @ViewChild(SouthServiceModalComponent, { static: true }) southServiceModal: SouthServiceModalComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
-
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private servicesApiService: ServicesApiService,
@@ -47,7 +46,13 @@ export class SouthComponent implements OnInit, OnDestroy {
     private ping: PingService,
     private dialogService: DialogService,
     private sharedService: SharedService,
-    public rolesService: RolesService) {
+    public rolesService: RolesService,
+    public flowEditorService: FlowEditorService) {
+    if (flowEditorService.getFlowEditorStatus()) {
+      setTimeout(() => {
+        this.navToFlowEditor();
+      }, 1);
+    }
     this.isAlive = true;
     this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))
@@ -142,13 +147,15 @@ export class SouthComponent implements OnInit, OnDestroy {
     this.router.navigate(['/south/add']);
   }
 
+  navToFlowEditor() {
+    this.router.navigate(['/flow/editor/south'])
+  }
+
   /**
  * Open create scheduler modal dialog
  */
   openSouthServiceModal(service: Service) {
-    this.service = service;
-    this.southServiceModal.service = service;
-    this.southServiceModal.toggleModal(true);
+    this.router.navigate(['/south', service.name, 'details'])
   }
 
   onNotify() {
@@ -206,4 +213,6 @@ export class SouthComponent implements OnInit, OnDestroy {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }
+
+
 }

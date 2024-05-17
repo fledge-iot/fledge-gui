@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable, Output } from '@angular/core';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DialogService {
   private modals: any[] = [];
+  @Output() resetChangesEmitter: EventEmitter<boolean>;
 
   add(modal: any) {
     // add modal to array of active modals
@@ -25,6 +27,21 @@ export class DialogService {
   close(id: string) {
     // close modal specified by id
     const modal = this.modals.find(x => x.id === id);
-    modal.close();
+    modal?.close();
+  }
+
+  // unsave changes dialog
+  confirm(data: { id: string, changeExist: boolean }): Observable<boolean> {
+    if (data.changeExist == true) {
+      this.resetChangesEmitter = new EventEmitter();
+      this.open(data.id);
+      this.resetChangesEmitter.emit(false);
+      return this.resetChangesEmitter;
+    }
+    else {
+      this.resetChangesEmitter?.emit(true);
+      this.resetChangesEmitter?.complete();
+      return of(true)
+    }
   }
 }

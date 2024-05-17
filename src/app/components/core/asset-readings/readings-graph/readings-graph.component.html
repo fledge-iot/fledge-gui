@@ -81,8 +81,8 @@
             [ngClass]="{'is-7': rangeSliderService.getAlphControlStatus() && selectedTab === 1, 'is-9': !rangeSliderService.getAlphControlStatus() || selectedTab !== 1}"
             *ngIf="!isLatestReadings && !(selectedTab == 4) && availableAssets.length > 0">
             <ng-select groupBy="name" placeholder="Select assets" bindLabel="name" [items]="availableAssets" [multiple]="true"
-              [(ngModel)]="additionalAssets" (add)="addOrRemoveAsset()" [clearable]="additionalAssets.length > 1"
-              (remove)="addOrRemoveAsset($event)" [ngModelOptions]="{standalone: true}" (clear)="clearAdditionalAssets()">
+              [(ngModel)]="additionalAssets" (add)="addOrRemoveAsset($event)" [clearable]="additionalAssets.length > 1"
+              (remove)="addOrRemoveAsset($event.label)" [ngModelOptions]="{standalone: true}" (clear)="clearAdditionalAssets()">
             </ng-select>
           </div>
           <div class="column is-2" *ngIf="rangeSliderService.getAlphControlStatus() && selectedTab === 1">

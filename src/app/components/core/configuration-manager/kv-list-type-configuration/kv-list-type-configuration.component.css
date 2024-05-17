@@ -1,0 +1,4 @@
+.kv-column:last-child {
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
+}

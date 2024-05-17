@@ -2,8 +2,9 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TitleCasePipe } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { TreeModule } from '@circlon/angular-tree-component';
+import { TreeModule } from '@ali-hm/angular-tree-component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DirectivesModule } from '../../../directives/directives.module';
 import { RolesGuard } from '../../../guards';
@@ -32,6 +33,9 @@ import { FilterModule } from '../filter/filter.module';
 import { AddDispatcherServiceComponent } from './add-dispatcher-service/add-dispatcher-service.component';
 import { APIFlowComponent } from './api-flow/api-flow.component';
 import { AddEditAPIFlowComponent } from './api-flow/add-edit-api-flow/add-edit-api-flow.component';
+import { DispatcherServiceConfigComponent } from './dispatcher-service-config/dispatcher-service-config.component';
+import { DeveloperModule } from './../developer/developer.module';
+import { canDeactivateGuard } from '../../../guards/can-deactivate/can-deactivate.guard';
 
 const routes: Routes = [
 
@@ -67,7 +71,7 @@ const routes: Routes = [
     canActivate: [RolesGuard]
   },
   {
-    path: 'task/:name',
+    path: 'task/:name', // TODO: Handle FOGL-8156 when this component is enabled
     component: ControlScheduleTaskDetailsComponent
   },
   {
@@ -77,23 +81,25 @@ const routes: Routes = [
   {
     path: 'pipelines/add',
     component: AddControlPipelineComponent,
-    canActivate: [RolesGuard]
+    canActivate: [RolesGuard],
+    canDeactivate: [canDeactivateGuard]
   },
   {
     path: 'pipelines/:id',
-    component: AddControlPipelineComponent
+    component: AddControlPipelineComponent,
+    canDeactivate: [canDeactivateGuard]
   },
   {
     path: 'entry-points',
     component: APIFlowComponent
   },
   {
-    path: 'entry-point/add',
+    path: 'entry-points/add',
     component: AddEditAPIFlowComponent,
     canActivate: [RolesGuard]
   },
   {
-    path: 'entry-point/:name',
+    path: 'entry-points/:name/details',
     component: AddEditAPIFlowComponent
   }
 ];
@@ -119,7 +125,8 @@ const routes: Routes = [
     AddControlPipelineComponent,
     AddPipelineFilterComponent,
     APIFlowComponent,
-    AddEditAPIFlowComponent
+    AddEditAPIFlowComponent,
+    DispatcherServiceConfigComponent
   ],
   imports: [
     FormsModule,
@@ -133,9 +140,10 @@ const routes: Routes = [
     SharedModule,
     AlertDialogModule,
     FilterModule,
+    DeveloperModule,
     RouterModule.forChild(routes)
   ],
   providers: [RolesGuard, ControlPipelinesService, NotificationsService,
-    FilterService, AssetsService]
+    FilterService, AssetsService, TitleCasePipe]
 })
 export class ControlDispatcherModule { }

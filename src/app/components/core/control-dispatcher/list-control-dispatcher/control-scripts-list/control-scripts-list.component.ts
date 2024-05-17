@@ -1,11 +1,13 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 import { orderBy } from 'lodash';
 import { AlertService, ProgressBarService, RolesService } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import { DocService } from '../../../../../services/doc.service';
+import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
   selector: 'app-control-scripts-list',
@@ -15,14 +17,22 @@ import { DocService } from '../../../../../services/doc.service';
 export class ControlScriptsListComponent implements OnInit {
   controlScripts: any = [];
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
+  @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
+
   script;
   private subscription: Subscription;
+  isServiceAvailable = false;
+  public reenableButton = new EventEmitter<boolean>(false);
+  showConfigureModal = false;
+  serviceInfo;
+
   constructor(
     private controlService: ControlDispatcherService,
     private alertService: AlertService,
     private dialogService: DialogService,
     public docService: DocService,
     private ngProgress: ProgressBarService,
+    private router: Router,
     public rolesService: RolesService) {
     this.subscription = this.controlService.triggerRefreshEvent.subscribe(tab => {
       if (tab === 'scripts') {
@@ -75,6 +85,7 @@ export class ControlScriptsListComponent implements OnInit {
     this.controlService.deleteScript(script)
       .subscribe((data: any) => {
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         this.alertService.success(data.message);
         // close modal
         this.closeModal('confirmation-dialog');
@@ -82,6 +93,7 @@ export class ControlScriptsListComponent implements OnInit {
       }, error => {
         /** request completed */
         this.ngProgress.done();
+        this.reenableButton.emit(false);
         // close modal
         this.closeModal('confirmation-dialog');
         if (error.status === 0) {
@@ -90,6 +102,29 @@ export class ControlScriptsListComponent implements OnInit {
           this.alertService.error(error.statusText);
         }
       });
+  }
+
+  getServiceDetail(event) {
+    this.showConfigureModal = event.isOpen;
+    delete event.isOpen;
+    this.serviceInfo = event;
+    if (this.showConfigureModal) {
+      this.openServiceConfigureModal();
+    }
+  }
+
+  /**
+   * Open Configure Service modal
+   */
+  openServiceConfigureModal() {
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
+  }
+
+  onNotify(handleEvent) {
+    if (handleEvent) {
+      this.addDispatcherServiceComponent.getInstalledServicesList();
+    }
+    return;
   }
 
   public ngOnDestroy(): void {

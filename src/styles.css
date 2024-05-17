@@ -27,12 +27,8 @@ html,
 
 @media only screen and (min-height: 769px) {
   aside {
-            overflow-y: hidden !important;
+    overflow-y: hidden !important;
   }
-}
-
-aside.column.is-2 {
-  padding: 0%;
 }
 
 #app {
@@ -131,17 +127,19 @@ table.scroll tbody {
 
 @keyframes dash {
   0% {
-      stroke-dasharray: 1, 200;
-      stroke-dashoffset: 0;
-    }
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+
   50% {
-      stroke-dasharray: 89, 200;
-      stroke-dashoffset: -35px;
-    }
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -35px;
+  }
+
   100% {
-      stroke-dasharray: 89, 200;
-      stroke-dashoffset: -124px;
-    }
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -124px;
+  }
 }
 
 .logo {
@@ -175,12 +173,6 @@ table.scroll tbody {
   background: transparent;
   box-shadow: inset 0 0 0px;
   color: #707070;
-}
-
-.fledge-logo {
-  width: 34px;
-  height: 20px;
-  background: url(./assets/fledge.png) center center no-repeat;
 }
 
 .navbar-menu {
@@ -251,20 +243,12 @@ table.scroll tbody {
 }
 
 .page-container {
-  margin-bottom: -144px;
+  padding-bottom: 20px;
 }
 
 .page-container:after {
   content: "";
   display: block;
-}
-
-.footer, .page-container:after {
-  height: 144px;
-}
-
-.footer {
-  padding: 6rem 1.5rem 6rem !important;
 }
 
 /**
@@ -280,7 +264,7 @@ Bulma Burger Dropdown rendering under other elements https://github.com/jgthms/b
   width: 100%
 }
 
-.dropdown-trigger > .button {
+.dropdown-trigger>.button {
   display: flex;
   width: 100%;
   justify-content: space-between
@@ -296,11 +280,13 @@ a.dropdown-item:hover {
   overflow: auto;
 }
 
-#avail-plugin{
+#avail-plugin {
   padding: 0%;
 }
 
-#refresh-check {
+#refresh-check,
+#refresh-tree,
+#config-icon {
   vertical-align: middle;
   background: none;
   border: none;
@@ -327,84 +313,150 @@ a.dropdown-item:hover {
 /* For modal card window */
 .modal-disabled {
   pointer-events: none;
- }
+}
 
- div:has(div.modal-disabled) {
+div:has(div.modal-disabled) {
   cursor: not-allowed;
- }
+}
 
- .blur {
+.blur {
   filter: blur(1px);
- }
+}
 
- .is-small-font, .label {
+table thead th {
   font-size: 0.9rem !important;
   font-weight: 500;
- }
+}
 
- table thead th {
-  font-size: 0.9rem !important;
-  font-weight: 500;
- }
-
- .title-name {
+.title-name {
   font-size: 0.9rem;
- }
+}
 
- .icon-group {
-  padding-left: 16px;;
- }
+.icon-group {
+  padding-left: 16px;
+  ;
+}
 
- .service-info {
+.service-info {
   max-width: 1344px;
   margin: auto;
   padding-bottom: 10px;
- }
+}
 
-  .service-info-text {
-    padding-left: 16px;
+.service-info-text {
+  padding-left: 16px;
+}
+
+.config-div {
+  margin-top: 1vw;
+  margin-bottom: 1vw;
+}
+
+@media screen and (min-width: 769px) {
+  .view-content {
+    display: block !important;
   }
 
-  .config-div {
-    margin-top: 1vw;
-    margin-bottom: 1vw;
+  .last-step-field {
+    flex-grow: 2 !important;
   }
+}
 
-  @media screen and (min-width: 769px) {
-    .view-content {
-      display: block !important;
-    }
-  
-    .last-step-field {
-      flex-grow: 2 !important;
-    }
-  }
+span.tooltip {
+  border-bottom: none;
+}
 
-  span.tooltip {
-    border-bottom: none;
-  }
+.description-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 32rem
+}
 
-  .description-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 32rem
-  }
+#confirmation-execute-dialog .modal-card-body {
+  min-height: 22vh;
+}
 
-  #confirmation-execute-dialog .modal-card-body {
-    min-height: 22vh;
-  }
+.plugin-info {
+  color: gray;
+}
 
-  .plugin-info {
-    color: gray;
-    font-size: 0.75rem;
-  }
+.plus-icon {
+  line-height: 1;
+}
 
-  .plus-icon {
-    font-size: 0.70rem;
-  }
+.bi-xs {
+  font-size: 0.75rem;
+}
 
-  .desc-text{
-    font-size: 0.95rem;
-  }
- /*****************/
+.bi-sm {
+  font-size: 0.85rem;
+}
+
+.bi-md {
+  font-size: 1rem;
+}
+
+.bi-lg {
+  font-size: 1.15rem;
+}
+
+.bi-xl {
+  font-size: 1.35rem;
+}
+
+.bi:hover {
+  color: rgb(91, 89, 89);
+}
+
+.desc-text {
+  font-size: 0.95rem;
+}
+
+.help-pad {
+  margin: 17px 7px;
+  font-size: 0.9rem;
+}
+
+.is-hovered {
+  cursor: pointer !important;
+}
+
+.is-horizontal .label {
+  font-size: 0.9rem;
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.lbl-child {
+  font-size: 0.8rem !important;
+}
+
+.card-header-title {
+  font-weight: 500;
+}
+
+.cog-icon {
+  margin: auto;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.required-field {
+  border-color: red;
+}
+
+.message.is-warning {
+  margin-bottom: 0px !important;
+}
+
+.message.is-warning .message-body {
+  padding: 1em 0.75em !important
+}
+
+/*****************/

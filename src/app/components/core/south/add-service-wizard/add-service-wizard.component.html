@@ -103,7 +103,7 @@
           <div class="column">
             <div class="config-div">
               <div class="field is-horizontal">
-                <div class="field-label has-text-left">
+                <div class="field-label has-text-centered enabled-field">
                   <label class="label">Enabled</label>
                 </div>
                 <div class="field-body last-step-field">
@@ -122,11 +122,11 @@
     </div>
     <div class="steps-actions">
       <div class="steps-action">
-        <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Back</button>
+        <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Cancel</button>
       </div>
       <div class="steps-action">
         <button (click)="moveNext()" data-nav="next" class="button is-link" id="next"
-          [disabled]="serviceForm.invalid || !validConfigurationForm">Next</button>
+          [disabled]="serviceForm.invalid || !validConfigurationForm" [appDisableUntilResponse]="reenableButton">Next</button>
       </div>
     </div>
   </div>

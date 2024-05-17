@@ -10,6 +10,7 @@ import { RangeSliderService } from '../../common/range-slider/range-slider.servi
 import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 import { StorageService } from '../../../services/storage.service';
 import { DEBOUNCE_TIME } from '../../../utils';
+import { FlowEditorService } from '../../common/node-editor/flow-editor.service';
 
 @Component({
   selector: 'app-settings',
@@ -43,7 +44,8 @@ export class SettingsComponent implements OnInit {
     public developerFeaturesService: DeveloperFeaturesService,
     public storageService: StorageService,
     public timezoneService: TimezoneService,
-    public rolesService: RolesService) {
+    public rolesService: RolesService,
+    public flowEditorService: FlowEditorService) {
     this.protocol = this.storageService.getProtocol() != null ? this.storageService.getProtocol() : location.protocol.replace(':', '').trim();
     this.host = this.storageService.getHost() != null ? this.storageService.getHost() : location.hostname;
     this.servicePort = this.storageService.getPort() != null ? this.storageService.getPort() : 8081;
@@ -161,6 +163,10 @@ export class SettingsComponent implements OnInit {
 
   setAlphControlStatus(status: boolean) {
     this.rangeSliderService.alphaControl(status);
+  }
+
+  setFlowEditorStatus(status: boolean) {
+    this.flowEditorService.flowEditorControl(status);
   }
 
   openSSLCertWarningPage() {

@@ -54,3 +54,21 @@ a {
   max-width: 1344px;
   margin: auto;
 }
+
+.modal-card-head {
+  padding: 12px !important;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.modal-subtitle {
+  margin-top: 0.35rem !important;
+}
+
+.flow-editor{
+  background: none;
+  border: none;
+  font-size: 14px;
+  margin-right: 15px;
+}
+

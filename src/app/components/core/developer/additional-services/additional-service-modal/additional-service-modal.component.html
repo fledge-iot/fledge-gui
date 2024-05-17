@@ -1,0 +1,142 @@
+<div id="additional-service-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <span *ngIf="serviceInfo.added" class="modal-card-title is-size-6">{{serviceName}}
+        <button class="button is-small" id="refresh-check" title="Reload" (click)="refreshService(true)">
+          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        </button>
+        <p class="help has-text-grey modal-subtitle mt-0">{{serviceInfo.type !== 'BucketStorage' ? serviceInfo.type :
+          'Bucket Storage'}} Service</p>
+      </span>
+      <span *ngIf="!serviceInfo.added" class="modal-card-title is-size-6">{{serviceInfo.type !== 'BucketStorage' ?
+        serviceInfo.type : 'Bucket Storage'}} Service
+      </span>
+      <button class="delete" aria-label="close" (click)="toggleModal(false); navToAdditionalService();"></button>
+    </header>
+    <section class="modal-card-body">
+      <form name="additional-service-form" id="serviceForm" #fg="ngForm">
+        <div *ngIf="!serviceInfo.added" class="columns is-mobile">
+          <div class="column">
+            <div class="field is-horizontal">
+              <div class="field-label has-text-left service-label">
+                <label class="label">Name</label>
+              </div>
+              <div class="field-body">
+                <div class="field is-narrow">
+                  <input *ngIf="!serviceInfo.added" type="text" class="input is-small" name="serviceName"
+                    [(ngModel)]="serviceName"
+                    [placeholder]="(serviceInfo.type !== 'BucketStorage' ? serviceInfo.type : 'Bucket Storage') +' Service'"
+                    required trim="blur" title="No single quotes and double quotes!"
+                    [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off" />
+                  <small
+                    *ngIf="(fg?.touched || fg?.controls['serviceName']?.dirty) && fg?.controls['serviceName']?.hasError('required')"
+                    class="help is-danger level-left">*required</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <app-configuration-group #configComponent *ngIf="category" [category]="category"
+            [from]="'additional-services'" (changedConfigEvent)="getChangedConfig($event)"
+            (formStatusEvent)="validForm = $event" (changedAdvanceConfigEvent)="getChangedAdvanceConfiguration($event)">
+          </app-configuration-group>
+          <div class="columns">
+            <div class="column">
+              <div class="field is-horizontal" [ngClass]="{'enable-div': serviceInfo.added}">
+                <div class="field-label has-text-left" [ngClass]="{'service-label':!serviceInfo.added === true}">
+                  <label class="label">Enabled</label>
+                </div>
+                <div class="field-body">
+                  <div class="field">
+                    <input class="checkbox" name="enabled" type="checkbox" [checked]="serviceInfo.isEnabled"
+                      [(ngModel)]="serviceInfo.isEnabled" [disabled]="!rolesService.hasEditPermissions()">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      <hr class="hr-text" data-content="" *ngIf="rolesService.hasEditPermissions()">
+      <div class="columns margin-bottom">
+        <div *ngIf="serviceInfo.added" class="column is-pulled-left is-8">
+          <div class="field is-horizontal" *ngIf="service?.protocol">
+            <div class="field-label has-text-left service-info-text">
+              <label class="label service-info pb-0 pt-1">Service Info</label>
+            </div>
+            <div class="field-body service-info-padding">
+              <div class="field">
+                <ng-container>
+                  <small>{{service?.protocol}}://{{service?.address}}:{{service?.management_port}}</small>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="column" *ngIf="rolesService.hasEditPermissions()">
+          <div class="is-pulled-right field is-grouped">
+            <p class="control">
+              <button [disabled]="serviceInstallationState" class="button is-small" id="cancel"
+                (click)="toggleModal(false); navToAdditionalService();">Cancel</button>
+            </p>
+            <p class="control">
+              <button [disabled]="serviceInstallationState || fg.controls['serviceName']?.invalid || !validForm"
+                class="button is-small is-link" (click)="save()"
+                [appDisableUntilResponse]="reenableButton">{{btnText}}</button>
+            </p>
+          </div>
+        </div>
+      </div>
+      <hr *ngIf="serviceInfo.added && showDeleteBtn" class="hr-text" data-content="">
+      <div class="columns margin-bottom" *ngIf="serviceInfo.added && showDeleteBtn">
+        <div class="column">
+          <div class="field is-grouped is-pulled-left service-info-text">
+            <p class="control">
+              <span class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
+                <i class="far fa-question-circle"></i>
+              </span>
+            </p>
+            <p class="control">
+              <span
+                class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon"
+                data-tooltip="Show logs" (click)="navToSyslogs(serviceName)">
+                <i class="far fa-file-alt"></i>
+              </span>
+            </p>
+            <p class="control" *ngIf="serviceInfo.type === 'Management' && pollingScheduleID && isServiceEnabled">
+              <a class="button is-ghost title-name pl-0 pb-2" [routerLink]="['/schedules', pollingScheduleID]"
+                [queryParams]="{ from: 'additional-services' }">
+                Polling Schedule
+              </a>
+            </p>
+          </div>
+          <div class="field is-grouped is-pulled-right" *ngIf="rolesService.hasEditPermissions()">
+            <p class="buttons">
+              <button (click)="openDeleteModal('dialog-delete-confirmation')" class="button is-small">
+                Delete Service
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+<app-confirmation-dialog id="dialog-delete-confirmation">
+  <header class="modal-card-head">
+    <p class="modal-card-title is-size-6">Delete</p>
+    <button type="button" class="delete" aria-label="close"
+      (click)="closeDeleteModal('dialog-delete-confirmation')"></button>
+  </header>
+  <section class="modal-card-body">
+    Deleting {{serviceName}} service can not be undone. Continue?
+  </section>
+  <footer class="modal-card-foot">
+    <button type="button" class="button is-small"
+      (click)="closeDeleteModal('dialog-delete-confirmation')">Cancel</button>
+    <button type="button" class="button is-small is-danger" (click)="deleteService(serviceName)"
+      [appDisableUntilResponse]="reenableButton">Delete</button>
+  </footer>
+</app-confirmation-dialog>

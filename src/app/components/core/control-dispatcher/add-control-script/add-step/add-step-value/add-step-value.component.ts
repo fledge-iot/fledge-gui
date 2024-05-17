@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormControl, FormGroup, NgForm } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, NgForm } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 import { RolesService, SharedService } from '../../../../../../services';
 
@@ -25,8 +25,8 @@ export class AddStepValueComponent implements OnInit {
     this.values = Object.values(this.valuesControlGroup().value);
     if (this.values.length == 0 && !this.update) {
       this.parameters.push({ index: 0, key: '', value: '' });
-      this.valuesControlGroup().addControl(`${this.from}-key-${0}`, new FormControl({ index: 0, key: '' }));
-      this.valuesControlGroup().addControl(`${this.from}-val-${0}`, new FormControl({ index: 0, value: '' }));
+      this.valuesControlGroup().addControl(`${this.from}-key-${0}`, new UntypedFormControl({ index: 0, key: '' }));
+      this.valuesControlGroup().addControl(`${this.from}-val-${0}`, new UntypedFormControl({ index: 0, value: '' }));
     }
     this.values.forEach((element) => {
       if (element?.key || element?.value) {
@@ -68,23 +68,23 @@ export class AddStepValueComponent implements OnInit {
 
 
   stepsFormGroup() {
-    return this.control.form.controls['steps'] as FormGroup;
+    return this.control.form.controls['steps'] as UntypedFormGroup;
   }
 
-  stepControlGroup(): FormGroup {
-    return this.stepsFormGroup().controls[`step-${this.index}`] as FormGroup;
+  stepControlGroup(): UntypedFormGroup {
+    return this.stepsFormGroup().controls[`step-${this.index}`] as UntypedFormGroup;
   }
 
-  valuesControlGroup(): FormGroup {
-    const stepControl = this.stepControlGroup().controls[this.from] as FormGroup;
-    return stepControl.controls[this.from === 'write' ? 'values' : 'parameters'] as FormGroup;
+  valuesControlGroup(): UntypedFormGroup {
+    const stepControl = this.stepControlGroup().controls[this.from] as UntypedFormGroup;
+    return stepControl.controls[this.from === 'write' ? 'values' : 'parameters'] as UntypedFormGroup;
   }
 
   addValueControl() {
     const index = this.parameters.length;
     this.parameters.push({ index: this.parameters.length, key: '', value: '' });
-    this.valuesControlGroup().addControl(`${this.from}-key-${index}`, new FormControl({ index, key: '' }));
-    this.valuesControlGroup().addControl(`${this.from}-val-${index}`, new FormControl({ index, value: '' }));
+    this.valuesControlGroup().addControl(`${this.from}-key-${index}`, new UntypedFormControl({ index, key: '' }));
+    this.valuesControlGroup().addControl(`${this.from}-val-${index}`, new UntypedFormControl({ index, value: '' }));
   }
 
   deleteControl(index) {

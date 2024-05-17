@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { ControlAPIFlowService, ProgressBarService, RolesService, SharedService, AlertService } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
-import { Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
+import { Validators, UntypedFormGroup, UntypedFormBuilder, AbstractControl, UntypedFormArray } from '@angular/forms';
 import { UserService } from '../../../../services';
 import { ControlUtilsService } from '../control-utils.service';
 
@@ -10,6 +11,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { APIFlow, User } from '../../../../../../src/app/models';
+import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
     selector: 'app-api-flow',
@@ -18,22 +20,30 @@ import { APIFlow, User } from '../../../../../../src/app/models';
 })
 
 export class APIFlowComponent implements OnInit {
+  @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
+
     apiFlows = [];
 
     // To show Entry point name and description on modal, we need these variables
     epName: string = '';
     description: string = '';
 
-
+    isServiceAvailable = false;
+    
     loggedInUsername: string;
     allUsers: User[];
   
     // Check if it can be removed
-    apiFlowForm: FormGroup;
+    apiFlowForm: UntypedFormGroup;
 
     editMode: {};
 
     destroy$: Subject<boolean> = new Subject<boolean>();
+
+    public reenableButton = new EventEmitter<boolean>(false);
+
+    showConfigureModal = false;
+    serviceInfo: {};
 
     constructor(
         private alertService: AlertService,
@@ -42,8 +52,9 @@ export class APIFlowComponent implements OnInit {
         public docService: DocService,
         private userService: UserService,
         private ngProgress: ProgressBarService,
-        private fb: FormBuilder,
+        private fb: UntypedFormBuilder,
         public sharedService: SharedService,
+        private router: Router,
         private controlUtilsService: ControlUtilsService,
         public rolesService: RolesService) {
             this.apiFlowForm = this.fb.group({
@@ -62,7 +73,7 @@ export class APIFlowComponent implements OnInit {
     }
 
     addParameter(param) {
-        const control = <FormArray>this.apiFlowForm.controls['variables'];
+        const control = <UntypedFormArray>this.apiFlowForm.controls['variables'];
         control.push(this.initParameter(param));
     }
 
@@ -82,7 +93,7 @@ export class APIFlowComponent implements OnInit {
     }
 
     getFormControls(type): AbstractControl[] {
-        return (<FormArray>this.apiFlowForm.get(type)).controls;
+        return (<UntypedFormArray>this.apiFlowForm.get(type)).controls;
     }
 
     getAPIFlows() {
@@ -111,7 +122,7 @@ export class APIFlowComponent implements OnInit {
         this.controlAPIFlowService.getAPIFlow(name)
           .subscribe((af: APIFlow) => {
             this.ngProgress.done();
-            let v = <FormArray>this.apiFlowForm.controls['variables'];
+            let v = <UntypedFormArray>this.apiFlowForm.controls['variables'];
             v.clear();
             this.fillParameters(af.variables);
             // TODO: FOGL-8079 (blank values for variables are not allowed)
@@ -141,6 +152,7 @@ export class APIFlowComponent implements OnInit {
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
 
           // Remove from local arrays of apiFlows
           this.apiFlows = this.apiFlows.filter(api => api.name !== this.epName);  
@@ -151,6 +163,7 @@ export class APIFlowComponent implements OnInit {
         error => {
           /** request completed but error */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -235,10 +248,35 @@ export class APIFlowComponent implements OnInit {
     openModal(id: string, af) {
       this.epName = af.name;
       this.description = af.description;
+      this.reenableButton.emit(false);
       this.dialogService.open(id);
     }
 
+    onNotify(handleEvent) {
+      if (handleEvent) {
+        this.addDispatcherServiceComponent.getInstalledServicesList();
+      }
+      return;
+    }
+
+    getServiceDetail(event) {
+      this.showConfigureModal = event.isOpen;
+      delete event.isOpen;
+      this.serviceInfo = event;
+      if (this.showConfigureModal) {
+       this.openServiceConfigureModal(); 
+      }
+    }
+
+    /**
+     * Open Configure Service modal
+     */
+    openServiceConfigureModal() {
+      this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
+    }
+
     closeModal(id: string) {
+      this.reenableButton.emit(false);
       this.dialogService.close(id);
     }
 

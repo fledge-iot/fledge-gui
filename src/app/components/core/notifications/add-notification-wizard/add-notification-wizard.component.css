@@ -1,7 +1,3 @@
-[hidden] {
-  display: none !important;
-}
-
 .is-vertical-center {
   display: flex;
   align-items: center;
@@ -22,10 +18,6 @@
 
 .container.is-fluid {
   margin-top: 10px;
-}
-
-.is-hovered {
-  cursor: pointer !important;
 }
 
 .notification-type-help {

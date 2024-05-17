@@ -23,6 +23,12 @@ export const appRoutes: Routes = [
     loadChildren: () => import('./components/core/north/north.module')
       .then(m => m.NorthModule)
   },
+  {
+    path: 'flow',
+    canActivate: [AuthRequiredGuard, DataViewRoleGuard],
+    loadChildren: () => import('./components/common/node-editor/flow-editor.module')
+      .then(m => m.FlowEditorModule)
+  },
   { path: 'login', component: LoginComponent },
   {
     path: 'configuration',
@@ -95,4 +101,4 @@ export const appRoutes: Routes = [
   { path: '**', redirectTo: '' }
 ];
 
-export const routing = RouterModule.forRoot(appRoutes, { useHash: true, preloadingStrategy: PreloadAllModules, relativeLinkResolution: 'legacy' });
+export const routing = RouterModule.forRoot(appRoutes, { useHash: true, preloadingStrategy: PreloadAllModules });

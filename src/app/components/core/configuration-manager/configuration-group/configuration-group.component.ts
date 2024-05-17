@@ -1,8 +1,9 @@
-import { AfterViewInit, Component, EventEmitter, Input, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { AlertService, ConfigurationControlService, ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
 import { chain, cloneDeep, uniqWith } from 'lodash';
 import { TabHeader } from './tab-header-slider';
+import { TabNavigationComponent } from '../tab-navigation/tab-navigation.component';
 
 @Component({
   selector: 'app-configuration-group',
@@ -21,11 +22,15 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   @Output() formStatusEvent = new EventEmitter<boolean>();
   @Output() changedAdvanceConfigEvent = new EventEmitter<any>();
 
+  @ViewChild(TabNavigationComponent) tabNavigationComponent: TabNavigationComponent;
+
   // To hold the changed configuration values of a plugin
   configFormValues = {};
 
-  pages = ['south', 'north', 'notification'];
+  pages = ['south', 'north', 'notification', 'additional-services'];
   @Input() from;
+  @Input() sourceName;
+  @Input() categoryType;
   categoryKey = '';
 
   advanceConfiguration: any
@@ -33,6 +38,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   changedAdvanceConfiguration: any;
   changedSecurityConfiguration: any;
   dynamicCategoriesGroup = [];
+  groupTabs = [];
 
   constructor(
     public developerFeaturesService: DeveloperFeaturesService,
@@ -72,18 +78,30 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   }
 
   categeryConfiguration() {
+    let modelConfig = []
     this.groups = [];
     const configItems = Object.keys(this.category.config).map(k => {
+      if (this.category.config[k].type == 'bucket') {
+        this.category.config[k].key = k;
+        modelConfig.push(this.category.config[k]);
+      }
       this.category.config[k].key = k;
       return this.category.config[k];
-    }).filter(obj => !obj.readonly); // remove readonly items from config array
+    }).filter(obj => !obj.readonly && obj.type != 'bucket'); // remove readonly & type=bucket items from config array
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
-
       const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic";
-      return { category: this.category.name, group: g, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })) }
+      return { category: this.category.name, group: g, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })), type: g }
     }).value();
 
+    if (modelConfig.length > 0) {
+      modelConfig.forEach(mConfig => {
+        if (!mConfig.hasOwnProperty('value')) {
+          mConfig.value = mConfig.default;
+        }
+        this.groups.push({ category: this.category.name, group: (mConfig.displayName ? mConfig.displayName : mConfig.description), config: mConfig, type: mConfig.type, key: mConfig.key });
+      });
+    }
     // merge configuration of same group
     this.groups = uniqWith(this.groups, (pre, cur) => {
       if (pre.group == cur.group) {
@@ -101,17 +119,29 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         return acc;
       }, []);
 
+    this.getGroups();
     // set initial group
     this.selectedGroup = this.groups[0]?.group;
   }
 
   /**
-   * Set configuration of the selected child category
-   * @param category Object{key, description, displayName}
+   * Set tab in the group
+   * @param tab tab index
    */
   selectTab(tab: string) {
     if (tab !== this.selectedGroup) {
       this.selectedGroup = tab;
+    }
+    if (this.tabNavigationComponent) {
+      const tabIndex = this.groupTabs.findIndex(t => t === this.selectedGroup);
+      this.tabNavigationComponent.setTab(tabIndex);
+    }
+  }
+
+  getGroups() {
+    this.groupTabs = [...this.groups.map(g => g.group), ...this.dynamicCategoriesGroup.map(g => g.group),];
+    if (this.developerFeaturesService.getDeveloperFeatureControl() && this.pages.includes(this.from)) {
+      this.groupTabs.push('Developer');
     }
   }
 
@@ -239,6 +269,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         return acc;
       }, []);
 
+    this.getGroups();
     // set advance as a first tab if no default config
     if (this.groups.length == 0) {
       this.selectedGroup = dynamicGroups[0]?.group

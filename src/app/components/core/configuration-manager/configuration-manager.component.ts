@@ -1,10 +1,10 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { TreeComponent } from '@circlon/angular-tree-component';
+import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
+import { TreeComponent } from '@ali-hm/angular-tree-component';
 import { isEmpty, cloneDeep } from 'lodash';
 
 import {
   AlertService, ConfigurationControlService, ConfigurationService,
-  FileUploaderService, ProgressBarService, RolesService
+  FileUploaderService, ProgressBarService, RolesService, SchedulesService
 } from '../../../services';
 
 @Component({
@@ -15,118 +15,51 @@ import {
 
 export class ConfigurationManagerComponent implements OnInit {
   public categoryData = [];
-  public rootCategories = [];
-  public JSON;
-  public selectedRootCategory = 'General';
   public isChild = true;
   validConfigForm = false;
+  selectedNode = { id: '', description: '' };
+  scheduleNames = [];
 
   nodes: any[] = [];
   options = {};
 
-  @ViewChild(TreeComponent, { static: true })
-  private tree: TreeComponent;
+  @ViewChild(TreeComponent, { static: true }) private tree: TreeComponent;
   changedConfig: any;
   categoryDataCopy: any;
+
+  public reenableButton = new EventEmitter<boolean>(false);
 
   constructor(private configService: ConfigurationService,
     public rolesService: RolesService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
     private configurationControlService: ConfigurationControlService,
-    private fileUploaderService: FileUploaderService
-  ) {
-    this.JSON = JSON;
-  }
+    private fileUploaderService: FileUploaderService,
+    public schedulesService: SchedulesService
+  ) { }
 
   ngOnInit() {
-    this.getRootCategories(true);
+    this.getSchedules();
+    this.getTreeStructure();
   }
 
-  public getRootCategories(onLoadingPage = false) {
-    this.rootCategories = [];
-    this.configService.getRootCategories().
-      subscribe(
-        (data) => {
-          data['categories'].forEach(element => {
-            if (element.hasOwnProperty('displayName')) {
-              this.rootCategories.push({
-                key: element.key,
-                displayName: element.displayName,
-                description: element.description
-              });
-            } else {
-              this.rootCategories.push({
-                key: element.key,
-                description: element.description
-              });
-            }
-            this.rootCategories = this.rootCategories.filter(el => el.key.toUpperCase() !== 'SOUTH')
-              .filter(el => el.key.toUpperCase() !== 'NORTH')
-              .filter(el => el.key.toUpperCase() !== 'NOTIFICATIONS');
-          });
-          if (onLoadingPage === true) {
-            this.getChildren(this.selectedRootCategory);
-          }
-        },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
-  }
-
-  getSelectedCategoryConfig(rootCategory: any) {
-    this.selectedRootCategory = this.hasProperty(rootCategory, 'displayName') === true ?
-      rootCategory.displayName : rootCategory.key;
-    this.getChildren(rootCategory.key);
-  }
-
-  public getChildren(categoryName) {
+  public getTreeStructure() {
     /** request started */
     this.ngProgress.start();
-    this.tree.treeModel.nodes = [];
-
-    this.nodes = [];
-    this.configService.getChildren(categoryName).
+    this.configService.getRootCategories().
       subscribe(
-        (data) => {
-          /** request completed */
-          this.ngProgress.done();
-          const rootCategories = this.rootCategories.filter(el => el.key === categoryName);
-
-          // Check if there is any category
-          if (rootCategories.length > 0 && data['categories'].length === 0) {
-            this.isChild = false;
-            this.getCategory(rootCategories[0].key, rootCategories[0].description);
-            this.categoryData = [];
-            return;
-          }
-          this.isChild = true;
-          data['categories'].forEach(element => {
-            if (element.hasOwnProperty('displayName')) {
-              this.nodes.push({
-                id: element.key,
-                name: element.displayName,
-                description: element.description,
-                hasChildren: true, children: []
-              });
-            } else {
-              this.nodes.push({
-                id: element.key,
-                name: element.description,
-                description: element.description,
-                hasChildren: true, children: []
-              });
-            }
+        (data: any) => {
+          this.categoryData = data.categories;
+          const excludeCategories = this.scheduleNames.concat(["SOUTH", "NORTH", "NOTIFICATIONS"]);
+          
+          // filter south, north, notification, management, bucket, dispatcher categories
+          this.categoryData = this.categoryData.filter((n: any) => {
+            return !excludeCategories.includes(n.key.toUpperCase());
           });
 
-          this.tree.treeModel.update();
-          if (this.tree.treeModel.getFirstRoot()) {
-            this.tree.treeModel.getFirstRoot().setIsActive(true);
-          }
+          this.nodes = this.updateIdAndNameInTreeObject(this.categoryData);
+          /** request completed */
+          this.ngProgress.done();
         },
         error => {
           /** request completed */
@@ -134,59 +67,66 @@ export class ConfigurationManagerComponent implements OnInit {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
-            this.alertService.error(error.statusText);
+            this.alertService.error(error.statusText, true);
           }
         });
   }
 
-  public onNodeToggleExpanded(event) {
-    event.node.data.children = [];
-    if (event.node.isExpanded) {
-      this.configService.getChildren(event.node.data.id).
-        subscribe(
-          (data) => {
-            data['categories'].forEach(element => {
-              if (element.hasOwnProperty('displayName')) {
-                event.node.data.children.push({
-                  id: element.key,
-                  name: element.displayName,
-                  description: element.description,
-                  hasChildren: true,
-                  children: []
-                });
-              } else {
-                event.node.data.children.push({
-                  id: element.key,
-                  name: element.description,
-                  description: element.description,
-                  hasChildren: true,
-                  children: []
-                });
-              }
-              this.tree.treeModel.update();
-            });
-          }, error => {
-            if (error.status === 0) {
-              console.log('service down ', error);
-            } else {
-              this.alertService.error(error.statusText);
-            }
-          });
+  updateIdAndNameInTreeObject(tree: any) {
+    // sort all nodes of tree
+    tree = tree.sort((a, b) => a.displayName.localeCompare(b.displayName));
+
+    // If category group 'General' exists, show it on index 0
+    tree.forEach((_n, i) => {
+      if (tree[i]['key'].toUpperCase() === 'GENERAL') {
+        tree.unshift(tree.splice(i, 1)[0]);
+      }
+    });
+
+    // Iterate through the array
+    tree.forEach((node: any) => {
+      // add key as Id and displayName/description as a name in the tree object
+      node.id = node.key;
+      node.name = (node.hasOwnProperty('displayName')) ? node.displayName : node.description;
+      node.hasChildren = false;
+      // If the object has 'children' property recurse 
+      if (Array.isArray(node.children) && node.children.length > 0) {
+        node.hasChildren = true;
+        this.updateIdAndNameInTreeObject(node.children);
+      }
+    })
+    return tree;
+  }
+
+  onTreeLoad(tree: TreeComponent): void {
+    if (this.selectedNode.id) {
+      this.getCategory(this.selectedNode.id, this.selectedNode.description);
+    }
+    const child = tree.treeModel.nodes[0]?.children[0];
+    if (child && !this.selectedNode.id) {
+      const firstRootChild = tree.treeModel.getNodeById(child.id);
+      firstRootChild.setActiveAndVisible();
+      this.selectedNode = { id: firstRootChild.data.id, description: firstRootChild.data.description };
+      this.getCategory(firstRootChild.data.id, firstRootChild.data.description);
     }
   }
 
-  public onNodeActive(event) {
-    this.getCategory(event.node.data.id, event.node.data.description);
-  }
-
-  public toggleDropDown() {
-    const dropDown = document.querySelector('#dropdown');
-    dropDown.classList.toggle('is-active');
-  }
-
-  public resetAllFilters() {
-    this.selectedRootCategory = 'General';
-    this.getRootCategories(true);
+  public onNodeActive(tree: TreeComponent) {
+    const rootId = tree.treeModel.focusedNodeId?.toString();
+    // In case of root node is in ['Advanced', 'General', 'Utilities'], 
+    // Expand the group and select first child
+    if (['Advanced', 'General', 'Utilities'].includes(rootId)) {
+      const nodes = tree.treeModel.nodes;
+      const node = nodes.find(c => c.id == rootId)?.children[0];
+      const firstChild = tree.treeModel.getNodeById(node.id);
+      firstChild.setActiveAndVisible();
+      this.selectedNode = { id: node.id, description: node.description };
+      this.getCategory(node.id, node.description);
+    } else {
+      const child = tree.treeModel.getNodeById(rootId);
+      this.selectedNode = { id: rootId, description: child.data.description };
+      this.getCategory(rootId, child.data.description);
+    }
   }
 
   private getCategory(categoryKey: string, categoryDesc: string): void {
@@ -197,6 +137,7 @@ export class ConfigurationManagerComponent implements OnInit {
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
+          this.categoryData = [];
           if (!isEmpty(data)) {
             this.categoryData = [{ name: categoryKey, config: data, description: categoryDesc }];
             this.categoryDataCopy = cloneDeep(this.categoryData);
@@ -208,7 +149,7 @@ export class ConfigurationManagerComponent implements OnInit {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
-            this.alertService.error(error.statusText);
+            this.alertService.error(error.statusText, true);
           }
         });
   }
@@ -216,6 +157,7 @@ export class ConfigurationManagerComponent implements OnInit {
   public refreshCategory(categoryKey: string, categoryDesc: string): void {
     this.changedConfig = null;
     this.validConfigForm = false;
+    this.selectedNode = { id: categoryKey, description: categoryDesc };
     this.getCategory(categoryKey, categoryDesc);
   }
 
@@ -257,10 +199,33 @@ export class ConfigurationManagerComponent implements OnInit {
         this.validConfigForm = false;
         this.alertService.success('Configuration updated successfully.', true);
         this.ngProgress.done();
+        this.reenableButton.emit(false);
+        this.selectedNode = { id: categoryName, description: categoryDescription };
         this.getCategory(categoryName, categoryDescription);
       },
         (error) => {
           this.ngProgress.done();
+          this.reenableButton.emit(false);
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText, true);
+          }
+        });
+  }
+
+  public getSchedules(): void {
+    this.schedulesService.getSchedules().
+      subscribe(
+        (data: any) => {
+          this.scheduleNames = [];
+          data.schedules.forEach(sch => {
+            if (['notification_c', 'dispatcher_c', 'bucket_storage_c', 'management'].includes(sch.processName)) {
+              this.scheduleNames.push(sch.name.toUpperCase());
+            }
+          });
+        },
+        error => {
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -285,15 +250,5 @@ export class ConfigurationManagerComponent implements OnInit {
    */
   public uploadScript(categoryName: string, files: any[]) {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
-  }
-
-
-  /**
-   * Check if object has a specific key
-   * @param o Object
-   * @param name key name
-   */
-  public hasProperty(o, name) {
-    return o.hasOwnProperty(name);
   }
 }

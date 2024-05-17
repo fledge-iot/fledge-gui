@@ -1,6 +1,6 @@
 # Fledge GUI
 
-This is a GUI for Fledge
+Web GUI for Fledge
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ This is a GUI for Fledge
 To update yarn, Run `sudo npm i -g yarn`
 
 ```
-git clone https://github.com/fledge/fledge-gui.git
+git clone https://github.com/fledge-iot/fledge-gui.git
 cd fledge-gui
 ```
 
@@ -65,9 +65,10 @@ For **windows**, see details [here](docs/windows-nginx-deployment-guide.md)
 
 | Browser        | Tested Version   | Supported |
 | -------------- | ---------------- | --------- |
-| Safari (macOS) | 15.6.x           | latest 1  |
-| Chrome         | 104.0.x (64-bit) | latest 2  |
-| Firefox        | 103.0.x (64-bit) | latest 2  |
+| Safari (macOS) | 16.6.x           | latest 1  |
+| Chrome         | 123.0.x (64-bit) | latest 2  |
+| Firefox        | 123.0.x (64-bit) | latest 2  |
+| Microsoft Edge | 123.0.x (64-bit) | latest 2  |
 
 [Changelog](docs/changelog.md)
 
@@ -77,4 +78,4 @@ For **windows**, see details [here](docs/windows-nginx-deployment-guide.md)
 
 See [Contributing Statement](CONTRIBUTING.md)
 
-> &copy; 2021 DIANOMIC SYSTEMS, INC. All Rights Reserved.
+> &copy; 2024 DIANOMIC SYSTEMS, INC. All Rights Reserved.

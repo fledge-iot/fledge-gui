@@ -1,19 +1,19 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { sortBy, isEmpty, cloneDeep } from 'lodash';
 
 import {
   AlertService, ConfigurationService, FilterService, ServicesApiService,
   ProgressBarService, FileUploaderService,
-  ConfigurationControlService,
-  ToastService
+  ConfigurationControlService
 } from '../../../../services';
-import { concatMap, delay, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
+import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { of, Subscription, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
-
+import { ActivatedRoute, Router } from '@angular/router';
+import { FlowEditorService } from '../../../common/node-editor/flow-editor.service';
 
 @Component({
   selector: 'app-add-filter-wizard',
@@ -38,11 +38,11 @@ export class AddFilterWizardComponent implements OnInit {
 
   installPluginSub: Subscription;
 
-  serviceForm = new FormGroup({
-    name: new FormControl(),
-    plugin: new FormControl(),
-    pluginToInstall: new FormControl(),
-    config: new FormControl(null)
+  serviceForm = new UntypedFormGroup({
+    name: new UntypedFormControl(),
+    plugin: new UntypedFormControl(),
+    pluginToInstall: new UntypedFormControl(),
+    config: new UntypedFormControl(null)
   });
 
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
@@ -51,18 +51,29 @@ export class AddFilterWizardComponent implements OnInit {
 
   validChildConfigurationForm = true;
   pluginConfiguration: any;
+  public source = '';
+  private subscription: Subscription;
+  updatedFilterPipeline: any;
 
-  constructor(private formBuilder: FormBuilder,
+  public reenableButton = new EventEmitter<boolean>(false);
+
+  constructor(private formBuilder: UntypedFormBuilder,
     private filterService: FilterService,
     private configurationService: ConfigurationService,
     private fileUploaderService: FileUploaderService,
     private alertService: AlertService,
-    private toast: ToastService,
     private service: ServicesApiService,
+    public flowEditorService: FlowEditorService,
     private docService: DocService,
     private configurationControlService: ConfigurationControlService,
     private ngProgress: ProgressBarService,
-    private cdRef: ChangeDetectorRef) { }
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
+    private cdRef: ChangeDetectorRef) {
+    this.activatedRoute.params.subscribe(params => {
+      this.source = params.name;
+    });
+  }
 
   ngOnInit() {
     this.getCategories();
@@ -72,6 +83,9 @@ export class AddFilterWizardComponent implements OnInit {
       pluginToInstall: [{ value: null, disabled: false }, [Validators.required]],
       config: [null]
     });
+    this.subscription = this.flowEditorService.pipelineInfo.subscribe((data: any) => {
+      this.updatedFilterPipeline = data;
+    })
     this.getInstalledFilterPlugins();
   }
 
@@ -146,10 +160,12 @@ export class AddFilterWizardComponent implements OnInit {
     }
 
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
+    const previousButton = <HTMLButtonElement>document.getElementById('previous');
     switch (+id) {
       case 2:
         this.serviceForm.controls.plugin.enable();
         nxtButton.textContent = 'Next';
+        previousButton.textContent = 'Cancel';
         nxtButton.disabled = false;
         break;
       default:
@@ -185,10 +201,6 @@ export class AddFilterWizardComponent implements OnInit {
 
     switch (+id) {
       case 1:
-
-        nxtButton.textContent = 'Next';
-        previousButton.textContent = 'Previous';
-
         // To verify if category (or filter itself) with this name already exists
         // hence filter can not be created with that name
         const isFilterExist = this.categories.some(item => {
@@ -196,8 +208,11 @@ export class AddFilterWizardComponent implements OnInit {
         });
         if (isFilterExist) {
           this.alertService.error('A filter (or category) with this name already exists.');
+          this.reenableButton.emit(false);
           return;
         }
+        nxtButton.textContent = 'Next';
+        previousButton.textContent = 'Previous';
         let pluginValue = '';
         if (formValues['name']?.trim() !== '' && (formValues['plugin']?.length > 0 || formValues['pluginToInstall']?.length > 0)) {
           if (formValues['pluginToInstall']) {
@@ -212,6 +227,7 @@ export class AddFilterWizardComponent implements OnInit {
 
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
+        this.reenableButton.emit(false);
         if (!this.validChildConfigurationForm) {
           nxtButton.disabled = true;
         }
@@ -400,17 +416,25 @@ export class AddFilterWizardComponent implements OnInit {
     this.filterService.saveFilter(payload)
       .subscribe(
         (data: any) => {
-          this.toast.success(data.filter + ' filter added successfully.');
           if (this.from === 'control-pipeline') {
             if (files) {
               this.uploadScript(payload.name, files);
             }
             this.notify.emit({ 'filter': payload.name, files });
           } else {
-            this.addFilterPipeline({ 'pipeline': [payload.name], files });
+            if (this.source && this.from) {
+              this.replaceFilterNameInPipeline(data.filter);
+              this.updateFilterPipeline({ 'pipeline': this.updatedFilterPipeline, files }, data.filter);
+              console.log(this.updatedFilterPipeline)
+              this.router.navigate(['/flow/editor', this.from, this.serviceName, 'details']);
+            }
+            else {
+              this.addFilterPipeline({ 'pipeline': [payload.name], files });
+            }
           }
         },
         (error) => {
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -436,9 +460,13 @@ export class AddFilterWizardComponent implements OnInit {
         if (payload?.files.length > 0) {
           const filterName = this.serviceName + '_' + name
           this.uploadScript(filterName, payload?.files);
+        } else {
+          this.reenableButton.emit(false);
         }
+        this.alertService.success(data.result, true);
       },
         (error) => {
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -512,5 +540,46 @@ export class AddFilterWizardComponent implements OnInit {
       type: 'filter'
     };
     this.docService.goToPluginLink(pluginInfo);
+  }
+
+  replaceFilterNameInPipeline(filterName) {
+    for (let i = 0; i < this.updatedFilterPipeline.length; i++) {
+      if (typeof (this.updatedFilterPipeline[i]) === "string") {
+        if (this.updatedFilterPipeline[i] === "Filter") {
+          this.updatedFilterPipeline[i] = filterName;
+          return;
+        }
+      }
+      else {
+        let index = this.updatedFilterPipeline[i].indexOf("Filter");
+        if (index !== -1) {
+          this.updatedFilterPipeline[i].splice(index, 1, filterName);
+          return;
+        }
+      }
+    }
+  }
+
+  public updateFilterPipeline(payload, filterName) {
+    this.filterService.updateFilterPipeline(payload, this.serviceName)
+      .subscribe((data: any) => {
+        if (payload?.files.length > 0) {
+          const name = this.serviceName + '_' + filterName
+          this.uploadScript(name, payload?.files);
+        }
+        this.alertService.success(data.result, true);
+        this.router.navigate(['/flow/editor', this.from, this.serviceName, 'details']);
+      },
+        (error) => {
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText, true);
+          }
+        });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

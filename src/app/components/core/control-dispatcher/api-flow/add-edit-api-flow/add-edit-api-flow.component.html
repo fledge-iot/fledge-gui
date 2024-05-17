@@ -20,27 +20,25 @@
     <div class="card">
         <div class="card-content">
         <form [formGroup]="apiFlowForm">
-            <!-- TODO: FOGL-?
-            <span (click)="goToLink()"
-            class=" icon is-small has-tooltip-top has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
+            <span (click)="goToLink('adding-a-control-api-entry-point')"
+            class=" icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
                 <i class="far fa-question-circle"></i>
-            </span> -->
+            </span>
             <div class="column is-four-fifths">
             <div [hidden]="editMode" class="field is-horizontal">
                 <div class="field-label">
-                <label class="label label-name has-text-left">Name</label>
+                <label class="label has-text-left">Name</label>
                 </div>
                 <div class="field-body">
                     <div class="field">
                         <div class="control">
-                        <input #name=ngModel name="af.name" class="input" type="text" placeholder="Name" required
-                            [(ngModel)]="af.name" title="No single quotes and double quotes!" [ngModelOptions]="{standalone: true}"
+                        <input formControlName="name" class="input" type="text" placeholder="Name" required title="No single quotes and double quotes!" 
                             [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off"
                             [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-4':!rolesService.hasControlAccess()}"
                             [readonly]="!rolesService.hasControlAccess()">
                         </div>
-                        <div *ngIf="name.invalid && (name.dirty || name.touched)" class="help is-danger">
-                            <div *ngIf="name.errors?.['required']">
+                        <div *ngIf="apiFlowForm.controls['name'].invalid" class="help is-danger">
+                            <div *ngIf="apiFlowForm.controls['name'].errors?.['required']">
                                 *required
                             </div>
                         </div>
@@ -49,7 +47,7 @@
             </div>
             <div class="field is-horizontal">
                 <div class="field-label">
-                <label class="label label-name has-text-left">Type</label>
+                <label class="label has-text-left">Type</label>
                 </div>
                 <div class="field-body">
                 <div class="field" *ngIf="rolesService.hasControlAccess(); else staticTypeDiv">
@@ -77,14 +75,12 @@
                 <div class="field">
                     <ngContainer *ngIf="selectedType === 'operation' && rolesService.hasControlAccess()">
                         <div class="control">
-                            <input #operation_name=ngModel name="af.operation_name" class="input is-small" type="text" placeholder="Operation name" required
-                            [(ngModel)]="af.operation_name" title="No single quotes and double quotes!" [ngModelOptions]="{standalone: true}"
+                            <input formControlName="operation_name" class="input is-small" type="text" placeholder="Operation name"
+                            title="No single quotes and double quotes!"
                             [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off">
                         </div>
-                        <div *ngIf="operation_name.invalid && (operation_name.dirty || operation_name.touched)" class="help is-danger">
-                        <div *ngIf="operation_name.errors?.['required']">
+                        <div *ngIf="selectedType === 'operation' && apiFlowForm.controls.operation_name.value === ''" class="help is-danger">
                             *required
-                        </div>
                         </div>
                     </ngContainer>
                 </div>
@@ -108,7 +104,7 @@
     
             <div class="field is-horizontal">
                 <div class="field-label">
-                    <label class="label label-name has-text-left">Destination</label>
+                    <label class="label has-text-left">Destination</label>
                 </div>
                 <div class="field-body">
                 <div class="field">
@@ -120,12 +116,12 @@
                                 <div class="column">
                                     <div class="field is-horizontal">
                                         <div class="field-label is-small">
-                                            <label class="label is-small has-text-left">Type</label>
+                                            <label class="label lbl-child has-text-left">Type</label>
                                         </div>
                                         <div class="field-body">
                                             <div class="field">
                                                 <div class="control" *ngIf="rolesService.hasControlAccess(); else staticDestinationType">
-                                                    <ng-select [clearable]="false" placeholder="Select Destination Type"
+                                                    <ng-select class="select-input" [clearable]="false" placeholder="Select Destination Type"
                                                         [items]="destinationTypes" [multiple]="false" bindLabel="name"
                                                         (change)="getDestinationNames($event)"
                                                         [ngModel]="af.destination | titlecase" [ngModelOptions]="{standalone: true}">
@@ -143,13 +139,13 @@
                                     <div *ngIf="af.destination && !((af.destination | titlecase) === 'Broadcast')"
                                     class="field is-horizontal mb-0">
                                     <div class="field-label is-small">
-                                        <label class="label is-small has-text-left">Name</label>
+                                        <label class="label lbl-child has-text-left">Name</label>
                                     </div>
                                     <div class="field-body">
                                         <div class="field mb-0">
                                         <div class="control"
                                             *ngIf="rolesService.hasControlAccess(); else staticDestinationName">
-                                            <ng-select [clearable]="false" placeholder="Select Destination"
+                                            <ng-select class="select-input" [clearable]="false" placeholder="Select Destination"
                                             [items]="destinationNames" [multiple]="false" bindLabel="name"
                                             groupBy="groupbyType" (change)="selectDestinationName($event.name)"
                                             [ngModel]="selectedDestinationName" [ngModelOptions]="{standalone: true}">
@@ -180,7 +176,7 @@
             </div>
             <div class="field is-horizontal">
                 <div class="field-label">
-                    <label class="label label-name has-text-left">Parameters</label>
+                    <label class="label has-text-left">Parameters</label>
                 </div>
                 <div class="field-body">
                 <div class="field">  
@@ -194,10 +190,10 @@
                                         <div *ngIf="getFormControls('variables').length === 0" class="field-label is-small">
                                             <div class="field is-horizontal">
                                                 <div class="field-label is-small">
-                                                    <label class="label is-small has-text-left">Variables</label>
+                                                    <label class="label lbl-child has-text-left">Variables</label>
                                                 </div>
                                                 <div class="field-body">
-                                                    <button class="button px-0 pt-0 is-small is-link is-light has-background-white" (click)="addValueControl('variables')">
+                                                    <button class="button px-0 pt-1 is-small is-link is-light has-background-white" (click)="addValueControl('variables')">
                                                         <span class="icon is-small pt-1 mr-0">
                                                             <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
                                                         </span>
@@ -209,7 +205,7 @@
                                         <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
                                             <div class="field is-horizontal">
                                                 <div *ngIf="i === 0" class="field-label is-small">
-                                                    <label class="label is-small has-text-left">Variables</label>
+                                                    <label class="label lbl-child has-text-left">Variables</label>
                                                 </div>
                                                 <div *ngIf="i > 0" class="field-label">
                                                     <label class="label"></label>
@@ -217,9 +213,9 @@
                                                 <div class="field-body" [formGroupName]="i">
                                                     <div class="field" style="max-width: 50%;">
                                                         <div class="control">
-                                                            <input formControlName="vName" placeholder="Variable name" class="input is-small"
-                                                            name="type" type="text" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-4':!rolesService.hasControlAccess()}"
-                                                            [readonly]="!rolesService.hasControlAccess()">
+                                                            <!-- Show variable name highlighted with red color if variable value exists but variable name is blank -->
+                                                            <input formControlName="vName" placeholder="Variable name" class="input is-small" name="type" type="text" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-4':!rolesService.hasControlAccess()}"
+                                                            [readonly]="!rolesService.hasControlAccess()" [ngClass]="{'input-error': (apiFlowForm.controls['variables'].controls[i].controls.vValue.value !== '' && apiFlowForm.controls['variables'].controls[i].controls.vName.value === '')}">
                                                         </div>
                                                     </div>
                                                     <div class="field" style="max-width: 50%;">
@@ -239,8 +235,8 @@
                                 <div *ngIf="rolesService.hasControlAccess() && getFormControls('variables').length > 0" class="field">
                                     <div class="columns">
                                         <div class="column is-one-fifth"></div>
-                                        <div class="btn-column pt-2 pb-0 pl-2">
-                                            <button class="button px-0 pt-0 is-small is-link is-light has-background-white" (click)="addValueControl('variables')">
+                                        <div class="btn-column pt-1 pb-0 pl-2">
+                                            <button class="button px-0 is-small is-link is-light has-background-white" (click)="addValueControl('variables')">
                                                 <span class="icon is-small pt-1 mr-0">
                                                     <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
                                                 </span>
@@ -254,10 +250,10 @@
                                         <div *ngIf="getFormControls('constants').length === 0" class="field-label is-small">
                                             <div class="field is-horizontal">
                                                 <div class="field-label is-small">
-                                                    <label class="label is-small has-text-left">Constants</label>
+                                                    <label class="label lbl-child has-text-left">Constants</label>
                                                 </div>
                                                 <div class="field-body">
-                                                    <button class="button px-0 pt-0 is-small is-link is-light has-background-white" (click)="addValueControl('constants')">
+                                                    <button class="button px-0 pt-1 is-small is-link is-light has-background-white" (click)="addValueControl('constants')">
                                                         <span class="icon is-small pt-1 mr-0">
                                                             <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
                                                         </span>
@@ -269,7 +265,7 @@
                                         <ng-container *ngFor="let c of getFormControls('constants'); let i = index">
                                             <div class="field is-horizontal">
                                                 <div *ngIf="i === 0" class="field-label is-small">
-                                                    <label class="label is-small has-text-left">Constants</label>
+                                                    <label class="label lbl-child has-text-left">Constants</label>
                                                 </div>
                                                 <div *ngIf="i > 0" class="field-label">
                                                     <label class="label"></label>
@@ -277,8 +273,9 @@
                                                 <div class="field-body" [formGroupName]="i">
                                                     <div class="field" style="max-width: 50%;">
                                                         <div class="control">
+                                                            <!-- Show constant name highlighted with red color if constant value exists but constant name is blank -->
                                                             <input formControlName="cName" placeholder="Constant name" class="input is-small" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-4':!rolesService.hasControlAccess()}"
-                                                            [readonly]="!rolesService.hasControlAccess()"
+                                                            [readonly]="!rolesService.hasControlAccess()" [ngClass]="{'input-error': (apiFlowForm.controls['constants'].controls[i].controls.cValue.value !== '' && apiFlowForm.controls['constants'].controls[i].controls.cName.value === '')}"
                                                             name="type" type="text">
                                                         </div>
                                                     </div>
@@ -299,8 +296,8 @@
                                 <div *ngIf="rolesService.hasControlAccess() && getFormControls('constants').length > 0" class="field">
                                     <div class="columns">
                                         <div class="column is-one-fifth"></div>
-                                        <div class="btn-column pt-2 pb-0 pl-2">
-                                            <button class="button px-0 pt-0 is-small is-link is-light has-background-white"
+                                        <div class="btn-column pt-1 pb-0 pl-2">
+                                            <button class="button px-0 is-small is-link is-light has-background-white"
                                             (click)="addValueControl('constants')">
                                                 <span class="icon is-small pt-1 mr-0">
                                                     <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
@@ -323,7 +320,7 @@
     
             <div class="field is-horizontal">
                 <div class="field-label">
-                    <label class="label label-name has-text-left access-label" title="Access to execute the entry point">Execution Access</label>
+                    <label class="label has-text-left access-label" title="Access to execute the entry point">Execution Access</label>
                 </div>
                 <div class="field-body">
                 <div class="field">
@@ -340,7 +337,7 @@
                                     </article>
                                     <div class="field is-horizontal">
                                         <div class="field-label">
-                                            <label class="label is-small has-text-left" title="Access to execute the entry point">Anonymous</label>
+                                            <label class="label lbl-child has-text-left" title="Access to execute the entry point">Anonymous</label>
                                         </div>
                                         <div class="field-body">
                                             <div class="field">
@@ -354,12 +351,12 @@
                                     </div>
                                     <div class="field is-horizontal mb-0">
                                     <div class="field-label">
-                                        <label class="label is-small has-text-left">Allow Users</label>
+                                        <label class="label lbl-child has-text-left">Allow Users</label>
                                     </div>
                                     <div class="field-body">
                                         <div class="field mb-0">
                                             <div class="control" *ngIf="rolesService.hasControlAccess(); else staticUsers">
-                                                <ng-select [clearable]="false" placeholder="Select Users"
+                                                <ng-select  class="select-input" [clearable]="false" placeholder="Select Users"
                                                     [items]="allUsers" [multiple]="true" bindLabel="userName"
                                                     (change)="selectAllowedUsers($event)"
                                                     [ngModel]="af.allow" [ngModelOptions]="{standalone: true}">
@@ -371,7 +368,7 @@
                                                 [ngClass]="{'is-static pb-4':!rolesService.hasControlAccess()}"
                                                 [readonly]="!rolesService.hasControlAccess()">
                                             </ng-template>
-                                            <p class="help">*Allow list will only be applicable when the anonymous access is disabled.</p>
+                                            <p class="help allow-list-text">*Allow list will only be applicable when the anonymous access is disabled.</p>
                                         </div>
                                     </div>
                                     </div>
@@ -388,17 +385,17 @@
 
             <div class="field is-horizontal">
                 <div class="field-label">
-                    <label class="label label-name has-text-left">Description</label>
+                    <label class="label has-text-left">Description</label>
                 </div>
                 <div class="field-body">
                 <div class="field">
                     <ng-container *ngIf="rolesService.hasControlAccess(); else staticDescription">
                         <div class="control">
-                            <textarea rows="2" type="text" class="textarea is-small" placeholder="description" name="af.description" required
-                            [(ngModel)]="af.description" trim="blur" #description="ngModel" [ngModelOptions]="{standalone: true}"></textarea>
+                            <textarea rows="2" type="text" formControlName="description" class="textarea is-small" placeholder="description" required
+                            trim="blur"></textarea>
                         </div>
-                        <div *ngIf="description.invalid && (description.dirty || description.touched)" class="help is-danger">
-                            <div *ngIf="description.errors?.['required']">
+                        <div *ngIf="apiFlowForm.controls['description'].invalid" class="help is-danger">
+                            <div *ngIf="apiFlowForm.controls['description'].errors?.['required']">
                                 *required
                             </div>
                         </div>
@@ -419,11 +416,11 @@
                     <div class="field">
                         <div class="columns">
                             <div class="column is-2">
-                                <div *ngIf="editMode && allowExecute" class="field has-addons is-fullwidth">
+                                <div *ngIf="editMode && af.permitted" class="field has-addons is-fullwidth">
                                     <p class="control is-expanded">
                                         <a class="button is-small is-fullwidth" (click)="checkAndRequestAPIFlow()">Execute</a>
                                     </p>
-                                    <div *ngIf="rolesService.hasControlAccess()" id="ed-dropdown" class="dropdown is-right">                                      
+                                    <div *ngIf="rolesService.hasControlAccess()" id="ed-dropdown" class="dropdown is-right">                       
                                         <div class="dropdown-trigger">
                                             <button class="button is-small small-btn" aria-haspopup="true"
                                             aria-controls="dropdown-menu" (click)="toggleDropdown('ed-dropdown')">
@@ -439,7 +436,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <p *ngIf="editMode && !allowExecute && rolesService.hasControlAccess()" class="control">
+                                <p *ngIf="editMode && !af.permitted && rolesService.hasControlAccess()" class="control">
                                     <button class="button is-small is-danger is-outlined" type="button" (click)="openModal('confirmation-delete-dialog')">Delete</button>
                                 </p>
                             </div>
@@ -450,7 +447,7 @@
                                     </p>
                                     <p class="control">
                                     <button (click)="saveAPIFlow(apiFlowForm.value)" type="submit" class="button is-small is-link"
-                                        [disabled]="apiFlowForm?.invalid">Save</button>
+                                    [disabled]="apiFlowForm?.invalid || (selectedType === 'operation' && apiFlowForm.controls.operation_name.value.trim() === '')" [appDisableUntilResponse]="reenableButton">Save</button>
                                     </p>
                                 </div>
                             </div>
@@ -475,9 +472,9 @@
     <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-execute-dialog')"></button>
 </header>
 <section class="modal-card-body">
-    <div class="columns">
-        <div class="column is-3"></div>
-        <div class="column pt-5">
+    <div class="columns is-mobile">
+        <div class="column is-1"></div>
+        <div class="column py-5">
             <form [formGroup]="apiFlowForm">
                 <div class="field is-horizontal pt-4">
                     <div class="field-body">
@@ -485,13 +482,10 @@
                             <ng-container formArrayName="variables">                    
                                 <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
                                     <div class="field is-horizontal">
-                                        <div *ngIf="i > 0" class="field-label">
-                                            <label class="label"></label>
-                                        </div>
                                         <div class="field-body columns" [formGroupName]="i">
-                                            <div class="column is-3">
+                                            <div class="column is-4">
                                                 <div class="control">
-                                                    <label class="label label-name has-text-left">{{v.value.vName}}</label>
+                                                    <label class="label has-text-left pt-1">{{v.value.vName}}</label>
                                                 </div>
                                             </div>
                                             <div class="column is-4">
@@ -512,7 +506,7 @@
 </section>
 <footer class="modal-card-foot p-3">
     <button class="button is-small" type="button" (click)="closeModal('confirmation-execute-dialog')">Cancel</button>
-    <button class="button is-small is-info" type="button" (click)="requestAPIFlow(apiFlowForm.value)">Execute</button>
+    <button class="button is-small is-info" type="button" (click)="requestAPIFlow(apiFlowForm.value)" [appDisableUntilResponse]="reenableButton">Execute</button>
 </footer>
 </app-confirmation-dialog>
 
@@ -526,6 +520,6 @@
     </section>
     <footer class="modal-card-foot">
         <button type="button" class="button is-small" (click)="closeModal('confirmation-delete-dialog')">Cancel</button>
-        <button type="button" class="button is-small is-danger" (click)="deleteAPIFlow()">Delete</button>
+        <button type="button" class="button is-small is-danger" (click)="deleteAPIFlow()" [appDisableUntilResponse]="reenableButton">Delete</button>
     </footer>
 </app-confirmation-dialog>

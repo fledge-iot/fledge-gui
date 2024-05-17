@@ -1,13 +1,14 @@
 <div class="field is-horizontal">
   <div class="field-label is-small">
-    <label class="label">Name</label>
+    <label class="label lbl-child">Name</label>
   </div>
   <div class="field-body">
     <div class="field">
       <div class="control" *ngIf="rolesService.hasControlAccess();else operationNameDiv">
         <input class="input is-small name-control" type="text" placeholder="Name" name="operationName"
-          [ngModel]="config.name" (ngModelChange)="setName($event)"
-          [ngClass]="{'is-static':!rolesService.hasControlAccess()}" [readonly]="!rolesService.hasControlAccess()">
+          [ngModel]="config.name" (ngModelChange)="setName($event)" #operationName="ngModel"
+          [ngClass]="{'is-static':!rolesService.hasControlAccess(), 'is-danger':operationName?.invalid}"
+          [readonly]="!rolesService.hasControlAccess()" required nospaceValidator>
       </div>
       <ng-template #operationNameDiv>
         <div class="control" *ngIf="config.name;else noOperation">
@@ -25,7 +26,7 @@
 </div>
 <div class="field is-horizontal">
   <div class="field-label is-small">
-    <label class="label">Service</label>
+    <label class="label lbl-child">Service</label>
   </div>
   <div class="field-body">
     <div class="field is-narrow">

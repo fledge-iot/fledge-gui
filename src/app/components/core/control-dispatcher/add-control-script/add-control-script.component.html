@@ -111,7 +111,8 @@
                 </p>
                 <p class="control">
                   <button [disabled]="!scriptForm.valid || !scriptForm.dirty" (click)="onSubmit(scriptForm)"
-                    type="button" class="button is-small is-link">Save</button>
+                    type="button" class="button is-small is-link"
+                    [appDisableUntilResponse]="reenableButton">Save</button>
                 </p>
               </div>
             </div>
@@ -131,6 +132,7 @@
   </section>
   <footer class="modal-card-foot">
     <button type="button" class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
-    <button type="button" class="button is-small is-danger" (click)="deleteScript(scriptName)">Delete</button>
+    <button type="button" class="button is-small is-danger" (click)="deleteScript(scriptName)"
+      [appDisableUntilResponse]="reenableButton">Delete</button>
   </footer>
 </app-confirmation-dialog>

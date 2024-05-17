@@ -2,7 +2,6 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { SidebarModule } from 'ng-sidebar';
 import { NgProgressModule } from 'ngx-progressbar';
 
 import { AppComponent } from './app.component';
@@ -11,6 +10,7 @@ import { AlertDialogModule } from './components/common/alert-dialog/alert-dialog
 import { AlertComponent } from './components/common/alert/alert.component';
 import { RestartModalComponent } from './components/common/restart-modal/restart-modal.component';
 import { ShutdownModalComponent } from './components/common/shut-down/shutdown-modal.component';
+import { SystemAlertModule } from './components/core/system-alert/system-alert.module';
 import { ServiceDiscoveryComponent } from './components/core/service-discovery/service-discovery.component';
 import { SettingsComponent } from './components/core/settings';
 import { FooterComponent } from './components/layout/footer';
@@ -83,13 +83,13 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     ReactiveFormsModule,
     HttpClientModule,
     routing,
-    SidebarModule.forRoot(),
     NgProgressModule,
     PipesModule,
     AlertDialogModule,
     SharedModule,
     DashboardModule,
     DirectivesModule,
+    SystemAlertModule,
     LogsModule
   ],
   declarations: [
@@ -109,7 +109,10 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
   providers: [
     AuthRequiredGuard,
     DataViewRoleGuard,
-    AlertService,
+    {
+      provide: 'ALERT_SERVICE',
+      useExisting: AlertService,
+    },
     AuthService,
     ConfigurationService,
     AuditService,
@@ -131,7 +134,10 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     PingService,
     NorthService,
     SchedulesService,
-    ProgressBarService,
+    {
+      provide: 'PROGRESS_SERVICE',
+      useExisting: ProgressBarService,
+    },
     UserService,
     {
       provide: HTTP_INTERCEPTORS,

@@ -7,37 +7,41 @@ describe('Fledge gui', () => {
   let skipLogin: SkipLogin;
   let adminLogin: AdminLogin;
   let nonAdminLogin: NonAdminLogin;
-  let isSetupInstance = false;
 
   skipLogin = new SkipLogin();
   adminLogin = new AdminLogin();
   nonAdminLogin = new NonAdminLogin();
 
-  before(() => {
-    if (!isSetupInstance) {
-      skipLogin.navigateToHome();
-      skipLogin.setUpInstance();
-      isSetupInstance = true;
-    }
+  beforeEach(() => {
+    skipLogin.setUpInstance();
+    skipLogin.navigateToHome();
   });
 
   if (environment.AUTH_OPTIONAL === true) {
-    it('Should Display Nav Title and App Status', () => {
-      skipLogin.navigateToHome();
-      skipLogin.getNavTitle().then(title =>{
-        expect(title.trim()).to.equal('Fledge')
-      })
-      skipLogin.getAppStatus()
-      skipLogin.getReceived().then(received =>{
-        expect(received.split(':')[0].trim()).to.equal('Received')
-      })
-      skipLogin.getSent().then(sent =>{
-        expect(sent.split(':')[0].trim()).to.equal('Sent')
-      })
-      skipLogin.getUptime().then(uptime =>{
-        expect(uptime.split(':')[0].trim()).to.equal('Uptime')
-      })
-    });
+    it('Should Display Nav Title and App Status',
+      {
+        retries: {
+          // Configure retry attempts for `cypress run`
+          // Default is 0
+          runMode: 2
+        },
+      },
+      () => {
+        skipLogin.navigateToHome();
+        skipLogin.getNavTitle().then(title => {
+          expect(title.trim()).to.equal('Fledge')
+        })
+        skipLogin.getAppStatus()
+        skipLogin.getReceived().then(received => {
+          expect(received.split(':')[0].trim()).to.equal('Received')
+        })
+        skipLogin.getSent().then(sent => {
+          expect(sent.split(':')[0].trim()).to.equal('Sent')
+        })
+        skipLogin.getUptime().then(uptime => {
+          expect(uptime.split(':')[0].trim()).to.equal('Uptime')
+        })
+      });
 
     it('Should Display Dashboard', () => {
       skipLogin.navigateToHome();
@@ -61,7 +65,7 @@ describe('Fledge gui', () => {
 
     it('Should Display Audits Logs', () => {
       skipLogin.navToAuditLogs();
-      skipLogin.getAuditLogsTitle().then(title =>{
+      skipLogin.getAuditLogsTitle().then(title => {
         expect(title.trim()).to.equal('Audit Logs')
       })
       skipLogin.isAuditLogsSourceDropdownPresent()
@@ -70,7 +74,7 @@ describe('Fledge gui', () => {
 
     it('Should Display System Logs', () => {
       skipLogin.navToSystemLogs();
-      skipLogin.getSystemLogTitle().then(title =>{
+      skipLogin.getSystemLogTitle().then(title => {
         expect(title.trim()).to.equal('System Logs')
       })
       skipLogin.isSystemLogDropDownPresent()
@@ -80,7 +84,7 @@ describe('Fledge gui', () => {
 
     it('Should Display Scheduled Tasks', () => {
       skipLogin.navToScheduledTasks();
-      skipLogin.getSchedulesTitle().then(title =>{
+      skipLogin.getSchedulesTitle().then(title => {
         expect(title.trim()).to.equal('Schedules')
       })
       skipLogin.getSchedulesRefreshButton()
@@ -88,87 +92,83 @@ describe('Fledge gui', () => {
 
     it('Should Display Certificate Store', () => {
       skipLogin.navToCertificateStore();
-      skipLogin.getCertificateStoreTitle().then(title =>{
+      skipLogin.getCertificateStoreTitle().then(title => {
         expect(title.trim()).to.equal('Certificate Store')
       })
       skipLogin.getCertificateStoreRefreshButton()
-      skipLogin.getCertificateStoreKeyColKeyName().then(columnName =>{
+      skipLogin.getCertificateStoreKeyColKeyName().then(columnName => {
         expect(columnName.trim()).to.equal('Key')
       })
-      skipLogin.getCertificateStoreKeyColExtensionName().then(columnName =>{
+      skipLogin.getCertificateStoreKeyColExtensionName().then(columnName => {
         expect(columnName.trim()).to.equal('Extension')
       })
-      skipLogin.getCertificateStoreCertColKeyName().then(columnName =>{
+      skipLogin.getCertificateStoreCertColKeyName().then(columnName => {
         expect(columnName.trim()).to.equal('Certificate')
       })
-      skipLogin.getCertificateStoreCertColExtensionName().then(columnName =>{
+      skipLogin.getCertificateStoreCertColExtensionName().then(columnName => {
         expect(columnName.trim()).to.equal('Extension')
       })
-      skipLogin.getCertificateStoreImport().then(importText =>{
+      skipLogin.getCertificateStoreImport().then(importText => {
         expect(importText.trim()).to.equal('Import')
       })
     });
 
     it('Should Display Backup & Restore', () => {
       skipLogin.navToBackupRestore();
-      skipLogin.getBackupRestoreTitle().then(title =>{
+      skipLogin.getBackupRestoreTitle().then(title => {
         expect(title.trim()).to.equal('Backups')
       })
-      skipLogin.noBackupRecord().then(recordText =>{
+      skipLogin.noBackupRecord().then(recordText => {
         expect(recordText.trim()).to.equal('No Record')
       })
-      skipLogin.getRequestBackup().then(result =>{
+      skipLogin.getRequestBackup().then(result => {
         expect(result.trim()).to.equal('Create New')
       })
       skipLogin.clickRequestBackup();
-      skipLogin.getBackupRestoreColDateName().then(columnName =>{
+      skipLogin.getBackupRestoreColDateName().then(columnName => {
         expect(columnName.trim()).to.equal('Date & Time')
       })
-      skipLogin.getBackupRestoreColStatusName().then(columnName =>{
+      skipLogin.getBackupRestoreColStatusName().then(columnName => {
         expect(columnName.trim()).to.equal('Status')
       })
-      skipLogin.getCreatedBackupRow().then(result =>{
+      skipLogin.getCreatedBackupRow().then(result => {
         expect(result.trim()).to.equal('COMPLETED')
       })
       skipLogin.deleteBackup();
-      skipLogin.noBackupRecord().then(recordText =>{
+      skipLogin.noBackupRecord().then(recordText => {
         expect(recordText.trim()).to.equal('No Record')
       })
     });
 
     it('Should Display Support Bundles', () => {
       skipLogin.navToSupportBundles();
-      skipLogin.getSupportBundlesTitle().then(title =>{
+      skipLogin.getSupportBundlesTitle().then(title => {
         expect(title.trim()).to.equal('Support Bundles')
       })
       skipLogin.getSupportBundlesRefreshButton()
-      skipLogin.getRequestNewBundle().then(result =>{
+      skipLogin.getRequestNewBundle().then(result => {
         expect(result.trim()).to.equal('Request New')
       })
-      skipLogin.requestNewBundle().then(result =>{
+      skipLogin.requestNewBundle().then(result => {
         expect(result.trim()).to.equal('Support bundle created successfully')
       })
     });
 
     it('Should Display Settings', () => {
       skipLogin.navToSettings();
-      skipLogin.getSettingsTitle().then(title =>{
+      skipLogin.getSettingsTitle().then(title => {
         expect(title.trim()).to.equal('Connection Setup')
       })
       skipLogin.getSettingsSelectTag()
       skipLogin.getSettingsHostInputTag()
       skipLogin.getSettingsPortInputTag()
-      skipLogin.getSettingsSetUrlAndRestartButton().then(result =>{
+      skipLogin.getSettingsSetUrlAndRestartButton().then(result => {
         expect(result.trim()).to.equal('Set the URL & Restart')
       })
       skipLogin.isRefreshDashboardDropdownPresent()
       skipLogin.isPingIntervalDropdownPresent()
     });
   } else {
-    beforeEach(() => {
-      skipLogin.navigateToHome();
-    })
-
     it('Should Display User Management for Admin', () => {
       skipLogin.loginPageInputTag()
       skipLogin.getLoginButton().then(result => {

@@ -34,19 +34,19 @@ export class SkipLogin {
   }
 
   getAppStatus() {
-    cy.get('#app > app-root > div > app-navbar > nav > div.navbar-menu .icon.has-text-success').should('be.visible')
+    cy.get('#service-status').should('be.visible')
   }
 
   getReceived() {
-    return cy.get('app-navbar .navbar-menu .navbar-start .field.is-grouped > div:nth-child(2)').invoke('text')
+    return cy.get('#received-reading').invoke('text')
   }
 
   getSent() {
-    return cy.get('app-navbar .navbar-menu .navbar-start .field.is-grouped > div:nth-child(3)').invoke('text')
+    return cy.get('#sent-reading').invoke('text')
   }
 
   getUptime() {
-    return cy.get('app-navbar .navbar-menu .navbar-start .field.is-grouped > div:nth-child(4)').invoke('text')
+    return cy.get('#uptime').invoke('text')
   }
 
   isDashboardTimeDropdownPresent() {
@@ -232,7 +232,8 @@ export class SkipLogin {
   }
 
   deleteBackup() {
-    cy.get('app-backup-restore table tbody tr td:nth-child(3)').click()
+    cy.get('app-backup-restore table tbody tr:nth-child(1) div.is-hoverable').invoke('addClass', 'is-active')
+    cy.get('#dropdown-menu > div > a:nth-child(1)').click()
     cy.wait(2000).get('#modal-box button.button.is-small.is-danger').should('be.visible')
     cy.get('#modal-box button.button.is-small.is-danger').click()
     cy.wait(3000).get('app-backup-restore .no-rec').should('be.visible')

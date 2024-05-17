@@ -1,6 +1,6 @@
-import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef, EventEmitter } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { cloneDeep, sortBy } from 'lodash';
 
@@ -31,12 +31,15 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
   public schedulesName = [];
   public showSpinner = false;
   private subscription: Subscription;
+  public source = '';
 
   // to hold child form state
   validConfigurationForm = true;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
 
-  serviceForm: FormGroup;
+  serviceForm: UntypedFormGroup;
+
+  public reenableButton = new EventEmitter<boolean>(false);
 
   @Input() categoryConfigurationData;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
@@ -46,11 +49,12 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     type: this.serviceType,
     pluginName: ''
   };
-  constructor(private formBuilder: FormBuilder,
+  constructor(private formBuilder: UntypedFormBuilder,
     private servicesApiService: ServicesApiService,
     private pluginService: PluginService,
     private alertService: AlertService,
     private router: Router,
+    private route: ActivatedRoute,
     private schedulesService: SchedulesService,
     private ngProgress: ProgressBarService,
     private sharedService: SharedService,
@@ -58,14 +62,20 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     private configurationControlService: ConfigurationControlService,
     private fileUploaderService: FileUploaderService,
     private cdRef: ChangeDetectorRef
-  ) { }
+  ) {
+    this.route.queryParams.subscribe(params => {
+      if (params['source']) {
+        this.source = params['source'];
+      }
+    });
+  }
 
   ngOnInit() {
     this.getSchedules();
     this.serviceForm = this.formBuilder.group({
-      name: new FormControl('', [Validators.required, CustomValidator.nospaceValidator]),
-      plugin: new FormControl('', [Validators.required, CustomValidator.pluginsCountValidator]),
-      config: new FormControl(null)
+      name: new UntypedFormControl('', [Validators.required, CustomValidator.nospaceValidator]),
+      plugin: new UntypedFormControl('', [Validators.required, CustomValidator.pluginsCountValidator]),
+      config: new UntypedFormControl(null)
     });
     this.getInstalledSouthPlugins();
     this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
@@ -84,7 +94,11 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     const last = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = last.getAttribute('id');
     if (+id === 1) {
-      this.router.navigate(['/south']);
+      if (this.source) {
+        this.router.navigate(['/flow/editor/south'])
+      } else {
+        this.router.navigate(['/south']);
+      }
       return;
     }
     last.classList.remove('is-active');
@@ -107,7 +121,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     switch (+id) {
       case 2:
         nxtButton.textContent = 'Next';
-        previousButton.textContent = 'Back';
+        previousButton.textContent = 'Cancel';
         nxtButton.disabled = false;
         break;
       case 3:
@@ -156,21 +170,23 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
     switch (+id) {
       case 1:
-        nxtButton.textContent = 'Next';
-        previousButton.textContent = 'Previous';
-
         // To verify if service with given name already exist
         const isServiceNameExist = this.schedulesName.some(item => {
           return formValues['name'].trim() === item.name;
         });
         if (isServiceNameExist) {
           this.alertService.error('A service/task already exists with this name.');
+          this.reenableButton.emit(false);
           return false;
         }
+        nxtButton.textContent = 'Next';
+        previousButton.textContent = 'Previous';
+
         // check if configuration form is valid or invalid
         this.validConfigurationForm ? nxtButton.disabled = false : nxtButton.disabled = true;
         break;
       case 2:
+        this.reenableButton.emit(false);
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
@@ -218,7 +234,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
    * Method to add service
    * @param payload  to pass in request
    */
-  public addService() {
+  addService() {
     let config = this.serviceForm?.value['config'];
     const payload = {
       name: this.serviceForm.value['name'].trim(),
@@ -238,16 +254,23 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
         (response) => {
           /** request done */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(response['name'] + ' service added successfully.', true);
           if (files.length > 0) {
             const name = payload.name
             this.uploadScript(name, files);
           }
-          this.router.navigate(['/south']);
+          if (this.source === 'flowEditor') {
+            this.router.navigate(['/flow/editor/south', response['name'], 'details']);
+          }
+          else {
+            this.router.navigate(['/south']);
+          }
         },
         (error) => {
           /** request done */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { orderBy } from 'lodash';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -6,6 +6,7 @@ import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.
 import { Router } from '@angular/router';
 import { DocService } from '../../../../services/doc.service';
 import { AlertService, ControlPipelinesService, ProgressBarService, RolesService } from '../../../../services';
+import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
   selector: 'app-control-pipelines',
@@ -14,11 +15,18 @@ import { AlertService, ControlPipelinesService, ProgressBarService, RolesService
 })
 export class ControlPipelinesComponent implements OnInit, OnDestroy {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
+  @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
+
   pipelines = [];
   public showSpinner = false;
   public childData = {};
+  isServiceAvailable = false;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
+
+  public reenableButton = new EventEmitter<boolean>(false);
+  showConfigureModal = false;
+  serviceInfo;
 
   constructor(private controlPipelinesService: ControlPipelinesService,
     private alertService: AlertService,
@@ -81,6 +89,7 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
         (data) => {
           /** request completed */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(data['message']);
           // delete pipeline locally from pipelines array
           const index: number = this.pipelines.findIndex((pipeline) => pipeline.id === id);
@@ -91,6 +100,7 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
         error => {
           /** request completed */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -158,6 +168,29 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
 
   public hideLoadingSpinner() {
     this.showSpinner = false;
+  }
+
+  getServiceDetail(event) {
+    this.showConfigureModal = event.isOpen;
+    delete event.isOpen;
+    this.serviceInfo = event;
+    if (this.showConfigureModal) {
+      this.openServiceConfigureModal();
+    }
+  }
+
+  /**
+   * Open Configure Service modal
+   */
+  openServiceConfigureModal() {
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
+  }
+
+  onNotify(handleEvent) {
+    if (handleEvent) {
+      this.addDispatcherServiceComponent.getInstalledServicesList();
+    }
+    return;
   }
 
   public ngOnDestroy(): void {

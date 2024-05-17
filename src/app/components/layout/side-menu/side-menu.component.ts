@@ -9,6 +9,7 @@ import { DeveloperFeaturesService } from '../../../services/developer-features.s
 import { RolesService, } from '../../../services';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { FlowEditorService } from '../../common/node-editor/flow-editor.service';
 
 @Component({
   selector: 'app-side-menu',
@@ -26,13 +27,19 @@ export class SideMenuComponent implements OnInit {
   isServiceRunning = true;
   private destroySubject: Subject<void> = new Subject();
 
+
+  toggleSideMenu() {
+    this.toggle.next('toggleSidebar');
+  }
+
   constructor(
     private router: Router,
     private docService: DocService,
     private sharedService: SharedService,
     private lookupService: LookupService,
     public developerFeaturesService: DeveloperFeaturesService,
-    public rolesService: RolesService
+    public rolesService: RolesService,
+    public flowEditorService: FlowEditorService
   ) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {

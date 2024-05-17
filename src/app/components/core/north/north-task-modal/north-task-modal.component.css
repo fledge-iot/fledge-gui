@@ -19,10 +19,6 @@
   vertical-align: middle;
 }
 
-[hidden] {
-  display: none !important;
-}
-
 a {
   color: black;
 }
@@ -99,4 +95,14 @@ a {
   padding-right: 0;
   max-width: 1344px;
   margin: auto;
+}
+
+.modal-card-head {
+  padding: 12px !important;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.modal-subtitle {
+  margin-top: 0.35rem !important;
 }

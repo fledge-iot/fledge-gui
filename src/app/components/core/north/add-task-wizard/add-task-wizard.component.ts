@@ -1,6 +1,6 @@
-import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef, EventEmitter } from '@angular/core';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
@@ -31,16 +31,18 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   public isService = false;
   private subscription: Subscription;
   public taskType = 'North';
+  public source = '';
+
   // to hold child form state
   validConfigurationForm = true;
   QUOTATION_VALIDATION_PATTERN = QUOTATION_VALIDATION_PATTERN;
 
-  taskForm = new FormGroup({
-    name: new FormControl('', [Validators.required, CustomValidator.nospaceValidator]),
-    plugin: new FormControl('', [Validators.required, CustomValidator.pluginsCountValidator]),
-    repeatDays: new FormControl('', [Validators.required, Validators.min(0), Validators.max(365)]),
-    repeatTime: new FormControl('', [Validators.required]),
-    config: new FormControl(null)
+  taskForm = new UntypedFormGroup({
+    name: new UntypedFormControl('', [Validators.required, CustomValidator.nospaceValidator]),
+    plugin: new UntypedFormControl('', [Validators.required, CustomValidator.pluginsCountValidator]),
+    repeatDays: new UntypedFormControl('', [Validators.required, Validators.min(0), Validators.max(365)]),
+    repeatTime: new UntypedFormControl('', [Validators.required]),
+    config: new UntypedFormControl(null)
   });
 
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';  // Regex to verify time format 00:00:00
@@ -53,10 +55,13 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     pluginName: ''
   };
 
+  public reenableButton = new EventEmitter<boolean>(false);
+
   constructor(private pluginService: PluginService,
     private alertService: AlertService,
     private schedulesService: SchedulesService,
     private router: Router,
+    private route: ActivatedRoute,
     private ngProgress: ProgressBarService,
     private sharedService: SharedService,
     private servicesApiService: ServicesApiService,
@@ -64,7 +69,13 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     private fileUploaderService: FileUploaderService,
     private configurationControlService: ConfigurationControlService,
     private cdRef: ChangeDetectorRef
-  ) { }
+  ) {
+    this.route.queryParams.subscribe(params => {
+      if (params['source']) {
+        this.source = params['source'];
+      }
+    });
+  }
 
   ngOnInit() {
     this.getSchedules();
@@ -87,7 +98,11 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     const last = <HTMLElement>document.getElementsByClassName('step-item is-active')[0];
     const id = last.getAttribute('id');
     if (+id === 1) {
-      this.router.navigate(['/north']);
+      if (this.source) {
+        this.router.navigate(['/flow/editor/north'])
+      } else {
+        this.router.navigate(['/north']);
+      }
       return;
     }
     last.classList.remove('is-active');
@@ -111,7 +126,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     switch (+id) {
       case 2:
         nxtButton.textContent = 'Next';
-        previousButton.textContent = 'Back';
+        previousButton.textContent = 'Cancel';
         nxtButton.disabled = false;
         break;
       case 3:
@@ -132,20 +147,24 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
     switch (+id) {
       case 1:
-        nxtButton.textContent = 'Next';
-        previousButton.disabled = false;
         // To verify if task with given name already exist
         const isTaskNameExist = this.schedulesName.some(item => {
           return formValues['name'].trim() === item.name;
         });
         if (isTaskNameExist) {
           this.alertService.error('A service/task already exists with this name.');
+          this.reenableButton.emit(false);
           return false;
         }
+        nxtButton.textContent = 'Next';
+        previousButton.textContent = 'Previous';
+        previousButton.disabled = false;
+
         // check if configuration form is valid or invalid
         this.validConfigurationForm ? nxtButton.disabled = false : nxtButton.disabled = true;
         break;
       case 2:
+        this.reenableButton.emit(false);
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         break;
@@ -246,19 +265,26 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     this.ngProgress.start();
     this.schedulesService.createScheduledTask(payload)
       .subscribe(
-        () => {
+        (response) => {
           /** request completed */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success('North instance added successfully.', true);
           if (files.length > 0) {
             const name = payload.name;
             this.uploadScript(name, files);
           }
-          this.router.navigate(['/north']);
+          if (this.source === 'flowEditor') {
+            this.router.navigate(['/flow/editor/north', response['name'], 'details'])
+          }
+          else {
+            this.router.navigate(['/north']);
+          }
         },
         (error) => {
           /** request completed */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -271,7 +297,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     return this.fileUploaderService.getConfigurationPropertyFiles(configuration, true);
   }
 
-  public addService() {
+  addService() {
     const payload = {
       name: this.taskForm.value['name'].trim(),
       type: this.taskType.toLowerCase(),
@@ -291,16 +317,23 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
         (response) => {
           /** request done */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(response['name'] + ' service added successfully.', true);
           if (files.length > 0) {
             const name = payload.name
             this.uploadScript(name, files);
           }
-          this.router.navigate(['/north']);
+          if (this.source === 'flowEditor') {
+            this.router.navigate(['/flow/editor/north', response['name'], 'details']);
+          }
+          else {
+            this.router.navigate(['/north']);
+          }
         },
         (error) => {
           /** request done */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

@@ -1,5 +1,5 @@
 <div class="container is-fluid">
-  <app-add-dispatcher-service></app-add-dispatcher-service>
+  <app-add-dispatcher-service (serviceStatusEvent)="isServiceAvailable = $event" (serviceConfigureModal)="getServiceDetail($event)"></app-add-dispatcher-service>
   <div class="card">
     <header class="card-header">
       <div id="control-acl" class="card-header-title">
@@ -8,12 +8,16 @@
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
-      <a *ngIf="rolesService.hasControlAccess()" class="fix-margin button is-light" routerLink="add">
+      <a *ngIf="rolesService.hasControlAccess()" class="fix-pad button is-light" routerLink="add">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
 
-      <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered btn-margin"
+      <div *ngIf="isServiceAvailable" class="cog-icon">
+        <app-dispatcher-service-config (serviceConfigureModal)="openServiceConfigureModal()"></app-dispatcher-service-config>
+      </div>
+
+      <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad"
         data-tooltip="Help" (click)="goToLink('control-dispatcher-service')">
         <i class="far fa-question-circle"></i>
       </span>
@@ -75,7 +79,7 @@
         </section>
         <footer class="modal-card-foot">
           <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
-          <button class="button is-small is-danger" (click)="deleteScript(script)">Delete</button>
+          <button class="button is-small is-danger" (click)="deleteScript(script)" [appDisableUntilResponse]="reenableButton">Delete</button>
         </footer>
       </app-confirmation-dialog>
     </div>

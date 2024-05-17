@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { ProgressBarService, SchedulesService, ServicesApiService, SharedService } from '../../../../services';
+import { ProgressBarService, SchedulesService, ServicesApiService, SharedService, RolesService } from '../../../../services';
 import { ControlDispatcherService } from '../../../../services/control-dispatcher.service';
 import { DocService } from '../../../../services/doc.service';
 
@@ -12,16 +12,23 @@ import { DocService } from '../../../../services/doc.service';
 export class AddDispatcherServiceComponent implements OnInit {
   private viewPortSubscription: Subscription;
   private subscription: Subscription;
-  dispatcherServiceInstalled;
-  dispatcherServiceAdded;
-  dispatcherServiceEnabled;
+  dispatcherServiceInstalled: boolean;
+  dispatcherServiceAdded: boolean;
+  dispatcherServiceEnabled: boolean;
+  dispatcherServiceName = '';
+  showConfigureModal = false;
+
+  @Output() serviceStatusEvent = new EventEmitter<boolean>();
+  @Output() serviceConfigureModal = new EventEmitter<Object>();
+  
   constructor(
     public controlService: ControlDispatcherService,
     public sharedService: SharedService,
     public schedulesService: SchedulesService,
     public servicesApiService: ServicesApiService,
     public ngProgress: ProgressBarService,
-    public docService: DocService
+    public docService: DocService,
+    public rolesService: RolesService
   ) { }
 
   ngOnInit(): void {
@@ -43,6 +50,8 @@ export class AddDispatcherServiceComponent implements OnInit {
           this.dispatcherServiceInstalled = false;
           this.dispatcherServiceAdded = false;
           this.dispatcherServiceEnabled = false;
+          this.serviceStatusEvent.emit(this.dispatcherServiceInstalled && this.dispatcherServiceAdded);
+          this.emitData();
         }
       })
       .catch(error => {
@@ -63,12 +72,16 @@ export class AddDispatcherServiceComponent implements OnInit {
           const schedule = data.schedules.find((item: any) => item.processName === 'dispatcher_c');
           this.dispatcherServiceEnabled = false;
           this.dispatcherServiceAdded = false;
+          this.dispatcherServiceName = '';
           if (schedule) {
             this.dispatcherServiceAdded = true;
+            this.dispatcherServiceName = schedule.name;
           }
           if (schedule?.enabled) {
             this.dispatcherServiceEnabled = true;
           }
+          this.serviceStatusEvent.emit(this.dispatcherServiceInstalled && this.dispatcherServiceAdded);
+          this.emitData();
         },
         error => {
           /** request done */
@@ -85,7 +98,24 @@ export class AddDispatcherServiceComponent implements OnInit {
     this.controlService.triggerRefreshEvent.next(tab);
   }
 
+  /**
+   * Open Configure Service modal
+   */
+  openConfigureModal() {
+    this.emitData(true);
+  }
 
+  emitData(isOpenModal = false) {
+    const serviceInfo = {
+      name: this.dispatcherServiceName,
+      isEnabled: this.dispatcherServiceEnabled,
+      added: this.dispatcherServiceAdded,
+      process: 'dispatcher',
+      isInstalled: this.dispatcherServiceInstalled,
+      isOpen: isOpenModal
+    }
+    this.serviceConfigureModal.emit(serviceInfo);
+  }
 
   public ngOnDestroy(): void {
     if (this.viewPortSubscription) {

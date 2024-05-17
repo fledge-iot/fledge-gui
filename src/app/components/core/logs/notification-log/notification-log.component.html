@@ -16,9 +16,9 @@
     </header>
     <div class="card-content">
       <div class="content">
-        <div class="columns is-mobile">
+        <div class="columns">
           <div class="column">
-            <label class="label is-small">Source</label>
+            <label class="label">Source</label>
             <div id="dropdown" class="dropdown">
               <div class="dropdown-trigger">
                 <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
@@ -42,7 +42,7 @@
             </div>
           </div>
           <div class="column">
-            <label class="label is-small">Severity</label>
+            <label class="label">Severity</label>
             <div id="severity-dropdown" class="dropdown">
               <div class="dropdown-trigger">
                 <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
@@ -64,7 +64,7 @@
             </div>
           </div>
           <div class="column">
-            <label class="label is-small">Search</label>
+            <label class="label">Search</label>
             <input [disabled]="notificationLogs?.length < 2" #nameField type="search"
               class="input is-fullwidth is-small" placeholder="search text by name" [(ngModel)]="searchTerm" />
           </div>

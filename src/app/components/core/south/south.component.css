@@ -58,8 +58,16 @@ color: #363636;
 }
 
 .is-hovered {
-  cursor: pointer !important;
   margin-top: 0.5em;
+}
+
+.flow-editor{
+  vertical-align: top;
+  background: none;
+  border: none;
+  padding-top: 3px !important;
+  padding-bottom: 0px !important;
+  font-size: 14px;
 }
 
 

@@ -39,11 +39,11 @@
           </div>
         </div>
         <div class="column">
-          <label class="label is-small is-fullwidth">Host</label>
+          <label class="label is-fullwidth">Host</label>
           <input id="host" class="input" type="text" placeholder="127.0.0.1" [ngModel]="host" trim="blur">
         </div>
         <div class="column">
-          <label class="label is-small is-fullwidth">Port</label>
+          <label class="label is-fullwidth">Port</label>
           <input name="service_port" id='service_port' class="input" type="number" [minValue]="0" [maxValue]="65535"
             placeholder="8081" required [ngModel]="servicePort" #service_port="ngModel">
           <span class="help is-danger" [ngClass]="{'is-invisible' : !service_port.invalid}">
@@ -78,7 +78,7 @@
     <div id="settings-content" class="card-content">
       <div class="columns">
         <div class="column is-3">
-          <label class="label is-small">Ping/Auto Refresh Interval</label>
+          <label class="label">Ping/Auto Refresh Interval</label>
           <div class="control">
             <div id="ping-interval-dropdown" class="dropdown">
               <div class="dropdown-trigger">
@@ -109,7 +109,7 @@
         </div>
         <div class="column is-2"></div>
         <div class="column is-3">
-          <label class="label is-small">Timestamps</label>
+          <label class="label">Timestamps</label>
           <div class="control">
             <div id="timezone-dropdown" class="dropdown">
               <div class="dropdown-trigger">
@@ -135,7 +135,7 @@
       </div>
       <div class="columns">
         <div class="column is-3">
-          <label class="label is-small"> Refresh Dashboard Graph</label>
+          <label class="label"> Refresh Dashboard Graph</label>
           <div class="control">
             <div id="refresh-time-dropdown" class="dropdown">
               <div class="dropdown-trigger">
@@ -167,7 +167,7 @@
         </div>
         <div class="column is-2"></div>
         <div class="column is-3">
-          <label class="label is-small">Editor Theme</label>
+          <label class="label">Editor Theme</label>
           <div class="control">
             <div id="theme-dropdown" class="dropdown">
               <div class="dropdown-trigger">
@@ -193,7 +193,7 @@
 
       <div class="columns">
         <div class="column is-3">
-          <label class="label is-small">Readings Graph Default Duration</label>
+          <label class="label">Readings Graph Default Duration</label>
           <div class="field has-addons">
             <div class="control column is-5 no-padding">
               <input class="input is-small" type="number" #readings_graph_default_time min="1" [max]="getMaxTimeForReadings()"
@@ -223,18 +223,37 @@
       <hr>
       <div class="columns">
         <div class="column is-3" *ngIf="rolesService.hasEditPermissions()">
-          <label class="label is-small">Developer Features</label>
+          <label class="label">Developer Features</label>
           <div class="control">
             <input type="checkbox" (click)="setDeveloperFeatures($event.target.checked)"
               [checked]="developerFeaturesService.getDeveloperFeatureControl()">
           </div>
         </div>
-        <div class="column is-2"></div>
+        <div *ngIf="rolesService.hasEditPermissions()" class="column is-2"></div>
         <div class="column is-3">
-          <label class="label is-small">Readings Graph Alpha Control</label>
+          <label class="label">Readings Graph Alpha Control</label>
           <div class="control">
             <input type="checkbox" (click)="setAlphControlStatus($event.target.checked)"
               [checked]="rangeSliderService.getAlphControlStatus()">
+          </div>
+        </div>
+        <ng-container *ngIf="!rolesService.hasEditPermissions() && !rolesService.hasDataViewRole()">
+          <div class="column is-2"></div>
+          <div class="column is-3">
+            <label class="label">Flow Editor</label>
+            <div class="control">
+              <input type="checkbox" (click)="setFlowEditorStatus($event.target.checked)"
+              [checked]="flowEditorService.getFlowEditorStatus()">
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      <div class="columns" *ngIf="rolesService.hasEditPermissions()">
+        <div class="column is-3">
+          <label class="label">Flow Editor</label>
+          <div class="control">
+            <input type="checkbox" (click)="setFlowEditorStatus($event.target.checked)"
+            [checked]="flowEditorService.getFlowEditorStatus()">
           </div>
         </div>
       </div>

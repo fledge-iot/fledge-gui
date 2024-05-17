@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { AclService } from './acl.service';
 import { orderBy, map, cloneDeep, reduce, assign } from 'lodash';
 
@@ -98,6 +98,10 @@ export class JSONConfig extends ConfigurationBase<string> {
   override controlType = 'JSON';
 }
 
+export class BucketConfig extends ConfigurationBase<string> {
+  override controlType = 'BUCKET';
+}
+
 export class ScriptConfig extends ConfigurationBase<string> {
   override controlType = 'SCRIPT';
   override validFileExtension = true;
@@ -118,6 +122,19 @@ export class URLConfig extends ConfigurationBase<string> {
 export class ACLConfig extends ConfigurationBase<string> {
   override controlType = 'ACL';
 }
+
+export class ListConfig extends ConfigurationBase<string> {
+  override controlType = 'LIST';
+  public listSize = '';
+  public items: '';
+}
+
+export class KVListConfig extends ConfigurationBase<string> {
+  override controlType = 'KVLIST';
+  public listSize = '';
+  public items: '';
+}
+
 
 
 @Injectable({
@@ -224,6 +241,20 @@ export class ConfigurationControlService {
             validity: element.validity
           }));
           break;
+        case 'BUCKET':
+          configurations.push(new BucketConfig({
+            key: key,
+            type: 'bucket',
+            label: this.setDisplayName(element),
+            description: element.description,
+            value: element.value,
+            readonly: element.readonly,
+            mandatory: element.mandatory,
+            order: element.order,
+            editorOptions: this.setEditorConfig(element.type),
+            validity: element.validity
+          }));
+          break;
         case 'ACL':
           configurations.push(new ACLConfig({
             key: key,
@@ -293,6 +324,46 @@ export class ConfigurationControlService {
             validity: element.validity
           }));
           break;
+        case 'LIST':
+          const listItem = new ListConfig({
+            key: key,
+            type: 'list',
+            label: this.setDisplayName(element),
+            description: element.description,
+            value: element.value,
+            readonly: element.readonly,
+            mandatory: element.mandatory,
+            order: element.order,
+            validity: element.validity,
+          });
+          listItem.items = element.items;
+          listItem.minimum = element?.minimum;
+          listItem.maximum = element?.maximum;
+          listItem.length = element?.length;
+          listItem.listSize = element?.listSize;
+          configurations.push(listItem);
+          break;
+
+        case 'KVLIST':
+          const kvListItem = new KVListConfig({
+            key: key,
+            type: 'kvlist',
+            label: this.setDisplayName(element),
+            description: element.description,
+            value: element.value,
+            readonly: element.readonly,
+            mandatory: element.mandatory,
+            order: element.order,
+            validity: element.validity,
+          });
+          kvListItem.items = element.items;
+          kvListItem.minimum = element?.minimum;
+          kvListItem.maximum = element?.maximum;
+          kvListItem.length = element?.length;
+          kvListItem.listSize = element?.listSize;
+          configurations.push(kvListItem);
+          break;
+
         case 'IPV4':
         case 'IPV6':
         default:
@@ -349,14 +420,14 @@ export class ConfigurationControlService {
     const group: any = {};
     groupConfigurations.forEach(configuration => {
       group[configuration.key] =
-        new FormControl({ value: configuration.value || '', disabled: this.validateConfigItem(pluginConfiguration, configuration) }, configuration.required ? Validators.required : null)
+        new UntypedFormControl({ value: configuration.value || '', disabled: this.validateConfigItem(pluginConfiguration, configuration) }, configuration.required ? Validators.required : null)
       // create an file uploader form control for script type
       if (configuration.controlType.toLocaleLowerCase() == 'script') {
         group[configuration.key + '-file-control'] =
-          new FormControl({ value: '', disabled: this.validateConfigItem(pluginConfiguration, configuration) }, configuration.required ? Validators.required : null)
+          new UntypedFormControl({ value: '', disabled: this.validateConfigItem(pluginConfiguration, configuration) }, configuration.required ? Validators.required : null)
       }
     });
-    return new FormGroup(group);
+    return new UntypedFormGroup(group);
   }
 
   /**
@@ -381,7 +452,7 @@ export class ConfigurationControlService {
     }
   }
 
-  checkConfigItemValidityOnChange(form: FormGroup, config: ConfigurationBase<string>, fullConfiguration: any) {
+  checkConfigItemValidityOnChange(form: UntypedFormGroup, config: ConfigurationBase<string>, fullConfiguration: any) {
     // update config value in a global config object
     if (fullConfiguration) {
       fullConfiguration[config.key].value = config.value;
@@ -416,7 +487,7 @@ export class ConfigurationControlService {
    * @param form Configuration control form
    * @param fullConfiguration plugin configuration
    */
-  checkConfigItemOnGroupChange(form: FormGroup, fullConfiguration: any) {
+  checkConfigItemOnGroupChange(form: UntypedFormGroup, fullConfiguration: any) {
     if (fullConfiguration) {
       Object.keys(fullConfiguration).forEach(key => {
         const cnf = fullConfiguration[key];
@@ -428,7 +499,7 @@ export class ConfigurationControlService {
     }
   }
 
-  setFormControlState(cnf: any, form: FormGroup, validExpression: boolean, configControl = null) {
+  setFormControlState(cnf: any, form: UntypedFormGroup, validExpression: boolean, configControl = null) {
     if (cnf.key == 'script') {
       if (validExpression) {
         const control = configControl?.key == 'script' ? configControl : cnf;

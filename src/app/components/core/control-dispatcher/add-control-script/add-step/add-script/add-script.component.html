@@ -1,6 +1,6 @@
 <div class="field is-horizontal">
   <div class="field-label is-small">
-    <label class="label">Name</label>
+    <label class="label lbl-child">Name</label>
   </div>
   <div class="field-body">
     <div class="field is-narrow">
@@ -8,7 +8,7 @@
         <div #scriptDropDown id="script-dropdown-{{controlIndex}}" class="dropdown is-left">
           <div class="dropdown-trigger">
             <button (click)="toggleDropDown(scriptDropDown.id)" class="button is-small" aria-haspopup="true"
-              aria-controls="dropdown-menu">
+              aria-controls="dropdown-menu" [ngClass]="{'required-field': !config.name}">
               <span>{{config?.name ? config?.name : 'Select script'}}</span>
               <span class="icon is-small">
                 <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
@@ -37,7 +37,7 @@
 <ng-container *ngIf="scripts.length > 0">
   <div class="field is-horizontal">
     <div class="field-label is-small">
-      <label class="label">Execution</label>
+      <label class="label lbl-child">Execution</label>
     </div>
     <div class="field-body">
       <div class="field is-narrow">

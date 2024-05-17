@@ -1,5 +1,5 @@
 <div class="container is-fluid">
-    <app-add-dispatcher-service></app-add-dispatcher-service>
+    <app-add-dispatcher-service (serviceStatusEvent)="isServiceAvailable = $event" (serviceConfigureModal)="getServiceDetail($event)"></app-add-dispatcher-service>
     <div class="card">
         <header class="card-header">
             <div id="control-api-flow" class="card-header-title">
@@ -8,14 +8,17 @@
                     <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
                 </button>
             </div>
-            <a *ngIf="rolesService.hasControlAccess()" class="fix-margin button is-light" [routerLink]="['/control-dispatcher/entry-point/add']">
+            <a *ngIf="rolesService.hasControlAccess()" class="fix-pad button is-light" [routerLink]="['/control-dispatcher/entry-points/add']">
                 <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
                 <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
             </a>
-            <!-- <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered btn-margin"
-                data-tooltip="Help" (click)="goToLink('control-dispatcher-service')">
+            <div *ngIf="isServiceAvailable" class="cog-icon">
+                <app-dispatcher-service-config (serviceConfigureModal)="openServiceConfigureModal()"></app-dispatcher-service-config>
+            </div>
+            <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad"
+                data-tooltip="Help" (click)="goToLink('api-control-invocation')">
                 <i class="far fa-question-circle"></i>
-            </span> -->
+            </span>
         </header>
         <div class="card-content api-card-content card-data">
             <table class="table is-responsive is-hoverable ep-tbl" *ngIf="apiFlows.length > 0; else nothing">
@@ -29,7 +32,6 @@
                     <ng-container *ngFor="let ep of apiFlows; let i = index">
                         <tr id="select{{i}}">
                             <td class="align-content">
-                                <!-- TODO: 8070, this requires check the same way, we have in details page for this.allowExecute; Here we need to check for each record while rendering --> 
                                 <a *ngIf="ep.permitted" class="button is-ghost ep-name mx-0 px-0" 
                                 (click)="getAndExecuteAPIFlow(ep.name);">
                                     {{ep.name}}
@@ -60,7 +62,7 @@
                                     </div>
                                     <div class="dropdown-menu" id="dropdown-menu" role="menu">
                                         <div class="dropdown-content">
-                                            <a class="dropdown-item" [routerLink]="['/control-dispatcher/entry-point', ep?.name]">
+                                            <a class="dropdown-item" [routerLink]="['/control-dispatcher/entry-points', ep?.name, 'details']">
                                                 Details
                                             </a>
                                             <a *ngIf="rolesService.hasControlAccess()" class="dropdown-item"
@@ -93,41 +95,46 @@
         <button type="button" class="delete" aria-label="close" (click)="closeModal('confirmation-execute-dialog')"></button>
     </header>
     <section class="modal-card-body">
-        <form [formGroup]="apiFlowForm">
-            <div class="field is-horizontal pt-4">
-                <div class="field-body">
-                    <div class="field">
-                        <ng-container formArrayName="variables">
-                            <div *ngIf="getFormControls('variables').length === 0" class="has-text-centered">
-                                <small class="text-secondary has-text-grey-light">
-                                    There are no variable parameters associated with this entry point.
-                                </small>
-                            </div>
-                            <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
-                                <div class="field is-horizontal">
-                                    <div class="field-body columns" [formGroupName]="i">
-                                        <div class="column is-3">
-                                            <div class="control">
-                                                <label class="label label-name has-text-left">{{v.value.vName}}</label>
-                                            </div>
-                                        </div>
-                                        <div class="column is-4">
-                                            <div class="control">
-                                                <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
-                                            </div>
-                                        </div>
+        <div class="columns is-mobile">
+            <div class="column is-1"></div>
+            <div class="column py-5">
+                <form [formGroup]="apiFlowForm">
+                    <div class="field is-horizontal execute-field-body">
+                        <div class="field-body">
+                            <div class="field">
+                                <ng-container formArrayName="variables">
+                                    <div *ngIf="getFormControls('variables').length === 0" class="has-text-centered">
+                                        <small class="text-secondary has-text-grey-light">
+                                            There are no variable parameters associated with this entry point.
+                                        </small>
                                     </div>
-                                </div>
-                            </ng-container>
-                        </ng-container>
+                                    <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
+                                        <div class="field is-horizontal">
+                                            <div class="field-body columns" [formGroupName]="i">
+                                                <div class="column is-4">
+                                                    <div class="control">
+                                                        <label class="label has-text-left pt-1">{{v.value.vName}}</label>
+                                                    </div>
+                                                </div>
+                                                <div class="column is-4">
+                                                    <div class="control">
+                                                        <input formControlName="vValue" placeholder="Variable value" class="input is-small" name="value" type="text">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </ng-container>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
-        </form>
+        </div>
     </section>
     <footer class="modal-card-foot p-3">
         <button class="button is-small" type="button" (click)="closeModal('confirmation-execute-dialog')">Cancel</button>
-        <button class="button is-small is-info" type="button" (click)="requestAPIFlow(epName, apiFlowForm.value)">Execute</button>
+        <button class="button is-small is-info" type="button" (click)="requestAPIFlow(epName, apiFlowForm.value)" [appDisableUntilResponse]="reenableButton">Execute</button>
     </footer>
 </app-confirmation-dialog>
     
@@ -141,6 +148,6 @@
     </section>
     <footer class="modal-card-foot">
         <button type="button" class="button is-small" (click)="closeModal('confirmation-delete-dialog')">Cancel</button>
-        <button type="button" class="button is-small is-danger" (click)="deleteAPIFlow('confirmation-delete-dialog')">Delete</button>
+        <button type="button" class="button is-small is-danger" (click)="deleteAPIFlow('confirmation-delete-dialog')" [appDisableUntilResponse]="reenableButton">Delete</button>
     </footer>
 </app-confirmation-dialog>

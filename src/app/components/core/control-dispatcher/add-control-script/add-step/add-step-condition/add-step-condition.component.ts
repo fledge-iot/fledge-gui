@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormControl, FormGroup, NgForm } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, NgForm } from '@angular/forms';
 import { RolesService, SharedService } from '../../../../../../services';
 
 @Component({
@@ -51,29 +51,29 @@ export class AddStepConditionComponent implements OnInit {
 
   setCondition(condition) {
     this.condition.condition = condition;
-    this.conditionControls().controls['condition'].patchValue(condition);
+    this.conditionControls().controls['condition']?.patchValue(condition);
     this.conditionControls().markAsTouched();
     this.conditionControls().markAsDirty();
   }
 
   addConditionControl() {
     this.showConditionControl = true;
-    this.conditionControls().addControl('key', new FormControl(''));
-    this.conditionControls().addControl('condition', new FormControl(this.conditions[0]));
-    this.conditionControls().addControl('value', new FormControl(''));
+    this.conditionControls().addControl('key', new UntypedFormControl(''));
+    this.conditionControls().addControl('condition', new UntypedFormControl(this.conditions[0]));
+    this.conditionControls().addControl('value', new UntypedFormControl(''));
   }
 
   stepsFormGroup() {
-    return this.control.form.controls['steps'] as FormGroup;
+    return this.control.form.controls['steps'] as UntypedFormGroup;
   }
 
-  stepControlGroup(): FormGroup {
-    return this.stepsFormGroup().controls[`step-${this.index}`] as FormGroup;
+  stepControlGroup(): UntypedFormGroup {
+    return this.stepsFormGroup().controls[`step-${this.index}`] as UntypedFormGroup;
   }
 
-  conditionControls(): FormGroup {
-    const stepControl = this.stepControlGroup().controls[this.from] as FormGroup;
-    const conditionControl = stepControl.controls['condition'] as FormGroup;
+  conditionControls(): UntypedFormGroup {
+    const stepControl = this.stepControlGroup().controls[this.from] as UntypedFormGroup;
+    const conditionControl = stepControl.controls['condition'] as UntypedFormGroup;
     return conditionControl;
   }
 
@@ -88,14 +88,14 @@ export class AddStepConditionComponent implements OnInit {
 
   setConditionValue(value) {
     this.condition.value = value;
-    this.conditionControls().controls['value'].patchValue(value);
+    this.conditionControls().controls['value']?.patchValue(value);
     this.conditionControls().markAsTouched();
     this.conditionControls().markAsDirty();
   }
 
   setConditionKey(key) {
     this.condition.key = key.trim();
-    this.conditionControls().controls['key'].patchValue(key.trim());
+    this.conditionControls().controls['key']?.patchValue(key.trim());
     this.conditionControls().markAsTouched();
     this.conditionControls().markAsDirty();
   }

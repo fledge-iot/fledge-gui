@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
+import { TitleCasePipe } from '@angular/common';
+
 import { APIFlow, User } from '../../../../../../../src/app/models';
 
-import { Validators, FormGroup, FormBuilder, AbstractControl, FormArray } from '@angular/forms';
+import { Validators, UntypedFormGroup, UntypedFormBuilder, AbstractControl, UntypedFormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { ControlUtilsService } from '../../control-utils.service';
+import { DocService } from '../../../../../services/doc.service';
 
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -44,11 +47,11 @@ export class AddEditAPIFlowComponent implements OnInit {
     destinationNames = [];
 
     editMode = false;
-    allowExecute = false;
     
     apiFlowName: string;
     af: APIFlow;
-    apiFlowForm: FormGroup;
+    
+    apiFlowForm: UntypedFormGroup;
 
     allUsers: User[];
     loggedInUsername: string;
@@ -56,6 +59,8 @@ export class AddEditAPIFlowComponent implements OnInit {
     APIFlowType = ['write', 'operation'];
 
     destroy$: Subject<boolean> = new Subject<boolean>();
+
+    public reenableButton = new EventEmitter<boolean>(false);
     constructor(
         private route: ActivatedRoute,
         private assetService: AssetsService,
@@ -65,14 +70,19 @@ export class AddEditAPIFlowComponent implements OnInit {
         private schedulesService: SchedulesService,
         private alertService: AlertService,
         private ngProgress: ProgressBarService,
-        private fb: FormBuilder,
+        private fb: UntypedFormBuilder,
         public rolesService: RolesService,
         private dialogService: DialogService,
+        public docService: DocService,
         public sharedService: SharedService,
         private userService: UserService,
         private controlUtilsService: ControlUtilsService,
+        private titlecasePipe: TitleCasePipe,
         private router: Router) {
             this.apiFlowForm = this.fb.group({
+                name: ['', Validators.required],
+                description: ['', Validators.required],
+                operation_name: [''],
                 variables: this.fb.array([]),
                 constants: this.fb.array([])
             });
@@ -89,6 +99,7 @@ export class AddEditAPIFlowComponent implements OnInit {
             type: 'write',
             description: '',
             operation_name: '',
+            permitted: false,
             destination: 'broadcast',
             constants: {},
             variables: {},
@@ -102,7 +113,6 @@ export class AddEditAPIFlowComponent implements OnInit {
             if (this.apiFlowName) {
               this.getAPIFlow();
             } else {
-                this.addParameter({ index: 0, key: '', value: '' });
                 this.selectedType = 'write';
             }
         });     
@@ -110,19 +120,19 @@ export class AddEditAPIFlowComponent implements OnInit {
 
     addParameter(param = null, controlType = null) {
         if (controlType == null) {
-            const variableControl = <FormArray>this.apiFlowForm.controls['variables'];
-            const constControl = <FormArray>this.apiFlowForm.controls['constants'];
+            const variableControl = <UntypedFormArray>this.apiFlowForm.controls['variables'];
+            const constControl = <UntypedFormArray>this.apiFlowForm.controls['constants'];
             variableControl.push(this.initParameter(param, 'variables'));
             constControl.push(this.initParameter(param, 'constants'));
         } else {
-            const control = <FormArray>this.apiFlowForm.controls[controlType];
+            const control = <UntypedFormArray>this.apiFlowForm.controls[controlType];
             control.push(this.initParameter(param, controlType));
         }
     }
 
     removeParameter(index: number, param) {
       // remove parameter from the list
-      const control = <FormArray>this.apiFlowForm.controls[param];
+      const control = <UntypedFormArray>this.apiFlowForm.controls[param];
       control.removeAt(index);
       this.apiFlowForm.markAsDirty();    
     }
@@ -142,7 +152,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     fillParameters(param, controlType) {
-      let c = <FormArray>this.apiFlowForm.controls[controlType];
+      let c = <UntypedFormArray>this.apiFlowForm.controls[controlType];
       c.clear();
       let i = 0;
       for (const [key, value] of Object.entries(param)) {
@@ -170,17 +180,21 @@ export class AddEditAPIFlowComponent implements OnInit {
             this.editMode = true;
             this.ngProgress.done();
             this.af = data;
-            if (this.af.destination !== 'broadcast') {
-                this.selectedDestinationName = this.af[this.af.destination];
+            
+            this.apiFlowForm.get('name').setValue(data.name);
+            this.apiFlowForm.get('description').setValue(data.description);
+            if (data.type === 'operation') {
+              this.apiFlowForm.get('operation_name').setValue(data.operation_name);
+            }
+            
+            this.getDestinationNames({'name': this.titlecasePipe.transform(this.af.destination)});
+            if (this.af.destination.toLowerCase() !== 'broadcast') {
+                this.selectedDestinationName = this.af[this.af.destination.toLowerCase()];
             }
             this.selectedType = data.type;
-            
-            // TODO: FOGL-8070
-            this.af.anonymous = data.anonymous === 't' || data.anonymous === true ? true : false;
-            
+                     
             this.fillParameters(data.variables, 'variables');
             this.fillParameters(data.constants, 'constants');
-            this.allowExecute = data.anonymous === true || (data.anonymous === false && data.allow.includes(this.loggedInUsername));
           }, error => {
             /** request completed */
             this.ngProgress.done();
@@ -194,9 +208,14 @@ export class AddEditAPIFlowComponent implements OnInit {
 
     saveAPIFlow(data) {
       let payload = this.af;
-
+      
+      payload.name = data.name;
+      payload.description = data.description;
       payload.type = this.selectedType;
-
+      if (payload.type === 'operation') {
+        payload.operation_name = data.operation_name;
+      }
+      
       const destination = this.af.destination.toLowerCase();
       payload.destination = destination;     
       if (destination !== 'broadcast') {
@@ -207,16 +226,8 @@ export class AddEditAPIFlowComponent implements OnInit {
       let constants = {};
       data.variables.forEach(v => { variables[v.vName] = v.vValue });
       data.constants.forEach(c => { constants[c.cName] = c.cValue });
-      if (Object.keys(variables).length !== 0) {
-          payload.variables = variables;
-      } else {
-          delete payload.variables;
-      }
-      if (Object.keys(constants).length !== 0) {
-          payload.constants = constants;
-      } else {
-          delete payload.constants;
-      }
+      payload.variables = variables;
+      payload.constants = constants;
 
       if (this.editMode) {
           this.updateAPIFlow();
@@ -230,13 +241,15 @@ export class AddEditAPIFlowComponent implements OnInit {
       .subscribe(
         (data: any) => {
           /** request completed */
-          this.ngProgress.done();  
+          this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(data.message, true);
           this.navigateToList();
         },
         error => {
           /** request completed but error */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -250,13 +263,15 @@ export class AddEditAPIFlowComponent implements OnInit {
       .subscribe(
         (data: any) => {
           /** request completed */
-          this.ngProgress.done();  
+          this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.alertService.success(data.message, true);
           this.navigateToList();
         },
         error => {
           /** request completed but error */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -271,12 +286,14 @@ export class AddEditAPIFlowComponent implements OnInit {
           (data: any) => {
             /** request completed */
             this.ngProgress.done();
+            this.reenableButton.emit(false);
             this.alertService.success(data.message, true);
             this.navigateToList();
           },
           error => {
             /** request completed but error */
             this.ngProgress.done();
+            this.reenableButton.emit(false);
             if (error.status === 0) {
               console.log('service down ', error);
             } else {
@@ -286,9 +303,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     checkAndRequestAPIFlow() {
-      // TODO: FOGL-8079 (blank values for variables are not allowed)
-      // commented if block for forced testing only
-      if(this.getFormControls('variables').length > 0) {
+      if (this.getFormControls('variables').length > 0) {
         this.openModal('confirmation-execute-dialog')
       } else {
       this.requestAPIFlow({});
@@ -327,7 +342,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     getFormControls(type): AbstractControl[] {
-      return (<FormArray>this.apiFlowForm.get(type)).controls;
+      return (<UntypedFormArray>this.apiFlowForm.get(type)).controls;
     }
 
     selectDestinationName(value) {
@@ -335,25 +350,25 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     getDestinationNames(selectedType) {
-        this.destinationNames = [];
-        this.selectedDestinationName = null;
-        this.af.destination = selectedType.name === 'Select Destination Type' ? '' : selectedType.name;
-        switch (selectedType.name) {
-          case 'Broadcast':
-            this.selectedDestinationName = null;
-            break;
-          case 'Service':
-            this.getServiceNames();
-            break;
-          case 'Asset':
-            this.getAssetNames();
-            break;
-          case 'Script':
-            this.getScriptNames();
-            break;
-          default:
-            break;
-        }
+      this.destinationNames = [];
+      this.selectedDestinationName = null;
+      this.af.destination = selectedType.name === 'Select Destination Type' ? '' : selectedType.name;
+      switch (selectedType.name) {
+        case 'Broadcast':
+          this.selectedDestinationName = null;
+          break;
+        case 'Service':
+          this.getServiceNames();
+          break;
+        case 'Asset':
+          this.getAssetNames();
+          break;
+        case 'Script':
+          this.getScriptNames();
+          break;
+        default:
+          break;
+      }
     }
 
     getServiceNames() {
@@ -393,7 +408,7 @@ export class AddEditAPIFlowComponent implements OnInit {
               })
               const SortedSouthboundSvc = southboundSvc.sort((a, b) => a.name.localeCompare(b.name));
               const SortedNorthboundSvc = northboundSvc.sort((a, b) => a.name.localeCompare(b.name));
-              this.destinationNames = SortedSouthboundSvc.concat(SortedNorthboundSvc);            
+              this.destinationNames = SortedSouthboundSvc.concat(SortedNorthboundSvc);
             },
             error => {
               /** request completed */
@@ -451,7 +466,7 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     addValueControl(controlType) {
-        const control = <FormArray>this.apiFlowForm.controls[controlType];
+        const control = <UntypedFormArray>this.apiFlowForm.controls[controlType];
         this.addParameter({index: control.value.length, key: '', value: ''}, controlType);
     }
 
@@ -482,10 +497,16 @@ export class AddEditAPIFlowComponent implements OnInit {
     }
 
     openModal(id: string) {
+        this.reenableButton.emit(false);
         this.dialogService.open(id);
     }
     
     closeModal(id: string) {
+        this.reenableButton.emit(false);
         this.dialogService.close(id);
+    }
+
+    goToLink(urlSlug: string) {
+      this.docService.goToSetPointControlDocLink(urlSlug);
     }
 }

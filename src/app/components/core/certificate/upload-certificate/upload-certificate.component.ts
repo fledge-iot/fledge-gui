@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild, HostListener } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 
 import { AlertService, CertificateService, ProgressBarService } from '../../../../services';
 
@@ -9,7 +9,7 @@ import { AlertService, CertificateService, ProgressBarService } from '../../../.
   styleUrls: ['./upload-certificate.component.css']
 })
 export class UploadCertificateComponent implements OnInit {
-  form: FormGroup;
+  form: UntypedFormGroup;
   key;
   cert;
   overwrite = '0';
@@ -19,10 +19,12 @@ export class UploadCertificateComponent implements OnInit {
   @ViewChild('fileInput', { static: true }) fileInput: ElementRef;
   @Output() notify: EventEmitter<any> = new EventEmitter<any>();
 
+  public reenableButton = new EventEmitter<boolean>(false);
+
   constructor(private certificateService: CertificateService,
     public ngProgress: ProgressBarService,
     private alertService: AlertService,
-    public formBuilder: FormBuilder) { }
+    public formBuilder: UntypedFormBuilder) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     this.toggleModal(false);
@@ -114,11 +116,13 @@ export class UploadCertificateComponent implements OnInit {
     // Check if file has been uploaded or not
     if (!this.cert && !this.key) {
       this.alertService.error('Key or Certificate file is missing');
+      this.reenableButton.emit(false);
       return;
     }
     // Check if extension of uploaded Certificate and Key (if exist) is valid
     if ((this.cert && !this.certExtension) || (this.key && !this.keyExtension)) {
       this.alertService.error('Please upload files with correct format & extension');
+      this.reenableButton.emit(false);
       return;
     }
     const formData = new FormData();
@@ -136,6 +140,7 @@ export class UploadCertificateComponent implements OnInit {
         (data) => {
           /** request completed */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           this.notify.emit();
           this.toggleModal(false);
           this.alertService.success(data['result']);
@@ -143,6 +148,7 @@ export class UploadCertificateComponent implements OnInit {
         error => {
           /** request completed */
           this.ngProgress.done();
+          this.reenableButton.emit(false);
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { filter, map, pairwise, startWith } from 'rxjs/operators';
 import { RolesService, ConfigurationControlService, ConfigurationBase } from '../../../../services';
@@ -19,9 +19,9 @@ export class ShowConfigurationComponent implements OnInit {
   @Output() event = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
   configurations$: Observable<ConfigurationBase<any>[]>;
-  form: FormGroup;
+  form: UntypedFormGroup;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
     public rolesService: RolesService,
     public changeDetectorRef: ChangeDetectorRef,
     public configControlService: ConfigurationControlService) {
@@ -66,7 +66,7 @@ export class ShowConfigurationComponent implements OnInit {
                 const file = this.createScriptFile(data[k].toString(), configuration);
                 this.event.emit({ [configuration.key]: file });
               } else {
-                this.formStatusEvent.emit({'status': this.form.status === 'VALID' ? true : false, 'group': this.group});
+                this.formStatusEvent.emit({ 'status': this.form.status === 'VALID' ? true : false, 'group': this.group });
                 if (this.form.valid) {
                   this.event.emit(data);
                 }
@@ -125,5 +125,15 @@ export class ShowConfigurationComponent implements OnInit {
 
   togglePassword(input: any): any {
     input.type = input.type === 'password' ? 'text' : 'password';
+  }
+
+  listTypeFormState(state: boolean, key: string) {
+    if (!state) {
+      this.form.controls[key].setErrors({ 'invalid': true });
+    } else {
+      this.form.controls[key].setErrors(null);
+    }
+    this.form.updateValueAndValidity();
+    this.formStatusEvent.emit({ 'status': this.form.valid, 'group': this.group });
   }
 }

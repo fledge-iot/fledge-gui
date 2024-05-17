@@ -24,13 +24,16 @@ const routes: Routes = [
     path: 'add',
     component: AddTaskWizardComponent,
     canActivate: [RolesGuard]
+  },
+  {
+    path: ':name/details',
+    component: NorthTaskModalComponent
   }
 ];
 
 @NgModule({
   declarations: [
     NorthComponent,
-    AddTaskWizardComponent,
     NorthTaskModalComponent
   ],
   imports: [

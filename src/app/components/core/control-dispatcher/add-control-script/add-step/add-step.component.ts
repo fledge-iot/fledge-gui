@@ -1,6 +1,6 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { orderBy } from 'lodash';
 import { CustomValidator } from '../../../../../directives/custom-validator';
@@ -43,19 +43,19 @@ export class AddStepComponent implements OnInit {
   ngAfterViewInit() {
     setTimeout(() => {
       if (!this.update) {
-        this.initStepFormGroup(0);
+        this.initStepFormGroup(1);
       }
     }, 0);
   }
 
   initStepFormGroup(index) {
-    this.stepsFormGroup().addControl(`step-${index}`, new FormGroup({}));
+    this.stepsFormGroup().addControl(`step-${index}`, new UntypedFormGroup({}));
     this.stepControlsList.push({ key: '', order: index, add: true });
     this.stepEvent.emit(this.stepControlsList);
   }
 
   stepsFormGroup() {
-    return this.control.form.controls['steps'] as FormGroup;
+    return this.control.form.controls['steps'] as UntypedFormGroup;
   }
 
   addStepControl() {
@@ -63,7 +63,8 @@ export class AddStepComponent implements OnInit {
       const maxOrder = Math.max(...this.stepControlsList.map(o => o.order));
       this.initStepFormGroup(maxOrder + 1)
     } else {
-      this.initStepFormGroup(0)
+      // Initialize step formgroup with parameter value 1 to set order of the initial control
+      this.initStepFormGroup(1)
     }
   }
 
@@ -142,20 +143,20 @@ export class AddStepComponent implements OnInit {
       });
   }
 
-  stepControlGroup(index): FormGroup {
-    return this.stepsFormGroup()?.controls[`step-${index}`] as FormGroup;
+  stepControlGroup(index): UntypedFormGroup {
+    return this.stepsFormGroup()?.controls[`step-${index}`] as UntypedFormGroup;
   }
 
   stepValuesGroup(step) {
     const config = step.values;
     const configuration = step.key === 'write' ? config.values : config.parameters;
-    let x = new FormGroup({});
+    let x = new UntypedFormGroup({});
     if (configuration) {
       Object.keys(configuration).forEach((key, i) => {
         if (Object.prototype.hasOwnProperty.call(configuration, key)) {
           const element = configuration[key];
-          x.addControl(`${step.key}-key-${i}`, new FormControl({ index: i, key: key }));
-          x.addControl(`${step.key}-val-${i}`, new FormControl({ index: i, value: element }));
+          x.addControl(`${step.key}-key-${i}`, new UntypedFormControl({ index: i, key: key }));
+          x.addControl(`${step.key}-val-${i}`, new UntypedFormControl({ index: i, value: element }));
         }
       });
     }
@@ -165,67 +166,67 @@ export class AddStepComponent implements OnInit {
 
   selectStep(step, index) {
     this.stepsFormGroup()?.removeControl(`step-${index}`);
-    this.stepsFormGroup()?.addControl(`step-${index}`, new FormGroup({}));
+    this.stepsFormGroup()?.addControl(`step-${index}`, new UntypedFormGroup({}));
     switch (step.key) {
       case 'write':
-        this.stepControlGroup(index)?.setControl(step.key, new FormGroup({
-          order: new FormControl(step?.values?.order),
-          service: new FormControl(step?.values?.service, Validators.required),
+        this.stepControlGroup(index)?.setControl(step.key, new UntypedFormGroup({
+          order: new UntypedFormControl(step?.values?.order),
+          service: new UntypedFormControl(step?.values?.service, Validators.required),
           values: this.stepValuesGroup(step),
-          condition: new FormGroup({
-            key: new FormControl(step?.values?.condition?.key),
-            condition: new FormControl(step?.values?.condition?.condition),
-            value: new FormControl(step?.values?.condition?.value),
+          condition: new UntypedFormGroup({
+            key: new UntypedFormControl(step?.values?.condition?.key),
+            condition: new UntypedFormControl(step?.values?.condition?.condition),
+            value: new UntypedFormControl(step?.values?.condition?.value),
           })
         }));
         break;
       case 'operation':
-        this.stepControlGroup(index)?.setControl(step.key, new FormGroup({
-          order: new FormControl(step?.values?.order),
-          name: new FormControl(step?.values?.name, [Validators.required, CustomValidator.nospaceValidator]),
-          service: new FormControl(step?.values?.service),
+        this.stepControlGroup(index)?.setControl(step.key, new UntypedFormGroup({
+          order: new UntypedFormControl(step?.values?.order),
+          name: new UntypedFormControl(step?.values?.name, [Validators.required, CustomValidator.nospaceValidator]),
+          service: new UntypedFormControl(step?.values?.service),
           parameters: this.stepValuesGroup(step),
-          condition: new FormGroup({
-            key: new FormControl(step?.values?.condition?.key),
-            condition: new FormControl(step?.values?.condition?.condition),
-            value: new FormControl(step?.values?.condition?.value),
+          condition: new UntypedFormGroup({
+            key: new UntypedFormControl(step?.values?.condition?.key),
+            condition: new UntypedFormControl(step?.values?.condition?.condition),
+            value: new UntypedFormControl(step?.values?.condition?.value),
           })
         }));
         break;
       case 'delay':
-        this.stepControlGroup(index)?.setControl(step.key, new FormGroup({
-          order: new FormControl(step?.values?.order),
-          duration: new FormControl(step?.values?.duration),
-          condition: new FormGroup({
-            key: new FormControl(step?.values?.condition?.key),
-            condition: new FormControl(step?.values?.condition?.condition),
-            value: new FormControl(step?.values?.condition?.value),
+        this.stepControlGroup(index)?.setControl(step.key, new UntypedFormGroup({
+          order: new UntypedFormControl(step?.values?.order),
+          duration: new UntypedFormControl(step?.values?.duration),
+          condition: new UntypedFormGroup({
+            key: new UntypedFormControl(step?.values?.condition?.key),
+            condition: new UntypedFormControl(step?.values?.condition?.condition),
+            value: new UntypedFormControl(step?.values?.condition?.value),
           })
         }));
         break;
       case 'configure':
-        this.stepControlGroup(index)?.setControl(step.key, new FormGroup({
-          order: new FormControl(step?.values?.order ? step?.values?.order : index),
-          category: new FormControl(step?.values?.category),
-          item: new FormControl(step?.values?.item),
-          value: new FormControl(step?.values?.value),
-          condition: new FormGroup({
-            key: new FormControl(step?.values?.condition?.key),
-            condition: new FormControl(step?.values?.condition?.condition),
-            value: new FormControl(step?.values?.condition?.value),
+        this.stepControlGroup(index)?.setControl(step.key, new UntypedFormGroup({
+          order: new UntypedFormControl(step?.values?.order ? step?.values?.order : index),
+          category: new UntypedFormControl(step?.values?.category),
+          item: new UntypedFormControl(step?.values?.item),
+          value: new UntypedFormControl(step?.values?.value),
+          condition: new UntypedFormGroup({
+            key: new UntypedFormControl(step?.values?.condition?.key),
+            condition: new UntypedFormControl(step?.values?.condition?.condition),
+            value: new UntypedFormControl(step?.values?.condition?.value),
           })
         }));
         break;
       case 'script':
-        this.stepControlGroup(index)?.setControl(step.key, new FormGroup({
-          order: new FormControl(step?.values?.order),
-          name: new FormControl(step?.values?.name, [Validators.required, CustomValidator.nospaceValidator]),
-          execution: new FormControl(step?.values?.execution),
+        this.stepControlGroup(index)?.setControl(step.key, new UntypedFormGroup({
+          order: new UntypedFormControl(step?.values?.order),
+          name: new UntypedFormControl(step?.values?.name, [Validators.required, CustomValidator.nospaceValidator]),
+          execution: new UntypedFormControl(step?.values?.execution),
           parameters: this.stepValuesGroup(step),
-          condition: new FormGroup({
-            key: new FormControl(step?.values?.condition?.key),
-            condition: new FormControl(step?.values?.condition?.condition),
-            value: new FormControl(step?.values?.condition?.value),
+          condition: new UntypedFormGroup({
+            key: new UntypedFormControl(step?.values?.condition?.key),
+            condition: new UntypedFormControl(step?.values?.condition?.condition),
+            value: new UntypedFormControl(step?.values?.condition?.value),
           })
         }));
         break;

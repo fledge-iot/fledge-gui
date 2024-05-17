@@ -1,4 +1,4 @@
-<div *ngIf="filterPipeline != undefined" class="view-content columns is-size-10">
+<div *ngIf="filterPipeline != undefined" class="view-content columns is-size-10" [ngClass]="{'pt-5 pl-5': sourceName}">
   <div class="column">
     <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
       <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="'list-item-' + i"
@@ -34,7 +34,7 @@
                   <i class="far fa-question-circle"></i>
                 </span>
               </div>
-              <div class="field is-pulled-right" *ngIf="rolesService.hasEditPermissionsOnPage(from)">
+              <div class="field is-pulled-right" *ngIf="rolesService.hasEditPermissionsOnPage(from) && !sourceName">
                 <span class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-hovered" data-tooltip="Remove"
                   (click)="deleteFilterReference(filter)">
                   <i class="fa fa-trash-alt" aria-hidden="true"></i>

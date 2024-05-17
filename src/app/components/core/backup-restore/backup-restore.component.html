@@ -22,7 +22,7 @@
                 <div class="dropdown-content">
                   <ng-container *ngIf="rolesService.hasEditPermissions()">
                     <a class="dropdown-item" id="create-backup" (click)="requestBackup()">
-                      <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
+                      <i class="bi bi-plus-circle plus-icon bi-sm" aria-hidden="true"></i>
                       <span> Create New</span>
                     </a>
                     <a class="dropdown-item" id="upload-backup" (click)="uploadBackup()">
@@ -42,7 +42,7 @@
         </div>
       </div>
     </header>
-    <div class="card-content">
+    <div class="card-content backup-card-content">
       <div *ngIf="showSpinner" class="app-loading">
         &nbsp;
         <svg class="spinner" viewBox="0 0 100 100">
@@ -54,7 +54,7 @@
           <small class="no-rec">No Record</small>
         </div>
         <ng-container *ngIf="backupData != undefined && backupData.length > 0">
-          <table class="table is-hoverable is-narrow scroll is-responsive" cellpadding="0" cellspacing="0">
+          <table class="table is-hoverable is-narrow is-responsive" cellpadding="0" cellspacing="0">
             <thead>
               <tr>
                 <th>
@@ -82,25 +82,30 @@
                 <td class="align-content">
                   <small>{{ backup.status }}</small>
                 </td>
-                <ng-container *ngIf="rolesService.hasEditPermissions()">
-                  <td class="align-content">
-                    <a *ngIf="backup.status != 'RUNNING'" class="button is-text text-btn"
-                      (click)="openModal(backup.id, backup.date, 'Are you sure you want to delete the backup', 'deleteBackup')">delete
-                    </a>
-                  </td>
-                  <td class="align-content">
-                    <a *ngIf="(backup.status == 'COMPLETED' || backup.status == 'RESTORED')"
-                      class="button is-text text-btn"
-                      (click)="openModal(backup.id, backup.date, 'Are you sure you want to restore the backup', 'restoreBackup')">restore
-                    </a>
-                  </td>
-                </ng-container>
-                <td class="align-content">
-                  <a *ngIf="backup.status == 'COMPLETED' || backup.status == 'RESTORED'"
-                    (click)="downloadBackup(backup)" class="button is-text text-btn">
-                    download
-                  </a>
-                </td>
+                <div class="dropdown is-left is-hoverable">
+                  <div class="dropdown-trigger">
+                      <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">
+                          <span class="icon">
+                              <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-600"></i>
+                          </span>
+                      </a>
+                  </div>
+                  <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                      <div class="dropdown-content">
+                          <a *ngIf="backup.status != 'RUNNING'" class="dropdown-item" (click)="openModal('delete-backup-dialog', backup)">
+                              Delete
+                          </a>
+                          <a *ngIf="(backup.status == 'COMPLETED' || backup.status == 'RESTORED')" class="dropdown-item"
+                            (click)="openModal('restore-backup-dialog', backup)">
+                              Restore
+                          </a>
+                          <a *ngIf="backup.status == 'COMPLETED' || backup.status == 'RESTORED'" class="dropdown-item"
+                            (click)="downloadBackup(backup)">
+                              Download
+                          </a>
+                      </div>
+                  </div>
+              </div>
               </tr>
             </tbody>
           </table>
@@ -108,7 +113,34 @@
       </ng-container>
     </div>
   </div>
-  <app-alert-dialog (createBackup)='requestBackup()' (restoreBackup)='restoreBackup($event)'
-    (deleteBackup)='deleteBackup($event)' [childData]='childData'></app-alert-dialog>
+  <!-- delete-backup-dialog -->
+  <app-confirmation-dialog id="delete-backup-dialog">
+    <header class="modal-card-head">
+      <span class="modal-card-title is-size-6">Delete Backup</span>
+      <button class="delete" aria-label="close" (click)="closeModal('delete-backup-dialog')"></button>
+    </header>
+    <section class="modal-card-body">
+      Are you sure you want to delete the backup  <b>{{backup?.date}}</b>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-small" (click)="closeModal('delete-backup-dialog')">Cancel</button>
+      <button class="button is-small is-danger" (click)="deleteBackup(backup?.id)" [appDisableUntilResponse]="reenableButton">Delete</button>
+    </footer>
+  </app-confirmation-dialog>
+
+  <!-- restore-backup-dialog -->
+  <app-confirmation-dialog id="restore-backup-dialog">
+    <header class="modal-card-head">
+      <span class="modal-card-title is-size-6">Restore Backup</span>
+      <button class="delete" aria-label="close" (click)="closeModal('restore-backup-dialog')"></button>
+    </header>
+    <section class="modal-card-body">
+      Are you sure you want to restore the backup <b>{{backup?.date}}</b>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-small" (click)="closeModal('restore-backup-dialog')">Cancel</button>
+      <button class="button is-small is-warning" (click)="restoreBackup(backup?.id)" [appDisableUntilResponse]="reenableButton">Restore</button>
+    </footer>
+  </app-confirmation-dialog>
   <app-file-upload-modal></app-file-upload-modal>
 </div>

@@ -1,24 +1,36 @@
 .menu-list {
   background-color: white !important;
-  min-height: 100%;
-  margin-top: 0.25%;
   margin-right: 1%;
   box-shadow: 0 0 0.1em rgba(85, 85, 85, 0.5);
+  overflow-y: auto !important;
+  max-height: 92vh;
+  height: 100vh; 
 }
 
 .menu-toogle-icon {
-    display:inline-flex;
-    height:1.2em;
-    width:1.2em;
-    background-color:whitesmoke;
-    border-radius:50%;
+  display: inline-flex;
+  height: 1.2em;
+  width: 1.2em;
+  background-color: whitesmoke;
+  border-radius: 50%;
 }
 
 .disabled {
   opacity: .7;
   pointer-events: none;
- }
+}
 
- ul:has(section.disabled) {
+ul:has(section.disabled) {
   cursor: not-allowed;
- }
+}
+
+.sidebar-icon {
+  vertical-align: 0.1em !important;
+}
+
+svg#control-dispatch {
+  padding-top: .2rem;
+  fill: #4a4a4a;
+  width: 20px;
+  height: 22px;
+}

@@ -15,12 +15,13 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import {
   AlertService, AuthService, ConnectedServiceStatus, PingService,
-  ProgressBarService, ServicesApiService, RolesService
+  ProgressBarService, ServicesApiService, RolesService, SchedulesService
 } from '../../../services';
 import { SharedService } from '../../../services/shared.service';
 import Utils from '../../../utils';
 import { RestartModalComponent } from '../../common/restart-modal/restart-modal.component';
 import { ShutdownModalComponent } from '../../common/shut-down/shutdown-modal.component';
+import { SystemAlertComponent } from '../../core/system-alert/system-alert.component';
 
 @Component({
   selector: 'app-navbar',
@@ -32,7 +33,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   public timer: any = '';
   public pingData = {};
   public servicesRecord = [];
-  public pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '' };
+  public pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '', alertsCount: null };
   public shutDownData = {
     key: '',
     message: ''
@@ -49,12 +50,14 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   viewPort: any = '';
   public showSpinner = false;
   isManualRefresh = false;
+  servicesToShow = ['northbound', 'southbound', 'dispatcher', 'notification', 'management', 'bucketstorage'];
 
   @ViewChild(ShutdownModalComponent, { static: true }) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent, { static: true }) childRestart: RestartModalComponent;
-
+  @ViewChild(SystemAlertComponent, { static: true }) systemAlertComponent: SystemAlertComponent;
+  
   destroy$: Subject<boolean> = new Subject<boolean>();
-
+  
   constructor(private servicesApiService: ServicesApiService,
     private status: ConnectedServiceStatus,
     private alertService: AlertService,
@@ -64,6 +67,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef,
     private ping: PingService,
     private router: Router,
+    private schedulesService: SchedulesService,
     public rolesService: RolesService) {
     // Subscribe to automatically update
     // "isUserLoggedIn" whenever a change to the subject is made.
@@ -178,7 +182,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           if (bucketStorageService.length) {
             this.servicesRecord.push(bucketStorageService[0]);
           }
-
+          this.sharedService.allServicesInfo.next(this.servicesRecord);
           this.hideLoadingSpinner();
         },
         (error) => {
@@ -210,7 +214,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.pingInfo = {
         isAlive: true, isAuth: false, isSafeMode: this.pingData['safeMode'], hostName: this.pingData['hostName'],
-        version: this.pingData['version']
+        version: this.pingData['version'], alertsCount: this.pingData['alerts']
       };
       if (data['authenticationOptional'] === true) {
         this.isUserLoggedIn = false;
@@ -235,7 +239,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           this.pingInfo.isAuth = true;
         } else {
           this.sharedService.connectionInfo.next({ version: '', isServiceUp: false });
-          this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '' };
+          this.pingInfo = { isAlive: false, isAuth: false, isSafeMode: false, hostName: '', version: '', alertsCount: this.pingData['alerts'] };
         }
       });
   }
@@ -421,5 +425,76 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   public hideLoadingSpinner() {
     this.showSpinner = false;
   }
-}
 
+  navToSyslogs(service) {
+    this.router.navigate(['logs/syslog'], { queryParams: { source: service.name } });
+  }
+
+  public showConfigWithPollingSchedule(serviceInfo): void {
+    this.ngProgress.start();
+    this.schedulesService.getSchedules().
+      subscribe(
+        (data: any) => {
+          this.ngProgress.done();
+          const pollingScheduleID = data.schedules.find(s => s.processName === 'manage')?.id;
+          serviceInfo['pollingScheduleID'] = pollingScheduleID;
+          this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
+        },
+        error => {
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
+  public isDeveloperFeatureOn(): boolean {
+    const devFeature = JSON.parse(localStorage.getItem('DEV_FEATURES'));
+    return devFeature ? devFeature : false;
+  }
+
+  navToServiceConfiguration(service) {
+    let serviceInfo = {
+      name: service.name,
+      isEnabled: service.status === 'running' ? true : false,
+      added: true,
+      isInstalled: true
+    }
+    switch (service.type) {
+      case 'Northbound':
+        this.router.navigate(['north', service.name, 'details']);
+        break;
+      case 'Southbound':
+        this.router.navigate(['south', service.name, 'details']);
+        break;
+      case 'BucketStorage':
+        serviceInfo['process'] = 'bucket';
+        serviceInfo['type'] = 'BucketStorage';
+        serviceInfo['package'] = 'fledge-service-bucket';
+        this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
+        break;
+      case 'Management':       
+        serviceInfo['process'] = 'management';
+        serviceInfo['type'] = 'Management';
+        serviceInfo['package'] = 'fledge-service-management';
+        this.showConfigWithPollingSchedule(serviceInfo);
+        break;
+      case 'Dispatcher':
+        serviceInfo['process'] = 'dispatcher';
+        serviceInfo['type'] = 'Dispatcher';
+        serviceInfo['package'] = 'fledge-service-dispatcher';
+        this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
+        break;
+      case 'Notification':
+        serviceInfo['process'] = 'notification';
+        serviceInfo['type'] = 'Notification';
+        serviceInfo['package'] = 'fledge-service-notification';
+        this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
+        break;
+      default:
+        break;
+      }
+  }
+}

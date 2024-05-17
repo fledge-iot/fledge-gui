@@ -27,6 +27,7 @@ export class FilterListComponent {
   @Input() filterPipeline: string[] = [];
   @Input() service: string = '';
   @Input() from: string = '';
+  @Input() sourceName: string;
   @Input() newAddedFilters: { filter: string, state: string }[] = [];
   @Output() formStatus = new EventEmitter<boolean>();
   @Output() controlPipelineFilters = new EventEmitter<string[]>();
@@ -163,7 +164,7 @@ export class FilterListComponent {
     }
 
     if (this.from !== 'control-pipeline') {
-      if (this.checkPipelineItemsOrder()) {
+      if (this.checkPipelineItemsOrder() && this.deletedFilterPipeline.length === 0) {
         this.updateFilterPipeline(this.filterPipeline);
       }
       if (this.deletedFilterPipeline.length > 0) {
@@ -203,7 +204,6 @@ export class FilterListComponent {
         return true;
       }
     }
-
     // All items have the same counterparts in different positions
     return false;
   }
@@ -219,11 +219,10 @@ export class FilterListComponent {
     this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.service)
       .subscribe(() => {
         this.deletedFilterPipeline.forEach((filter, index) => {
-          this.filterService.deleteFilter(filter).subscribe((data: any) => {
+          this.filterService.deleteFilter(filter).subscribe(() => {
             if (this.deletedFilterPipeline.length === index + 1) {
               this.deletedFilterPipeline = []; // clear deleted filter reference
             }
-            this.toastService.success(data.result);
           },
             (error) => {
               if (error.status === 0) {

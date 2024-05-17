@@ -1,32 +1,18 @@
 <div class="container is-fluid">
   <div>
-    <ng-container *ngIf="isNotificationServiceAvailable == false && isNotificationServiceEnabled == false">
+    <ng-container *ngIf="isNotificationServiceEnabled === false">
       <article class="message is-warning">
         <div class="message-body">
-          Notification service is not added
-          and enabled.&nbsp; <a *ngIf="rolesService.hasEditPermissions()"
-            (click)="openNotificationServiceModal()"><strong>add & enable now</strong></a>
-          <button (click)="checkNotificationServiceStatus(true)" class="button is-small"title="Recheck"  id="refresh-check">
+          <span *ngIf="notificationServiceInstalled === false">Notification service is not installed.</span>
+          <span *ngIf="notificationServiceInstalled && isNotificationServiceAvailable === false">Notification service is not
+            added.</span>
+          <span *ngIf="isNotificationServiceAvailable && isNotificationServiceEnabled === false">Notification service is not
+            enabled.</span>
+          &nbsp;<a *ngIf="rolesService.hasEditPermissions() && (notificationServiceInstalled === false || isNotificationServiceAvailable === false || isNotificationServiceEnabled === false)"
+          (click)="openServiceConfigureModal()"><strong>Configure</strong></a>
+          <button (click)="checkNotificationServiceStatus()" class="button is-small" id="refresh-check">
             <span class="icon">
-              <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
-            </span>
-          </button>
-          <span class="icon is-small tooltip is-pulled-right is-hovered custom-pad" data-tooltip="Help"
-            (click)="goToLink('starting-the-notification-service')">
-            <i class="far fa-question-circle"></i>
-          </span>
-        </div>
-      </article>
-    </ng-container>
-    <ng-container *ngIf="isNotificationServiceAvailable && !isNotificationServiceEnabled">
-      <article class="message is-warning">
-        <div class="message-body">
-          Notification service is not enabled.&nbsp;<a *ngIf="rolesService.hasEditPermissions()"
-            (click)="enableNotificationService()"><strong>enable
-              now</strong></a>
-          <button (click)="checkNotificationServiceStatus(true)" class="button is-small" title="Recheck" id="refresh-check">
-            <span class="icon">
-              <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+              <i class="fa fa-sm fa-sync" aria-hidden="true" title="Recheck"></i>
             </span>
           </button>
           <span class="icon is-small tooltip is-pulled-right is-hovered custom-pad" data-tooltip="Help"
@@ -49,19 +35,19 @@
           </a>
         </p>
       </div>
-      <button *ngIf="rolesService.hasEditPermissions()" [disabled]="!isNotificationServiceEnabled"
-        id="add_notification_instance" class="button is-light fix-margin" (click)="addNotificationInstance()">
+
+      <button *ngIf="rolesService?.hasControlAccess()" [disabled]="!isNotificationServiceEnabled" class="fix-pad button is-light mr-0 mt-0" (click)="addNotificationInstance()">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Create Notification Instance &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </button>
       <a *ngIf="isNotificationServiceAvailable || rolesService.hasEditPermissions()" class="button"
-        (click)="openNotificationServiceModal()" id="refresh-check">
+        (click)="openServiceConfigureModal()" id="refresh-check">
         <span class="icon">
-          <i class="fa fa-sm fa-cog" aria-hidden="true"></i>
+          <i class="bi bi-gear-wide-connected bi-sm" aria-hidden="true" title="Notification Service Configuration"></i>
         </span>
       </a>
       <span *ngIf="isNotificationServiceEnabled"
-        class="icon is-small tooltip is-pulled-right is-hovered notification-help-pad" data-tooltip="Help"
+        class="icon is-small tooltip is-pulled-right is-hovered help-pad" data-tooltip="Help"
         (click)="goToLink('using-the-notification-service')">
         <i class="far fa-question-circle"></i>
       </span>
@@ -80,7 +66,7 @@
             <small class="no-rec">No Record</small>
           </div>
           <ng-container *ngIf="notificationInstances!= undefined && notificationInstances.length > 0">
-            <table id="south-service-list" class="table is-fullwidth scroll is-responsive is-hoverable" cellpadding="0"
+            <table class="table is-fullwidth scroll is-responsive is-hoverable" cellpadding="0"
               cellspacing="0">
               <thead>
                 <tr>
@@ -123,4 +109,3 @@
 </div>
 <app-notification-modal (notify)='onNotify()' [notification]="notification"></app-notification-modal>
 <app-view-logs></app-view-logs>
-<app-notification-service-modal [notificationServiceData]="notificationServiceData"></app-notification-service-modal>
