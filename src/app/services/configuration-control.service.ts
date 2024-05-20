@@ -127,12 +127,14 @@ export class ListConfig extends ConfigurationBase<string> {
   override controlType = 'LIST';
   public listSize = '';
   public items: '';
+  public properties: '';
 }
 
 export class KVListConfig extends ConfigurationBase<string> {
   override controlType = 'KVLIST';
   public listSize = '';
   public items: '';
+  public properties: '';
 }
 
 
@@ -334,6 +336,7 @@ export class ConfigurationControlService {
             readonly: element.readonly,
             mandatory: element.mandatory,
             order: element.order,
+            editorOptions: this.setEditorConfig(element.type),
             validity: element.validity,
           });
           listItem.items = element.items;
@@ -341,6 +344,7 @@ export class ConfigurationControlService {
           listItem.maximum = element?.maximum;
           listItem.length = element?.length;
           listItem.listSize = element?.listSize;
+          listItem.properties = element?.properties
           configurations.push(listItem);
           break;
 
@@ -354,6 +358,7 @@ export class ConfigurationControlService {
             readonly: element.readonly,
             mandatory: element.mandatory,
             order: element.order,
+            editorOptions: this.setEditorConfig(element.type),
             validity: element.validity,
           });
           kvListItem.items = element.items;
@@ -361,6 +366,7 @@ export class ConfigurationControlService {
           kvListItem.maximum = element?.maximum;
           kvListItem.length = element?.length;
           kvListItem.listSize = element?.listSize;
+          kvListItem.properties = element?.properties;
           configurations.push(kvListItem);
           break;
 
@@ -397,7 +403,7 @@ export class ConfigurationControlService {
       inputStyle: 'textarea',
       autoRefresh: true
     };
-    if (type === 'JSON') {
+    if (type === 'JSON' || type === 'list' || type === 'kvlist') {
       editorOptions.mode = 'application/json';
     }
     return editorOptions;

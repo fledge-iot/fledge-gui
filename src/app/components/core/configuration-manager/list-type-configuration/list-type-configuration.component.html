@@ -9,6 +9,10 @@
             [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appFloatOnly>
           <input *ngIf="configuration.items == 'string'" class="input is-small" type="text" formControlName="{{i}}"
             [attr.maxLength]="configuration?.length">
+          <ng-container *ngIf="configuration.items == 'object'">
+            <ngx-codemirror [options]="setCodeMirrorOption(configuration)" formControlName="{{i}}">
+            </ngx-codemirror>
+          </ng-container>
         </div>
         <div class="column pl-0 pt-2">
           <span class="icon">

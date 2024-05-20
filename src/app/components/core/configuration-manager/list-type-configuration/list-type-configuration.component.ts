@@ -38,7 +38,13 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   initListItem(v = '') {
-    const listItem = new FormControl(v, [CustomValidator.nospaceValidator]);
+    let listItem;
+    if(this.configuration.items == 'object') {
+      listItem = new FormControl(JSON.stringify(this.configuration.properties, null, ' '));
+    }
+    else{
+      listItem = new FormControl(v, [CustomValidator.nospaceValidator]);
+    }
     this.listItems.push(listItem);
     this.cdRef.detectChanges();
   }
@@ -72,5 +78,10 @@ export class ListTypeConfigurationComponent implements OnInit {
       this.form.get(this.configuration.key)?.patchValue(JSON.stringify(value))
       this.formState.emit(this.listItems.valid);
     })
+  }
+
+  setCodeMirrorOption(configuration) {
+    // configuration.editorOptions['readOnly'] = true;
+    return configuration.editorOptions;
   }
 }
