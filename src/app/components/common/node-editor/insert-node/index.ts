@@ -54,14 +54,8 @@ export function insertableNodes<S extends Schemes>(
       );
 
       if (view && node.label !== "South" && node.label !== "Storage" && node.label !== "North") {
-        console.log('node', node);
-        console.log('cons', editor.getConnections());
-
         const intersectedConnections = checkIntersection(view.position, node, cons);
-
         for (let id of intersectedConnections) {
-          console.log('id', id);
-
           const exist = editor.getConnection(id);
           if (exist && (exist.source !== node.id && exist.target !== node.id)) {
             await editor.removeConnection(id);
