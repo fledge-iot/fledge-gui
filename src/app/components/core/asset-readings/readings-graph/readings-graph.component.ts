@@ -442,7 +442,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         });
   }
 
-  public plotReadingsGraph(assetCode, limit = null, time = null, previous:number|string = 0) {
+  public plotReadingsGraph(assetCode, limit = null, time = null, previous:number = 0, previous_ts:string = '') {
     this.zoomConfig.isZoomed = false;
     if (assetCode === '') {
       return false;
@@ -458,7 +458,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     optedAssets = optedAssets.filter((asset) => asset !== this.assetCode);
     this.limit = limit;
     this.isReadingsFetched = false;
-    this.assetService.getMultipleAssetReadings(encodeURIComponent(assetCode), +limit, 0, time, optedAssets, previous, this.fromMostRecent)
+    this.assetService.getMultipleAssetReadings(encodeURIComponent(assetCode), +limit, 0, time, optedAssets, previous, this.fromMostRecent, previous_ts)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any[]) => {
@@ -995,8 +995,8 @@ export class ReadingsGraphComponent implements OnDestroy {
       else {
         prev = new Date(latestReadingTimestamp.valueOf() + this.optedTime * 1000);
       }
-      let previous = moment(prev.valueOf()).format('YYYY-MM-DD HH:mm:ss.SSS');
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, previous);
+      let previous_ts = moment(prev.valueOf()).format('YYYY-MM-DD HH:mm:ss.SSS');
+      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, previous_ts);
     }
   }
 
