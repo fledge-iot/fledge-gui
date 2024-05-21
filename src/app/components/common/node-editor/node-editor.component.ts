@@ -88,7 +88,6 @@ export class NodeEditorComponent implements OnInit {
   deliveryPluginChangedConfig: any;
   ruleConfiguration: any;
   deliveryConfiguration: any;
-  showConfigureModal = false;
   serviceInfo = {added: false, type: '', isEnabled: true, schedule_process: '', process: '', package: '', name: '',
                   isInstalled: false, isAvailable: false};
   btnText = '';
@@ -1026,11 +1025,11 @@ export class NodeEditorComponent implements OnInit {
   }
 
   getServiceDetail(event) {
-    this.showConfigureModal = event.isOpen;
+    const showConfigureModal = event.isOpen;
     delete event.isOpen;
     this.serviceInfo = event;
 
-    if (this.showConfigureModal) {
+    if (showConfigureModal) {
      this.openServiceConfigureModal(); 
     }
   }
