@@ -98,7 +98,7 @@ export class AddControlPipelineComponent implements OnInit {
   }
 
   canDeactivate(): Observable<boolean> | boolean {
-    return this.dialogService.confirm({ id: 'unsaved-changes-dialog', changeExist: this.unsavedChangesInFilterForm });
+    return this.dialogService.confirm({ id: 'unsaved-changes-dialog', changeExist: this.pipelineForm.dirty || this.unsavedChangesInFilterForm });
   }
   ngOnInit(): void {
     let callsStack = {

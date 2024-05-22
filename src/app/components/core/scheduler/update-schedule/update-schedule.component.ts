@@ -7,6 +7,8 @@ import Utils, { QUOTATION_VALIDATION_PATTERN, weekDays } from '../../../../utils
 import { cloneDeep, isEmpty } from 'lodash';
 import { Schedule } from '../schedule';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 
 @Component({
   selector: 'app-update-schedule',
@@ -32,6 +34,7 @@ export class UpdateScheduleComponent implements OnInit {
     public router: Router,
     private schedulesService: SchedulesService,
     public fb: UntypedFormBuilder,
+    public unsavedChangesService: DialogService,
     private alertService: AlertService,
     public rolesService: RolesService) {
     this.form = this.fb.group({
@@ -60,6 +63,10 @@ export class UpdateScheduleComponent implements OnInit {
     });
   }
 
+  canDeactivate(): Observable<boolean> | boolean {
+    return this.unsavedChangesService.confirm({ id: 'unsaved-changes-dialog', changeExist: this.form.dirty });
+  }
+
   ngOnInit() { }
 
   public getWeekDays() {
@@ -78,11 +85,11 @@ export class UpdateScheduleComponent implements OnInit {
 
     if (type.name == 'TIMED') {
       const time = Utils.convertTimeToSec(this.form.get('time').value);
-      // Set time control value when type is TIMED 
+      // Set time control value when type is TIMED
       if (time == 0) { this.form.controls['time'].patchValue('00:00:01') }
     }
 
-    // Enable repeat & time control 
+    // Enable repeat & time control
     this.form.controls['time'].enable();
     this.form.controls['day'].enable();
     this.form.controls['repeat'].enable();
@@ -130,7 +137,7 @@ export class UpdateScheduleComponent implements OnInit {
     const day = this.days.find(day => day.index == index);
     this.form.controls['day'].patchValue(day);
     this.form.controls['day'].updateValueAndValidity();
-    // set default time 
+    // set default time
     this.form.controls['time'].patchValue('00:00:01');
     this.form.controls['time'].updateValueAndValidity();
     return day;

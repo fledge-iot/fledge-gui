@@ -6,6 +6,8 @@ import {
   AlertService, ConfigurationControlService, ConfigurationService,
   FileUploaderService, ProgressBarService, RolesService, SchedulesService
 } from '../../../services';
+import { Observable } from 'rxjs';
+import { DialogService } from '../../common/confirmation-dialog/dialog.service';
 
 @Component({
   selector: 'app-configuration-manager',
@@ -35,8 +37,13 @@ export class ConfigurationManagerComponent implements OnInit {
     public ngProgress: ProgressBarService,
     private configurationControlService: ConfigurationControlService,
     private fileUploaderService: FileUploaderService,
-    public schedulesService: SchedulesService
+    public schedulesService: SchedulesService,
+    public unsavedChangesService: DialogService,
   ) { }
+
+  canDeactivate(): Observable<boolean> | boolean {
+    return this.unsavedChangesService.confirm({ id: 'unsaved-changes-dialog', changeExist: !isEmpty(this.changedConfig) });
+  }
 
   ngOnInit() {
     this.getSchedules();
@@ -51,7 +58,7 @@ export class ConfigurationManagerComponent implements OnInit {
         (data: any) => {
           this.categoryData = data.categories;
           const excludeCategories = this.scheduleNames.concat(["SOUTH", "NORTH", "NOTIFICATIONS"]);
-          
+
           // filter south, north, notification, management, bucket, dispatcher categories
           this.categoryData = this.categoryData.filter((n: any) => {
             return !excludeCategories.includes(n.key.toUpperCase());
@@ -89,7 +96,7 @@ export class ConfigurationManagerComponent implements OnInit {
       node.id = node.key;
       node.name = (node.hasOwnProperty('displayName')) ? node.displayName : node.description;
       node.hasChildren = false;
-      // If the object has 'children' property recurse 
+      // If the object has 'children' property recurse
       if (Array.isArray(node.children) && node.children.length > 0) {
         node.hasChildren = true;
         this.updateIdAndNameInTreeObject(node.children);
@@ -113,7 +120,7 @@ export class ConfigurationManagerComponent implements OnInit {
 
   public onNodeActive(tree: TreeComponent) {
     const rootId = tree.treeModel.focusedNodeId?.toString();
-    // In case of root node is in ['Advanced', 'General', 'Utilities'], 
+    // In case of root node is in ['Advanced', 'General', 'Utilities'],
     // Expand the group and select first child
     if (['Advanced', 'General', 'Utilities'].includes(rootId)) {
       const nodes = tree.treeModel.nodes;

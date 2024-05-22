@@ -11,6 +11,7 @@ import { ListSchedulesComponent } from './list-schedules/list-schedules.componen
 import { UpdateScheduleComponent } from './update-schedule/update-schedule.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ScheduleTypeResolver } from './update-schedule/schedule-type.resolver';
+import { canDeactivateGuard } from '../../../guards/can-deactivate/can-deactivate.guard';
 
 const routes: Routes = [
   {
@@ -23,7 +24,8 @@ const routes: Routes = [
     component: UpdateScheduleComponent,
     resolve: {
       data: ScheduleTypeResolver
-    }
+    },
+    canDeactivate: [canDeactivateGuard]
   }
 ];
 

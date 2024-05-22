@@ -21,6 +21,7 @@ import { AddTaskWizardComponent } from './components/core/north/add-task-wizard/
 import { TaskScheduleComponent } from './components/core/north/task-schedule/task-schedule.component';
 import { ListTypeConfigurationComponent } from './components/core/configuration-manager/list-type-configuration/list-type-configuration.component';
 import { KvListTypeConfigurationComponent } from './components/core/configuration-manager/kv-list-type-configuration/kv-list-type-configuration.component';
+import { UnsavedChangesDialogComponent } from './components/common/unsaved-changes-dialog/unsaved-changes-dialog.component';
 
 @NgModule({
   imports: [
@@ -48,6 +49,7 @@ import { KvListTypeConfigurationComponent } from './components/core/configuratio
     AddServiceWizardComponent,
     AddTaskWizardComponent,
     TaskScheduleComponent,
+    UnsavedChangesDialogComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -61,7 +63,8 @@ import { KvListTypeConfigurationComponent } from './components/core/configuratio
     TabNavigationComponent,
     AddServiceWizardComponent,
     AddTaskWizardComponent,
-    TaskScheduleComponent
+    TaskScheduleComponent,
+    UnsavedChangesDialogComponent
   ]
 })
 export class SharedModule { }

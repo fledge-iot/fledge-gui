@@ -241,8 +241,10 @@
     <footer class="modal-card-foot">
       <button type="button" id="cancel" class="button is-small" (click)="navToSchedulesPage()">Cancel</button>
       <button *ngIf="rolesService.hasEditPermissions()" id="save" type="submit" class="button is-info is-small"
-        [disabled]="form?.invalid || (!form.dirty && form.pristine)"
-        (click)="form?.valid && updateSchedule()" [appDisableUntilResponse]="reenableButton">Save</button>
+        [disabled]="form?.invalid || (!form.dirty && form.pristine)" (click)="form?.valid && updateSchedule()"
+        [appDisableUntilResponse]="reenableButton">Save</button>
     </footer>
   </div>
 </div>
+<!--  Unsaved changes dialog  -->
+<app-unsaved-changes-dialog></app-unsaved-changes-dialog>
