@@ -74,18 +74,16 @@ export class CustomNotificationNodeComponent implements OnChanges {
     this.nodeId = this.data.id;
     if (this.data.label === 'Notification') {
       this.elRef.nativeElement.style.borderColor = "#0E9BD8";
-      this.isNotificationNode = true;    
-      if ('notifications' == 'notifications') {
-        if (!isEmpty(this.data.controls)) {
-          this.notification.name = this.data.controls.nameControl['name'];
-          this.notification.channel = this.data.controls.channelControl['pluginName'];
-          this.notification.rule = this.data.controls.ruleControl['pluginName'];
-          this.notification.notificationType = this.data.controls.notificationTypeControl['type'];
-          this.notification.enable = this.data.controls.enabledControl['enabled'] === 'true' ? true : false;
-          this.notification.isServiceEnabled = this.data.controls.serviceStatusControl['enabled'];
-          // TODO (OPTIMIZE): API call for bolt (delivery/notify plugin enable state) icon highlighting
-          this.isDeliveryEnabled();
-        }
+      this.isNotificationNode = true;
+      if (!isEmpty(this.data.controls)) {
+        this.notification.name = this.data.controls.nameControl['name'];
+        this.notification.channel = this.data.controls.channelControl['pluginName'];
+        this.notification.rule = this.data.controls.ruleControl['pluginName'];
+        this.notification.notificationType = this.data.controls.notificationTypeControl['type'];
+        this.notification.enable = this.data.controls.enabledControl['enabled'] === 'true' ? true : false;
+        this.notification.isServiceEnabled = this.data.controls.serviceStatusControl['enabled'];
+        // TODO (OPTIMIZE): API call for bolt (delivery/notify plugin enable state) icon highlighting
+        this.isDeliveryEnabled();
       }
     } 
     this.cdr.detectChanges();
@@ -144,7 +142,8 @@ export class CustomNotificationNodeComponent implements OnChanges {
     this.flowEditorService.serviceInfo.next({ name: this.notification.name });
   }
 
-  toggleState() {
+  toggleState(event) {
+    event.preventDefault();
     const btnText = this.notification.enable ? 'Disable' : 'Enable';
     this.flowEditorService.serviceInfo.next({ name: this.notification.name,  buttonText: btnText});
   }
