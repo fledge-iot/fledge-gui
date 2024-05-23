@@ -78,16 +78,21 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   }
 
   categeryConfiguration() {
-    let modelConfig = []
+    let modelConfig = [];
+    let listKvlistConfig = [];
     this.groups = [];
     const configItems = Object.keys(this.category.config).map(k => {
       if (this.category.config[k].type == 'bucket') {
         this.category.config[k].key = k;
         modelConfig.push(this.category.config[k]);
       }
+      else if((this.category.config[k].type == 'list' || this.category.config[k].type == 'kvlist') && this.category.config[k].items == 'object') {
+        this.category.config[k].key = k;
+        listKvlistConfig.push(this.category.config[k]);
+      }
       this.category.config[k].key = k;
       return this.category.config[k];
-    }).filter(obj => !obj.readonly && obj.type != 'bucket'); // remove readonly & type=bucket items from config array
+    }).filter(obj => !(obj.readonly || obj.type == 'bucket' || ((obj.type == 'list' || obj.type == 'kvlist') && obj.items == 'object'))); // remove readonly, type=bucket and object type list & kvlist items from config array
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
       const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic";
@@ -100,6 +105,15 @@ export class ConfigurationGroupComponent implements AfterViewInit {
           mConfig.value = mConfig.default;
         }
         this.groups.push({ category: this.category.name, group: (mConfig.displayName ? mConfig.displayName : mConfig.description), config: mConfig, type: mConfig.type, key: mConfig.key });
+      });
+    }
+
+    if (listKvlistConfig.length > 0) {
+      listKvlistConfig.forEach(config => {
+        if (!config.hasOwnProperty('value')) {
+          config.value = config.default;
+        }
+        this.groups.push({ category: this.category.name, group: (config.displayName ? config.displayName : config.description), config: config, type: config.type, key: config.key });
       });
     }
     // merge configuration of same group
