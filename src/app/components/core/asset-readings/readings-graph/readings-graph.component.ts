@@ -995,7 +995,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       else {
         prev = new Date(latestReadingTimestamp.valueOf() + this.optedTime * 1000);
       }
-      let previous_ts = moment(prev.valueOf()).format('YYYY-MM-DD HH:mm:ss.SSS');
+      let previous_ts = (moment(prev.valueOf()).format('YYYY-MM-DD HH:mm:ss.SSS')) + this.timestamps[ts_length - 1].slice(-3); // send previous_ts upto 6 digits i.e. microsecond precision
       this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, previous_ts);
     }
   }
