@@ -33,4 +33,10 @@ svg#control-dispatch {
   fill: #4a4a4a;
   width: 20px;
   height: 22px;
+  stroke: #4a4a4a;
+  stroke-width: 10rem;
+}
+
+.menu-text {
+  padding-right: 0.15rem;
 }
