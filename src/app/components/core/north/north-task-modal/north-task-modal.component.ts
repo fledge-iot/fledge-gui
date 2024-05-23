@@ -18,7 +18,7 @@ import Utils from '../../../../utils';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
-import { Subject, forkJoin, of } from 'rxjs';
+import { Observable, Subject, forkJoin, of } from 'rxjs';
 import { catchError, map, takeUntil } from 'rxjs/operators';
 import { NorthTask } from '../north-task';
 import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
@@ -94,7 +94,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         this.getNorthTasks(true)
       }
     })
-   }
+  }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
@@ -102,6 +102,11 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
       this.navToNorthPage();
     }
   }
+
+  canDeactivate(): Observable<boolean> | boolean {
+    return this.dialogService.confirm({ id: 'unsaved-changes-dialog', changeExist: !isEmpty(this.changedConfig) });
+  }
+
 
   ngOnInit() { }
 
@@ -496,11 +501,11 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     return noChange;
   }
 
-  navToNorthPage(){
+  navToNorthPage() {
     this.router.navigate(['/north']);
   }
 
-  getNorthTasks(caching: boolean){
+  getNorthTasks(caching: boolean) {
     this.northService.getNorthTasks(caching)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
