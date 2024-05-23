@@ -13,6 +13,7 @@ import { AddServiceWizardComponent } from './add-service-wizard/add-service-wiza
 import { SouthServiceModalComponent } from './south-service-modal/south-service-modal.component';
 import { SouthComponent } from './south.component';
 import { FlowEditorModule } from '../../common/node-editor/flow-editor.module';
+import { canDeactivateGuard } from '../../../guards/can-deactivate/can-deactivate.guard';
 
 const routes: Routes = [
   {
@@ -22,11 +23,13 @@ const routes: Routes = [
   {
     path: 'add',
     component: AddServiceWizardComponent,
-    canActivate: [RolesGuard]
+    canActivate: [RolesGuard],
+    canDeactivate: [canDeactivateGuard]
   },
   {
     path: ':name/details',
-    component: SouthServiceModalComponent
+    component: SouthServiceModalComponent,
+    canDeactivate: [canDeactivateGuard]
   },
 ];
 

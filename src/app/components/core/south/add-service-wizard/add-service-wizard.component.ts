@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef, EventEmitter } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { cloneDeep, sortBy } from 'lodash';
 
 import {
@@ -13,6 +13,7 @@ import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.c
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
+import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 
 @Component({
   selector: 'app-add-service-wizard',
@@ -61,13 +62,18 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     private docService: DocService,
     private configurationControlService: ConfigurationControlService,
     private fileUploaderService: FileUploaderService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private dialogService: DialogService
   ) {
     this.route.queryParams.subscribe(params => {
       if (params['source']) {
         this.source = params['source'];
       }
     });
+  }
+
+  canDeactivate(): Observable<boolean> | boolean {
+    return this.dialogService.confirm({ id: 'unsaved-changes-dialog', changeExist: this.serviceForm.dirty });
   }
 
   ngOnInit() {

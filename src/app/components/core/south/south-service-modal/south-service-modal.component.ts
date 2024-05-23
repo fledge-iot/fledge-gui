@@ -22,7 +22,7 @@ import { MAX_INT_SIZE } from '../../../../utils';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { FilterAlertComponent } from '../../filter/filter-alert/filter-alert.component';
 import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
-import { Subject, forkJoin, of } from 'rxjs';
+import { Observable, Subject, forkJoin, of } from 'rxjs';
 import { catchError, map, takeUntil } from 'rxjs/operators';
 import { Service } from '../south-service';
 import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
@@ -105,6 +105,10 @@ export class SouthServiceModalComponent implements OnInit {
     if (!alertModal.classList.contains('is-active')) {
       this.navToSouthPage();
     }
+  }
+
+  canDeactivate(): Observable<boolean> | boolean {
+    return this.dialogService.confirm({ id: 'unsaved-changes-dialog', changeExist: !isEmpty(this.changedConfig) });
   }
 
   ngOnInit() { }
