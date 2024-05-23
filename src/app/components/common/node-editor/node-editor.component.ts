@@ -758,6 +758,8 @@ export class NodeEditorComponent implements OnInit {
   }
 
   saveNotificationConfiguration() {
+    const quickView = <HTMLDivElement>document.getElementById('quickviewDefault');
+    quickView.classList.remove('is-active');
     if (!isEmpty(this.notificationChangedConfig) && this.pluginConfiguration?.name) {
       this.updateConfiguration(this.pluginConfiguration?.name, this.notificationChangedConfig, 'plugin-config');
     }
@@ -822,11 +824,13 @@ export class NodeEditorComponent implements OnInit {
     }
 
     if (isEmpty(configuration)) {
+      this.reenableButton.emit(false);
       return;
     }
     this.apiCallsStack.push(this.configService.
       updateBulkConfiguration(categoryName, configuration)
       .pipe(map((data: any) => {
+        this.reenableButton.emit(false);
         if (type == 'filter-config') {
           this.filterCategory.config = data;
           this.filterPluginConfiguration = cloneDeep(this.filterCategory);
