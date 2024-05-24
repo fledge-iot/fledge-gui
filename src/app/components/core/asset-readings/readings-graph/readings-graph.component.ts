@@ -62,6 +62,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public zoomConfig = { minZoomValue: 1, isZoomed: false };
   public fromMostRecent: boolean = false;
   public isReadingsFetched = false;
+  public mostRecentReadingTimestamp;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -974,6 +975,9 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   moveInReadingsGraph(move: string) {
+    if(this.backwardReadingCounter === 0) {
+      this.mostRecentReadingTimestamp = this.timestamps[this.timestamps.length - 1];
+    }
     if (move === "back") {
       this.backwardReadingCounter++;
     }
@@ -985,20 +989,10 @@ export class ReadingsGraphComponent implements OnDestroy {
       this.showReadingsGraph();
       return;
     }
-    let ts_length = this.timestamps.length;
-    if (ts_length !== 0) {
-      let endReadingTimestamp = this.timestamps[ts_length - 1];
-      let latestReadingTimestamp = new Date(endReadingTimestamp);
-      let prev;
-      if (move === "back") {
-        prev = new Date(latestReadingTimestamp.valueOf() - this.optedTime * 1000);
-      }
-      else {
-        prev = new Date(latestReadingTimestamp.valueOf() + this.optedTime * 1000);
-      }
-      let previous_ts = (moment(prev.valueOf()).format('YYYY-MM-DD HH:mm:ss.SSS')) + endReadingTimestamp.slice(-3); // send previous_ts upto 6 digits i.e. microsecond precision
-      this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, previous_ts);
-    }
+    let mostRecentReadingTimestampDate = new Date(this.mostRecentReadingTimestamp);
+    let prev = new Date(mostRecentReadingTimestampDate.valueOf() - this.backwardReadingCounter * this.optedTime * 1000);
+    let previous_ts = (moment(prev.valueOf()).format('YYYY-MM-DD HH:mm:ss.SSS')) + this.mostRecentReadingTimestamp.slice(-3); // send previous_ts upto 6 digits i.e. microsecond precision
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, previous_ts);
   }
 
   showReadingsGraph() {
