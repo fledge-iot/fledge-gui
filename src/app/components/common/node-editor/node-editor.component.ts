@@ -758,8 +758,6 @@ export class NodeEditorComponent implements OnInit {
   }
 
   saveNotificationConfiguration() {
-    const quickView = <HTMLDivElement>document.getElementById('quickviewDefault');
-    quickView.classList.remove('is-active');
     if (!isEmpty(this.notificationChangedConfig) && this.pluginConfiguration?.name) {
       this.updateConfiguration(this.pluginConfiguration?.name, this.notificationChangedConfig, 'plugin-config');
     }
@@ -789,6 +787,14 @@ export class NodeEditorComponent implements OnInit {
         this.getCategory();
       });
     }
+    // close quickview after changing configuration (if any) and reset data
+    const quickView = <HTMLDivElement>document.getElementById('quickviewDefault');
+    quickView.classList.remove('is-active');
+    this.rulePluginChangedConfig = {};
+    this.deliveryPluginChangedConfig = {};
+    this.notificationChangedConfig = {};
+    this.ruleCategory = null;
+    this.deliveryCategory = null;
   }
 
   checkFormState() {
