@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnChanges, Input, SimpleChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ProgressBarService, SchedulesService, ServicesApiService, SharedService, RolesService } from '../../../../services';
 import { NotificationsService } from '../../../../services/notifications.service';
@@ -9,18 +9,19 @@ import { DocService } from '../../../../services/doc.service';
   templateUrl: './notification-service-warning.component.html',
   styleUrls: ['./notification-service-warning.component.css']
 })
-export class NotificationServiceWarningComponent implements OnInit {
+export class NotificationServiceWarningComponent implements OnInit, OnChanges {
   private viewPortSubscription: Subscription;
   private subscription: Subscription;
   showConfigureModal = false;
 
   @Output() serviceConfigureModal = new EventEmitter<Object>();
+  @Output() refreshService = new EventEmitter<any>();
 
   @Input() isEnabled: boolean;
   @Input() isInstalled: boolean;
   @Input() isAvailable: boolean;
   @Input() serviceName: string;
-  
+
   constructor(
     public notificationsService: NotificationsService,
     public sharedService: SharedService,
@@ -33,21 +34,26 @@ export class NotificationServiceWarningComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes) {
+      this.isEnabled = changes?.isEnabled?.currentValue;
+      this.isInstalled = changes?.isInstalled?.currentValue;
+      this.isAvailable = changes?.isAvailable?.currentValue;
+      this.serviceName = changes?.serviceName?.currentValue;
+    }
+  }
+
   /**
    * Open Configure Service modal
    */
   openConfigureModal() {
-    this.emitData(true);
-  }
-
-  emitData(isOpenModal = false) {
     const serviceInfo = {
       name: this.serviceName,
       isEnabled: this.isEnabled,
       added: this.isAvailable,
       process: 'notification',
       isInstalled: this.isInstalled,
-      isOpen: isOpenModal
+      isOpen: true
     }
     this.serviceConfigureModal.emit(serviceInfo);
   }
@@ -60,5 +66,9 @@ export class NotificationServiceWarningComponent implements OnInit {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+  }
+
+  public refreshServiceInfo() {
+    this.refreshService.emit();
   }
 }

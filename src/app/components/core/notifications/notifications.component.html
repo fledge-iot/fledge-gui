@@ -1,6 +1,6 @@
 <div class="container is-fluid">
   <app-notification-service-warning [isEnabled]="isNotificationServiceEnabled" [isInstalled]="notificationServiceInstalled" [isAvailable]="isNotificationServiceAvailable" 
-  [serviceName]="notificationServiceName" (serviceConfigureModal)="getServiceDetail($event)"></app-notification-service-warning>
+  [serviceName]="notificationServiceName" (serviceConfigureModal)="getServiceDetail($event)" (refreshService)="refreshServiceInfo(true)"></app-notification-service-warning>
   <div class="card">
     <header class="card-header">
       <div id="notification-service" class="card-header-title">

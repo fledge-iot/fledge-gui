@@ -8,7 +8,7 @@
                 enabled.</span>
             &nbsp;<a *ngIf="rolesService.hasEditPermissions() && (isInstalled === false || isAvailable === false || isEnabled === false)"
             (click)="openConfigureModal()"><strong>Configure</strong></a>
-            <button (click)="getInstalledServicesList()" class="button is-small" id="refresh-check">
+            <button (click)="refreshServiceInfo()" class="button is-small" id="refresh-check">
                 <span class="icon">
                 <i class="fa fa-sm fa-sync" aria-hidden="true" title="Recheck"></i>
                 </span>

@@ -138,6 +138,27 @@ export class NodeEditorComponent implements OnInit {
     });
   }
 
+  refreshServiceInfo() {
+    this.additionalServicesUtils.getAllServiceStatus(false);
+    this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
+      if (service) {
+        const notificationServiceDetail = service.find(s => s.process == 'notification');
+        if (notificationServiceDetail) {
+          this.serviceInfo = notificationServiceDetail;
+          this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(notificationServiceDetail?.state) ? false : true;
+          this.serviceInfo.isInstalled = true;
+          this.serviceInfo.isAvailable = notificationServiceDetail?.added;
+          this.serviceInfo.name = notificationServiceDetail?.name;
+        } else {
+          this.serviceInfo.isEnabled = false;
+          this.serviceInfo.isInstalled = false;
+          this.serviceInfo.isAvailable = false;
+          this.serviceInfo.name = '';
+        }
+      }
+    });
+  }
+
   @HostListener('document:keydown.delete', ['$event']) onKeydownHandler() {
     this.deleteSelectedConnection();
   }
@@ -1035,13 +1056,8 @@ export class NodeEditorComponent implements OnInit {
   }
 
   getServiceDetail(event) {
-    const showConfigureModal = event.isOpen;
-    delete event.isOpen;
     this.serviceInfo = event;
-
-    if (showConfigureModal) {
-     this.openServiceConfigureModal(); 
-    }
+    this.openServiceConfigureModal();
   }
 
   goToLink(urlSlug) {
