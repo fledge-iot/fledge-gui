@@ -1,8 +1,8 @@
 <div id="quickviewDefault" class="quickview" #quickView>
-    <div class="quickview-body">
-        <div class="quickview-block" #quickViewBlock>
-            <ng-content></ng-content>
-        </div>
-        <span class="delete mt-5 mr-2" data-dismiss="quickview"></span>
+  <div class="quickview-body">
+    <div class="quickview-block" #quickViewBlock>
+      <ng-content></ng-content>
     </div>
+    <span class="delete mt-5 mr-2" (click)="dismiss()"></span>
+  </div>
 </div>

@@ -40,7 +40,7 @@
     </div>
   </ng-contafiner>
   <!-- Quick View -->
-  <app-quickview [showReadings]="showReadings">
+  <app-quickview #quickView [showReadings]="showReadings" (closeAction)="closeRightDrawer()">
     <ng-container *ngIf="showPluginConfiguration">
       <app-configuration-group *ngIf="category" [category]="category" [from]="'south'" [sourceName]="serviceName"
         (changedConfigEvent)="getChangedConfig($event)"
@@ -76,8 +76,8 @@
     </ng-container>
     <ng-container *ngIf="showReadings">
       <app-asset-tracker [service]="readingService" [isAlive]="isAlive" [reenableButton]="reenableButton"
-      (selectedAsset)="selectAsset($event)"
-      (reloadReadings)="getSouthervices()" (exportReading)="getAssetReadings(readingService)"></app-asset-tracker>
+        (selectedAsset)="selectAsset($event)" (reloadReadings)="getSouthervices()"
+        (exportReading)="getAssetReadings(readingService)"></app-asset-tracker>
     </ng-container>
   </app-quickview>
 </div>
@@ -128,3 +128,6 @@
     <button class="button is-small is-danger" (click)="deprecateAsset(selectedAsset)">Yes</button>
   </footer>
 </app-confirmation-dialog>
+
+<!--  Unsaved changes dialog  -->
+<app-unsaved-changes-dialog (discardChanges)="resetForm()"></app-unsaved-changes-dialog>

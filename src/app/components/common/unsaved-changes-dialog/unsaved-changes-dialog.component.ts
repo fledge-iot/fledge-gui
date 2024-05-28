@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { DialogService } from '../../common/confirmation-dialog/dialog.service';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { DialogService } from '../confirmation-dialog/dialog.service';
 
 @Component({
   selector: 'app-unsaved-changes-dialog',
@@ -9,6 +9,8 @@ import { DialogService } from '../../common/confirmation-dialog/dialog.service';
 export class UnsavedChangesDialogComponent implements OnInit {
 
   modalId = 'unsaved-changes-dialog';
+  @Output() discardChanges = new EventEmitter<boolean>(false);
+
   constructor(private dialogService: DialogService) { }
 
   ngOnInit() {
@@ -23,6 +25,8 @@ export class UnsavedChangesDialogComponent implements OnInit {
   }
 
   discardUnsavedChanges() {
+    this.closeModal(this.modalId)
+    this.discardChanges.emit(true);
     this.dialogService.resetChangesEmitter?.emit(true);
   }
 

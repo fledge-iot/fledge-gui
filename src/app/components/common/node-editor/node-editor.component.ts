@@ -18,12 +18,13 @@ import {
 } from './../../../services';
 import { catchError, delay, map, mergeMap, repeatWhen, skip, take, takeUntil, takeWhile } from 'rxjs/operators';
 import { Service } from '../../core/south/south-service';
-import { EMPTY, Subject, Subscription, forkJoin, interval, of } from 'rxjs';
+import { EMPTY, Observable, Subject, Subscription, forkJoin, interval, of } from 'rxjs';
 import { FlowEditorService } from './flow-editor.service';
 import { cloneDeep, isEmpty } from 'lodash';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import { NorthTask } from '../../core/north/north-task';
 import Utils, { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
+import { QuickviewComponent } from '../quickview/quickview.component';
 
 @Component({
   selector: 'app-node-editor',
@@ -31,7 +32,6 @@ import Utils, { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
   styleUrls: ['./node-editor.component.css']
 })
 export class NodeEditorComponent implements OnInit {
-
   @ViewChild("rete") container!: ElementRef;
   public source = '';
   public from = '';
@@ -82,6 +82,8 @@ export class NodeEditorComponent implements OnInit {
   selectedAsset = '';
   MAX_RANGE = MAX_INT_SIZE / 2;
 
+  @ViewChild('quickView') private quickView: QuickviewComponent;
+
   constructor(public injector: Injector,
     private route: ActivatedRoute,
     private filterService: FilterService,
@@ -124,6 +126,28 @@ export class NodeEditorComponent implements OnInit {
       this.flowEditorService.canvasClick.next({ canvasClicked: true, connectionId: this.selectedConnectionId });
     }
   }
+
+  canDeactivate(): Observable<boolean> | boolean {
+    return this.dialogService.confirm({ id: 'unsaved-changes-dialog', changeExist: this.changeExist() });
+  }
+
+  closeRightDrawer() {
+    // this.dialogService.confirm({ id: 'unsaved-changes-dialog', changeExist: this.changeExist() });
+    this.canDeactivate()
+    if (isEmpty(this.changedConfig)) {
+      this.quickView.close();
+    }
+  }
+
+  changeExist(): boolean {
+    return !isEmpty(this.changedConfig) || !isEmpty(this.changedFilterConfig)
+  }
+
+  resetForm() {
+    this.changedConfig = {};
+    this.closeRightDrawer();
+  }
+
   ngOnInit(): void {
     this.subscription = this.flowEditorService.showItemsInQuickview.pipe(skip(1)).subscribe(data => {
       this.showPluginConfiguration = data.showPluginConfiguration ? true : false;
