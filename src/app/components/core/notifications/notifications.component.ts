@@ -64,23 +64,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }
 
   ngOnInit() {
-    this.refreshServiceInfo();
-    this.getNotificationInstance();
-    this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
-      if (showPackageLogs.isSubscribed) {
-        this.viewLogsComponent.toggleModal(true, showPackageLogs.fileLink);
-        showPackageLogs.isSubscribed = false;
-      }
-    });
-    this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
-      this.viewPort = viewport;
-    });
-  }
-
-  refreshServiceInfo(refresh = false) {
-    if (refresh) {
-      this.additionalServicesUtils.getAllServiceStatus(false);
-    } 
     this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
       if (service) {
         const notificationServiceDetail = service.find(s => s.process == 'notification');
@@ -97,6 +80,20 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         }       
       }
     });
+    this.getNotificationInstance();
+    this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
+      if (showPackageLogs.isSubscribed) {
+        this.viewLogsComponent.toggleModal(true, showPackageLogs.fileLink);
+        showPackageLogs.isSubscribed = false;
+      }
+    });
+    this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
+      this.viewPort = viewport;
+    });
+  }
+
+  refreshServiceInfo() {
+    this.additionalServicesUtils.getAllServiceStatus(false);
   }
 
   public getNotificationInstance() {
