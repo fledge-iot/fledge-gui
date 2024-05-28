@@ -303,16 +303,17 @@ export class AdditionalServiceModalComponent {
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
-          } else if (error.status === 500) {
+          } else if (error.status === 500) { 
+            this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
             this.alertService.error('Failed to install from repository');
           } else {
             let errorText = error.statusText;
             if (typeof error.error.link === 'string') {
               errorText += ` <a>${error.error.link}</a>`;
-            }
+            }     
+            this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
             this.alertService.error(errorText);
           }
-          this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
         });
   }
 
