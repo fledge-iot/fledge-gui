@@ -88,8 +88,7 @@ export class NodeEditorComponent implements OnInit {
   deliveryPluginChangedConfig: any;
   ruleConfiguration: any;
   deliveryConfiguration: any;
-  serviceInfo = {added: false, type: '', isEnabled: true, schedule_process: '', process: '', package: '', name: '',
-                  isInstalled: false, isAvailable: false};
+  serviceInfo = {added: false, type: '', isEnabled: true, process: '', name: '', isInstalled: false, isAvailable: false};
   btnText = '';
 
   taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };
@@ -365,7 +364,6 @@ export class NodeEditorComponent implements OnInit {
                       data.notifications = notifications;
                       data.notification = this.notification;
                       data.isServiceEnabled = this.serviceInfo.isEnabled;
-
                       createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
                     }       
                   });
@@ -1055,11 +1053,6 @@ export class NodeEditorComponent implements OnInit {
         });
   }
 
-  getServiceDetail(event) {
-    this.serviceInfo = event;
-    this.openServiceConfigureModal();
-  }
-
   goToLink(urlSlug) {
     this.docService.goToServiceDocLink(urlSlug, 'fledge-service-notification');
   }
@@ -1092,6 +1085,7 @@ export class NodeEditorComponent implements OnInit {
      * Open Configure Service modal
      */
    openServiceConfigureModal() {
+    this.serviceInfo.process = 'notification';
     this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
   }
 

@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { sortBy } from 'lodash';
-import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
 import {
@@ -41,7 +40,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   private viewPortSubscription: Subscription;
   private serviceDetailsSubscription: Subscription;
   public showSpinner = false;
-  public showConfigureModal = false;
 
   isNotificationServiceEnable: boolean;
 
@@ -57,7 +55,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     public notificationService: NotificationsService,
     public ngProgress: ProgressBarService,
     public alertService: AlertService,
-    private route: ActivatedRoute,
     public router: Router,
     public docService: DocService,
     private sharedService: SharedService,
@@ -100,11 +97,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         }       
       }
     });
-  }
-
-  getServiceDetail(event) {
-    this.serviceInfo = event;
-    this.openServiceConfigureModal();
   }
 
   public getNotificationInstance() {
@@ -170,7 +162,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       process: 'notification',
       isInstalled: this.notificationServiceInstalled
     }
-    this.showConfigureModal = true;
     this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
   }
 

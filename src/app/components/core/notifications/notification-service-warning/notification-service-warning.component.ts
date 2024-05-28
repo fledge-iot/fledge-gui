@@ -36,10 +36,10 @@ export class NotificationServiceWarningComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes) {
-      this.isEnabled = changes?.isEnabled?.currentValue;
-      this.isInstalled = changes?.isInstalled?.currentValue;
-      this.isAvailable = changes?.isAvailable?.currentValue;
-      this.serviceName = changes?.serviceName?.currentValue;
+      this.isEnabled = changes?.isEnabled?.currentValue ? changes?.isEnabled?.currentValue : this.isEnabled;
+      this.isInstalled = changes?.isInstalled?.currentValue ? changes?.isInstalled?.currentValue : this.isInstalled;
+      this.isAvailable = changes?.isAvailable?.currentValue ? changes?.isAvailable?.currentValue : this.isAvailable;
+      this.serviceName = changes?.serviceName?.currentValue ? changes?.serviceName?.currentValue : this.serviceName;
     }
   }
 
@@ -47,15 +47,7 @@ export class NotificationServiceWarningComponent implements OnInit, OnChanges {
    * Open Configure Service modal
    */
   openConfigureModal() {
-    const serviceInfo = {
-      name: this.serviceName,
-      isEnabled: this.isEnabled,
-      added: this.isAvailable,
-      process: 'notification',
-      isInstalled: this.isInstalled,
-      isOpen: true
-    }
-    this.serviceConfigureModal.emit(serviceInfo);
+    this.serviceConfigureModal.emit();
   }
 
   public ngOnDestroy(): void {

@@ -312,6 +312,7 @@ export class AdditionalServiceModalComponent {
             }
             this.alertService.error(errorText);
           }
+          this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
         });
   }
 
