@@ -25,6 +25,9 @@ export class KvListTypeConfigurationComponent implements OnInit {
 
   ngOnInit() {
     this.form = this.rootFormGroup.control;
+    if (this.configuration.items == 'enumeration' && this.configuration.options && typeof(this.configuration.options) == 'string'){
+      this.configuration.options = JSON.parse(this.configuration.options)
+    }
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
     values = JSON.parse(values) as [];
     for (const [key, value] of Object.entries(values)) {
@@ -38,12 +41,17 @@ export class KvListTypeConfigurationComponent implements OnInit {
   }
 
   initListItem(param) {
+    if (this.configuration.items == 'enumeration'){
+      return this.fb.group({
+        key: [param?.key, [Validators.required, CustomValidator.nospaceValidator]],
+        value: [param?.value ? param?.value : this.configuration.options?.[0]]
+      });
+    }
     return this.fb.group({
       key: [param?.key, [Validators.required, CustomValidator.nospaceValidator]],
       value: [param?.value, CustomValidator.nospaceValidator]
     });
   }
-
 
   addListItem() {
     const controlsLength = this.kvListItems.length;
