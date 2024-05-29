@@ -138,6 +138,7 @@
 
 .health-icon {
   margin-left: -5px;
+  height: 1rem !important;
 }
 
 .add-service {
