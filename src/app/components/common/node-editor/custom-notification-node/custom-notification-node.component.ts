@@ -2,7 +2,7 @@ import { isEmpty } from 'lodash';
 import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef } from "@angular/core";
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
-import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
+import { NavigationEnd, Router } from "@angular/router";
 import { RolesService, ConfigurationService } from "../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
@@ -54,7 +54,6 @@ export class CustomNotificationNodeComponent implements OnChanges {
   constructor(private cdr: ChangeDetectorRef,   
     private docService: DocService,
     private router: Router,
-    private route: ActivatedRoute,
     public flowEditorService: FlowEditorService,
     public rolesService: RolesService,
     public configurationService: ConfigurationService,

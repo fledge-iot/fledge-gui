@@ -477,15 +477,13 @@ export function updateNode(data) {
         ruleControl.pluginName = notification.rule;
         enabledControl.enabled = notification.enable;
         notificationTypeControl.type = notification.notificationType;
+        serviceStatusControl.enabled = data.isServiceEnabled;
 
         area.update("control", channelControl.id);
         area.update("control", ruleControl.id);
         area.update("control", enabledControl.id);
         area.update("control", notificationTypeControl.id);
-        if (data.isServiceEnabled) {
-          serviceStatusControl.enabled = data.isServiceEnabled;
-          area.update("control", serviceStatusControl.id);
-        }
+        area.update("control", serviceStatusControl.id);
         area.update('node', node.id)
       }
     }

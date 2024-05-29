@@ -5,5 +5,6 @@ export interface Notification {
     notificationType: string
     retriggerTime: number
     enable: boolean
+    isServiceEnabled: boolean
   }
   

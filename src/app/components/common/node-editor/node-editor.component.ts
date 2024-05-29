@@ -346,6 +346,12 @@ export class NodeEditorComponent implements OnInit {
                       this.notification = notifications.find(n => (n.name == this.source));
                       data.notifications = notifications;
                       data.notification = this.notification;
+
+                      this.notifications.map((notification) => {
+                        notification.isServiceEnabled = this.serviceInfo.isEnabled;
+                        return notification;
+                      })
+
                       data.isServiceEnabled = this.serviceInfo.isEnabled;
                       createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
                     }       
