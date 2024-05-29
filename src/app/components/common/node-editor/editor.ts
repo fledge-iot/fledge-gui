@@ -450,10 +450,10 @@ export function updateNode(data) {
         const task = data.tasks.find(t => t.name === node.controls.nameControl['name']) as NorthTask;
         sentReadingControl.sent = task.sent;
         enabledControl.enabled = task.enabled;
-
+        statusControl.status = task.status;
         area.update("control", sentReadingControl.id);
         area.update("control", enabledControl.id);
-        area.update('node', node.id)
+        area.update('node', node.id);
       }
     }
   });
