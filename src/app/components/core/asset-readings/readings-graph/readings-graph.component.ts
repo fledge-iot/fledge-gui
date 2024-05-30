@@ -62,7 +62,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   public zoomConfig = { minZoomValue: 1, isZoomed: false };
   public fromMostRecent: boolean = false;
   public isReadingsFetched = false;
-  public mostRecentReadingTimestamp;
+  public mostRecentReadingTimestamp: string;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -990,7 +990,9 @@ export class ReadingsGraphComponent implements OnDestroy {
       return;
     }
     let mostRecentReadingTimestampDate = new Date(this.mostRecentReadingTimestamp);
+    // Calculate previous_ts while taking mostRecentReadingTimestamp as reference point
     let prev = new Date(mostRecentReadingTimestampDate.valueOf() - this.backwardReadingCounter * this.optedTime * 1000);
+    // Convert date(prev) to string because previous_ts is a timestamp string unlike pervious(which is a numeric value)
     let previous_ts = (moment(prev.valueOf()).format('YYYY-MM-DD HH:mm:ss.SSS')) + this.mostRecentReadingTimestamp.slice(-3); // send previous_ts upto 6 digits i.e. microsecond precision
     this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, previous_ts);
   }
@@ -998,6 +1000,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   showReadingsGraph() {
     let currentTime = Date.now();
     let timeDifference = Math.floor((currentTime - this.pauseTime) / 1000);
+    // Add time difference between current time and pause time in previous parameter calculation so that reference point of graph is pause time
     let previous = timeDifference + this.backwardReadingCounter * this.optedTime;
     if (this.selectedTab === 4) {
       this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime, previous);
