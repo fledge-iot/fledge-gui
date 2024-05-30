@@ -441,31 +441,36 @@ export function updateNode(data) {
     if (!isEmpty(node.controls)) {
       if (node.label == 'South') {
         const service = data.services.find(s => s.name === node.controls.nameControl['name'])
-        let assetCount = service.assets.length;
-        let readingCount = service.assets.reduce((total, asset) => {
-          return total + asset.count;
-        }, 0)
-
-        assetControls.count = assetCount;
-        readingControl.count = readingCount;
-        enabledControl.enabled = service.schedule_enabled;
-        statusControl.status = service.status;
-
-        area.update("control", assetControls.id);
-        area.update("control", readingControl.id);
-        area.update("control", enabledControl.id);
-        area.update("control", statusControl.id);
-        area.update('node', node.id)
+        if (service) {
+          let assetCount = service.assets.length;
+          let readingCount = service.assets.reduce((total, asset) => {
+            return total + asset.count;
+          }, 0)
+  
+          assetControls.count = assetCount;
+          readingControl.count = readingCount;
+          enabledControl.enabled = service.schedule_enabled;
+          statusControl.status = service.status;
+  
+          area.update("control", assetControls.id);
+          area.update("control", readingControl.id);
+          area.update("control", enabledControl.id);
+          area.update("control", statusControl.id);
+          area.update('node', node.id);
+        }
+        
       }
       if (node.label == 'North') {
         const sentReadingControl = node.controls.sentReadingControl as SentReadingsControl;
         const task = data.tasks.find(t => t.name === node.controls.nameControl['name']) as NorthTask;
-        sentReadingControl.sent = task.sent;
-        enabledControl.enabled = task.enabled;
-
-        area.update("control", sentReadingControl.id);
-        area.update("control", enabledControl.id);
-        area.update('node', node.id)
+        if (task) {
+          sentReadingControl.sent = task.sent;
+          enabledControl.enabled = task.enabled;
+          statusControl.status = task.status;
+          area.update("control", sentReadingControl.id);
+          area.update("control", enabledControl.id);
+          area.update('node', node.id);
+        }     
       }
       if (node.label == 'Notification') {
         const serviceStatusControl = node.controls.serviceStatusControl as ServiceStatusControl;
