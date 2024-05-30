@@ -253,10 +253,10 @@ export class NodeEditorComponent implements OnInit {
         if (this.from == 'south') {
           this.getSouthservices();
         }
-        if (this.from == 'notifications') {
-          this.getNotifications();
-        }
       });
+      if (this.from == 'notifications') {
+        this.getNotifications();
+      }
     this.removeFilterSubscription = this.flowEditorService.removeFilter.pipe(skip(1)).subscribe(data => {
       if (data) {
         removeNode(data.id);
@@ -792,6 +792,7 @@ export class NodeEditorComponent implements OnInit {
         });
         this.apiCallsStack = [];
         this.getCategory();
+        this.getNotifications();
       });
     }
     // close quickview after changing configuration (if any) and reset data
@@ -1057,6 +1058,7 @@ export class NodeEditorComponent implements OnInit {
         this.reenableButton.emit(false);
         this.toastService.success(`Instance successfully ${state === 'Enable' ? 'enabled' : 'disabled'}.`);
         this.closeModal('state-change-dialog');
+        this.getNotifications();
       },
         error => {
           this.ngProgress.done();

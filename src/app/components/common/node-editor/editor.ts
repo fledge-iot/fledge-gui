@@ -478,18 +478,20 @@ export function updateNode(data) {
         const ruleControl = node.controls.ruleControl as RuleControl;
         const notificationTypeControl = node.controls.notificationTypeControl as NotificationTypeControl;
         const notification = data.notifications.find(n => n.name === node.controls.nameControl['name']);
-        channelControl.pluginName = notification.channel;
-        ruleControl.pluginName = notification.rule;
-        enabledControl.enabled = notification.enable;
-        notificationTypeControl.type = notification.notificationType;
-        serviceStatusControl.enabled = data.isServiceEnabled;
-
-        area.update("control", channelControl.id);
-        area.update("control", ruleControl.id);
-        area.update("control", enabledControl.id);
-        area.update("control", notificationTypeControl.id);
-        area.update("control", serviceStatusControl.id);
-        area.update('node', node.id)
+        if (notification) {
+          channelControl.pluginName = notification.channel;
+          ruleControl.pluginName = notification.rule;
+          enabledControl.enabled = notification.enable;
+          notificationTypeControl.type = notification.notificationType;
+          serviceStatusControl.enabled = data.isServiceEnabled;
+  
+          area.update("control", channelControl.id);
+          area.update("control", ruleControl.id);
+          area.update("control", enabledControl.id);
+          area.update("control", notificationTypeControl.id);
+          area.update("control", serviceStatusControl.id);
+          area.update('node', node.id);
+        }  
       }
     }
   });
