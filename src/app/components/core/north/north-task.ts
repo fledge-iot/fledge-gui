@@ -3,15 +3,16 @@ export interface NorthTask {
   name: string
   processName: string
   repeat: number
-  day: any,
-  repeatDays?: number,
-  repeatTime?: number,
+  day: any
+  repeatDays?: number
+  repeatTime?: number
   enabled: boolean
   exclusive: boolean
   execution: string
   taskStatus: TaskStatus
   sent: number
   plugin: Plugin
+  status?: string
 }
 
 export interface TaskStatus {
