@@ -472,7 +472,6 @@ export function updateNode(data) {
           area.update('node', node.id);
         }     
       }
-      console.log('data', data);
       if (node.label == 'Notification' && data.from == 'notifications') {
         const serviceStatusControl = node.controls.serviceStatusControl as ServiceStatusControl;
         const channelControl = node.controls.channelControl as ChannelControl;
