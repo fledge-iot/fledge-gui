@@ -1,5 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { interval, Subject, Subscription } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { AlertService, AuditService, PingService, ProgressBarService } from '../../../../services';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
@@ -10,6 +11,8 @@ import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
   styleUrls: ['./notification-log.component.css']
 })
 export class NotificationLogComponent implements OnInit, OnDestroy {
+  @Input() sourceName: string;
+
   public logSourceList = [];
   public logSeverityList = [];
   public notificationLogs: any;
@@ -36,6 +39,7 @@ export class NotificationLogComponent implements OnInit, OnDestroy {
   constructor(private auditService: AuditService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
+    private route: ActivatedRoute,
     private ping: PingService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
@@ -56,6 +60,12 @@ export class NotificationLogComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.getNotificationLogs(true);
       });
+  }
+
+  ngOnChanges(){
+    if(this.sourceName){
+      this.searchTerm = this.sourceName;
+    }
   }
 
   /**

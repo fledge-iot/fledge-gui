@@ -1,5 +1,5 @@
 <div class="container" [ngClass]="{'is-fluid': sourceName}">
-  <nav *ngIf="sourceName" class="breadcrumb" aria-label="breadcrumbs">
+  <nav *ngIf="sourceName && from !== 'rule-modal' && from !== 'delivery-modal'" class="breadcrumb" aria-label="breadcrumbs">
     <ul>
       <li class="is-active"><a>{{sourceName}}</a></li>
       <li class="is-active">
@@ -11,7 +11,7 @@
     <nav id="group_navigation" class="groupNav dragscroll mouse-scroll" role="tablist">
       <div id="groupNavContents" class="nav" [ngClass]="{'groupNav_contents': !sourceName}">
         <div class="tabs" *ngIf="from !== 'config-manager'"
-          [ngClass]="{'is-fullwidth': sourceName && groupTabs?.length > 1, 'is-boxed': !sourceName}">
+          [ngClass]="{'is-fullwidth': sourceName && groupTabs?.length > 1 && from !== 'notifications' && !groupTabs.includes('Developer'), 'is-boxed': !sourceName}">
           <ul>
             <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
               <h6 class="is-6 is-small-font">
@@ -28,7 +28,7 @@
                 </a>
               </h6>
             </li>
-            <ng-container *ngIf="!['notification', 'additional-services'].includes(from)">
+            <ng-container *ngIf="!['notifications', 'additional-services'].includes(from)">
               <li [ngClass]="{'is-active': selectedGroup == 'Developer'}"
                 *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissionsOnPage(from)">
                 <h6 class="is-6 is-small-font">
@@ -93,13 +93,13 @@
           </ng-container>
         </ng-template>
       </ng-container>
-      <ng-container *ngIf="!['notification', 'additional-services'].includes(from)">
+      <ng-container *ngIf="!['notifications', 'additional-services'].includes(from)">
         <app-plugin-persist-data *ngIf="selectedGroup == 'Developer' && pages.includes(from)"
           [serviceStaus]="serviceStatus" [serviceName]="category?.name" [pluginName]="plugin">
         </app-plugin-persist-data>
       </ng-container>
       <app-tab-navigation #tabNaigation
-        *ngIf="groupTabs && !['notification', 'config-manager', 'additional-services'].includes(from)"
+        *ngIf="groupTabs && !['notifications', 'config-manager', 'additional-services'].includes(from)"
         [tabs]="groupTabs" (selectedTabEvent)="selectedGroup = $event"></app-tab-navigation>
     </div>
   </ng-template>

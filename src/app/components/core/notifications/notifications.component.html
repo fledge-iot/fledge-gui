@@ -1,28 +1,6 @@
 <div class="container is-fluid">
-  <div>
-    <ng-container *ngIf="isNotificationServiceEnabled === false">
-      <article class="message is-warning">
-        <div class="message-body">
-          <span *ngIf="notificationServiceInstalled === false">Notification service is not installed.</span>
-          <span *ngIf="notificationServiceInstalled && isNotificationServiceAvailable === false">Notification service is not
-            added.</span>
-          <span *ngIf="isNotificationServiceAvailable && isNotificationServiceEnabled === false">Notification service is not
-            enabled.</span>
-          &nbsp;<a *ngIf="rolesService.hasEditPermissions() && (notificationServiceInstalled === false || isNotificationServiceAvailable === false || isNotificationServiceEnabled === false)"
-          (click)="openServiceConfigureModal()"><strong>Configure</strong></a>
-          <button (click)="checkNotificationServiceStatus()" class="button is-small" id="refresh-check">
-            <span class="icon">
-              <i class="fa fa-sm fa-sync" aria-hidden="true" title="Recheck"></i>
-            </span>
-          </button>
-          <span class="icon is-small tooltip is-pulled-right is-hovered custom-pad" data-tooltip="Help"
-            (click)="goToLink('starting-the-notification-service')">
-            <i class="far fa-question-circle"></i>
-          </span>
-        </div>
-      </article>
-    </ng-container>
-  </div>
+  <app-notification-service-warning [isEnabled]="isNotificationServiceEnabled" [isInstalled]="notificationServiceInstalled" [isAvailable]="isNotificationServiceAvailable" 
+  [serviceName]="notificationServiceName" (serviceConfigureModal)="openServiceConfigureModal()" (refreshService)="refreshServiceInfo()"></app-notification-service-warning>
   <div class="card">
     <header class="card-header">
       <div id="notification-service" class="card-header-title">
@@ -40,12 +18,9 @@
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Create Notification Instance &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </button>
-      <a *ngIf="isNotificationServiceAvailable || rolesService.hasEditPermissions()" class="button"
-        (click)="openServiceConfigureModal()" id="refresh-check">
-        <span class="icon">
-          <i class="bi bi-gear-wide-connected bi-sm" aria-hidden="true" title="Notification Service Configuration"></i>
-        </span>
-      </a>
+      <div *ngIf="notificationServiceInstalled && isNotificationServiceEnabled" class="cog-icon">
+        <app-service-config (serviceConfigureModal)="openServiceConfigureModal()"></app-service-config>
+    </div>
       <span *ngIf="isNotificationServiceEnabled"
         class="icon is-small tooltip is-pulled-right is-hovered help-pad" data-tooltip="Help"
         (click)="goToLink('using-the-notification-service')">

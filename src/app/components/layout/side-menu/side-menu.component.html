@@ -29,7 +29,8 @@
           </a>
         </li>
         <li>
-          <a id="notification" routerLinkActive="is-active" routerLink='/notification'>
+          <a id="notification" routerLinkActive="is-active" 
+          [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/notifications']: ['/notification']">
             <span><i class="bi bi-lightning-charge bi-sm"></i></span>
             Notifications
           </a>
