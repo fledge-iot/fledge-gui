@@ -12,8 +12,13 @@
             [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appFloatOnly>
           <input *ngIf="configuration.items == 'string'" class="input is-small" type="text" formControlName="value"
             [attr.maxLength]="configuration?.length">
-          <input *ngIf="configuration.items == 'enumeration'" class="input is-small" type="text" formControlName="value"
-            [attr.maxLength]="configuration?.length">
+          <div *ngIf="configuration.items == 'enumeration'" class="select is-small">
+            <select formControlName="value">
+              <option *ngFor="let option of configuration?.options" [value]="option">
+                {{option}}
+              </option>
+            </select>
+          </div>
         </div>
         <div class="column is-1 pl-2 pt-2">
           <span class="icon">
