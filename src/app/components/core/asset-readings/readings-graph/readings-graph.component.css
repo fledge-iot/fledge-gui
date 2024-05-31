@@ -181,6 +181,10 @@ table.is-borderless td {
   float: right;
 }
 
+.btn-enabled {
+  color: #3850b7;
+}
+
 .spin-button {
   background-color: whitesmoke;
   border: none;

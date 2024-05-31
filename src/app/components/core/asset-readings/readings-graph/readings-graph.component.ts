@@ -7,6 +7,7 @@ import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, MAX_INT_SIZE, POLLING_
 import { KeyValue } from '@angular/common';
 import { DateFormatterPipe } from '../../../../pipes';
 import { RangeSliderService } from '../../../common/range-slider/range-slider.service';
+import * as moment from 'moment';
 
 declare var Plotly: any;
 
@@ -59,7 +60,9 @@ export class ReadingsGraphComponent implements OnDestroy {
   public infoTextTimestamps = { start: "", end: "" };
   public graphStartTimestamp: string;
   public zoomConfig = { minZoomValue: 1, isZoomed: false };
+  public fromMostRecent: boolean = false;
   public isReadingsFetched = false;
+  public mostRecentReadingTimestamp: string;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
   private subscription: Subscription;
@@ -112,6 +115,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.infoTextTimestamps.start = "";
     this.infoTextTimestamps.end = "";
     this.zoomConfig.isZoomed = false;
+    this.fromMostRecent = false;
 
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
     if (shouldOpen) {
@@ -239,6 +243,8 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   addOrRemoveAsset(asset: string) {
+    this.backwardReadingCounter = 0;
+    this.pauseTime = Date.now();
     if (asset) {
       /**
        * clear legend object from session store 
@@ -437,7 +443,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         });
   }
 
-  public plotReadingsGraph(assetCode, limit = null, time = null, previous = 0) {
+  public plotReadingsGraph(assetCode, limit = null, time = null, previous:number = 0, previous_ts:string = '') {
     this.zoomConfig.isZoomed = false;
     if (assetCode === '') {
       return false;
@@ -453,7 +459,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     optedAssets = optedAssets.filter((asset) => asset !== this.assetCode);
     this.limit = limit;
     this.isReadingsFetched = false;
-    this.assetService.getMultipleAssetReadings(encodeURIComponent(assetCode), +limit, 0, time, optedAssets, previous)
+    this.assetService.getMultipleAssetReadings(encodeURIComponent(assetCode), +limit, 0, time, optedAssets, previous, this.fromMostRecent, previous_ts)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any[]) => {
@@ -968,19 +974,33 @@ export class ReadingsGraphComponent implements OnDestroy {
       });
   }
 
-  showBackwardReadingsGraphOrSummary() {
-    this.backwardReadingCounter++;
-    this.showReadingsGraphOrSummary();
+  moveInReadingsGraph(move: string) {
+    if(this.backwardReadingCounter === 0) {
+      this.mostRecentReadingTimestamp = this.timestamps[this.timestamps.length - 1];
+    }
+    if (move === "back") {
+      this.backwardReadingCounter++;
+    }
+    else {
+      this.backwardReadingCounter--;
+    }
+
+    if (!this.fromMostRecent) {
+      this.showReadingsGraph();
+      return;
+    }
+    let mostRecentReadingTimestampDate = new Date(this.mostRecentReadingTimestamp);
+    // Calculate previous_ts while taking mostRecentReadingTimestamp as reference point
+    let prev = new Date(mostRecentReadingTimestampDate.valueOf() - this.backwardReadingCounter * this.optedTime * 1000);
+    // Convert date(prev) to string because previous_ts is a timestamp string unlike pervious(which is a numeric value)
+    let previous_ts = (moment(prev.valueOf()).format('YYYY-MM-DD HH:mm:ss.SSS')) + this.mostRecentReadingTimestamp.slice(-3); // send previous_ts upto 6 digits i.e. microsecond precision
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0, previous_ts);
   }
 
-  showForwardReadingsGraphOrSummary() {
-    this.backwardReadingCounter--;
-    this.showReadingsGraphOrSummary();
-  }
-
-  showReadingsGraphOrSummary() {
+  showReadingsGraph() {
     let currentTime = Date.now();
     let timeDifference = Math.floor((currentTime - this.pauseTime) / 1000);
+    // Add time difference between current time and pause time in previous parameter calculation so that reference point of graph is pause time
     let previous = timeDifference + this.backwardReadingCounter * this.optedTime;
     if (this.selectedTab === 4) {
       this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime, previous);
@@ -1023,16 +1043,24 @@ export class ReadingsGraphComponent implements OnDestroy {
   setGraphStartTimestamp(optedTime: number) {
     let ts_length = this.timestamps.length;
     if (ts_length != 0) {
-      let currentTime = Date.now();
       let graphStartingTimestamp: Date;
-      if (!this.isAlive) {
-        let timeDifference = Math.floor(currentTime - this.pauseTime);
-        graphStartingTimestamp = new Date(currentTime - ((this.backwardReadingCounter + 1) * optedTime * 1000 + timeDifference));
+      if(!this.fromMostRecent){
+        let currentTime = Date.now();
+        if (!this.isAlive) {
+          let timeDifference = Math.floor(currentTime - this.pauseTime);
+          graphStartingTimestamp = new Date(currentTime - ((this.backwardReadingCounter + 1) * optedTime * 1000 + timeDifference));
+          this.graphStartTimestamp = this.dateFormatter.transform(graphStartingTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
+          return;
+        }
+        graphStartingTimestamp = new Date(currentTime - optedTime * 1000);
         this.graphStartTimestamp = this.dateFormatter.transform(graphStartingTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
-        return;
       }
-      graphStartingTimestamp = new Date(currentTime - optedTime * 1000);
-      this.graphStartTimestamp = this.dateFormatter.transform(graphStartingTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
+      else{
+        let latestReadingTimestamp = new Date(this.timestamps[ts_length-1]);
+        let graphStartingTimestamp = new Date(latestReadingTimestamp.valueOf() - this.optedTime*1000);
+        let formattedTimestamp = moment(graphStartingTimestamp.valueOf()).format('YYYY-MM-DD HH:mm:ss.SSS');
+        this.graphStartTimestamp = this.dateFormatter.transform(formattedTimestamp, 'YYYY-MM-DD HH:mm:ss');
+      }
     }
   }
 
@@ -1055,6 +1083,38 @@ export class ReadingsGraphComponent implements OnDestroy {
       let secondDate = new Date(this.timestamps[ts_length - 2])
       this.zoomConfig.minZoomValue = firstDate.valueOf() - secondDate.valueOf();
     }
+  }
+
+  showGraphFromMostRecentReading(){
+    this.fromMostRecent = true;
+    this.toggleBetweenMostRecentAndCurrent();
+  }
+
+  showGraphFromCurrentTime(){
+    this.fromMostRecent = false;
+    this.toggleBetweenMostRecentAndCurrent();
+  }
+
+  toggleBetweenMostRecentAndCurrent(){
+    this.backwardReadingCounter = 0;
+    this.pauseTime = Date.now();
+
+    // clear interval subscription before initializing it again
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+
+    // Instantly make a call on click
+    this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
+
+    // start auto refresh
+    this.subscription = interval(this.graphRefreshInterval)
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
+      .subscribe(() => {
+        this.autoRefresh = true;
+        this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
+        this.refreshAssets.next();
+      });
   }
 
   public ngOnDestroy(): void {
