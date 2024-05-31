@@ -439,7 +439,7 @@ export function updateNode(data) {
     const enabledControl = node.controls.enabledControl as EnabledControl;
     const statusControl = node.controls.statusControl as StatusControl;
     if (!isEmpty(node.controls)) {
-      if (node.label == 'South') {
+      if (node.label == 'South' && data.from == 'south') {
         const service = data.services.find(s => s.name === node.controls.nameControl['name'])
         if (service) {
           let assetCount = service.assets.length;
@@ -460,7 +460,7 @@ export function updateNode(data) {
         }
         
       }
-      if (node.label == 'North') {
+      if (node.label == 'North' && data.from == 'north') {
         const sentReadingControl = node.controls.sentReadingControl as SentReadingsControl;
         const task = data.tasks.find(t => t.name === node.controls.nameControl['name']) as NorthTask;
         if (task) {
@@ -472,7 +472,8 @@ export function updateNode(data) {
           area.update('node', node.id);
         }     
       }
-      if (node.label == 'Notification') {
+      console.log('data', data);
+      if (node.label == 'Notification' && data.from == 'notifications') {
         const serviceStatusControl = node.controls.serviceStatusControl as ServiceStatusControl;
         const channelControl = node.controls.channelControl as ChannelControl;
         const ruleControl = node.controls.ruleControl as RuleControl;
