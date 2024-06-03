@@ -97,7 +97,7 @@ export class ShowConfigurationComponent implements OnInit {
     this.form.controls[key].patchValue(`${evt.target.checked}`);
   }
 
-  public fileChange(event, config: ConfigurationBase<string>) {
+  public fileChange(event, config: ConfigurationBase<string>, type: string) {
     const fileReader = new FileReader();
     const fi = event.target;
     if (fi?.files?.length !== 0) {
@@ -112,13 +112,16 @@ export class ShowConfigurationComponent implements OnInit {
       };
       fileReader.readAsText(file);
       const ext = file.name.substring(file.name.lastIndexOf('.') + 1);
-      if (ext !== 'py') {
+      if (ext !== type) {
         config.validFileExtension = false;
       } else {
-        config.fileName = file.name;
-        config.file = file;
-        this.event.emit({ [config.key]: config.file });
-        this.form.controls[config.key]?.enable({ emitEvent: false });
+        // Manage file upload for script config item
+        if (ext == 'py') {
+          config.fileName = file.name;
+          config.file = file;
+          this.event.emit({ [config.key]: config.file });
+          this.form.controls[config.key]?.enable({ emitEvent: false });
+        }
       }
     }
   }
