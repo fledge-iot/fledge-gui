@@ -49,7 +49,7 @@
                         {{configuration?.fileName | truncate:"/" }}
                       </p>
                       <span *ngIf="!configuration.validFileExtension" class="help is-danger">
-                        Invalid file. Please upload file with .json extension.
+                        Cannot recognise, upload a valid *.json extension file
                       </span>
                       <div class="config-div is-fullwidth">
                         <input class="input is-small is-fullwidth" type="file"
@@ -67,7 +67,7 @@
                         {{configuration?.fileName | truncate:"/" }}
                       </p>
                       <span *ngIf="!configuration.validFileExtension" class="help is-danger">
-                        Invalid file. Please upload file with .py extension.
+                        Cannot recognise, upload a valid *.py extension file
                       </span>
                       <div class="config-div is-fullwidth">
                         <input class="input is-small is-fullwidth" multiple type="file"
