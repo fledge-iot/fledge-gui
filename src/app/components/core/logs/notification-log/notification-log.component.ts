@@ -58,6 +58,12 @@ export class NotificationLogComponent implements OnInit, OnDestroy {
     this.subscription = interval(this.refreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
+        if (this.sourceName) {
+          const quickView = <HTMLDivElement>document.getElementById('quickviewDefault');
+          if (!quickView.classList.contains('is-active')) {
+            return;
+          }
+        }
         this.getNotificationLogs(true);
       });
   }
