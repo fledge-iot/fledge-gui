@@ -194,12 +194,12 @@ export class CustomNodeComponent implements OnChanges {
         }
       }
     }
-    if (this.data.label === 'AddService') {
+    
+    const labels = ['AddService', 'AddTask'];
+    if (labels.includes(this.data.label)) {
       this.data.label = "";
     }
-    if (this.data.label === 'AddTask') {
-      this.data.label = "";
-    }
+
     if (this.data.label === 'Storage') {
       this.elRef.nativeElement.style.borderColor = "#999999";
     }

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NodeEditorComponent } from './node-editor.component';
 import { CustomNodeComponent } from './custom-node/custom-node.component';
+import { CustomNotificationNodeComponent } from './custom-notification-node/custom-notification-node.component';
 import { CustomSocketComponent } from './custom-socket/custom-socket.component';
 import { CustomConnectionComponent } from './custom-connection/custom-connection.component';
 import { RefDirective } from './ref.directive';
@@ -11,8 +12,10 @@ import { SharedModule } from './../../../shared.module';
 import { RouterModule, Routes } from '@angular/router';
 import { FilterModule } from '../../core/filter/filter.module';
 import { AddServiceWizardComponent } from '../../core/south/add-service-wizard/add-service-wizard.component';
+import { AddNotificationWizardComponent } from '../../core/notifications/add-notification-wizard/add-notification-wizard.component';
+
 import { RolesGuard } from '../../../guards/roles.gurad';
-import { PluginService } from '../../../services/plugin.service';
+import { PluginService, NotificationsService } from '../../../services';
 import { AddTaskWizardComponent } from '../../core/north/add-task-wizard/add-task-wizard.component';
 import { ReadingsCountComponent } from './south/asset-readings/readings-count.component';
 import { DirectivesModule } from '../../../directives/directives.module';
@@ -36,15 +39,19 @@ const routes: Routes = [
     path: 'editor/south/add',
     component: AddServiceWizardComponent,
     canActivate: [RolesGuard]
+  },
+  {
+    path: 'editor/notifications/add',
+    component: AddNotificationWizardComponent,
+    canActivate: [RolesGuard]
   }
-
 ]
-
 
 @NgModule({
   declarations: [
     NodeEditorComponent,
     CustomNodeComponent,
+    CustomNotificationNodeComponent,
     CustomSocketComponent,
     CustomConnectionComponent,
     ReadingsCountComponent,
@@ -55,7 +62,6 @@ const routes: Routes = [
     CommonModule,
     QuickviewModule,
     LogsModule,
-    SharedModule,
     RouterModule,
     FilterModule,
     SharedModule,
@@ -63,9 +69,10 @@ const routes: Routes = [
   ],
   exports: [NodeEditorComponent,
     CustomNodeComponent,
+    CustomNotificationNodeComponent,
     CustomSocketComponent,
     CustomConnectionComponent,
     RefDirective],
-  providers: [RolesGuard, PluginService],
+  providers: [RolesGuard, PluginService, NotificationsService]
 })
 export class FlowEditorModule { }
