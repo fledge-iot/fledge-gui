@@ -15,8 +15,6 @@
   background: whitesmoke;
 }
 
-:host:hover .reading,
-:host:hover .asset,
 :host:hover .trash-icon {
   visibility: visible !important;
 }
@@ -40,36 +38,6 @@
   background-color: inherit !important;
   border: none !important;
   width: inherit;
-}
-
-:host .output-socket {
-  text-align: right;
-  margin-right: -1px;
-  display: inline-block;
-}
-
-:host .input-socket {
-  text-align: left;
-  margin-left: -1px;
-  display: inline-block;
-}
-
-:host .input-title,
-:host .output-title {
-  vertical-align: middle;
-  color: white;
-  display: inline-block;
-  font-family: sans-serif;
-  font-size: 14px;
-  margin: 6px;
-  line-height: 16px;
-}
-
-:host .input-control {
-  z-index: 1;
-  width: calc(100% - 28px);
-  vertical-align: middle;
-  display: inline-block;
 }
 
 .btn-icon {
@@ -106,20 +74,10 @@
   left: 20% !important;
 }
 
-.service-details {
+.notification-details {
   display: flex;
   justify-content: center;
   padding: 0px 4px 4px 4px;
-}
-
-.reading-details {
-  display: flex;
-  justify-content: center;
-}
-
-.reading {
-  font-size: 14px;
-  visibility: hidden;
 }
 
 .output-container {
@@ -132,17 +90,12 @@
   justify-content: center;
 }
 
-.storage-input {
-  margin-top: 16px;
-}
-
 .health-icon {
   margin-left: -5px;
-  height: 1rem !important;
 }
 
-.add-service {
-  height: 92px;
+.add-notification {
+  height: 110px;
   width: 198px;
   display: flex;
   justify-content: center;
@@ -154,7 +107,7 @@
   height: auto;
 }
 
-.service-name:hover {
+.notification-name:hover {
   color: #485fc7 !important;
 }
 
@@ -163,7 +116,7 @@
 }
 
 .no-hover {
-  color: #b5b5b5 !important;
+  color: #b5b5b5;
 }
 
 .dropdown-button {
@@ -174,22 +127,18 @@
   margin-top: 2px;
 }
 
-.north-storage-output {
-  margin-left: 13px;
-  margin-top: 8px;
-}
-
-.north-storage-icon {
-  margin-top: 4px;
-  margin-left: 30px;
-}
-
-.south-storage-icon{
-  margin-top: 4px;
-  margin-left: 10px;
-}
-
-
 .trash-icon {
   visibility: hidden !important;
+}
+
+.icon-rule {
+  font-size: 0.8rem;
+}
+
+.onhover-text {
+  height: 0.7rem;
+}
+
+.bulb-on {
+  color: #dab600;
 }

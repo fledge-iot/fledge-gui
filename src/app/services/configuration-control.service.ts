@@ -361,6 +361,7 @@ export class ConfigurationControlService {
           kvListItem.maximum = element?.maximum;
           kvListItem.length = element?.length;
           kvListItem.listSize = element?.listSize;
+          kvListItem.options = element?.options;
           configurations.push(kvListItem);
           break;
 

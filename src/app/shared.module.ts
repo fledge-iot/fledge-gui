@@ -19,6 +19,9 @@ import { TabNavigationComponent } from './components/core/configuration-manager/
 import { AddServiceWizardComponent } from './components/core/south/add-service-wizard/add-service-wizard.component';
 import { AddTaskWizardComponent } from './components/core/north/add-task-wizard/add-task-wizard.component';
 import { TaskScheduleComponent } from './components/core/north/task-schedule/task-schedule.component';
+import { NotificationServiceWarningComponent } from './components/core/notifications/notification-service-warning/notification-service-warning.component';
+import { ServiceConfigComponent } from './components/core/notifications/service-config/service-config.component';
+
 import { ListTypeConfigurationComponent } from './components/core/configuration-manager/list-type-configuration/list-type-configuration.component';
 import { KvListTypeConfigurationComponent } from './components/core/configuration-manager/kv-list-type-configuration/kv-list-type-configuration.component';
 import { UnsavedChangesDialogComponent } from './components/common/unsaved-changes-dialog/unsaved-changes-dialog.component';
@@ -49,7 +52,9 @@ import { UnsavedChangesDialogComponent } from './components/common/unsaved-chang
     AddServiceWizardComponent,
     AddTaskWizardComponent,
     TaskScheduleComponent,
-    UnsavedChangesDialogComponent
+    UnsavedChangesDialogComponent,
+    NotificationServiceWarningComponent,
+    ServiceConfigComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -64,7 +69,9 @@ import { UnsavedChangesDialogComponent } from './components/common/unsaved-chang
     AddServiceWizardComponent,
     AddTaskWizardComponent,
     TaskScheduleComponent,
-    UnsavedChangesDialogComponent
+    UnsavedChangesDialogComponent,
+    NotificationServiceWarningComponent,
+    ServiceConfigComponent
   ]
 })
 export class SharedModule { }
