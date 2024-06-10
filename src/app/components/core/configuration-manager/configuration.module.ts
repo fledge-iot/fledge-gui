@@ -8,11 +8,13 @@ import { ConfigurationManagerComponent } from '.';
 import { DirectivesModule } from '../../../directives/directives.module';
 import { ConfigurationService } from '../../../services';
 import { SharedModule } from '../../../shared.module';
+import { canDeactivateGuard } from '../../../guards/can-deactivate/can-deactivate.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: ConfigurationManagerComponent
+    component: ConfigurationManagerComponent,
+    canDeactivate: [canDeactivateGuard]
   }
 ];
 

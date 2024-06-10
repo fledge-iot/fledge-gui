@@ -1,0 +1,13 @@
+<app-confirmation-dialog #unsavedChangesDialog id="unsaved-changes-dialog">
+  <header class="modal-card-head">
+    <p class="modal-card-title is-size-6">Discard Changes</p>
+    <button type="button" class="delete" aria-label="close" (click)="closeModal('unsaved-changes-dialog')"></button>
+  </header>
+  <section class="modal-card-body">
+    Do you want to discard unsaved changes?
+  </section>
+  <footer class="modal-card-foot">
+    <button class="button is-small" type="button" (click)="closeModal('unsaved-changes-dialog')">Cancel</button>
+    <button class="button is-small is-warning" type="button" (click)="discardUnsavedChanges()">Discard</button>
+  </footer>
+</app-confirmation-dialog>

@@ -24,6 +24,7 @@ import { ServiceConfigComponent } from './components/core/notifications/service-
 
 import { ListTypeConfigurationComponent } from './components/core/configuration-manager/list-type-configuration/list-type-configuration.component';
 import { KvListTypeConfigurationComponent } from './components/core/configuration-manager/kv-list-type-configuration/kv-list-type-configuration.component';
+import { UnsavedChangesDialogComponent } from './components/common/unsaved-changes-dialog/unsaved-changes-dialog.component';
 
 @NgModule({
   imports: [
@@ -51,6 +52,7 @@ import { KvListTypeConfigurationComponent } from './components/core/configuratio
     AddServiceWizardComponent,
     AddTaskWizardComponent,
     TaskScheduleComponent,
+    UnsavedChangesDialogComponent,
     NotificationServiceWarningComponent,
     ServiceConfigComponent
   ],
@@ -67,6 +69,7 @@ import { KvListTypeConfigurationComponent } from './components/core/configuratio
     AddServiceWizardComponent,
     AddTaskWizardComponent,
     TaskScheduleComponent,
+    UnsavedChangesDialogComponent,
     NotificationServiceWarningComponent,
     ServiceConfigComponent
   ]

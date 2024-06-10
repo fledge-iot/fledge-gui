@@ -14,6 +14,7 @@ import { NorthTaskModalComponent } from './north-task-modal/north-task-modal.com
 import { NorthComponent } from './north.component';
 import { FilterModule } from '../filter/filter.module';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { canDeactivateGuard } from '../../../guards/can-deactivate/can-deactivate.guard';
 
 const routes: Routes = [
   {
@@ -23,11 +24,13 @@ const routes: Routes = [
   {
     path: 'add',
     component: AddTaskWizardComponent,
-    canActivate: [RolesGuard]
+    canActivate: [RolesGuard],
+    canDeactivate: [canDeactivateGuard]
   },
   {
     path: ':name/details',
-    component: NorthTaskModalComponent
+    component: NorthTaskModalComponent,
+    canDeactivate: [canDeactivateGuard]
   }
 ];
 

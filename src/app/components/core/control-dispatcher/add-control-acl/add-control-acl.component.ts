@@ -8,6 +8,7 @@ import { uniqBy } from 'lodash';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { SUPPORTED_SERVICE_TYPES, QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-add-control-acl',
@@ -44,6 +45,10 @@ export class AddControlAclComponent implements OnInit {
     private docService: DocService,
     private servicesApiService: ServicesApiService,
     public sharedService: SharedService) { }
+
+  canDeactivate(): Observable<boolean> | boolean {
+    return this.dialogService.confirm({ id: 'unsaved-changes-dialog', changeExist: this.aclForm.dirty });
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {

@@ -45,11 +45,13 @@ const routes: Routes = [
   {
     path: 'script/add',
     component: AddControlScriptComponent,
-    canActivate: [RolesGuard]
+    canActivate: [RolesGuard],
+    canDeactivate: [canDeactivateGuard]
   },
   {
     path: 'script/:name/details',
-    component: AddControlScriptComponent
+    component: AddControlScriptComponent,
+    canDeactivate: [canDeactivateGuard]
   },
   {
     path: 'acl',
@@ -58,11 +60,13 @@ const routes: Routes = [
   {
     path: 'acl/add',
     component: AddControlAclComponent,
-    canActivate: [RolesGuard]
+    canActivate: [RolesGuard],
+    canDeactivate: [canDeactivateGuard]
   },
   {
     path: 'acl/:name/details',
-    component: AddControlAclComponent
+    component: AddControlAclComponent,
+    canDeactivate: [canDeactivateGuard]
   },
   {
     path: 'task/add',
@@ -95,11 +99,13 @@ const routes: Routes = [
   {
     path: 'entry-points/add',
     component: AddEditAPIFlowComponent,
-    canActivate: [RolesGuard]
+    canActivate: [RolesGuard],
+    canDeactivate: [canDeactivateGuard]
   },
   {
     path: 'entry-points/:name/details',
-    component: AddEditAPIFlowComponent
+    component: AddEditAPIFlowComponent,
+    canDeactivate: [canDeactivateGuard]
   }
 ];
 

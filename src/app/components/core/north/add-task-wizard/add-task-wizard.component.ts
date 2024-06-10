@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewChild, OnDestroy, ChangeDetectorRef, Even
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, sortBy } from 'lodash';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import {
   AlertService, SchedulesService, SharedService, PluginService, ProgressBarService,
@@ -12,6 +12,7 @@ import Utils, { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
+import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 
 @Component({
   selector: 'app-add-task-wizard',
@@ -68,13 +69,18 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     private docService: DocService,
     private fileUploaderService: FileUploaderService,
     private configurationControlService: ConfigurationControlService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private dialogService: DialogService
   ) {
     this.route.queryParams.subscribe(params => {
       if (params['source']) {
         this.source = params['source'];
       }
     });
+  }
+
+  canDeactivate(): Observable<boolean> | boolean {
+    return this.dialogService.confirm({ id: 'unsaved-changes-dialog', changeExist: this.taskForm.dirty });
   }
 
   ngOnInit() {

@@ -9,6 +9,7 @@ import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { AddStepComponent } from './add-step/add-step.component';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -43,6 +44,10 @@ export class AddControlScriptComponent implements OnInit {
     public docService: DocService,
     public rolesService: RolesService,
     private router: Router) { }
+
+  canDeactivate(): Observable<boolean> | boolean {
+    return this.dialogService.confirm({ id: 'unsaved-changes-dialog', changeExist: this.scriptForm.dirty });
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -157,7 +162,7 @@ export class AddControlScriptComponent implements OnInit {
     steps.forEach((val: any) => {
       const keys = Object.keys(val);
       keys.forEach(key => {
-        // remove invalid(null, undefined) values from object 
+        // remove invalid(null, undefined) values from object
         val[key] = pickBy(val[key]);
         if ('condition' in val[key]) {
           if (isEmpty(val[key]['condition'].key) || val[key]['condition'].value == null) {
