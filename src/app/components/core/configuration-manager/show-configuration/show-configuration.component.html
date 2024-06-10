@@ -45,9 +45,6 @@
                         [options]="setCodeMirrorOption(configuration)" [autoFocus]="true"
                         [jsonValue]="form.controls[configuration.key]">
                       </ngx-codemirror>
-                      <p class="help" *ngIf="configuration?.fileName">
-                        {{configuration?.fileName | truncate:"/" }}
-                      </p>
                       <span *ngIf="!configuration.validFileExtension" class="help is-danger">
                         Cannot recognise, upload a valid *.json extension file
                       </span>
