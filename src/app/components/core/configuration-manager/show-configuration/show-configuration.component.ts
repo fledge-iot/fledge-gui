@@ -107,6 +107,10 @@ export class ShowConfigurationComponent implements OnInit {
       const file = fi.files[0];
       fileReader.onload = () => {
         config.value = fileReader.result.toString();
+        if (type == 'json') {
+          // JOSN pretty format
+          config.value = JSON.stringify(JSON.parse(config.value), null, 1)
+        }
         this.form.controls[config.key].patchValue(config.value);
         this.form.controls[config.key]?.enable({ emitEvent: false });
       };

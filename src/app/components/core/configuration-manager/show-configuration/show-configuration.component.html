@@ -52,6 +52,11 @@
                         <input class="input is-small is-fullwidth" type="file"
                           (change)="fileChange($event, configuration, 'json')" />
                       </div>
+                      <span
+                        *ngIf="configuration.validFileExtension && form?.controls[configuration.key]?.hasError('jsonValue')"
+                        class="help is-danger">
+                        Invalid JSON
+                      </span>
                     </ng-container>
 
                     <ng-container *ngSwitchCase="'SCRIPT'">
@@ -112,9 +117,6 @@
                     </span>
                     <span *ngIf="form?.controls[configuration.key]?.hasError('maxValue')" class="help is-danger">
                       <sup>*</sup>Value should not be greater than {{configuration.maximum}}.
-                    </span>
-                    <span *ngIf="form?.controls[configuration.key]?.hasError('jsonValue')" class="help is-danger">
-                      Invalid JSON
                     </span>
                   </div>
                   <ng-container *ngSwitchCase="'LIST'">
