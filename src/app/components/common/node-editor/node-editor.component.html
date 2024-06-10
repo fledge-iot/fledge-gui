@@ -83,12 +83,11 @@
       </div>
     </ng-container>
     <ng-container *ngIf="showLogs && from !== 'notifications'">
-      <app-system-log [sourceName]="serviceName"></app-system-log>
+      <app-system-log [sourceName]="serviceName" #systemLogs></app-system-log>
     </ng-container>
-
-    <!-- Notification Log in Quickview -->
+    <!-- Notification Log in Quickview -->  
     <ng-container *ngIf="showLogs && from === 'notifications'">
-      <app-notification-log [sourceName]="serviceName"></app-notification-log>
+      <app-notification-log [sourceName]="serviceName" #notificationLogs></app-notification-log>
     </ng-container>
 
     <!-- Notification Instance Configuration in Quickview -->

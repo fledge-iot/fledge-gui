@@ -276,9 +276,11 @@ export class NotificationLogComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.isAlive = false;
-    this.destroy$.next(true);
-    this.destroy$.unsubscribe();
-    this.subscription.unsubscribe();
+    if (this.isAlive) {
+      this.isAlive = false;
+      this.destroy$.next(true);
+      this.destroy$.unsubscribe();
+      this.subscription.unsubscribe();
+    }
   }
 }
