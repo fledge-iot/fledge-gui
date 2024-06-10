@@ -577,15 +577,19 @@ export class ConfigurationControlService {
     const defaultConfig = map(defaultConfiguration.config, (v, key) => ({ key, ...v }));
 
     // make a copy of matched config items having changed values
-    const matchedConfig = defaultConfig.filter(e1 => {
-      if (changedConfiguration.hasOwnProperty(e1.key)) {
-        if (e1.type == 'JSON') {
+    const matchedConfig = defaultConfig.filter(conf => {
+      if (changedConfiguration.hasOwnProperty(conf.key)) {
+        if (conf.type == 'JSON') {
           // compare JSON value for changed config
-          const oldJsonValue = JSON.stringify(JSON.parse(e1.value ? e1.value : e1.default), null, ' ');
-          const changedJsonValue = JSON.stringify(JSON.parse(changedConfiguration[e1?.key]), null, ' ');
-          return oldJsonValue != changedJsonValue;
+          try {
+            const oldJsonValue = JSON.stringify(JSON.parse(conf.value ? conf.value : conf.default), null, ' ');
+            const changedJsonValue = JSON.stringify(JSON.parse(changedConfiguration[conf?.key]), null, ' ');
+            return oldJsonValue != changedJsonValue;
+          } catch (error) {
+            console.log('Invalid JSON, ', error);
+          }
         }
-        return (e1.value ? e1.value : e1.default) !== changedConfiguration[e1.key];
+        return (conf.value ? conf.value : conf.default) !== changedConfiguration[conf.key];
       }
     });
 
