@@ -10,7 +10,7 @@
     </header>
     <section class="modal-card-body">
       <div class="box">
-        <app-configuration-group #notificationConfigView *ngIf="category" [category]="category" [from]="'notification'"
+        <app-configuration-group #notificationConfigView *ngIf="category" [category]="category" [from]="'notifications'"
           (changedConfigEvent)="getChangedNotificationConfig($event)"
           (formStatusEvent)="validConfigurationForm = $event">
         </app-configuration-group>

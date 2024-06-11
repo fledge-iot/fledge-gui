@@ -8,12 +8,12 @@
         </select>
       </div>
     </div>
-    <div class="column is-4">
+    <div class="column is-3">
       <h6 class="is-centered has-text-grey">
         Total Count: {{ count }}
       </h6>
     </div>
-    <div class="column is-4">
+    <div class="column is-5">
       <ul class="pagination-list is-pulled-right" *ngIf="totalPage != 1">
         <li><a class="{{(page === 1) ? 'button is-info is-small' : 'button pagination-link'}}"
             (click)="onFirst()">1</a></li>

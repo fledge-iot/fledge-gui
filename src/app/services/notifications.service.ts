@@ -7,8 +7,6 @@ import { environment } from '../../environments/environment';
 
 @Injectable()
 export class NotificationsService {
-  notifyServiceEmitter = new BehaviorSubject<any>(null);
-
   private GET_NOTIFICATION_URL = environment.BASE_URL + 'notification';
 
   constructor(private http: HttpClient) { }

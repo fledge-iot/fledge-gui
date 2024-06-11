@@ -38,12 +38,17 @@ export class KvListTypeConfigurationComponent implements OnInit {
   }
 
   initListItem(param) {
+    if (this.configuration.items == 'enumeration'){
+      return this.fb.group({
+        key: [param?.key, [Validators.required, CustomValidator.nospaceValidator]],
+        value: [param?.value ? param?.value : this.configuration.options?.[0]]
+      });
+    }
     return this.fb.group({
       key: [param?.key, [Validators.required, CustomValidator.nospaceValidator]],
       value: [param?.value, CustomValidator.nospaceValidator]
     });
   }
-
 
   addListItem() {
     const controlsLength = this.kvListItems.length;
