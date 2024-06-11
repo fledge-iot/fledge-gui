@@ -54,7 +54,7 @@
     </div>
   </ng-contafiner>
   <!-- Quick View -->
-  <app-quickview [showReadings]="showReadings">
+  <app-quickview [showReadings]="showReadings" [showLogs]="showLogs">
     <ng-container *ngIf="showPluginConfiguration">
       <app-configuration-group *ngIf="category" [category]="category" [from]="'south'" [sourceName]="serviceName"
         (changedConfigEvent)="getChangedConfig($event)"

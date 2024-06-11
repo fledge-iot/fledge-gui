@@ -109,7 +109,7 @@ export class CustomNotificationNodeComponent implements OnChanges {
   }
 
   showLogsInQuickview() {
-    this.flowEditorService.showItemsInQuickview.next({ showLogs: true, notification: this.notification });
+    this.flowEditorService.showLogsInQuickview.next({ showLogs: true, notification: this.notification });
   }
 
   navToNotificationPage() {

@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Subject } from 'rxjs';
 import { RolesService } from '../../../../../services';
 import { DeveloperFeaturesService } from '../../../../../services/developer-features.service';
 import { Service } from '../../../../core/south/south-service';
