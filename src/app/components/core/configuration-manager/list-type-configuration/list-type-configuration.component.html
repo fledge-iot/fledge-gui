@@ -10,8 +10,9 @@
           <input *ngIf="configuration.items == 'string'" class="input is-small" type="text" formControlName="{{i}}"
             [attr.maxLength]="configuration?.length">
           <ng-container *ngIf="configuration.items == 'object'">
-            <ngx-codemirror [options]="setCodeMirrorOption(configuration)" formControlName="{{i}}">
-            </ngx-codemirror>
+            <app-show-configuration [groupConfiguration]="initialProperties[i]" [fullConfiguration]="initialProperties[i]"
+              (event)="getChangedConfiguration(i, $event)" (formStatusEvent)="formStatus($event)" [from]="from"
+              [group]="group"></app-show-configuration>
           </ng-container>
         </div>
         <div class="column pl-0 pt-2">
