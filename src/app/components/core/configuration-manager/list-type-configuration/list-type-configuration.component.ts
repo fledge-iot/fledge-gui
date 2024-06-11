@@ -87,6 +87,7 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   removeListItem(index: number) {
     this.listItems.removeAt(index);
+    this.initialProperties.splice(index, 1);
   }
 
   onControlValueChanges(): void {
