@@ -51,7 +51,7 @@ export class ListTypeConfigurationComponent implements OnInit {
         objectConfig[key].value = val;
       }
       this.initialProperties.push(objectConfig);
-      listItem = new FormControl(JSON.stringify(objectConfig, null, ' '));
+      listItem = new FormControl(objectConfig);
     }
     else {
       listItem = new FormControl(v, [CustomValidator.nospaceValidator]);
@@ -100,13 +100,11 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   getChangedConfiguration(index: string, propertyChangedValues: any) {
     for (let [ind, val] of this.listItems.value.entries()) {
-      let obj = JSON.parse(val);
-      for (let property in obj) {
+      for (let property in val) {
         if(ind==index && property == Object.keys(propertyChangedValues)[0]) {
-          obj[property].value = Object.values(propertyChangedValues)[0];
+          val[property].value = Object.values(propertyChangedValues)[0];
         }
       }
-      val = JSON.stringify(obj, null, ' ');
       this.listItems.value[ind] = val;
     }
     let listValues = this.generateListValuesArray(this.listItems.value);
@@ -120,10 +118,9 @@ export class ListTypeConfigurationComponent implements OnInit {
   generateListValuesArray(value) {
     let listValues = [];
     for (let val of value) {
-      let obj = JSON.parse(val);
       let valueObj = {};
-      for (let property in obj) {
-        valueObj[property] = obj[property].value ? obj[property].value : obj[property].default;
+      for (let property in val) {
+        valueObj[property] = val[property].value ? val[property].value : val[property].default;
       }
       listValues.push(valueObj);
     }
