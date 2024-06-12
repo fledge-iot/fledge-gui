@@ -336,7 +336,6 @@ export class ConfigurationControlService {
             readonly: element.readonly,
             mandatory: element.mandatory,
             order: element.order,
-            editorOptions: this.setEditorConfig(element.type),
             validity: element.validity,
           });
           listItem.items = element.items;
@@ -358,7 +357,6 @@ export class ConfigurationControlService {
             readonly: element.readonly,
             mandatory: element.mandatory,
             order: element.order,
-            editorOptions: this.setEditorConfig(element.type),
             validity: element.validity,
           });
           kvListItem.items = element.items;
@@ -404,7 +402,7 @@ export class ConfigurationControlService {
       inputStyle: 'textarea',
       autoRefresh: true
     };
-    if (type === 'JSON' || type === 'list' || type === 'kvlist') {
+    if (type === 'JSON') {
       editorOptions.mode = 'application/json';
     }
     return editorOptions;
