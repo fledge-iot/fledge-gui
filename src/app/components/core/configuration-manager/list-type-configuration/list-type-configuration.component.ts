@@ -34,12 +34,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
     values = JSON.parse(values) as [];
     values.forEach(element => {
-      if(this.configuration.items == 'object') {
-        this.initObjectListItem(element);
-      }
-      else{
-        this.initListItem(element);
-      }
+      this.initListItem(element);
     });
     this.onControlValueChanges();
   }
@@ -50,21 +45,17 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   initListItem(v = '') {
     let listItem;
-    listItem = new FormControl(v, [CustomValidator.nospaceValidator]);
-    this.listItems.push(listItem);
-    this.cdRef.detectChanges();
-  }
-
-  initObjectListItem(initialValue?: any) {
-    let listItem;
-    let objectConfig = cloneDeep(this.configuration.properties);
-    if(initialValue) {
-      for(let [key, val] of Object.entries(initialValue)) {
+    if (this.configuration.items == 'object') {
+      let objectConfig = cloneDeep(this.configuration.properties);
+      for (let [key, val] of Object.entries(v)) {
         objectConfig[key].value = val;
       }
+      this.initialProperties.push(objectConfig);
+      listItem = new FormControl(JSON.stringify(objectConfig, null, ' '));
     }
-    this.initialProperties.push(objectConfig);
-    listItem = new FormControl(JSON.stringify(objectConfig, null, ' '));
+    else {
+      listItem = new FormControl(v, [CustomValidator.nospaceValidator]);
+    }
     this.listItems.push(listItem);
     this.cdRef.detectChanges();
   }
@@ -75,12 +66,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     if (controlsLength > listSize) {
       return;
     }
-    if(this.configuration.items == 'object') {
-      this.initObjectListItem();
-    }
-    else{
-      this.initListItem();
-    }
+    this.initListItem();
     // this.formState.emit(this.listItems.valid);
     this.formStatusEvent.emit({'status': this.listItems.valid, 'group': this.group});
   }
@@ -103,12 +89,9 @@ export class ListTypeConfigurationComponent implements OnInit {
         });
       }
       if(this.configuration.items == 'object') {
-        let listValues = this.generateListValuesArray(value);
-        this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(listValues) });
+        value = this.generateListValuesArray(value);
       }
-      else{
-        this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(value) });
-      }
+      this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(value) });
       this.formStatusEvent.emit({'status': this.listItems.valid, 'group': this.group});
       // this.form.get(this.configuration.key)?.patchValue(JSON.stringify(value))
       // this.formState.emit(this.listItems.valid);
