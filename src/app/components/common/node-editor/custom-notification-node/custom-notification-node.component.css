@@ -11,6 +11,10 @@
   user-select: none;
 }
 
+:host:has(div.add-notification) {
+  border: 2px dotted silver !important;
+}
+
 :host:hover {
   background: whitesmoke;
 }

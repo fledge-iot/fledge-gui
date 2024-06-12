@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { RolesService } from '../../../../services';
 
 @Component({
@@ -8,6 +8,7 @@ import { RolesService } from '../../../../services';
 })
 export class ServiceConfigComponent implements OnInit {
     @Output() serviceConfigureModal = new EventEmitter<boolean>();
+    @Input() from: string;
 
     constructor(
         public rolesService: RolesService) {}
