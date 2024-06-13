@@ -232,7 +232,7 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   showLogsInQuickview() {
-    this.flowEditorService.showItemsInQuickview.next({ showLogs: true, serviceName: this.service.name });
+    this.flowEditorService.showLogsInQuickview.next({ showLogs: true, serviceName: this.service.name });
   }
 
   navToSyslogs() {
