@@ -23,14 +23,19 @@
         </div>
       </div>
     </div>
-    <div class="is-flex is-justify-content-center">
-      <span class="is-hovered has-text-grey-light">
-        <p class="onhover-text">
-          <span class="help-text" [hidden]="!showPluginName">{{notification.channel}}</span>
-        </p>
-        <i class="bi bi-lightning-charge bi-lg no-hover pl-3" [ngClass]="notification.isDeliveryEnabled === 'true' ? 'has-text-info': 'has-text-grey-light'"></i>
-        <span class="help-text">{{notification.notificationType}}</span>
-      </span>        
+    <div class="columns mb-0 is-centered">
+      <div class="column is-half">
+        <span class="is-hovered has-text-grey-light">
+          <span class="is-custom-center onhover-text help-text" [hidden]="!showPluginName">{{notification.channel}}</span>
+        </span>
+      </div>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-half">
+        <span>
+          <i class="is-custom-center bi bi-lightning-charge bi-lg no-hover" [ngClass]="notification.isDeliveryEnabled === 'true' ? 'has-text-info': 'has-text-grey-light'"></i>
+        </span>
+      </div>
     </div>
     <div>
       <div class="is-pulled-left ml-2 icon-margin">
@@ -42,7 +47,10 @@
           class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon ml-3"
           data-tooltip="Show logs" data-show="quickview" data-target="quickviewDefault" (click)="showLogsInQuickview()">
           <i class="bi bi-file-earmark-text bi-xs"></i>
-        </span>
+        </span>     
+      </div>
+      <div class="is-custom-center">
+        <span class="help-text">{{notification.notificationType}}</span>
       </div>
       <div class="is-pulled-right">
         <div class="dropdown is-hoverable" *ngIf="rolesService.hasEditPermissions()">

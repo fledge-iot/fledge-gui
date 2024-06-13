@@ -99,7 +99,7 @@
 }
 
 .add-notification {
-  height: 110px;
+  height: 92px;
   width: 198px;
   display: flex;
   justify-content: center;
@@ -145,4 +145,15 @@
 
 .bulb-on {
   color: #dab600;
+}
+
+.is-custom-center {
+  position: absolute;
+  left: 53%;
+  transform: translateX(-50%);
+  width: max-content;
+}
+
+.title {
+  line-height: 0.9;
 }
