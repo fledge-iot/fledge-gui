@@ -1,5 +1,6 @@
-import { Component, HostListener, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, Input, OnInit, ViewChild, ContentChild } from '@angular/core';
 import * as bulmaQuickview from './../../../../../node_modules/bulma-quickview/dist/js/bulma-quickview.min.js'
+import { FlowEditorService } from './../node-editor/flow-editor.service';
 
 @Component({
   selector: 'app-quickview',
@@ -11,12 +12,18 @@ export class QuickviewComponent implements OnInit {
   @ViewChild('quickView') quickView;
   @ViewChild('quickViewBlock') quickViewBlock;
   @Input() showReadings: boolean;
+  @Input() showLogs: boolean;
+  
+  @ContentChild('notificationLogs', {static:false}) notificationLogsComponent;
+  @ContentChild('systemLogs', {static:false}) systemLogsComponent;
 
-  constructor() {
-  }
+  constructor(
+    public flowEditorService: FlowEditorService,
+  ) {}
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     this.quickView.nativeElement.classList.remove('is-active');
+    this.onCloseQuickview();
   }
   
   ngOnInit(): void {
@@ -32,15 +39,36 @@ export class QuickviewComponent implements OnInit {
   }
 
   ngOnChanges() {
-    if(this.showReadings){
+    if (this.showReadings) {
       this.quickView.nativeElement.style.width = '35%';
       this.quickViewBlock.nativeElement.style.width = '80%';
       return;
     }
-    if(this.quickView){
+    if (this.quickView) {
       this.quickView.nativeElement.style.width = '66%';
       this.quickViewBlock.nativeElement.style.width = '95%';
     }
+    if (this.showLogs) {
+      if (this.notificationLogsComponent) {
+        this.notificationLogsComponent.ngOnInit();
+      }
+      if (this.systemLogsComponent) {
+        this.systemLogsComponent.ngOnInit();
+      }
+    }
   }
 
+  onCloseQuickview() {
+    this.flowEditorService.showLogsInQuickview.next({ showLogs: false });
+    if (this.notificationLogsComponent) {
+      this.notificationLogsComponent.ngOnDestroy();
+    }
+    if (this.systemLogsComponent) {
+      this.systemLogsComponent.ngOnDestroy();
+    }
+  }
+
+  ngOnDestroy() {
+    this.onCloseQuickview();
+  }
 }

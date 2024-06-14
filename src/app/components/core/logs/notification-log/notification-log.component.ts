@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { interval, Subject, Subscription } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { AlertService, AuditService, PingService, ProgressBarService } from '../../../../services';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
@@ -39,7 +38,6 @@ export class NotificationLogComponent implements OnInit, OnDestroy {
   constructor(private auditService: AuditService,
     private alertService: AlertService,
     public ngProgress: ProgressBarService,
-    private route: ActivatedRoute,
     private ping: PingService) {
     this.isAlive = true;
     this.ping.pingIntervalChanged
@@ -270,9 +268,11 @@ export class NotificationLogComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.isAlive = false;
-    this.destroy$.next(true);
-    this.destroy$.unsubscribe();
-    this.subscription.unsubscribe();
+    if (this.isAlive) {
+      this.isAlive = false;
+      this.destroy$.next(true);
+      this.destroy$.unsubscribe();
+      this.subscription.unsubscribe();
+    }
   }
 }

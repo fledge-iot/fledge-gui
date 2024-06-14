@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
 import { createEditor, getUpdatedFilterPipeline, deleteConnection, removeNode, updateNode, updateFilterNode } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -31,6 +31,7 @@ export class NodeEditorComponent implements OnInit {
   @ViewChild(NotificationServiceWarningComponent, { static: true }) notificationServiceWarningComponent: NotificationServiceWarningComponent;
   @ViewChild(ServiceConfigComponent, { static: true }) notificationServiceConfigComponent: ServiceConfigComponent;
   @ViewChild("rete") container!: ElementRef;
+ 
   public source = '';
   public from = '';
   public filterPipeline = [];
@@ -45,6 +46,7 @@ export class NodeEditorComponent implements OnInit {
   private removeFilterSubscription: Subscription;
   private exportReadingSubscription: Subscription;
   private serviceDetailsSubscription: Subscription;
+  private logsSubscription: Subscription;
   
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
@@ -151,25 +153,36 @@ export class NodeEditorComponent implements OnInit {
     }
   }
   ngOnInit(): void {
+    this.logsSubscription = this.flowEditorService.showLogsInQuickview.subscribe(data => {
+      this.showLogs = data.showLogs ? true: false;
+      this.notification = data?.notification;
+      this.serviceName = data?.serviceName ? data.serviceName : this.notification?.name;
+      this.showNotificationConfiguration = false;
+      this.showPluginConfiguration = false;
+      this.showFilterConfiguration = false;
+      this.showTaskSchedule = false;
+      this.showReadings = false;
+    });
     this.subscription = this.flowEditorService.showItemsInQuickview.pipe(skip(1)).subscribe(data => {
       if (this.from === 'notifications') {
+        this.showLogs = false;
         this.showNotificationConfiguration = data.showNotificationConfiguration ? true : false;
-        this.showLogs = data.showLogs ? true: false;
-        this.notification = data.notification;
+        this.notification = data?.notification;
         this.serviceName = data.notification.name;
         if (this.showNotificationConfiguration) {
           this.getCategory();
           this.getRuleConfiguration();
           this.getDeliveryConfiguration();
-        }  
+        }
         return;
       }
       this.showPluginConfiguration = data.showPluginConfiguration ? true: false;
       this.showFilterConfiguration = data.showFilterConfiguration ? true: false;
-      this.showLogs = data.showLogs ? true: false;
       this.showTaskSchedule = data.showTaskSchedule ? true: false;
       this.showReadings = data.showReadings ? true: false;
-      this.serviceName = data.serviceName;
+      this.serviceName = data?.serviceName;
+      this.showLogs = false;
+
       if (this.showPluginConfiguration || this.showNotificationConfiguration) {
         this.getCategory();
       }
@@ -1087,6 +1100,7 @@ export class NodeEditorComponent implements OnInit {
     this.serviceSubscription.unsubscribe();
     this.removeFilterSubscription.unsubscribe();
     this.exportReadingSubscription.unsubscribe();
+    this.logsSubscription.unsubscribe();
     if (this.from === 'notifications') {
       this.serviceDetailsSubscription.unsubscribe();
     }
