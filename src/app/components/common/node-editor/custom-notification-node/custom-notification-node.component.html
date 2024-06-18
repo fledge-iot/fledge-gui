@@ -6,7 +6,7 @@
           <span>{{data.controls?.nameControl?.name}}
             <i [ngClass]="notification.enable ? 'bulb-on': 'has-text-grey-light'" class="fa-regular fa-lightbulb icon-rule"></i>
             <p class="onhover-text">
-              <span class="help-text" [hidden]="!showPluginName">{{notification.rule}}</span>
+              <span class="help-text pt-1" [hidden]="!showPluginName">{{notification.rule}}</span>
             </p>
           </span>
         </div>
@@ -23,13 +23,6 @@
         </div>
       </div>
     </div>
-    <div class="columns mb-0 is-centered">
-      <div class="column is-half">
-        <span class="is-hovered has-text-grey-light">
-          <span class="is-custom-center onhover-text help-text" [hidden]="!showPluginName">{{notification.channel}}</span>
-        </span>
-      </div>
-    </div>
     <div class="columns is-centered">
       <div class="column is-half">
         <span>
@@ -37,7 +30,14 @@
         </span>
       </div>
     </div>
-    <div>
+    <div class="columns mb-0 is-centered">
+      <div class="column is-half">
+        <span class="is-hovered has-text-grey-light">
+          <span class="is-custom-center onhover-text help-text" [hidden]="!showPluginName">{{notification.channel}}</span>
+        </span>
+      </div>
+    </div>
+    <div class="pt-1">
       <div class="is-pulled-left ml-2 icon-margin">
         <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered"
           data-tooltip="Help" (click)="goToLink()">
@@ -50,7 +50,7 @@
         </span>     
       </div>
       <div class="is-custom-center">
-        <span class="help-text">{{notification.notificationType}}</span>
+        <span class="help-text">{{notification.notificationType | titlecase}}</span>
       </div>
       <div class="is-pulled-right">
         <div class="dropdown is-hoverable" *ngIf="rolesService.hasEditPermissions()">
