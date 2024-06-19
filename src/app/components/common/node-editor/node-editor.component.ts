@@ -971,8 +971,8 @@ export class NodeEditorComponent implements OnInit {
   }
 
   reload() {
-    if (this.from === 'notifications') {
-      this.router.navigate(['/flow/editor/notifications']);
+    if (!this.source) {
+      this.router.navigate(['/flow/editor', this.from]);
       return;
     }
     this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
