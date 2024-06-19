@@ -140,7 +140,7 @@
 }
 
 .onhover-text {
-  height: 0.7rem;
+  height: 0.9rem;
 }
 
 .bulb-on {
@@ -156,4 +156,8 @@
 
 .title {
   line-height: 0.9;
+}
+
+.description-text {
+  max-width: 7rem !important;
 }

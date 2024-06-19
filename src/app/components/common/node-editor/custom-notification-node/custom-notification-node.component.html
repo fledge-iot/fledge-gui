@@ -3,8 +3,9 @@
     <div class="title" data-testid="title">
       <div class="is-flex is-justify-content-space-between is-align-items-baseline">
         <div class="is-inline-flex is-align-items-baseline">    
-          <span>{{data.controls?.nameControl?.name}}
-            <i [ngClass]="notification.enable ? 'bulb-on': 'has-text-grey-light'" class="fa-regular fa-lightbulb icon-rule"></i>
+          <i [ngClass]="notification.enable ? 'bulb-on': 'has-text-grey-light'" class="fa-regular fa-lightbulb icon-rule pr-1"></i>
+          <span class="description-text">
+            <span [title]="data.controls?.nameControl?.name">{{data.controls?.nameControl?.name}}</span>
             <p class="onhover-text">
               <span class="help-text pt-1" [hidden]="!showPluginName">{{notification.rule}}</span>
             </p>

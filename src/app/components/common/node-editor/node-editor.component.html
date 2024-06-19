@@ -26,7 +26,7 @@
           </li>
         </ul>
       </nav>
-      <ng-container *ngIf="source && !isAddFilterWizard">
+      <ng-container *ngIf="source && !isAddFilterWizard || from === 'notifications'">
         <button type="button" (click)="reload()" class="button is-small" title="Reload" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
@@ -198,7 +198,7 @@
     <button class="delete" aria-label="close" (click)="closeModal('state-change-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Are You sure, you want to {{btnText}} the instance {{dialogServiceName}}?
+    Are you sure, You want to {{btnText.toLowerCase()}} the notification instance {{dialogServiceName}}?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('state-change-dialog')">Cancel</button>
