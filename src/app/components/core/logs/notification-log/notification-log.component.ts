@@ -63,7 +63,6 @@ export class NotificationLogComponent implements OnInit, OnDestroy {
 
   ngOnChanges(){
     if(this.sourceName){
-      // this.searchTerm = this.sourceName;
       this.searchTerm = [];
       this.searchTerm.push(this.sourceName, this.notificationService);
     } else {

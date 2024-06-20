@@ -288,13 +288,13 @@ async function nodesGrid(area: AreaPlugin<Schemes,
       }
     }
   }
-  if (rolesService.hasEditPermissions()) {
+  // if (rolesService.hasEditPermissions()) {
     const service = from == 'south' ? new AddService() : from == 'north' ? new AddTask() : new AddNotification();
-    if (['south', 'north'].includes(from) || isServiceAvailable) {
+    // if (['south', 'north'].includes(from) || isServiceAvailable) {
       await editor.addNode(service);
       await area.translate(service.id, { x: 250 * j, y: 150 * k });
-    }
-  }
+    // }
+  // }
 }
 
 export function getUpdatedFilterPipeline() {

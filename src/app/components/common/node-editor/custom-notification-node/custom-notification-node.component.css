@@ -142,3 +142,9 @@
 .bulb-on {
   color: #dab600;
 }
+
+.disabled-node, .disabled-node .disabled .plus-icon {
+  cursor: not-allowed !important;
+}
+
+
