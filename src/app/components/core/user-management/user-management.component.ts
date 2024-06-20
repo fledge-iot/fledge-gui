@@ -192,6 +192,28 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     //     });
   }
 
+  unblockedUser(userId: string) {
+    /** request started */
+    this.ngProgress.start();
+    this.userService.unblockUser(userId).
+      subscribe(
+        (data) => {
+          /** request completed */
+          this.ngProgress.done();
+          this.alertService.success(data['message']);
+          this.getUsers();
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
   public toggleDropdown(contextMenu) {
     const id = 'dropdown-' + contextMenu;
     const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));

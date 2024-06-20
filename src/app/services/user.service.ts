@@ -83,6 +83,16 @@ export class UserService {
   }
 
   /**
+   * Unblock user
+   * PUT  | /fledge/admin/{user_id}/unblock
+   */
+  unblockUser(id: string) {
+    return this.http.put(this.ADMIN_URL + '/' + id + '/unblock', null).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  /**
   * Create user
   *
   * POST  | fledge/admin/user

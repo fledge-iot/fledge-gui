@@ -14,10 +14,19 @@
             </h6>
           </li>
           <li style="position: absolute;right: 0;">
-            <a class="is-light" (click)="openCreateUserModal()" style="border-bottom-width: 0">
-              <p *ngIf="viewPort !== 'mobile'" class="add-btn">&nbsp; Add User &nbsp;</p>
-              <i class="bi bi-person-plus bi-sm" aria-hidden="true"></i>
-            </a>
+            <div class="columns is-vcentered m-0 p-0">
+              <div *ngIf="seletedTab == 1" class="column is-narrow px-0">
+                <a type="button" (click)="getUsers()" class="button is-small" title="Reload" id="refresh-check">
+                  <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+                </a>
+              </div>
+              <div class="column is-narrow px-0">
+                <a class="is-light" (click)="openCreateUserModal()" style="border-bottom-width: 0">
+                  <p *ngIf="viewPort !== 'mobile'" class="add-btn">&nbsp; Add User &nbsp;</p>
+                  <i class="bi bi-person-plus bi-sm" aria-hidden="true"></i>
+                </a>
+              </div>
+            </div>
           </li>
         </ul>
       </div>
@@ -28,30 +37,35 @@
           <table class="table is-hoverable user-table">
             <thead id="head">
               <tr>
-                <!-- <th>ID</th> -->
-                <th>Name</th>
+                <th></th>
+                <th class="px-0">Name</th>
                 <th>Username</th>
                 <th>Role</th>
                 <th>Authentication Method</th>
-                <th>Description</th>         
+                <th>Description</th>
                 <th></th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let user of userRecord; let i = index;">
-                <!-- <td class="user-col">{{user.userId}}</td> -->
-                <td class="user-col">
+                <td class="pr-0">
+                  <span [title]="'Blocked until ' + user.block_until + ' due to multiple invalid login attempts'">
+                    <i *ngIf="user.status == 'blocked'" class="bi bi-lock bi-sm has-text-warning"
+                      aria-hidden="true"></i>
+                  </span>
+                </td>
+                <td class="px-0">
                   {{user.realName}}
                 </td>
-                <td class="user-col">
+                <td>
                   {{user.userName}}
                 </td>
-                <td class="user-col">
+                <td>
                   {{user.roleName}}
                 </td>
-                <td class="user-col">{{getAccessMethod(user.accessMethod)}}</td>
-                <td class="user-col desc-col desc-text">{{user.description}}</td>               
+                <td>{{getAccessMethod(user.accessMethod)}}</td>
+                <td class="desc-col desc-text">{{user.description}}</td>
                 <td class="tags-groups">
                   <span *ngIf='user.userId == 1' class="tag is-rounded">super admin</span>&nbsp;
                   <span *ngIf='user.userId == uid' class="tag is-rounded">active</span>
@@ -80,6 +94,11 @@
                           <i class="bi bi-key bi-xs" aria-hidden="true"></i>
                           Reset Password
                         </a>
+                        <a *ngIf="user.status == 'blocked'" class="dropdown-item"
+                          (click)="openModal(user.userId, user.userName, 'unblockUser', 'Are You sure, you want to unblock the user')">
+                          <i class="bi bi-unlock bi-xs" aria-hidden="true"></i>
+                          Unblock
+                        </a>
                         <a class="dropdown-item"
                           (click)="openModal(user.userId, user.userName, 'deactivateUser', 'Are You sure, you want to deactivate the user')">
                           <i class="bi bi-trash bi-xs" aria-hidden="true"></i>
@@ -93,7 +112,7 @@
                         <a class="dropdown-item"
                           (click)="openModal(user.userId, user.userName, 'clearSessions', 'Are you sure, You want to clear all active sessions for')">
                           <i class="bi bi-box-arrow-right bi-xs" aria-hidden="true"></i>
-                          Logout Active Sessions
+                          Log out active sessions
                         </a>
                       </div>
                     </div>
@@ -125,7 +144,8 @@
     </div>
   </div>
   <app-alert-dialog (enabledService)='enableUser($event)' (deleteUserService)='deleteUser($event)'
-    (logoutAllUserSessionsService)='clearAllSessions($event)' [childData]='childData'></app-alert-dialog>
+    (unblockUserService)="unblockedUser($event)" (logoutAllUserSessionsService)='clearAllSessions($event)'
+    [childData]='childData'></app-alert-dialog>
   <app-create-user [userRoles]="roles" (notify)='onNotify()'></app-create-user>
   <app-update-user [userRoles]="roles" (notify)='onNotify()'></app-update-user>
 </div>
