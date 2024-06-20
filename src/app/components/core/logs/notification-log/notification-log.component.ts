@@ -30,7 +30,7 @@ export class NotificationLogComponent implements OnInit, OnDestroy {
   totalPagesCount = 0;
 
   isInvalidLimit = false;
-  searchTerm = [];
+  searchTerm: any;
 
   public refreshInterval = POLLING_INTERVAL;
   destroy$: Subject<boolean> = new Subject<boolean>();
@@ -63,8 +63,11 @@ export class NotificationLogComponent implements OnInit, OnDestroy {
 
   ngOnChanges(){
     if(this.sourceName){
+      // this.searchTerm = this.sourceName;
+      this.searchTerm = [];
       this.searchTerm.push(this.sourceName, this.notificationService);
-      // this.searchTerm.push();
+    } else {
+      this.searchTerm = '';
     }
   }
 
