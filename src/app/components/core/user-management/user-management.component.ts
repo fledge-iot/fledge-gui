@@ -5,6 +5,8 @@ import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.com
 import { CreateUserComponent } from './create-user/create-user.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
 import { Subscription } from 'rxjs';
+import { DateFormatterPipe } from '../../../pipes';
+import { User } from '../../../models';
 
 @Component({
   selector: 'app-user-management',
@@ -31,6 +33,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     private userService: UserService,
     public ngProgress: ProgressBarService,
     private sharedService: SharedService,
+    private dateFormatter: DateFormatterPipe,
     private roleService: RolesService
   ) { }
 
@@ -76,6 +79,11 @@ export class UserManagementComponent implements OnInit, OnDestroy {
             });
           });
           this.userRecord = users.sort();
+          this.userRecord = this.userRecord.map((user: User) => {
+            user.blockUntil = this.dateFormatter.transform(user.blockUntil, 'LLLL');
+            return user;
+          })
+
           this.ngProgress.done();
         },
         error => {

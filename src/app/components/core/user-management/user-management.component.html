@@ -50,9 +50,9 @@
             <tbody>
               <tr *ngFor="let user of userRecord; let i = index;">
                 <td class="pr-0">
-                  <span [title]="'Blocked until ' + user.blockUntil + ' due to multiple invalid login attempts'">
-                    <i *ngIf="user.status == 'blocked'" class="bi bi-lock bi-sm has-text-warning"
-                      aria-hidden="true"></i>
+                  <span
+                    [title]="'User log in has been blocked temporarily until ' + user.blockUntil + ', due to multiple login attempts with invalid credentials.'">
+                    <i *ngIf="user.status == 'blocked'" class="bi bi-lock bi-sm has-text-danger" aria-hidden="true"></i>
                   </span>
                 </td>
                 <td class="px-0">
