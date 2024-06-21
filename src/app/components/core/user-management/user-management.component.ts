@@ -7,6 +7,8 @@ import { UpdateUserComponent } from './update-user/update-user.component';
 import { Subscription } from 'rxjs';
 import { DateFormatterPipe } from '../../../pipes';
 import { User } from '../../../models';
+import moment from 'moment';
+
 
 @Component({
   selector: 'app-user-management',
@@ -80,7 +82,9 @@ export class UserManagementComponent implements OnInit, OnDestroy {
           });
           this.userRecord = users.sort();
           this.userRecord = this.userRecord.map((user: User) => {
-            user.blockUntil = this.dateFormatter.transform(user.blockUntil, 'LLLL');
+            if (user.blockUntil) {
+              user.blockUntil = this.calculateBlockUserTime(user.blockUntil);
+            }
             return user;
           })
 
@@ -109,6 +113,29 @@ export class UserManagementComponent implements OnInit, OnDestroy {
         return 'Any';
         break;
     }
+  }
+
+  calculateBlockUserTime(time: string): string {
+    const blockUntilTime = this.dateFormatter.transform(time, 'LLLL');
+    const currentTime = this.dateFormatter.transform(moment().utc().format(), 'LLLL');
+    // remaning block user time in milliseconds
+    let diffTime = Math.abs(new Date(currentTime).valueOf() - new Date(blockUntilTime).valueOf());
+    let days = diffTime / (24 * 60 * 60 * 1000);
+    let hours = (days % 1) * 24;
+    let minutes = (hours % 1) * 60;
+    let seconds = (minutes % 1) * 60;
+    [days, hours, minutes, seconds] = [Math.floor(days), Math.floor(hours), Math.floor(minutes), Math.floor(seconds)]
+    let remaningTime = '';
+    if (hours) {
+      remaningTime = ` ${hours} ${(hours > 1) ? 'hours' : 'hour'}`;
+    }
+    if (minutes) {
+      return remaningTime + ` ${minutes} ${(minutes > 1) ? 'minutes' : 'minute'}`;
+    }
+    if (seconds) {
+      return remaningTime + ` ${seconds} ${(seconds > 1) ? 'seconds' : 'second'}`;
+    }
+    return remaningTime;
   }
 
   /**
@@ -230,7 +257,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
         activeDropDowns[0].classList.remove('is-active');
       }
     }
-    const dropDown = document.querySelector(`#${id}`);
+    const dropDown = document.querySelector(`#${id} `);
     dropDown.classList.toggle('is-active');
   }
 
