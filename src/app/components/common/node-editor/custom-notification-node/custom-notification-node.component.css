@@ -11,6 +11,10 @@
   user-select: none;
 }
 
+:host:has(div.add-notification) {
+  border: 2px dotted silver !important;
+}
+
 :host:hover {
   background: whitesmoke;
 }
@@ -95,7 +99,7 @@
 }
 
 .add-notification {
-  height: 110px;
+  height: 92px;
   width: 198px;
   display: flex;
   justify-content: center;
@@ -136,7 +140,7 @@
 }
 
 .onhover-text {
-  height: 0.7rem;
+  height: 0.9rem;
 }
 
 .bulb-on {
@@ -147,4 +151,17 @@
   cursor: not-allowed !important;
 }
 
+.is-custom-center {
+  position: absolute;
+  left: 53%;
+  transform: translateX(-50%);
+  width: max-content;
+}
 
+.title {
+  line-height: 0.9;
+}
+
+.description-text {
+  max-width: 7rem !important;
+}

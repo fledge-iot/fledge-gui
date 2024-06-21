@@ -4,13 +4,15 @@
       <nav class="breadcrumb mb-2" aria-label="breadcrumbs">
         <ul>
           <li *ngIf="from=='south'">
-            <a [routerLink]="['/flow/editor/south']">South</a>
+            <a *ngIf="source" [routerLink]="['/flow/editor/south']">South</a>
+            <span *ngIf="!source">South</span>
           </li>
           <li *ngIf="from=='north'">
-            <a [routerLink]="['/flow/editor/north']">North</a>
+            <a *ngIf="source" [routerLink]="['/flow/editor/north']">North</a>
+            <span *ngIf="!source">North</span>
           </li>
-          <li *ngIf="from=='notifications'" class="pt-2">
-            <a [routerLink]="['/flow/editor/notifications']">Notifications</a>
+          <li *ngIf="from=='notifications'">
+            <span>Notifications</span>
           </li>
           <li [ngClass]="{'is-active' : !source || !isAddFilterWizard}" *ngIf="source">
             <a [routerLink]="['/flow/editor', from, source, 'details']">
@@ -24,15 +26,15 @@
           </li>
         </ul>
       </nav>
-      <ng-container *ngIf="source && !isAddFilterWizard">
+      <ng-container *ngIf="!isAddFilterWizard">
         <button type="button" (click)="reload()" class="button is-small" title="Reload" id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </ng-container>
     </div>
     <div *ngIf="serviceInfo.isEnabled && serviceInfo.isInstalled && from === 'notifications'">
-      <app-service-config (serviceConfigureModal)="openServiceConfigureModal()"></app-service-config>
-      <span class="icon is-small tooltip is-pulled-right is-hovered help-pad" data-tooltip="Help"
+      <app-service-config (serviceConfigureModal)="openServiceConfigureModal()" [from]="'flow-editor'"></app-service-config>
+      <span class="icon is-small tooltip has-tooltip-left has-tooltip-arrow is-pulled-right is-hovered pb-3 text-btn help-icon" data-tooltip="Help"
         (click)="goToLink('using-the-notification-service')">
         <i class="far fa-question-circle"></i>
       </span>
@@ -196,7 +198,7 @@
     <button class="delete" aria-label="close" (click)="closeModal('state-change-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Are You sure, you want to {{btnText}} the instance {{dialogServiceName}}?
+    Are you sure, You want to {{btnText.toLowerCase()}} the notification instance {{dialogServiceName}}?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('state-change-dialog')">Cancel</button>
