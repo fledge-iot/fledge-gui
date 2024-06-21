@@ -11,18 +11,15 @@ import { cloneDeep } from 'lodash';
 })
 export class ListTypeConfigurationComponent implements OnInit {
   @Input() configuration;
-  // @Output() formState = new EventEmitter<boolean>();
-  // form: FormGroup;
-  listItemsForm: FormGroup;
   @Input() group: string = '';
   @Input() from = '';
   @Output() changedConfig = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
+  listItemsForm: FormGroup;
   initialProperties = [];
 
   constructor(
     public cdRef: ChangeDetectorRef,
-    // private rootFormGroup: FormGroupDirective,
     private fb: FormBuilder) {
     this.listItemsForm = this.fb.group({
       listItems: this.fb.array([])
@@ -30,7 +27,6 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.form = this.rootFormGroup.control;
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
     values = JSON.parse(values) as [];
     values.forEach(element => {
@@ -70,7 +66,6 @@ export class ListTypeConfigurationComponent implements OnInit {
       return;
     }
     this.initListItem();
-    // this.formState.emit(this.listItems.valid);
     this.formStatusEvent.emit({'status': this.listItems.valid, 'group': this.group});
   }
 
@@ -92,12 +87,10 @@ export class ListTypeConfigurationComponent implements OnInit {
         });
       }
       if(this.configuration.items == 'object') {
-        value = this.generateListValuesArray(value);
+        value = this.extractListValues(value);
       }
       this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(value) });
       this.formStatusEvent.emit({'status': this.listItems.valid, 'group': this.group});
-      // this.form.get(this.configuration.key)?.patchValue(JSON.stringify(value))
-      // this.formState.emit(this.listItems.valid);
     })
   }
 
@@ -110,7 +103,7 @@ export class ListTypeConfigurationComponent implements OnInit {
       }
       this.listItems.value[ind] = val;
     }
-    let listValues = this.generateListValuesArray(this.listItems.value);
+    let listValues = this.extractListValues(this.listItems.value);
     this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(listValues) });
   }
 
@@ -118,7 +111,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.formStatusEvent.emit(formState);
   }
 
-  generateListValuesArray(value) {
+  extractListValues(value) {
     let listValues = [];
     for (let val of value) {
       let valueObj = {};
