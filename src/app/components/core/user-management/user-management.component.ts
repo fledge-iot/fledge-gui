@@ -117,9 +117,9 @@ export class UserManagementComponent implements OnInit, OnDestroy {
 
   calculateBlockUserTime(time: string): string {
     const blockUntilTime = this.dateFormatter.transform(time, 'YYYY-MM-DD HH:mm:ss');
-    const alertTimestamp = moment(blockUntilTime);
+    const blockUntilTimestamp = moment(blockUntilTime);
     const currentTime = moment().utc();
-    let timeDifference = alertTimestamp.isAfter(currentTime) ? alertTimestamp.fromNow() : alertTimestamp.from(currentTime);
+    let timeDifference = blockUntilTimestamp.isAfter(currentTime) ? blockUntilTimestamp.fromNow() : blockUntilTimestamp.from(currentTime);
     timeDifference = timeDifference.toString().replace('in', 'for')
     return timeDifference;
   }
