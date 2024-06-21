@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-
 import { AlertService, AuthService, UserService, ProgressBarService, SharedService, RolesService } from '../../../services';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { CreateUserComponent } from './create-user/create-user.component';
@@ -8,7 +7,6 @@ import { Subscription } from 'rxjs';
 import { DateFormatterPipe } from '../../../pipes';
 import { User } from '../../../models';
 import moment from 'moment';
-
 
 @Component({
   selector: 'app-user-management',
