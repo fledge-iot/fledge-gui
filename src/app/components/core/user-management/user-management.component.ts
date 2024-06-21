@@ -100,22 +100,25 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   }
 
   getAccessMethod(accessMethod) {
+    let method;
     switch (accessMethod) {
       case 'cert':
-        return 'Certificate';
+        method = 'Certificate';
         break;
       case 'pwd':
-        return 'Password';
+        method = 'Password';
         break;
       default:
-        return 'Any';
+        method = 'Any';
         break;
     }
+    return method;
   }
 
   calculateBlockUserTime(time: string): string {
-    const blockUntilTime = this.dateFormatter.transform(time, 'LLLL');
-    const currentTime = this.dateFormatter.transform(moment().utc().format(), 'LLLL');
+    const blockUntilTime = this.dateFormatter.transform(time, 'YYYY-MM-DD HH:mm:ss');
+    const currentTime = this.dateFormatter.transform(moment().utc().format(), 'YYYY-MM-DD HH:mm:ss');
+
     // remaning block user time in milliseconds
     let diffTime = Math.abs(new Date(currentTime).valueOf() - new Date(blockUntilTime).valueOf());
     let days = diffTime / (24 * 60 * 60 * 1000);
@@ -123,6 +126,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     let minutes = (hours % 1) * 60;
     let seconds = (minutes % 1) * 60;
     [days, hours, minutes, seconds] = [Math.floor(days), Math.floor(hours), Math.floor(minutes), Math.floor(seconds)]
+
     let remaningTime = '';
     if (hours) {
       remaningTime = ` ${hours} ${(hours > 1) ? 'hours' : 'hour'}`;
