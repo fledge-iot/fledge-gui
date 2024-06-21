@@ -51,7 +51,7 @@
               <tr *ngFor="let user of userRecord; let i = index;">
                 <td class="pr-0">
                   <span
-                    [title]="'User blocked temporarily for' + user.blockUntil + ', due to multiple login attempts with invalid credentials.'">
+                    [title]="'User blocked temporarily ' + user.blockUntil + ', due to multiple login attempts with invalid credentials.'">
                     <i *ngIf="user.status == 'blocked'" class="bi bi-person-lock has-text-danger"
                       aria-hidden="true"></i>
                   </span>

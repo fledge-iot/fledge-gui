@@ -117,27 +117,11 @@ export class UserManagementComponent implements OnInit, OnDestroy {
 
   calculateBlockUserTime(time: string): string {
     const blockUntilTime = this.dateFormatter.transform(time, 'YYYY-MM-DD HH:mm:ss');
-    const currentTime = this.dateFormatter.transform(moment().utc().format(), 'YYYY-MM-DD HH:mm:ss');
-
-    // remaning block user time in milliseconds
-    let diffTime = Math.abs(new Date(currentTime).valueOf() - new Date(blockUntilTime).valueOf());
-    let days = diffTime / (24 * 60 * 60 * 1000);
-    let hours = (days % 1) * 24;
-    let minutes = (hours % 1) * 60;
-    let seconds = (minutes % 1) * 60;
-    [days, hours, minutes, seconds] = [Math.floor(days), Math.floor(hours), Math.floor(minutes), Math.floor(seconds)]
-
-    let remaningTime = '';
-    if (hours) {
-      remaningTime = ` ${hours} ${(hours > 1) ? 'hours' : 'hour'}`;
-    }
-    if (minutes) {
-      return remaningTime + ` ${minutes} ${(minutes > 1) ? 'minutes' : 'minute'}`;
-    }
-    if (seconds) {
-      return remaningTime + ` ${seconds} ${(seconds > 1) ? 'seconds' : 'second'}`;
-    }
-    return remaningTime;
+    const alertTimestamp = moment(blockUntilTime);
+    const currentTime = moment().utc();
+    let timeDifference = alertTimestamp.isAfter(currentTime) ? alertTimestamp.fromNow() : alertTimestamp.from(currentTime);
+    timeDifference = timeDifference.toString().replace('in', 'for')
+    return timeDifference;
   }
 
   /**
@@ -259,7 +243,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
         activeDropDowns[0].classList.remove('is-active');
       }
     }
-    const dropDown = document.querySelector(`#${id} `);
+    const dropDown = document.querySelector(`#${id}`);
     dropDown.classList.toggle('is-active');
   }
 
