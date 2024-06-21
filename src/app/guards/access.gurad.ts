@@ -6,8 +6,8 @@ import { RolesService } from '../services';
 export class AccessGuard {
   constructor(private router: Router, public rolesService: RolesService) { }
   canActivate() {
-    const canEdit = this.rolesService.hasAccessPermissions();
-    if (canEdit) {
+    const canAccess = this.rolesService.hasAdminPermissionsOrAnonymousAllowed();
+    if (canAccess) {
       return true;
     }
     this.router.navigateByUrl('');

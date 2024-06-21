@@ -12,10 +12,9 @@ export class RolesService {
   constructor() { }
 
   /**
-   * To check if user is admin or anonymous to access backup/restore
-   * and support tabs in sidebar
+   * To check if user is admin or anonymous
    */
-  public hasAccessPermissions(): boolean {
+  public hasAdminPermissionsOrAnonymousAllowed(): boolean {
     const roleId = Number(sessionStorage.getItem('roleId'));
     return [appRoles.admin, appRoles.anonymous].includes(roleId);
   }

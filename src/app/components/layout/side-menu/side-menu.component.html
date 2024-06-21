@@ -100,7 +100,7 @@
               {{mfe.displayName}}</a>
           </ng-container>
         </li>
-        <li *ngIf="rolesService.hasAccessPermissions()">
+        <li *ngIf="rolesService.hasAdminPermissionsOrAnonymousAllowed()">
           <a id="backup-restore" routerLinkActive="is-active" routerLink='/backup-restore'>
             <span><i class="bi bi-database-gear bi-sm"></i></span>
             Backup &amp; Restore
@@ -143,7 +143,7 @@
             User Management
           </a>
         </li>
-        <li *ngIf="rolesService.hasAccessPermissions()">
+        <li *ngIf="rolesService.hasAdminPermissionsOrAnonymousAllowed()">
           <a id="support" routerLinkActive="is-active" routerLink='/support'>
             <span><i class="bi bi-file-medical bi-sm"></i></span>
             Support
