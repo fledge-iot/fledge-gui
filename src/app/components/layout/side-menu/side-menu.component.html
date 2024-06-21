@@ -29,8 +29,8 @@
           </a>
         </li>
         <li>
-          <a id="notification" routerLinkActive="is-active" 
-          [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/notifications']: ['/notification']">
+          <a id="notification" routerLinkActive="is-active"
+            [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/notifications']: ['/notification']">
             <span><i class="bi bi-lightning-charge bi-sm"></i></span>
             Notifications
           </a>
@@ -100,9 +100,8 @@
               {{mfe.displayName}}</a>
           </ng-container>
         </li>
-        <li>
-          <a *ngIf="rolesService.hasEditPermissions()" id="backup-restore" routerLinkActive="is-active"
-            routerLink='/backup-restore'>
+        <li *ngIf="rolesService.hasAccessPermissions()">
+          <a id="backup-restore" routerLinkActive="is-active" routerLink='/backup-restore'>
             <span><i class="bi bi-database-gear bi-sm"></i></span>
             Backup &amp; Restore
           </a>
@@ -138,14 +137,13 @@
             </ul>
           </div>
         </li>
-        <li>
-          <a id="user-management" *ngIf="isAdmin" routerLinkActive="is-active" routerLink='/user-management'>
+        <li *ngIf="isAdmin">
+          <a id="user-management" routerLinkActive="is-active" routerLink='/user-management'>
             <span><i class="bi bi-people bi-sm"></i></span>
             User Management
           </a>
         </li>
-
-        <li>
+        <li *ngIf="rolesService.hasAccessPermissions()">
           <a id="support" routerLinkActive="is-active" routerLink='/support'>
             <span><i class="bi bi-file-medical bi-sm"></i></span>
             Support
