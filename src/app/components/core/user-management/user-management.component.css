@@ -33,3 +33,12 @@
 .is-hoverable.user-table tr:hover .context-menu {
   background-color: #fafafa;
 }
+
+.action-items {
+  position: absolute;
+  right: 0;
+}
+
+#add-user {
+  border-bottom-width: 0;
+}

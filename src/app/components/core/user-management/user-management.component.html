@@ -13,7 +13,7 @@
               <a (click)="showDiv(2)">Roles</a>
             </h6>
           </li>
-          <li style="position: absolute;right: 0;">
+          <li class="action-items">
             <div class="columns is-vcentered m-0 p-0">
               <div *ngIf="seletedTab == 1" class="column is-narrow px-0">
                 <a type="button" (click)="getUsers()" class="button is-small" title="Reload" id="refresh-check">
@@ -21,7 +21,7 @@
                 </a>
               </div>
               <div class="column is-narrow px-0">
-                <a class="is-light" (click)="openCreateUserModal()" style="border-bottom-width: 0">
+                <a id="add-user" class="is-light pl-0" (click)="openCreateUserModal()">
                   <p *ngIf="viewPort !== 'mobile'" class="add-btn">&nbsp; Add User &nbsp;</p>
                   <i class="bi bi-person-plus bi-sm" aria-hidden="true"></i>
                 </a>
@@ -96,12 +96,12 @@
                           Reset Password
                         </a>
                         <a *ngIf="user.status == 'blocked'" class="dropdown-item"
-                          (click)="openModal(user.userId, user.userName, 'unblockUser', 'Are You sure, you want to unblock the user')">
+                          (click)="openModal(user.userId, user.userName, 'unblockUser', 'Are you sure, You want to unblock the user')">
                           <i class="bi bi-unlock bi-xs" aria-hidden="true"></i>
                           Unblock
                         </a>
                         <a class="dropdown-item"
-                          (click)="openModal(user.userId, user.userName, 'deactivateUser', 'Are You sure, you want to deactivate the user')">
+                          (click)="openModal(user.userId, user.userName, 'deactivateUser', 'Are you sure, You want to deactivate the user')">
                           <i class="bi bi-trash bi-xs" aria-hidden="true"></i>
                           Deactivate
                         </a>
