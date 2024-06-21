@@ -49,6 +49,9 @@ export class ListTypeConfigurationComponent implements OnInit {
       let objectConfig = cloneDeep(this.configuration.properties);
       for (let [key, val] of Object.entries(v)) {
         objectConfig[key].value = val;
+        if (objectConfig[key].type == 'json') {
+          objectConfig[key].value = JSON.stringify(objectConfig[key].value);
+        }
       }
       this.initialProperties.push(objectConfig);
       listItem = new FormControl(objectConfig);
@@ -121,6 +124,9 @@ export class ListTypeConfigurationComponent implements OnInit {
       let valueObj = {};
       for (let property in val) {
         valueObj[property] = val[property].value ? val[property].value : val[property].default;
+        if(val[property].type == 'json'){
+          valueObj[property] = JSON.parse(valueObj[property]);
+        }
       }
       listValues.push(valueObj);
     }
