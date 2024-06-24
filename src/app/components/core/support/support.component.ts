@@ -65,15 +65,23 @@ export class SupportComponent implements OnInit, OnDestroy {
   }
 
   public async downloadBundle(bundle): Promise<void> {
-    const blob = await this.supportBundleService.downloadSupportBundle(bundle);
-    const url = window.URL.createObjectURL(blob);
-    // create a custom anchor tag
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = bundle;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    try {
+      const blob = await this.supportBundleService.downloadSupportBundle(bundle);
+      const url = window.URL.createObjectURL(blob);
+      // create a custom anchor tag
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = bundle;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (error) {
+      if (error.status === 0) {
+        console.log('service down ', error);
+      } else {
+        this.alertService.error(error.statusText);
+      }
+    }
   }
 
   goToLink() {
