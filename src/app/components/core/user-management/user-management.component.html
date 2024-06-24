@@ -3,19 +3,19 @@
     <header>
       <div class="tabs">
         <ul>
-          <li [ngClass]="{'is-active': seletedTab == 1}">
+          <li [ngClass]="{'is-active': selectedTab == 1}">
             <h6 class="is-6 has-text-weight-semibold">
               <a (click)="showDiv(1)">User Management</a>
             </h6>
           </li>
-          <li [ngClass]="{'is-active': seletedTab == 2}">
+          <li [ngClass]="{'is-active': selectedTab == 2}">
             <h6 class="is-6 has-text-weight-semibold">
               <a (click)="showDiv(2)">Roles</a>
             </h6>
           </li>
           <li class="action-items">
             <div class="columns is-vcentered m-0 p-0">
-              <div *ngIf="seletedTab == 1" class="column is-narrow px-0">
+              <div *ngIf="selectedTab == 1" class="column is-narrow px-0">
                 <a type="button" (click)="getUsers()" class="button is-small" title="Reload" id="refresh-check">
                   <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
                 </a>
@@ -32,7 +32,7 @@
       </div>
     </header>
     <div class="card-content card-data">
-      <div *ngIf="seletedTab == 1" id="user-management" #management>
+      <div *ngIf="selectedTab == 1" id="user-management" #management>
         <div class="is-responsive">
           <table class="table is-hoverable user-table">
             <thead id="head">
@@ -49,7 +49,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let user of userRecord; let i = index;">
-                <td class="pr-0">
+                <td class="pr-1">
                   <span
                     [title]="'User blocked temporarily ' + user.blockUntil + ', due to multiple login attempts with invalid credentials.'">
                     <i *ngIf="user?.blockUntil" class="bi bi-person-lock has-text-danger" aria-hidden="true"></i>
@@ -123,7 +123,7 @@
           </table>
         </div>
       </div>
-      <div *ngIf="seletedTab == 2">
+      <div *ngIf="selectedTab == 2">
         <table class="table scroll is-responsive">
           <thead>
             <tr>

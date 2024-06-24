@@ -24,7 +24,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   public userRecord;
   public uid: string;
   public roles = [];
-  seletedTab: Number = 1;  // 1: user-management , 2 : roles
+  selectedTab: Number = 1;  // 1: user-management , 2 : roles
   private viewPortSubscription: Subscription;
   viewPort: any = '';
 
@@ -280,9 +280,9 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   }
 
   showDiv(id) {
-    this.seletedTab = 1;
+    this.selectedTab = 1;
     if (id === 2) {
-      this.seletedTab = id;
+      this.selectedTab = id;
     }
   }
 
