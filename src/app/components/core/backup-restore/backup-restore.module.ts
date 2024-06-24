@@ -3,8 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
-
-import { RolesGuard } from '../../../guards';
+import { AccessGuard } from '../../../guards';
 import { PipesModule } from '../../../pipes/pipes.module';
 import { SharedModule } from '../../../shared.module';
 import { BackupRestoreComponent } from './backup-restore.component';
@@ -17,7 +16,7 @@ const routes: Routes = [
   {
     path: '',
     component: BackupRestoreComponent,
-    canActivate: [RolesGuard]
+    canActivate: [AccessGuard]
   }
 ];
 
@@ -35,7 +34,7 @@ const routes: Routes = [
     DirectivesModule,
     SharedModule
   ],
-  providers: [DateFormatterPipe, RolesGuard],
+  providers: [DateFormatterPipe, AccessGuard],
   exports: []
 })
 export class BackupRestoreModule { }

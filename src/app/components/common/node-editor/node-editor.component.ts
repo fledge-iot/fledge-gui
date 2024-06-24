@@ -31,7 +31,7 @@ export class NodeEditorComponent implements OnInit {
   @ViewChild(NotificationServiceWarningComponent, { static: true }) notificationServiceWarningComponent: NotificationServiceWarningComponent;
   @ViewChild(ServiceConfigComponent, { static: true }) notificationServiceConfigComponent: ServiceConfigComponent;
   @ViewChild("rete") container!: ElementRef;
- 
+
   public source = '';
   public from = '';
   public filterPipeline = [];
@@ -47,7 +47,7 @@ export class NodeEditorComponent implements OnInit {
   private exportReadingSubscription: Subscription;
   private serviceDetailsSubscription: Subscription;
   private logsSubscription: Subscription;
-  
+
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
   showLogs: boolean = false;
@@ -70,7 +70,7 @@ export class NodeEditorComponent implements OnInit {
   changedConfig: any;
   changedFilterConfig: any;
   pluginConfiguration;
-  
+
   filterPluginConfiguration;
   advancedConfiguration = [];
   public reenableButton = new EventEmitter<boolean>(false);
@@ -90,7 +90,7 @@ export class NodeEditorComponent implements OnInit {
   deliveryPluginChangedConfig: any;
   ruleConfiguration: any;
   deliveryConfiguration: any;
-  serviceInfo = {added: false, type: '', isEnabled: true, process: '', name: '', isInstalled: false, isAvailable: false};
+  serviceInfo = { added: false, type: '', isEnabled: true, process: '', name: '', isInstalled: false, isAvailable: false };
   btnText = '';
 
   taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };
@@ -154,7 +154,7 @@ export class NodeEditorComponent implements OnInit {
   }
   ngOnInit(): void {
     this.logsSubscription = this.flowEditorService.showLogsInQuickview.subscribe(data => {
-      this.showLogs = data.showLogs ? true: false;
+      this.showLogs = data.showLogs ? true : false;
       this.notification = data?.notification;
       this.serviceName = data?.serviceName ? data.serviceName : this.notification?.name;
       this.showNotificationConfiguration = false;
@@ -176,10 +176,10 @@ export class NodeEditorComponent implements OnInit {
         }
         return;
       }
-      this.showPluginConfiguration = data.showPluginConfiguration ? true: false;
-      this.showFilterConfiguration = data.showFilterConfiguration ? true: false;
-      this.showTaskSchedule = data.showTaskSchedule ? true: false;
-      this.showReadings = data.showReadings ? true: false;
+      this.showPluginConfiguration = data.showPluginConfiguration ? true : false;
+      this.showFilterConfiguration = data.showFilterConfiguration ? true : false;
+      this.showTaskSchedule = data.showTaskSchedule ? true : false;
+      this.showReadings = data.showReadings ? true : false;
       this.serviceName = data?.serviceName;
       this.showLogs = false;
 
@@ -240,7 +240,7 @@ export class NodeEditorComponent implements OnInit {
       } else {
         this.openModal('state-change-dialog');
         this.btnText = data.buttonText;
-      }    
+      }
     });
 
     this.exportReadingSubscription = this.flowEditorService.exportReading.pipe(skip(1)).subscribe(data => {
@@ -262,14 +262,14 @@ export class NodeEditorComponent implements OnInit {
       .subscribe(() => {
         if (this.from == 'north') {
           this.getNorthTasks();
-        } 
+        }
         if (this.from == 'south') {
           this.getSouthservices();
         }
       });
-      if (this.from == 'notifications') {
-        this.getNotifications();
-      }
+    if (this.from == 'notifications') {
+      this.getNotifications();
+    }
     this.removeFilterSubscription = this.flowEditorService.removeFilter.pipe(skip(1)).subscribe(data => {
       if (data) {
         removeNode(data.id);
@@ -332,11 +332,11 @@ export class NodeEditorComponent implements OnInit {
                   data.task = this.task;
                 }
                 if (r.services) {
-                    const services = r.services as Service[];
-                    this.services = services;
-                    this.service = services.find(service => (service.name == this.source));
-                    data.services = services;
-                    data.service = this.service;
+                  const services = r.services as Service[];
+                  this.services = services;
+                  this.service = services.find(service => (service.name == this.source));
+                  data.services = services;
+                  data.service = this.service;
                 }
                 if (r.notifications) {
                   this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
@@ -367,7 +367,7 @@ export class NodeEditorComponent implements OnInit {
 
                       data.isServiceEnabled = this.serviceInfo.isEnabled;
                       createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
-                    }       
+                    }
                   });
                 }
                 if (r.result) {
@@ -392,13 +392,13 @@ export class NodeEditorComponent implements OnInit {
             else {
               if (this.from !== 'notifications') {
                 createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
-              }       
+              }
             }
-          });       
+          });
       }
     }
   }
-  
+
   getChangedNotificationConfig(changedConfiguration: any) {
     this.notificationChangedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.pluginConfiguration);
   }
@@ -526,7 +526,7 @@ export class NodeEditorComponent implements OnInit {
           if (this.from === 'notifications') {
             data.channel['readonly'] = 'true';
             data.rule['readonly'] = 'true';
-          }        
+          }
           this.category = { name: this.serviceName, config: data };
           this.pluginConfiguration = cloneDeep({ name: this.serviceName, config: data });
         },
@@ -923,7 +923,7 @@ export class NodeEditorComponent implements OnInit {
   }
 
   deleteService() {
-    if(this.from === 'notifications') {
+    if (this.from === 'notifications') {
       this.deleteNotification();
       return;
     }
@@ -1087,9 +1087,9 @@ export class NodeEditorComponent implements OnInit {
   /**
      * Open Configure Service modal
      */
-   openServiceConfigureModal() {
+  openServiceConfigureModal() {
     this.serviceInfo.process = 'notification';
-    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo } });
   }
 
   ngOnDestroy() {
@@ -1102,7 +1102,7 @@ export class NodeEditorComponent implements OnInit {
     this.exportReadingSubscription.unsubscribe();
     this.logsSubscription.unsubscribe();
     if (this.from === 'notifications') {
-      this.serviceDetailsSubscription.unsubscribe();
+      this.serviceDetailsSubscription?.unsubscribe();
     }
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
