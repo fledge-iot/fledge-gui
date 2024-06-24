@@ -118,8 +118,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   calculateBlockUserTime(time: string): string {
     const blockUntilTime = this.dateFormatter.transform(time, 'YYYY-MM-DD HH:mm:ss');
     const blockUntilTimestamp = moment(blockUntilTime);
-    const currentTime = moment().utc();
-    let timeDifference = blockUntilTimestamp.isAfter(currentTime) ? blockUntilTimestamp.fromNow() : blockUntilTimestamp.from(currentTime);
+    let timeDifference = blockUntilTimestamp.fromNow();
     timeDifference = timeDifference.toString().replace('in', 'for')
     return timeDifference;
   }
@@ -213,7 +212,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     //     });
   }
 
-  unblockedUser(userId: string) {
+  unblockUser(userId: string) {
     /** request started */
     this.ngProgress.start();
     this.userService.unblockUser(userId).
