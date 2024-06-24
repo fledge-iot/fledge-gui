@@ -8,12 +8,13 @@ import { ChartModule } from '../../common/chart';
 import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
 import { Routes, RouterModule } from '@angular/router';
 import { SupportComponent } from './support.component';
-
+import { AccessGuard } from '../../../guards';
 
 const routes: Routes = [
   {
     path: '',
-    component: SupportComponent
+    component: SupportComponent,
+    canActivate: [AccessGuard]
   }
 ];
 
@@ -28,7 +29,7 @@ const routes: Routes = [
     NumberInputDebounceModule,
     ChartModule
   ],
-  providers: [StatisticsService, DateFormatterPipe],
+  providers: [StatisticsService, DateFormatterPipe, AccessGuard],
   exports: []
 })
 export class SupportModule { }
