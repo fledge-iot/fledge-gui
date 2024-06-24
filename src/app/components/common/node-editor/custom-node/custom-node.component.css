@@ -145,12 +145,19 @@
   height: 1rem !important;
 }
 
-.add-service {
-  height: 92px;
+.add-service, .add-task {
   width: 198px;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.add-service {
+  height: 86px;
+}
+
+.add-task {
+  height: 89px;
 }
 
 .input-container {
@@ -193,7 +200,20 @@
   margin-left: 10px;
 }
 
-
 .trash-icon {
   visibility: hidden !important;
+}
+
+.disabled-node .plus-icon {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.disabled {
+  pointer-events: none;
+}
+
+:host:has(div.disabled-node) {
+  background: whitesmoke;
+  cursor: not-allowed !important;
 }

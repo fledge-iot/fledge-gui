@@ -99,7 +99,7 @@
 }
 
 .add-notification {
-  height: 92px;
+  height: 96px;
   width: 198px;
   display: flex;
   justify-content: center;
@@ -147,7 +147,17 @@
   color: #dab600;
 }
 
-.disabled-node, .disabled-node .disabled .plus-icon {
+.disabled-node .plus-icon {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.disabled {
+  pointer-events: none;
+}
+
+:host:has(div.disabled-node) {
+  background: whitesmoke;
   cursor: not-allowed !important;
 }
 
