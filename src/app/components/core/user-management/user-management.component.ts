@@ -162,6 +162,18 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     this.updateUserModal.toggleModal(true);
   }
 
+  action(userData: any) {
+    if (userData.key == 'deactivateUser') {
+      this.deleteUser(userData.id);
+    } else if (userData.key == 'enableUser') {
+      this.enableUser(userData.id);
+    } else if (userData.key == 'clearSessions') {
+      this.clearAllSessions(userData.key);
+    } else if (userData.key == 'unblockUser') {
+      this.unblockUser(userData.id);
+    }
+  }
+
   deleteUser(userId) {
     console.log('Deleting User:', userId);
     /** request started */

@@ -15,15 +15,14 @@ export class AlertDialogComponent implements OnInit, OnChanges {
   @Output() deleteNotification = new EventEmitter<Object>();
   @Output() deleteNotificationService = new EventEmitter<Object>();
   @Output() deleteTask = new EventEmitter<Object>();
-  @Output() deleteUserService = new EventEmitter<Number>();
-  @Output() unblockUserService = new EventEmitter<Number>();
+
   @Output() deletePipeline = new EventEmitter<Number>();
   @Output() deleteCertificate = new EventEmitter<Object>();
   @Output() logoutUserService = new EventEmitter<Number>();
   @Output() createBackup = new EventEmitter<Number>();
   @Output() restoreBackup = new EventEmitter<Number>();
   @Output() deleteBackup = new EventEmitter<Number>();
-  @Output() logoutAllUserSessionsService = new EventEmitter<Number>();
+  @Output() userActionService = new EventEmitter<any>();
   modalId = '';
 
   constructor() { }
@@ -114,12 +113,8 @@ export class AlertDialogComponent implements OnInit, OnChanges {
         this.delete.emit(this.childData.id);
         this.toggleModal(false);
       }
-      if (this.childData.key === 'deactivateUser') {
-        this.deleteUserService.emit(this.childData.id);
-        this.toggleModal(false);
-      }
-      if (this.childData.key === 'unblockUser') {
-        this.unblockUserService.emit(this.childData.id);
+      if (['deactivateUser', 'enableUser', 'unblockUser', 'clearSessions'].includes(this.childData.key)) {
+        this.userActionService.emit({ key: this.childData.key, id: this.childData.id });
         this.toggleModal(false);
       }
       if (this.childData.key === 'deleteCertificate') {
@@ -128,10 +123,6 @@ export class AlertDialogComponent implements OnInit, OnChanges {
       }
       if (this.childData.key === 'deleteKey') {
         this.deleteCertificate.emit({ name: this.childData.name, type: 'key' });
-        this.toggleModal(false);
-      }
-      if (this.childData.key === 'clearSessions') {
-        this.logoutAllUserSessionsService.emit(this.childData.id);
         this.toggleModal(false);
       }
       if (this.childData.key === 'logout') {
