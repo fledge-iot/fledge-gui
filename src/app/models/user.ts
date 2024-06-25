@@ -7,4 +7,5 @@ export class User {
   description: string;
   confirmPassword: string;
   role_id: number;
+  blockUntil?: string;
 }

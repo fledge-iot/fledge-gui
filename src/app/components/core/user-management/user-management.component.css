@@ -1,45 +1,44 @@
 .fa::before {
-    display: inline-block;
+  display: inline-block;
 }
 
 .tabs {
-    position: relative;
-}
-
-.columns {
-    margin-top: 10px;
-}
-
-.column {
-    padding-top: 0px;
+  position: relative;
 }
 
 .context-menu {
-    border: none;
-}
-
-.user-col {
-    vertical-align: middle;
+  border: none;
 }
 
 @media only screen and (min-width: 1024px) {
-    .user-table, .card-data {
-        overflow: visible;
-    }
+
+  .user-table,
+  .card-data {
+    overflow: visible;
+  }
 }
 
 .user-table {
-    width: 92%;
+  width: 92%;
 }
 
 .tags-groups {
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 .desc-col {
-    max-width: 18rem;
+  max-width: 18rem;
 }
 
 .is-hoverable.user-table tr:hover .context-menu {
-    background-color: #fafafa; 
+  background-color: #fafafa;
+}
+
+.action-items {
+  position: absolute;
+  right: 0;
+}
+
+#add-user {
+  border-bottom-width: 0;
 }
