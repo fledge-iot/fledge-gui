@@ -73,8 +73,12 @@
           <app-list-type-configuration *ngIf="g?.type == 'list' && selectedGroup == g.group" [configuration]="g.config"
            [group]="g.group" [from]="from" (changedConfig)="getChangedConfiguration($event)"
             (formStatusEvent)="formStatus($event)"></app-list-type-configuration>
+
+          <app-kv-list-type-configuration *ngIf="g?.type == 'kvlist' && selectedGroup == g.group" [configuration]="g.config"
+           [group]="g.group" [from]="from" (changedConfig)="getChangedConfiguration($event)"
+            (formStatusEvent)="formStatus($event)"></app-kv-list-type-configuration>
             
-          <app-show-configuration *ngIf="g?.type != 'bucket' && g?.type != 'list'" [hidden]="selectedGroup !== g.group"
+          <app-show-configuration *ngIf="g?.type != 'bucket' && g?.type != 'list' && g?.type != 'kvlist'" [hidden]="selectedGroup !== g.group"
             [groupConfiguration]="g.config" [group]="g.group" [from]="from" [selectedGroup]="selectedGroup"
             [fullConfiguration]="category.config" (event)="getChangedConfiguration($event)"
             (formStatusEvent)="formStatus($event)"></app-show-configuration>

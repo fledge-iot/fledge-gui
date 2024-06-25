@@ -82,6 +82,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   categeryConfiguration() {
     let modelConfig = [];
     let listConfig = [];
+    let kvlistConfig = [];
     this.groups = [];
     const configItems = Object.keys(this.category.config).map(k => {
       if (this.category.config[k].type == 'bucket') {
@@ -92,9 +93,13 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         this.category.config[k].key = k;
         listConfig.push(this.category.config[k]);
       }
+      else if(this.category.config[k].type == 'kvlist') {
+        this.category.config[k].key = k;
+        kvlistConfig.push(this.category.config[k]);
+      }
       this.category.config[k].key = k;
       return this.category.config[k];
-    }).filter(obj => !(obj.readonly || obj.type == 'bucket' || obj.type == 'list')); // remove readonly, type=bucket and type=list from config array
+    }).filter(obj => !(obj.readonly || obj.type == 'bucket' || obj.type == 'list' || obj.type == 'kvlist')); // remove readonly, type=bucket, type=list and type=kvlist from config array
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
       const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic";
@@ -112,6 +117,15 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
     if (listConfig.length > 0) {
       listConfig.forEach(config => {
+        if (!config.hasOwnProperty('value')) {
+          config.value = config.default;
+        }
+        this.groups.push({ category: this.category.name, group: (config.displayName ? config.displayName : config.description), config: config, type: config.type, key: config.key });
+      });
+    }
+
+    if (kvlistConfig.length > 0) {
+      kvlistConfig.forEach(config => {
         if (!config.hasOwnProperty('value')) {
           config.value = config.default;
         }
