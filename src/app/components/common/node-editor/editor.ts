@@ -28,7 +28,6 @@ import { North } from "./nodes/north";
 import { AddTask } from "./nodes/add-task";
 import { AddNotification } from "./nodes/add-notification";
 import { ChannelControl, RuleControl, NotificationTypeControl, ServiceStatusControl } from "./controls/notification-custom-control";
-import { RolesService } from "../../../services/roles.service";
 import { AssetControl, ReadingControl } from "./controls/south-custom-control";
 import { SentReadingsControl } from './controls/north-custom-control';
 import { EnabledControl, StatusControl } from './controls/common-custom-control';
@@ -184,9 +183,9 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   setCustomBackground(area) // Set custom background
   
   if (data.from !== 'notifications') {
-    createNodesAndConnections(socket, editor, arrange, area, rolesService, data);
+    createNodesAndConnections(socket, editor, arrange, area, data);
   } else {
-    nodesGrid(area, data.notifications, socket, rolesService, data.from, data.isServiceEnabled);
+    nodesGrid(area, data.notifications, socket, data.from, data.isServiceEnabled);
   }
 }
 
@@ -194,7 +193,6 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
   editor: NodeEditor<Schemes>,
   arrange: AutoArrangePlugin<Schemes, never>,
   area: AreaPlugin<Schemes, AreaExtra>,
-  rolesService: RolesService,
   data: any) {
 
   if (data.source) {
@@ -252,7 +250,7 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
   }
   else {
     const nodes = data.from == 'south' ? data.services : data.tasks;
-    nodesGrid(area, nodes, socket, rolesService, data.from);
+    nodesGrid(area, nodes, socket, data.from);
   }
 }
 
@@ -271,7 +269,6 @@ function setCustomBackground(area: AreaPlugin<Schemes, AreaExtra>,) {
 async function nodesGrid(area: AreaPlugin<Schemes,
   AreaExtra>, nodeItems: [],
   socket: ClassicPreset.Socket,
-  rolesService: RolesService,
   from: string, isServiceAvailable = null) {
   const canvasWidth = area.container.parentElement.clientWidth;
   const itemCount = Math.round(canvasWidth / 275);
@@ -288,13 +285,9 @@ async function nodesGrid(area: AreaPlugin<Schemes,
       }
     }
   }
-  if (rolesService.hasEditPermissions()) {
-    const service = from == 'south' ? new AddService() : from == 'north' ? new AddTask() : new AddNotification();
-    if (['south', 'north'].includes(from) || isServiceAvailable) {
-      await editor.addNode(service);
-      await area.translate(service.id, { x: 250 * j, y: 150 * k });
-    }
-  }
+  const service = from == 'south' ? new AddService() : from == 'north' ? new AddTask() : new AddNotification(isServiceAvailable);
+  await editor.addNode(service);
+  await area.translate(service.id, { x: 250 * j, y: 150 * k });
 }
 
 export function getUpdatedFilterPipeline() {
