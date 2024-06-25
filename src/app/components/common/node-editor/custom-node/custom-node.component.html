@@ -172,7 +172,7 @@
     </div>
   </ng-container>
   <ng-template #addServiceTemplate>
-    <div [ngClass]="{'disabled-node': !rolesService.hasEditPermissions()}" [ngClass]="from == 'north' ? 'add-task' : 'add-service'">
+    <div [ngClass]="{'disabled-node': !rolesService.hasEditPermissions(), 'add-task': from == 'north', 'add-service': from == 'south'}">
       <span class="has-tooltip-bottom has-tooltip-arrow tooltip" [ngClass]="rolesService.hasEditPermissions() ? 'is-hovered': 'disabled'"
         [attr.data-tooltip]="from == 'north'? 'Add Instance': 'Add Service'" (click)="navToAddServicePage()">
         <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
