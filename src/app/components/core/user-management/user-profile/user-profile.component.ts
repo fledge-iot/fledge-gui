@@ -15,7 +15,7 @@ export class UserProfileComponent implements OnInit {
   public childData = {};
   isShow = false;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
-
+  @ViewChild('profileForm', { static: true }) profileForm: NgForm;
 
   constructor(private authService: AuthService,
     private alertService: AlertService,
@@ -185,6 +185,7 @@ export class UserProfileComponent implements OnInit {
         () => {
           this.ngProgress.done();
           this.alertService.success('User updated successfully');
+          this.profileForm.form.markAsPristine();
         },
         error => {
           this.ngProgress.done();

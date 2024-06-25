@@ -1,10 +1,12 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-
 import { AlertService, AuthService, UserService, ProgressBarService, SharedService, RolesService } from '../../../services';
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
 import { Subscription } from 'rxjs';
+import { DateFormatterPipe } from '../../../pipes';
+import { User } from '../../../models';
+import moment from 'moment';
 
 @Component({
   selector: 'app-user-management',
@@ -22,7 +24,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   public userRecord;
   public uid: string;
   public roles = [];
-  seletedTab: Number = 1;  // 1: user-management , 2 : roles
+  selectedTab: Number = 1;  // 1: user-management , 2 : roles
   private viewPortSubscription: Subscription;
   viewPort: any = '';
 
@@ -31,6 +33,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     private userService: UserService,
     public ngProgress: ProgressBarService,
     private sharedService: SharedService,
+    private dateFormatter: DateFormatterPipe,
     private roleService: RolesService
   ) { }
 
@@ -76,6 +79,13 @@ export class UserManagementComponent implements OnInit, OnDestroy {
             });
           });
           this.userRecord = users.sort();
+          this.userRecord = this.userRecord.map((user: User) => {
+            if (user.blockUntil) {
+              user.blockUntil = this.calculateBlockUserTime(user.blockUntil);
+            }
+            return user;
+          })
+
           this.ngProgress.done();
         },
         error => {
@@ -90,17 +100,27 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   }
 
   getAccessMethod(accessMethod) {
+    let method;
     switch (accessMethod) {
       case 'cert':
-        return 'Certificate';
+        method = 'Certificate';
         break;
       case 'pwd':
-        return 'Password';
+        method = 'Password';
         break;
       default:
-        return 'Any';
+        method = 'Any';
         break;
     }
+    return method;
+  }
+
+  calculateBlockUserTime(time: string): string {
+    const blockUntilTime = this.dateFormatter.transform(time, 'YYYY-MM-DD HH:mm:ss');
+    const blockUntilTimestamp = moment(blockUntilTime);
+    let timeDifference = blockUntilTimestamp.fromNow();
+    timeDifference = timeDifference.toString().replace('in', 'for')
+    return timeDifference;
   }
 
   /**
@@ -140,6 +160,18 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     this.updateUserModal.setUser(user, key);
     // call child component method to toggle modal
     this.updateUserModal.toggleModal(true);
+  }
+
+  action(userData: any) {
+    if (userData.key == 'deactivateUser') {
+      this.deleteUser(userData.id);
+    } else if (userData.key == 'enableUser') {
+      this.enableUser(userData.id);
+    } else if (userData.key == 'clearSessions') {
+      this.clearAllSessions(userData.key);
+    } else if (userData.key == 'unblockUser') {
+      this.unblockUser(userData.id);
+    }
   }
 
   deleteUser(userId) {
@@ -192,6 +224,28 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     //     });
   }
 
+  unblockUser(userId: string) {
+    /** request started */
+    this.ngProgress.start();
+    this.userService.unblockUser(userId).
+      subscribe(
+        (data) => {
+          /** request completed */
+          this.ngProgress.done();
+          this.alertService.success(data['message']);
+          this.getUsers();
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        });
+  }
+
   public toggleDropdown(contextMenu) {
     const id = 'dropdown-' + contextMenu;
     const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
@@ -226,9 +280,9 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   }
 
   showDiv(id) {
-    this.seletedTab = 1;
+    this.selectedTab = 1;
     if (id === 2) {
-      this.seletedTab = id;
+      this.selectedTab = id;
     }
   }
 
