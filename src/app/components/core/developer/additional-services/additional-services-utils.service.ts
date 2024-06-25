@@ -20,8 +20,9 @@ export class AdditionalServicesUtils {
   servicesSchedules = [];
   pollingScheduleID: string;
   availableServicePkgs = [];
+  expectedServices = [];
 
-  expectedServices = [
+  allExpectedServices = [
     {
       "package": "fledge-service-notification",
       "process": "notification",
@@ -71,8 +72,10 @@ export class AdditionalServicesUtils {
         private response: ResponseHandler){
     }
 
-
-    public getAllServiceStatus(autoRefresh) {
+    public getAllServiceStatus(autoRefresh, from = null) {
+      if (from) {
+        this.expectedServices = this.allExpectedServices.filter((s => (s.process === from)));
+      }
       this.servicesApiService.getAllServices()
         .pipe(takeUntil(this.destroy$))
         .subscribe(

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
@@ -60,7 +60,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     private sharedService: SharedService,
     private additionalServicesUtils: AdditionalServicesUtils,
     public rolesService: RolesService) {
-      this.additionalServicesUtils.getAllServiceStatus(false);
+      this.additionalServicesUtils.getAllServiceStatus(false, 'notification');
     }
 
   ngOnInit() {
@@ -93,7 +93,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   refreshServiceInfo() {
-    this.additionalServicesUtils.getAllServiceStatus(false);
+    this.additionalServicesUtils.getAllServiceStatus(false, 'notification');
   }
 
   public getNotificationInstance() {

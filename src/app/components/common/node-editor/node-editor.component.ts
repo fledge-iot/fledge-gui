@@ -129,7 +129,7 @@ export class NodeEditorComponent implements OnInit {
         this.getNorthboundServices();
       }
       if (this?.from === 'notifications') {
-        this.additionalServicesUtils.getAllServiceStatus(false);
+        this.additionalServicesUtils.getAllServiceStatus(false, 'notification');
         this.getNotificationInstances();
       }
 
@@ -140,7 +140,7 @@ export class NodeEditorComponent implements OnInit {
   }
 
   refreshServiceInfo() {
-    this.additionalServicesUtils.getAllServiceStatus(false);
+    this.additionalServicesUtils.getAllServiceStatus(false, 'notification');
   }
 
   @HostListener('document:keydown.delete', ['$event']) onKeydownHandler() {

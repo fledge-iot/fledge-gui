@@ -77,7 +77,7 @@ export class AdditionalServiceModalComponent {
       if (service?.process) {
         this.fromListPage = service.fromListPage;
         
-        const openedServiceModal = this.additionalServicesUtils.expectedServices.find(es => es.process === service.process);
+        const openedServiceModal = this.additionalServicesUtils.allExpectedServices.find(es => es.process === service.process);
         service.type = openedServiceModal.type;
         service.schedule_process = openedServiceModal.schedule_process;
         service.package = openedServiceModal.package;
