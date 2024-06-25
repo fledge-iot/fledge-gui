@@ -11,7 +11,7 @@
   user-select: none;
 }
 
-:host:has(div.add-service) {
+:host:has(div.add-service), :host:has(div.add-task) {
   border: 2px dotted silver !important;
 }
 
