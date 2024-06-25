@@ -71,10 +71,10 @@ export class CustomNotificationNodeComponent implements OnChanges {
 
   ngOnChanges(): void {
     this.nodeId = this.data.id;
-    if (this.data.label === 'Notification') {
+    if (!isEmpty(this.data.controls)) {
       this.elRef.nativeElement.style.borderColor = "#0E9BD8";
       this.isNotificationNode = true;
-      if (!isEmpty(this.data.controls)) {
+      if (this.data.label === 'Notification') {
         this.notification.name = this.data.controls.nameControl['name'];
         this.notification.channel = this.data.controls.channelControl['pluginName'];
         this.notification.rule = this.data.controls.ruleControl['pluginName'];
@@ -84,7 +84,9 @@ export class CustomNotificationNodeComponent implements OnChanges {
         // TODO (OPTIMIZE): API call for bolt (delivery/notify plugin enable state) icon highlighting
         this.isDeliveryEnabled();
       }
-    } 
+        this.notification.isServiceEnabled = this.data.controls.serviceStatusControl['enabled'];
+    }
+    
     this.cdr.detectChanges();
     requestAnimationFrame(() => this.rendered());
     this.seed++; // force render sockets
