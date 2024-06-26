@@ -104,7 +104,7 @@ Set API base URL in `environments/environment.prod.ts`, You can always change it
 
 | Library                        | Version | Latest Stable (? Y/n) | License |
 | ------------------------------ | ------- | --------------------- | ------- |
-| chart.js                       | 4.3.0   | 3.9.1                 | MIT     |
+| chart.js                       | 4.3.0   | 4.4.3                 | MIT     |
 | moment                         | 2.29.3  | 2.29.3                | MIT     |
 | ngx-progressbar                | 8.0.0   | 9.0.0                 | MIT     |
 | node-git-describe              | 4.1.0   | 4.1.0                 | MIT     |
