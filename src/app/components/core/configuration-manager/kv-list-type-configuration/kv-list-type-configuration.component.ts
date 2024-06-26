@@ -101,48 +101,45 @@ export class KvListTypeConfigurationComponent implements OnInit {
               item.value = Number.parseFloat('0').toFixed(1); // set default 0.0 if no value passed in the input field
           }
         }
+        if(this.configuration.items == 'object') {
+          item.value = this.extractKvListValues(item.value);
+        }
         transformedObject[item.key] = item.value;
       });
 
       // this.form.get(this.configuration.key)?.patchValue(JSON.stringify(transformedObject))
       // this.formState.emit(this.kvListItems.valid);
-      if(this.configuration.items == 'object') {
-        data = this.extractListValues(data);
-      }
-      this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(data) });
+      this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(transformedObject) });
       this.formStatusEvent.emit({'status': this.kvListItems.valid, 'group': this.group});
     })
   }
 
   getChangedConfiguration(index: string, propertyChangedValues: any) {
+    const transformedObject = {};
     for (let [ind, val] of this.kvListItems.value.entries()) {
-      for (let property in val) {
+      for (let property in val.value) {
         if(ind==index && property == Object.keys(propertyChangedValues)[0]) {
-          val[property].value = Object.values(propertyChangedValues)[0];
+          val.value[property].value = Object.values(propertyChangedValues)[0];
         }
       }
       this.kvListItems.value[ind] = val;
+      transformedObject[val.key] = this.extractKvListValues(val.value);
     }
-    let listValues = this.extractListValues(this.kvListItems.value);
-    this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(listValues) });
+    this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(transformedObject) });
   }
 
   formStatus(formState: any) {
     this.formStatusEvent.emit(formState);
   }
 
-  extractListValues(value) {
-    let listValues = [];
-    for (let val of value) {
-      let valueObj = {};
-      for (let property in val) {
-        valueObj[property] = val[property].value ? val[property].value : val[property].default;
-        if(val[property].type == 'json'){
-          valueObj[property] = JSON.parse(valueObj[property]);
-        }
+  extractKvListValues(value) {
+    let valueObj = {};
+    for (let property in value) {
+      valueObj[property] = value[property].value ? value[property].value : value[property].default;
+      if(value[property].type == 'json'){
+        valueObj[property] = JSON.parse(valueObj[property]);
       }
-      listValues.push(valueObj);
     }
-    return listValues;
+    return valueObj;
   }
 }
