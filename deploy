@@ -21,7 +21,7 @@
 
 set -e
 
-__version__="2.4.0"
+__version__="2.5.0"
 if [ -f "package.json" ];
   then
 	__version__=`cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[" ,]//g'`
