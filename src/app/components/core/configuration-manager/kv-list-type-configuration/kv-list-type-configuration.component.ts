@@ -101,10 +101,11 @@ export class KvListTypeConfigurationComponent implements OnInit {
               item.value = Number.parseFloat('0').toFixed(1); // set default 0.0 if no value passed in the input field
           }
         }
+        let itemValue = item.value;
         if(this.configuration.items == 'object') {
-          item.value = this.extractKvListValues(item.value);
+          itemValue = this.extractKvListValues(item.value);
         }
-        transformedObject[item.key] = item.value;
+        transformedObject[item.key] = itemValue;
       });
 
       // this.form.get(this.configuration.key)?.patchValue(JSON.stringify(transformedObject))
@@ -126,6 +127,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
       transformedObject[val.key] = this.extractKvListValues(val.value);
     }
     this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(transformedObject) });
+    this.formStatusEvent.emit({'status': this.kvListItems.valid, 'group': this.group});
   }
 
   formStatus(formState: any) {
