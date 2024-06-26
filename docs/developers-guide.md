@@ -1,4 +1,4 @@
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.4
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.12
 
 ## Code scaffolding
 
@@ -94,36 +94,29 @@ Set API base URL in `environments/environment.prod.ts`, You can always change it
 
 | Library         | Version | Latest Stable (? Y/n) | License    |
 | --------------- | ------- | --------------------- | ---------- |
-| Angular         | 13.2.0  | 14.1.3                | MIT        |
-| Angular CLI     | 13.2.4  | 14.1.3                | MIT        |
-| TypeScript      | 4.5.2   | 4.5.2                 | Apache 2.0 |
-| rxjs            | 6.6.6   | 6.6.6                 | Apache 2.0 |
-| Bulma css       | 0.8.2   | 0.9.4                 | MIT        |
-| Font-Awesome    | 5.6.3   | 6.1.2                 | MIT        |
-| Bootstrap-Icons | 1.11.1  | 1.11.1                | MIT        |
+| Angular         | 16.2.12 | 18.0.4                | MIT        |
+| Angular CLI     | 16.2.12 | 18.0.4                | MIT        |
+| Bulma css       | 0.9.4   | 1.0.1                 | MIT        |
+| Font-Awesome    | 6.4.0   | 6.4.0                 | MIT        |
+| Bootstrap-Icons | 1.11.1  | 1.11.3                | MIT        |
 
 #### Dev
 
 | Library                        | Version | Latest Stable (? Y/n) | License |
 | ------------------------------ | ------- | --------------------- | ------- |
-| chart.js                       | 2.9.4   | 3.9.1                 | MIT     |
+| chart.js                       | 4.3.0   | 3.9.1                 | MIT     |
 | moment                         | 2.29.3  | 2.29.3                | MIT     |
 | ngx-progressbar                | 8.0.0   | 9.0.0                 | MIT     |
 | node-git-describe              | 4.1.0   | 4.1.0                 | MIT     |
 | plotly.js                      | 2.12.1  | 2.12.1                | MIT     |
 | @ctrl/ngx-codemirror           | 5.1.1   | 5.1.1                 | MIT     |
 | codemirror                     | 5.65.3  | 5.65.3                | MIT     |
-| jsonlint-mod                   | 1.7.6   | 1.7.6                 | MIT     |
 | @ng-select/ng-select           | 8.1.1   | 8.1.1                 | MIT     |
 | @ali-hm/angular-tree-component | 12.0.5  | 12.0.5                | MIT     |
 | @kurkle/color                  | 0.1.9   | 0.1.9                 | MIT     |
 | Animate.css                    | 4.1.1   | 4.1.1                 | MIT     |
-| ngx-build-plus                 | 13.0.1  | 14.0.0                | MIT     |
 | bulma-toast                    | 2.4.2   | 2.4.2                 | MIT     |
-| cypress                        | 13.1.0  | 13.1.0                | MIT     |
-| cypress-junit-reporter         | 1.3.1   | 1.3.1                 | MIT     |
-| cypress-mochawesome-reporter   | 3.6.0   | 3.6.0                 | MIT     |
-| cypress-multi-reporters        | 1.6.3   | 1.6.3                 | MIT     |
+
 
 ## Update Dependencies
 
