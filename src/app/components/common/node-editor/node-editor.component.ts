@@ -16,7 +16,7 @@ import { cloneDeep, isEmpty } from 'lodash';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import { NorthTask } from '../../core/north/north-task';
 import { Notification } from '../../core/notifications/notification';
-import { NotificationServiceWarningComponent } from '../../core/notifications/notification-service-warning/notification-service-warning.component';
+import { ServiceWarningComponent } from '../../core/notifications/service-warning/service-warning.component';
 import { ServiceConfigComponent } from '../../core/notifications/service-config/service-config.component';
 import Utils, { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
 import { DocService } from '../../../services/doc.service';
@@ -28,7 +28,7 @@ import { DocService } from '../../../services/doc.service';
 })
 export class NodeEditorComponent implements OnInit {
 
-  @ViewChild(NotificationServiceWarningComponent, { static: true }) notificationServiceWarningComponent: NotificationServiceWarningComponent;
+  @ViewChild(ServiceWarningComponent, { static: true }) notificationServiceWarningComponent: ServiceWarningComponent;
   @ViewChild(ServiceConfigComponent, { static: true }) notificationServiceConfigComponent: ServiceConfigComponent;
   @ViewChild("rete") container!: ElementRef;
 

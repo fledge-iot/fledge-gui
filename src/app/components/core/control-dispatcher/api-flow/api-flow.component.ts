@@ -1,9 +1,13 @@
-import { Component, OnInit, EventEmitter, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, EventEmitter, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ControlAPIFlowService, ProgressBarService, RolesService, SharedService, AlertService } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { Validators, UntypedFormGroup, UntypedFormBuilder, AbstractControl, UntypedFormArray } from '@angular/forms';
+import { ServiceWarningComponent } from '../../notifications/service-warning/service-warning.component';
+import { AdditionalServicesUtils } from '../../developer/additional-services/additional-services-utils.service';
+
 import { UserService } from '../../../../services';
 import { ControlUtilsService } from '../control-utils.service';
 
@@ -11,7 +15,6 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { APIFlow, User } from '../../../../../../src/app/models';
-import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-dispatcher-service.component';
 
 @Component({
     selector: 'app-api-flow',
@@ -19,17 +22,15 @@ import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-d
     styleUrls: ['./api-flow.component.css']
 })
 
-export class APIFlowComponent implements OnInit {
-  @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
-
+export class APIFlowComponent implements OnInit, OnDestroy {
+  @ViewChild(ServiceWarningComponent, { static: true }) notificationServiceWarningComponent: ServiceWarningComponent;
+  
     apiFlows = [];
 
     // To show Entry point name and description on modal, we need these variables
     epName: string = '';
     description: string = '';
 
-    isServiceAvailable = false;
-    
     loggedInUsername: string;
     allUsers: User[];
   
@@ -42,8 +43,9 @@ export class APIFlowComponent implements OnInit {
 
     public reenableButton = new EventEmitter<boolean>(false);
 
-    showConfigureModal = false;
-    serviceInfo: {};
+    private serviceDetailsSubscription: Subscription;
+    
+    serviceInfo = { added: false, type: '', isEnabled: true, process: 'dispatcher', name: '', isInstalled: false };
 
     constructor(
         private alertService: AlertService,
@@ -56,6 +58,7 @@ export class APIFlowComponent implements OnInit {
         public sharedService: SharedService,
         private router: Router,
         private controlUtilsService: ControlUtilsService,
+        private additionalServicesUtils: AdditionalServicesUtils,
         public rolesService: RolesService) {
             this.apiFlowForm = this.fb.group({
                 variables: this.fb.array([])
@@ -65,11 +68,32 @@ export class APIFlowComponent implements OnInit {
             .subscribe(value => {
                 this.loggedInUsername = value.userName;
             });
+            this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
       }
 
     ngOnInit() {
+      this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
+        if (service) {
+          const dispatcherServiceDetail = service.find(s => s.process == 'dispatcher');
+          if (dispatcherServiceDetail) {
+            this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(dispatcherServiceDetail?.state) ? false : true;
+            this.serviceInfo.isInstalled = true;
+            this.serviceInfo.added = dispatcherServiceDetail?.added;
+            this.serviceInfo.name = dispatcherServiceDetail?.name;
+          } else {
+            this.serviceInfo.isEnabled = false;
+            this.serviceInfo.isInstalled = false;
+            this.serviceInfo.added = false;
+            this.serviceInfo.name = '';
+          }       
+        }
+      });
       this.getAPIFlows();
       this.resetEditMode();
+    }
+
+    refreshServiceInfo() {
+      this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
     }
 
     addParameter(param) {
@@ -252,22 +276,6 @@ export class APIFlowComponent implements OnInit {
       this.dialogService.open(id);
     }
 
-    onNotify(handleEvent) {
-      if (handleEvent) {
-        this.addDispatcherServiceComponent.getInstalledServicesList();
-      }
-      return;
-    }
-
-    getServiceDetail(event) {
-      this.showConfigureModal = event.isOpen;
-      delete event.isOpen;
-      this.serviceInfo = event;
-      if (this.showConfigureModal) {
-       this.openServiceConfigureModal(); 
-      }
-    }
-
     /**
      * Open Configure Service modal
      */
@@ -282,5 +290,9 @@ export class APIFlowComponent implements OnInit {
 
     goToLink(urlSlug: string) {
       this.docService.goToSetPointControlDocLink(urlSlug);
+    }
+
+    ngOnDestroy() {
+      this.serviceDetailsSubscription.unsubscribe();
     }
 }

@@ -2,12 +2,12 @@ import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { orderBy } from 'lodash';
-import { AlertService, ProgressBarService, RolesService } from '../../../../../services';
+import { AlertService, ProgressBarService, RolesService, SharedService } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import { DocService } from '../../../../../services/doc.service';
-import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/add-dispatcher-service.component';
+import { AdditionalServicesUtils } from '../../../developer/additional-services/additional-services-utils.service';
 
 @Component({
   selector: 'app-control-scripts-list',
@@ -17,14 +17,13 @@ import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/ad
 export class ControlScriptsListComponent implements OnInit {
   controlScripts: any = [];
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
-  @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
 
   script;
   private subscription: Subscription;
-  isServiceAvailable = false;
+  private serviceDetailsSubscription: Subscription;
   public reenableButton = new EventEmitter<boolean>(false);
-  showConfigureModal = false;
-  serviceInfo;
+  
+  serviceInfo = { added: false, type: '', isEnabled: true, process: 'dispatcher', name: '', isInstalled: false };
 
   constructor(
     private controlService: ControlDispatcherService,
@@ -33,16 +32,39 @@ export class ControlScriptsListComponent implements OnInit {
     public docService: DocService,
     private ngProgress: ProgressBarService,
     private router: Router,
+    public sharedService: SharedService,
+    private additionalServicesUtils: AdditionalServicesUtils,
     public rolesService: RolesService) {
-    this.subscription = this.controlService.triggerRefreshEvent.subscribe(tab => {
-      if (tab === 'scripts') {
-        this.getControlScripts();
-      }
-    })
+      this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
+      this.subscription = this.controlService.triggerRefreshEvent.subscribe(tab => {
+        if (tab === 'scripts') {
+          this.getControlScripts();
+        }
+      })
   }
 
   ngOnInit(): void {
+    this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
+      if (service) {
+        const dispatcherServiceDetail = service.find(s => s.process == 'dispatcher');
+        if (dispatcherServiceDetail) {
+          this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(dispatcherServiceDetail?.state) ? false : true;
+          this.serviceInfo.isInstalled = true;
+          this.serviceInfo.added = dispatcherServiceDetail?.added;
+          this.serviceInfo.name = dispatcherServiceDetail?.name;
+        } else {
+          this.serviceInfo.isEnabled = false;
+          this.serviceInfo.isInstalled = false;
+          this.serviceInfo.added = false;
+          this.serviceInfo.name = '';
+        }       
+      }
+    });
     this.getControlScripts();
+  }
+
+  refreshServiceInfo() {
+    this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
   }
 
   goToLink(urlSlug: string) {
@@ -104,15 +126,6 @@ export class ControlScriptsListComponent implements OnInit {
       });
   }
 
-  getServiceDetail(event) {
-    this.showConfigureModal = event.isOpen;
-    delete event.isOpen;
-    this.serviceInfo = event;
-    if (this.showConfigureModal) {
-      this.openServiceConfigureModal();
-    }
-  }
-
   /**
    * Open Configure Service modal
    */
@@ -120,16 +133,10 @@ export class ControlScriptsListComponent implements OnInit {
     this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
   }
 
-  onNotify(handleEvent) {
-    if (handleEvent) {
-      this.addDispatcherServiceComponent.getInstalledServicesList();
-    }
-    return;
-  }
-
   public ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+    this.serviceDetailsSubscription.unsubscribe();
   }
 }

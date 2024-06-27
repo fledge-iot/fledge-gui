@@ -1,10 +1,10 @@
 <ng-container *ngIf="isEnabled === false">
     <article class="message is-warning">
         <div class="message-body">
-            <span *ngIf="isInstalled === false">Notification service is not installed.</span>
-            <span *ngIf="isInstalled && isAvailable === false">Notification service is not
+            <span *ngIf="isInstalled === false">{{serviceType}} service is not installed.</span>
+            <span *ngIf="isInstalled && isAvailable === false">{{serviceType}} service is not
                 added.</span>
-            <span *ngIf="isAvailable && isEnabled === false">Notification service is not
+            <span *ngIf="isAvailable && isEnabled === false">{{serviceType}} service is not
                 enabled.</span>
             &nbsp;<a *ngIf="rolesService.hasEditPermissions() && (isInstalled === false || isAvailable === false || isEnabled === false)"
             (click)="openConfigureModal()"><strong>Configure</strong></a>

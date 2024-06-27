@@ -1,5 +1,6 @@
 <div class="container is-fluid">
-    <app-add-dispatcher-service (serviceStatusEvent)="isServiceAvailable = $event" (serviceConfigureModal)="getServiceDetail($event)"></app-add-dispatcher-service>
+    <app-service-warning [isEnabled]="serviceInfo.isEnabled" [isInstalled]="serviceInfo.isInstalled" [isAvailable]="serviceInfo.added"
+      [serviceName]="serviceInfo.name" (serviceConfigureModal)="openServiceConfigureModal()" (refreshService)="refreshServiceInfo()" [serviceType]="'Dispatcher'"></app-service-warning>
     <div class="card">
         <header class="card-header">
             <div id="control-api-flow" class="card-header-title">
@@ -12,8 +13,8 @@
                 <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
                 <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
             </a>
-            <div *ngIf="isServiceAvailable" class="cog-icon">
-                <app-service-config (serviceConfigureModal)="openServiceConfigureModal()"></app-service-config>
+            <div *ngIf="serviceInfo.added" class="cog-icon">
+                <app-service-config (serviceConfigureModal)="openServiceConfigureModal()" [from]="dispatcher"></app-service-config>
             </div>
             <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad"
                 data-tooltip="Help" (click)="goToLink('api-control-invocation')">

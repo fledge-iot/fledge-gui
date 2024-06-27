@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, EventEmitter, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AlertService, SharedService, ProgressBarService, RolesService } from '../../../../../services';
@@ -7,26 +7,25 @@ import { DialogService } from '../../../../common/confirmation-dialog/dialog.ser
 import { orderBy } from 'lodash';
 import { AclService } from '../../../../../services/acl.service';
 import { DocService } from '../../../../../services/doc.service';
-import { AddDispatcherServiceComponent } from './../../add-dispatcher-service/add-dispatcher-service.component';
+import { AdditionalServicesUtils } from '../../../developer/additional-services/additional-services-utils.service';
 
 @Component({
   selector: 'app-acl-list',
   templateUrl: './acl-list.component.html',
   styleUrls: ['./acl-list.component.css']
 })
-export class AclListComponent implements OnInit {
+export class AclListComponent implements OnInit, OnDestroy {
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
-  @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
-
+  
   controlAcls: any = [];
   
   acl;
-  isServiceAvailable = false;
   private subscription: Subscription;
+  private serviceDetailsSubscription: Subscription;
 
   public reenableButton = new EventEmitter<boolean>(false);
-  showConfigureModal = false;
-  serviceInfo = {};
+  serviceInfo = { added: false, type: '', isEnabled: true, process: 'dispatcher', name: '', isInstalled: false };
+
 
   constructor(
     private aclService: AclService,
@@ -36,13 +35,34 @@ export class AclListComponent implements OnInit {
     private router: Router,
     public rolesService: RolesService,
     public sharedService: SharedService,
+    private additionalServicesUtils: AdditionalServicesUtils,
     private ngProgress: ProgressBarService) {
+      this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
   }
 
   ngOnInit(): void {
+    this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
+      if (service) {
+        const dispatcherServiceDetail = service.find(s => s.process == 'dispatcher');
+        if (dispatcherServiceDetail) {
+          this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(dispatcherServiceDetail?.state) ? false : true;
+          this.serviceInfo.isInstalled = true;
+          this.serviceInfo.added = dispatcherServiceDetail?.added;
+          this.serviceInfo.name = dispatcherServiceDetail?.name;
+        } else {
+          this.serviceInfo.isEnabled = false;
+          this.serviceInfo.isInstalled = false;
+          this.serviceInfo.added = false;
+          this.serviceInfo.name = '';
+        }       
+      }
+    });
     this.getACLs();
   }
 
+  refreshServiceInfo() {
+    this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
+  }
 
   getACLs() {
     /** request started */
@@ -134,15 +154,6 @@ export class AclListComponent implements OnInit {
       });
   }
 
-  getServiceDetail(event) {
-    this.showConfigureModal = event.isOpen;
-    delete event.isOpen;
-    this.serviceInfo = event;
-    if (this.showConfigureModal) {
-      this.openServiceConfigureModal();
-    }
-  }
-
   /**
    * Open Configure Service modal
    */
@@ -154,17 +165,11 @@ export class AclListComponent implements OnInit {
     this.docService.goToSetPointControlDocLink(urlSlug);
   }
 
-  onNotify(handleEvent) {
-    if (handleEvent) {
-      this.addDispatcherServiceComponent.getInstalledServicesList();
-    }
-    return;
-  }
-
   public ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+    this.serviceDetailsSubscription.unsubscribe();
   }
 }
 
