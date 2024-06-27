@@ -78,8 +78,8 @@
     </div>
   </ng-container>
   <ng-template #addNotificationTemplate>
-    <div class="add-notification">
-      <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Add Notification Instance"
+    <div class="add-notification" [ngClass]="{'disabled-node': !rolesService.hasEditPermissions() || !notification.isServiceEnabled}">
+      <span class="has-tooltip-bottom has-tooltip-arrow tooltip" [ngClass]="rolesService.hasEditPermissions() && notification.isServiceEnabled ? 'is-hovered': 'disabled'" data-tooltip="Add Notification Instance"
         (click)="navToAddNotificationPage()">
         <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
       </span>

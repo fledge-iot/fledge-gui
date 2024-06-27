@@ -267,9 +267,6 @@ export class NodeEditorComponent implements OnInit {
           this.getSouthservices();
         }
       });
-    if (this.from == 'notifications') {
-      this.getNotifications();
-    }
     this.removeFilterSubscription = this.flowEditorService.removeFilter.pipe(skip(1)).subscribe(data => {
       if (data) {
         removeNode(data.id);
