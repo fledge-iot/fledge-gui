@@ -10,10 +10,9 @@
 }
 
 .kvlist-divider {
-  background-color: #ededed;
-  border: none;
+  background-color: white;
+  border: 1px dashed whitesmoke;
   display: block;
-  height: 1px;
   margin: 0.5rem 0 0 0;
 }
 
