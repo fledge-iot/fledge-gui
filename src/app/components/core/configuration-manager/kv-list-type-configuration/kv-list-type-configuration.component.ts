@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { filter } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
@@ -17,12 +17,9 @@ export class KvListTypeConfigurationComponent implements OnInit {
   @Output() formStatusEvent = new EventEmitter<any>();
   kvListItemsForm: FormGroup;
   initialProperties = [];
-  // @Output() formState = new EventEmitter<boolean>();
-  // form: FormGroup;
 
   constructor(
     public cdRef: ChangeDetectorRef,
-    // private rootFormGroup: FormGroupDirective,
     private fb: FormBuilder) {
     this.kvListItemsForm = this.fb.group({
       kvListItems: this.fb.array([])
@@ -30,7 +27,6 @@ export class KvListTypeConfigurationComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.form = this.rootFormGroup.control;
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
     values = JSON.parse(values) as [];
     for (const [key, value] of Object.entries(values)) {
@@ -77,7 +73,6 @@ export class KvListTypeConfigurationComponent implements OnInit {
       return;
     }
     this.kvListItems.push(this.initListItem({ key: '', value: '' }));
-    // this.formState.emit(this.kvListItems.valid);
     this.formStatusEvent.emit({'status': this.kvListItems.valid, 'group': this.group});
   }
 
@@ -107,9 +102,6 @@ export class KvListTypeConfigurationComponent implements OnInit {
         }
         transformedObject[item.key] = itemValue;
       });
-
-      // this.form.get(this.configuration.key)?.patchValue(JSON.stringify(transformedObject))
-      // this.formState.emit(this.kvListItems.valid);
       this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(transformedObject) });
       this.formStatusEvent.emit({'status': this.kvListItems.valid, 'group': this.group});
     })
