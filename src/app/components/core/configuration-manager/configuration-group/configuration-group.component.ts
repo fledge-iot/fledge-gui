@@ -99,7 +99,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
       }
       this.category.config[k].key = k;
       return this.category.config[k];
-      // comment for testing new pc
     }).filter(obj => !(obj.readonly || ['bucket', 'list', 'kvlist'].includes(obj.type))); // remove readonly, type=bucket, type=list and type=kvlist from config array
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
