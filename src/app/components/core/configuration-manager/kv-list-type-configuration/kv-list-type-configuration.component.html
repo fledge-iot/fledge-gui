@@ -1,7 +1,7 @@
 <div [formGroup]="kvListItemsForm">
   <div formArrayName="kvListItems">
     <ng-container *ngFor="let item of kvListItems.controls; let i=index">
-      <div [ngClass]="{'box': configuration.items == 'object'}">
+      <div [ngClass]="{'box pt-2 pb-0 mb-2': configuration.items == 'object'}">
         <div class="columns mb-0 is-variable is-1" [formGroupName]="i">
           <div class="column pt-5" [ngClass]="{'is-11': configuration.items == 'object', 'is-6': configuration.items != 'object'}">
             <div class="field is-horizontal">
@@ -15,6 +15,9 @@
                 <div class="field">
                   <div class="column is-11 p-0">
                     <input formControlName="key" placeholder="key" class="input is-small is-fullwidth" name="type" type="text">
+                    <span *ngIf="kvListItems?.controls[i]?.controls['key']?.invalid" class="help is-danger">
+                      <sup>*required</sup>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -46,9 +49,6 @@
           </div>
         </div>
         <div>
-          <span *ngIf="kvListItems?.controls[i]?.controls['key']?.invalid" class="help is-danger">
-            <sup>*required</sup>
-          </span>
           <span *ngIf="kvListItems?.controls[i]?.controls['value']?.hasError('minValue')" class="help is-danger">
             <sup>*</sup>Value should not be less than {{configuration?.minimum}}.
           </span>
@@ -60,7 +60,7 @@
     </ng-container>
     <div class="field">
       <p class="control" *ngIf="!configuration.listSize || configuration.listSize != kvListItems.controls.length ">
-        <button class="button is-small" (click)="addListItem()"
+        <button class="button is-small mb-1" (click)="addListItem()"
         [ngClass]="{'px-0 pt-1 is-ghost': configuration.items != 'object'}">
           <span class="icon is-small mr-0">
             <i class="bi bi-plus bi-sm"></i>
