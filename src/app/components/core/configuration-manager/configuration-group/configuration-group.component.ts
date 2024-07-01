@@ -124,14 +124,12 @@ export class ConfigurationGroupComponent implements AfterViewInit {
       });
     }
 
-    if (kvlistConfig.length > 0) {
-      kvlistConfig.forEach(config => {
-        if (!config.hasOwnProperty('value')) {
-          config.value = config.default;
-        }
-        this.groups.push({ category: this.category.name, group: (config.displayName ? config.displayName : config.description), config: config, type: config.type, key: config.key });
-      });
-    }
+    kvlistConfig.forEach(config => {
+      if (!config.hasOwnProperty('value')) {
+        config.value = config.default;
+      }
+      this.groups.push({ category: this.category.name, group: (config.displayName ? config.displayName : config.description), config: config, type: config.type, key: config.key });
+    });
     // merge configuration of same group
     this.groups = uniqWith(this.groups, (pre, cur) => {
       if (pre.group == cur.group) {
