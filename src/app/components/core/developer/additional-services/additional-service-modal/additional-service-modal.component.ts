@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   ProgressBarService, AlertService, ServicesApiService, SchedulesService,
   ConfigurationService, RolesService, ConfigurationControlService,
-  FileUploaderService} from '../../../../../services';
+  FileUploaderService, SharedService} from '../../../../../services';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 
 import { AlertDialogComponent } from '../../../../common/alert-dialog/alert-dialog.component';
@@ -62,6 +62,7 @@ export class AdditionalServiceModalComponent {
     private configService: ConfigurationService,
     public schedulesService: SchedulesService,
     public servicesApiService: ServicesApiService,
+    public sharedService: SharedService,
     public alertService: AlertService,
     private docService: DocService,
     private dialogService: DialogService,
@@ -302,13 +303,15 @@ export class AdditionalServiceModalComponent {
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
-          } else if (error.status === 500) {
+          } else if (error.status === 500) { 
+            this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
             this.alertService.error('Failed to install from repository');
           } else {
             let errorText = error.statusText;
             if (typeof error.error.link === 'string') {
               errorText += ` <a>${error.error.link}</a>`;
-            }
+            }     
+            this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
             this.alertService.error(errorText);
           }
         });
@@ -397,7 +400,7 @@ export class AdditionalServiceModalComponent {
             if (i > 3) {
               this.ngProgress.done();
               this.toggleModal(false);
-              this.reenableButton.emit(false);   
+              this.reenableButton.emit(false);
               this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
               return;
             }
@@ -407,12 +410,18 @@ export class AdditionalServiceModalComponent {
     ).subscribe(() => {
       this.ngProgress.done();
       // toggle the value of variable after enabling/disabling the service
+      let serviceData = {name: '', process: '', added: false, state: ''};
       if (status !== 'addService') {
         this.isServiceEnabled = !this.isServiceEnabled;
+        serviceData.name = this.serviceName;
+        serviceData.process = this.serviceInfo.process;
+        serviceData.added = this.serviceInfo.added;
+        serviceData.state = status === true ? 'running' : 'shutdown';
       }
 
       this.toggleModal(false);
       this.reenableButton.emit(false);
+      this.sharedService.installedServicePkgs.next([serviceData]);
       this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
     });
   }

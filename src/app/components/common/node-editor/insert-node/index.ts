@@ -54,12 +54,10 @@ export function insertableNodes<S extends Schemes>(
       );
 
       if (view && node.label !== "South" && node.label !== "Storage" && node.label !== "North") {
-        const intersectedConnections = checkIntersection(view.position, node, cons);   
-
-        for(let id of intersectedConnections){
+        const intersectedConnections = checkIntersection(view.position, node, cons);
+        for (let id of intersectedConnections) {
           const exist = editor.getConnection(id);
-
-          if (exist.source !== node.id && exist.target !== node.id) {
+          if (exist && (exist.source !== node.id && exist.target !== node.id)) {
             await editor.removeConnection(id);
             await props.createConnections(node, exist);
           }

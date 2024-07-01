@@ -10,6 +10,15 @@ export class RolesService {
   private roleNames = [{ roleId: 1, name: "Administrator" }, { roleId: 2, name: "Editor" }, { roleId: 3, name: "Viewer" }, { roleId: 4, name: "Data Viewer" }, { roleId: 5, name: "Control" }];
 
   constructor() { }
+
+  /**
+   * To check if user is admin or anonymous
+   */
+  public hasAdminPermissionsOrAnonymousAllowed(): boolean {
+    const roleId = Number(sessionStorage.getItem('roleId'));
+    return [appRoles.admin, appRoles.anonymous].includes(roleId);
+  }
+
   /**
    * To check if user, who has the add/edit permission
    * @returns true|false based on user role

@@ -8,6 +8,7 @@ import { AutoArrangePlugin, Presets as ArrangePresets, ArrangeAppliers } from "r
 import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from "rete-context-menu-plugin";
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
 import { CustomNodeComponent } from "./custom-node/custom-node.component";
+import { CustomNotificationNodeComponent } from "./custom-notification-node/custom-notification-node.component";
 import { HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
 import { addCustomBackground } from "./custom-background";
 import { easeInOut } from "popmotion";
@@ -15,6 +16,7 @@ import { insertableNodes } from "./insert-node";
 import { CustomConnectionComponent } from "./custom-connection/custom-connection.component";
 import { CustomSocketComponent } from "./custom-socket/custom-socket.component";
 import { South } from "./nodes/south";
+import { Notification } from "./nodes/notification";
 import { Storage } from "./storage";
 import { Filter } from "./filter";
 import { AddService } from "./nodes/add-service";
@@ -24,15 +26,14 @@ import { ConnectionPathPlugin } from "rete-connection-path-plugin";
 import { colors } from "./color-palette";
 import { North } from "./nodes/north";
 import { AddTask } from "./nodes/add-task";
-import { RolesService } from "../../../services/roles.service"
-import { Service } from "../../core/south/south-service";
+import { AddNotification } from "./nodes/add-notification";
+import { ChannelControl, RuleControl, NotificationTypeControl, ServiceStatusControl } from "./controls/notification-custom-control";
 import { AssetControl, ReadingControl } from "./controls/south-custom-control";
 import { SentReadingsControl } from './controls/north-custom-control';
-import { EnabledControl, NameControl, PluginControl, StatusControl } from './controls/common-custom-control';
+import { EnabledControl, StatusControl } from './controls/common-custom-control';
 import { NorthTask } from '../../core/north/north-task';
 
-
-type Node = South | North | Filter;
+type Node = South | North | Filter | Notification;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 type AreaExtra = AngularArea2D<Schemes> | MinimapExtra | ContextMenuExtra;
 
@@ -40,8 +41,9 @@ class Connection<A extends Node, B extends Node> extends ClassicPreset.Connectio
 
 let editor = new NodeEditor<Schemes>();
 let area: AreaPlugin<Schemes, AreaExtra>;
-export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, data) {
 
+
+export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, data) {
   const socket = new ClassicPreset.Socket("socket");
   editor = new NodeEditor<Schemes>();
   area = new AreaPlugin<Schemes, AreaExtra>(container);
@@ -123,6 +125,9 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
       customize: {
 
         node() {
+          if (data.from == 'notifications') {
+            return CustomNotificationNodeComponent;
+          }
           return CustomNodeComponent;
         },
         connection() {
@@ -176,69 +181,35 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     }
   }
   setCustomBackground(area) // Set custom background
-  if (data.from == 'south') {
-    createNodesAndConnections(socket, editor, arrange, area, rolesService, data);
-    return;
-  }
-  createNorthNodesAndConnections(socket, editor, arrange, area, rolesService, data);
-}
-
-async function createNorthNodesAndConnections(socket: ClassicPreset.Socket,
-  editor: NodeEditor<Schemes>,
-  arrange: AutoArrangePlugin<Schemes, never>,
-  area: AreaPlugin<Schemes, AreaExtra>,
-  rolesService: RolesService,
-  data: any) {
-  if (data.source) {
-    // Storage Node
-    const db = new Storage(socket);
-    await editor.addNode(db);
-    // North Node
-    const plugin = new North(socket, data.task);
-    await editor.addNode(plugin);
-
-    let fpLen = data.filterPipeline.length;
-    let previousNode = db;
-    for (let i = 0; i < fpLen; i++) {
-      let pipelineItem = data.filterPipeline[i];
-      if (typeof (pipelineItem) === "string") {
-        let nextNodeConfig = data.filterConfigurations.find((f: any) => f.filterName === pipelineItem)
-        let nextFilterNode = new Filter(socket, nextNodeConfig);
-        await editor.addNode(nextFilterNode);
-        await editor.addConnection(
-          new ClassicPreset.Connection(previousNode, "port", nextFilterNode, "port")
-        );
-        previousNode = nextFilterNode;
-      }
-    }
-    await editor.addConnection(
-      new ClassicPreset.Connection(previousNode, "port", plugin, "port")
-    );
-    await arrange.layout();
-    AreaExtensions.zoomAt(area, editor.getNodes());
-  }
-  else {
-    nodesGrid(area, data.tasks, socket, rolesService, data.from);
+  
+  if (data.from !== 'notifications') {
+    createNodesAndConnections(socket, editor, arrange, area, data);
+  } else {
+    nodesGrid(area, data.notifications, socket, data.from, data.isServiceEnabled);
   }
 }
+
 async function createNodesAndConnections(socket: ClassicPreset.Socket,
   editor: NodeEditor<Schemes>,
   arrange: AutoArrangePlugin<Schemes, never>,
   area: AreaPlugin<Schemes, AreaExtra>,
-  rolesService: RolesService,
   data: any) {
 
   if (data.source) {
-    // South node
-    const plugin = new South(socket, data.service);
-    await editor.addNode(plugin);
-
-    // Storage node
     const db = new Storage(socket);
-    await editor.addNode(db);
+    const plugin = data.from == 'south' ? new South(socket, data.service) : new North(socket, data.task);;
+    //  FIX ME: Array index based change
+    if (data.from == 'south') {
+      await editor.addNode(plugin);
+      await editor.addNode(db);
+    } else {
+      await editor.addNode(db);
+      await editor.addNode(plugin);
+    }
 
     let fpLen = data.filterPipeline.length;
-    let previousNode = plugin;
+    const lastNode = data.from == 'south' ? db : plugin;
+    let previousNode = data.from == 'south' ? plugin : db;
     let colorNumber = 0;
     for (let i = 0; i < fpLen; i++) {
       let pipelineItem = data.filterPipeline[i];
@@ -264,20 +235,22 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
           );
           tempNode = nextNode;
         }
+
         await editor.addConnection(
-          new ClassicPreset.Connection(tempNode, "port", db, "port")
+          new ClassicPreset.Connection(tempNode, "port", lastNode, "port")
         );
         colorNumber = (colorNumber + 1) % (colors.length);
       }
     }
     await editor.addConnection(
-      new ClassicPreset.Connection(previousNode, "port", db, "port")
+      new ClassicPreset.Connection(previousNode, "port", lastNode, "port")
     );
     await arrange.layout();
     AreaExtensions.zoomAt(area, editor.getNodes());
   }
   else {
-    nodesGrid(area, data.services, socket, rolesService, data.from);
+    const nodes = data.from == 'south' ? data.services : data.tasks;
+    nodesGrid(area, nodes, socket, data.from);
   }
 }
 
@@ -296,14 +269,13 @@ function setCustomBackground(area: AreaPlugin<Schemes, AreaExtra>,) {
 async function nodesGrid(area: AreaPlugin<Schemes,
   AreaExtra>, nodeItems: [],
   socket: ClassicPreset.Socket,
-  rolesService: RolesService,
-  from: string) {
+  from: string, isServiceAvailable = null) {
   const canvasWidth = area.container.parentElement.clientWidth;
   const itemCount = Math.round(canvasWidth / 275);
   let j = 0;
   let k = 0;
   for (let i = 0; i < nodeItems.length; i++) {
-    const plugin = from == 'south' ? new South(socket, nodeItems[i]) : new North(socket, nodeItems[i]);
+    const plugin = from == 'south' ? new South(socket, nodeItems[i]) : from == 'north' ? new North(socket, nodeItems[i]) : new Notification(socket, nodeItems[i]);
     await editor.addNode(plugin);
     if (j < itemCount) {
       await area.translate(plugin.id, { x: 250 * j, y: 150 * k });
@@ -313,11 +285,9 @@ async function nodesGrid(area: AreaPlugin<Schemes,
       }
     }
   }
-  if (rolesService.hasEditPermissions()) {
-    const service = from == 'south' ? new AddService() : new AddTask();
-    await editor.addNode(service);
-    await area.translate(service.id, { x: 250 * j, y: 150 * k });
-  }
+  const service = from == 'south' ? new AddService() : from == 'north' ? new AddTask() : new AddNotification(isServiceAvailable);
+  await editor.addNode(service);
+  await area.translate(service.id, { x: 250 * j, y: 150 * k });
 }
 
 export function getUpdatedFilterPipeline() {
@@ -344,7 +314,6 @@ export function getUpdatedFilterPipeline() {
       }
     }
   }
-
 
   for (let i = 0; i < connections.length; i++) {
     if (connections[i].source === connections[i].target) {
@@ -463,33 +432,59 @@ export function updateNode(data) {
     const enabledControl = node.controls.enabledControl as EnabledControl;
     const statusControl = node.controls.statusControl as StatusControl;
     if (!isEmpty(node.controls)) {
-      if (node.label == 'South') {
+      if (node.label == 'South' && data.from == 'south') {
         const service = data.services.find(s => s.name === node.controls.nameControl['name'])
-        let assetCount = service.assets.length;
-        let readingCount = service.assets.reduce((total, asset) => {
-          return total + asset.count;
-        }, 0)
-
-        assetControls.count = assetCount;
-        readingControl.count = readingCount;
-        enabledControl.enabled = service.schedule_enabled;
-        statusControl.status = service.status;
-
-        area.update("control", assetControls.id);
-        area.update("control", readingControl.id);
-        area.update("control", enabledControl.id);
-        area.update("control", statusControl.id);
-        area.update('node', node.id)
+        if (service) {
+          let assetCount = service.assets.length;
+          let readingCount = service.assets.reduce((total, asset) => {
+            return total + asset.count;
+          }, 0)
+  
+          assetControls.count = assetCount;
+          readingControl.count = readingCount;
+          enabledControl.enabled = service.schedule_enabled;
+          statusControl.status = service.status;
+  
+          area.update("control", assetControls.id);
+          area.update("control", readingControl.id);
+          area.update("control", enabledControl.id);
+          area.update("control", statusControl.id);
+          area.update('node', node.id);
+        }
+        
       }
-      if (node.label == 'North') {
+      if (node.label == 'North' && data.from == 'north') {
         const sentReadingControl = node.controls.sentReadingControl as SentReadingsControl;
         const task = data.tasks.find(t => t.name === node.controls.nameControl['name']) as NorthTask;
-        sentReadingControl.sent = task.sent;
-        enabledControl.enabled = task.enabled;
-
-        area.update("control", sentReadingControl.id);
-        area.update("control", enabledControl.id);
-        area.update('node', node.id)
+        if (task) {
+          sentReadingControl.sent = task.sent;
+          enabledControl.enabled = task.enabled;
+          statusControl.status = task.status;
+          area.update("control", sentReadingControl.id);
+          area.update("control", enabledControl.id);
+          area.update('node', node.id);
+        }     
+      }
+      if (node.label == 'Notification' && data.from == 'notifications') {
+        const serviceStatusControl = node.controls.serviceStatusControl as ServiceStatusControl;
+        const channelControl = node.controls.channelControl as ChannelControl;
+        const ruleControl = node.controls.ruleControl as RuleControl;
+        const notificationTypeControl = node.controls.notificationTypeControl as NotificationTypeControl;
+        const notification = data.notifications.find(n => n.name === node.controls.nameControl['name']);
+        if (notification) {
+          channelControl.pluginName = notification.channel;
+          ruleControl.pluginName = notification.rule;
+          enabledControl.enabled = notification.enable;
+          notificationTypeControl.type = notification.notificationType;
+          serviceStatusControl.enabled = data.isServiceEnabled;
+  
+          area.update("control", channelControl.id);
+          area.update("control", ruleControl.id);
+          area.update("control", enabledControl.id);
+          area.update("control", notificationTypeControl.id);
+          area.update("control", serviceStatusControl.id);
+          area.update('node', node.id);
+        }  
       }
     }
   });

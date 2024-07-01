@@ -1,19 +1,37 @@
-<div class="container is-fluid">
-  <div class="card">
-    <header class="card-header">
-      <div class="card-header-title">
-        <span>Notification Logs</span>
-        <button *ngIf="!isAlive" title="Reload" (click)="getNotificationLogs()" class="button is-small" id="refresh-check">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
-        </button>
-      </div>
+<div [ngClass]="{'container is-fluid': !sourceName}">
+  <div class="card" [ngClass]="{'custom-quickview-card': sourceName}">
+    <div class="breadcrumb-container" *ngIf="sourceName; else cardHeaderTemplate">
+      <nav class="breadcrumb" aria-label="breadcrumbs" [ngClass]="{'quickview-breadcrumb': sourceName}">
+        <ul>
+          <li class="is-active"><a>{{sourceName}}</a></li>
+          <li class="is-active">
+            <a href="#" aria-current="page">Logs</a>
+          </li>
+        </ul>
+      </nav>
       <div *ngIf="refreshInterval !== -1" class="fix-pad auto-refresh">
-        <label class="checkbox">
+        <label class="checkbox" [ngClass]="{'quickview-label': sourceName}">
           <input class="checkmark" type="checkbox" [checked]='isAlive' (click)="toggleAutoRefresh($event)">
           Auto Refresh
         </label>
       </div>
-    </header>
+    </div>
+    <ng-template #cardHeaderTemplate>
+      <header class="card-header">
+        <div class="card-header-title">
+          <span>Notification Logs</span>
+          <button *ngIf="!isAlive" title="Reload" (click)="getNotificationLogs()" class="button is-small" id="refresh-check">
+            <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div *ngIf="refreshInterval !== -1" class="fix-pad auto-refresh">
+          <label class="checkbox">
+            <input class="checkmark" type="checkbox" [checked]='isAlive' (click)="toggleAutoRefresh($event)">
+            Auto Refresh
+          </label>
+        </div>
+      </header>
+    </ng-template>
     <div class="card-content">
       <div class="content">
         <div class="columns">
@@ -63,7 +81,7 @@
               </div>
             </div>
           </div>
-          <div class="column">
+          <div *ngIf="!sourceName" class="column">
             <label class="label">Search</label>
             <input [disabled]="notificationLogs?.length < 2" #nameField type="search"
               class="input is-fullwidth is-small" placeholder="search text by name" [(ngModel)]="searchTerm" />

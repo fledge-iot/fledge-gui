@@ -1,0 +1,177 @@
+:host {
+  display: block;
+  background: white;
+  border: 2px solid silver;
+  border-radius: 6px;
+  cursor: pointer;
+  box-sizing: border-box;
+  width: 198px;
+  height: auto;
+  position: relative;
+  user-select: none;
+}
+
+:host:has(div.add-notification) {
+  border: 2px dotted silver !important;
+}
+
+:host:hover {
+  background: whitesmoke;
+}
+
+:host:hover .trash-icon {
+  visibility: visible !important;
+}
+
+:host .title {
+  font-size: 14px;
+  padding: 4px 4px 0px 4px;
+  margin-bottom: 0px;
+  font-weight: 400;
+}
+
+:host .output {
+  text-align: right;
+  display: inline-block;
+}
+
+:host .input {
+  text-align: left;
+   display: inline-block;
+  box-shadow: none !important;
+  background-color: inherit !important;
+  border: none !important;
+  width: inherit;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+}
+
+.checkbox {
+  line-height: 0px !important;
+  align-self: center;
+}
+
+.add-btn {
+  vertical-align: top;
+  background: none;
+  border: none;
+  padding-top: 3px !important;
+  padding-bottom: 0px !important;
+  font-size: 14px;
+  z-index: 999;
+}
+
+.help-text {
+  display: block;
+  color: grey;
+  font-size: 0.75rem;
+}
+
+.custom-tooltip::before {
+  left: 20% !important;
+}
+
+.custom-tooltip::after {
+  left: 20% !important;
+}
+
+.notification-details {
+  display: flex;
+  justify-content: center;
+  padding: 0px 4px 4px 4px;
+}
+
+.output-container {
+  margin-top: -30px;
+}
+
+.node-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.health-icon {
+  margin-left: -5px;
+}
+
+.add-notification {
+  height: 97px;
+  width: 198px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.input-container {
+  padding: 0px !important;
+  height: auto;
+}
+
+.notification-name:hover {
+  color: #485fc7 !important;
+}
+
+.custom-margin {
+  margin-top: -25px;
+}
+
+.no-hover {
+  color: #b5b5b5;
+}
+
+.dropdown-button {
+  height: auto;
+}
+
+.icon-margin {
+  margin-top: 2px;
+}
+
+.trash-icon {
+  visibility: hidden !important;
+}
+
+.icon-rule {
+  font-size: 0.8rem;
+}
+
+.onhover-text {
+  height: 0.9rem;
+}
+
+.bulb-on {
+  color: #dab600;
+}
+
+.disabled-node .plus-icon {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.disabled {
+  pointer-events: none;
+}
+
+:host:has(div.disabled-node) {
+  background: whitesmoke;
+  cursor: not-allowed !important;
+}
+
+.is-custom-center {
+  position: absolute;
+  left: 53%;
+  transform: translateX(-50%);
+  width: max-content;
+}
+
+.title {
+  line-height: 0.9;
+}
+
+.description-text {
+  max-width: 7rem !important;
+}

@@ -13,7 +13,7 @@
                 <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
             </a>
             <div *ngIf="isServiceAvailable" class="cog-icon">
-                <app-dispatcher-service-config (serviceConfigureModal)="openServiceConfigureModal()"></app-dispatcher-service-config>
+                <app-service-config (serviceConfigureModal)="openServiceConfigureModal()"></app-service-config>
             </div>
             <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad"
                 data-tooltip="Help" (click)="goToLink('api-control-invocation')">

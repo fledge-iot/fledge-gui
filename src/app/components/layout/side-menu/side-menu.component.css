@@ -27,3 +27,16 @@ ul:has(section.disabled) {
 .sidebar-icon {
   vertical-align: 0.1em !important;
 }
+
+svg#control-dispatch {
+  padding-top: .2rem;
+  fill: #4a4a4a;
+  width: 19px;
+  height: 21px;
+  stroke: #4a4a4a;
+  stroke-width: 10rem;
+}
+
+.menu-text {
+  padding-right: 0.15rem;
+}

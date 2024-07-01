@@ -39,11 +39,25 @@
                       [type]="configuration.type" class="input is-fullwidth is-small" [minValue]="configuration.minimum"
                       [maxValue]="configuration.maximum" appNumberOnly />
 
-                    <ngx-codemirror *ngSwitchCase="'JSON'" [formControlName]="configuration.key" #jsonEditor
-                      [ngClass]="{'readonly-editor': form.controls[configuration.key]?.status === 'DISABLED' }"
-                      [options]="setCodeMirrorOption(configuration)" [autoFocus]="true"
-                      [jsonValue]="form.controls[configuration.key]">
-                    </ngx-codemirror>
+                    <ng-container *ngSwitchCase="'JSON'">
+                      <ngx-codemirror [formControlName]="configuration.key" #jsonEditor
+                        [ngClass]="{'readonly-editor': form.controls[configuration.key]?.status === 'DISABLED' }"
+                        [options]="setCodeMirrorOption(configuration)" [autoFocus]="true"
+                        [jsonValue]="form.controls[configuration.key]">
+                      </ngx-codemirror>
+                      <span *ngIf="!configuration.validFileExtension" class="help is-danger">
+                        Cannot recognise, upload a valid *.json extension file
+                      </span>
+                      <div class="config-div is-fullwidth">
+                        <input class="input is-small is-fullwidth" type="file"
+                          (change)="fileChange($event, configuration, 'json')" />
+                      </div>
+                      <span
+                        *ngIf="configuration.validFileExtension && form?.controls[configuration.key]?.hasError('jsonValue')"
+                        class="help is-danger">
+                        Invalid JSON
+                      </span>
+                    </ng-container>
 
                     <ng-container *ngSwitchCase="'SCRIPT'">
                       <ngx-codemirror #scriptCode
@@ -55,11 +69,11 @@
                         {{configuration?.fileName | truncate:"/" }}
                       </p>
                       <span *ngIf="!configuration.validFileExtension" class="help is-danger">
-                        Invalid file. Please upload file with .py extension.
+                        Cannot recognise, upload a valid *.py extension file
                       </span>
                       <div class="config-div is-fullwidth">
                         <input class="input is-small is-fullwidth" multiple type="file"
-                          (change)="fileChange($event, configuration)"
+                          (change)="fileChange($event, configuration, 'py')"
                           [formControlName]="configuration.key + '-file-control'" />
                       </div>
                     </ng-container>
@@ -103,9 +117,6 @@
                     </span>
                     <span *ngIf="form?.controls[configuration.key]?.hasError('maxValue')" class="help is-danger">
                       <sup>*</sup>Value should not be greater than {{configuration.maximum}}.
-                    </span>
-                    <span *ngIf="form?.controls[configuration.key]?.hasError('jsonValue')" class="help is-danger">
-                      Invalid JSON
                     </span>
                   </div>
                   <ng-container *ngSwitchCase="'LIST'">

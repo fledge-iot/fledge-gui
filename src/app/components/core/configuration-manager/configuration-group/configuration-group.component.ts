@@ -27,7 +27,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   // To hold the changed configuration values of a plugin
   configFormValues = {};
 
-  pages = ['south', 'north', 'notification', 'additional-services'];
+  pages = ['south', 'north', 'notifications', 'additional-services'];
   @Input() from;
   @Input() sourceName;
   @Input() categoryType;
@@ -46,6 +46,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     private configService: ConfigurationService,
     private configurationControlService: ConfigurationControlService,
     private alertService: AlertService
+    // public flowEditorService: FlowEditorService
   ) { }
 
   ngAfterViewInit() {
@@ -87,7 +88,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
       }
       this.category.config[k].key = k;
       return this.category.config[k];
-    }).filter(obj => !obj.readonly && obj.type != 'bucket'); // remove readonly & type=bucket items from config array
+    }).filter(obj => obj.type != 'bucket'); // remove type=bucket items from config array
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
       const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic";

@@ -30,3 +30,32 @@
 .card-header-title {
   max-height: 45px !important;
 }
+
+.custom-quickview-card {
+  box-shadow: none;
+}
+
+.breadcrumb-container {
+  display: flex;
+  align-items: stretch;
+}
+
+.breadcrumb {
+  display: flex;
+  flex-grow: 1;
+  margin-left: 1.5rem;
+  padding-top: 0.85rem;
+}
+
+.fix-pad {
+  padding-top: 1.1rem;
+}
+
+.quickview-breadcrumb {
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem !important;
+}
+
+.quickview-label {
+  font-weight: 400 !important;
+}

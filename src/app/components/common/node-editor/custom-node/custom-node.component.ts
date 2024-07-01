@@ -62,7 +62,8 @@ export class CustomNodeComponent implements OnChanges {
     repeat: "",
     sent: "",
     taskStatus: {},
-    pluginVersion: ""
+    pluginVersion: "",
+    status: ""
   }
   filter = { pluginName: '', enabled: 'false', name: '', color: '', pluginVersion: "" }
   isServiceNode: boolean = false;
@@ -125,6 +126,7 @@ export class CustomNodeComponent implements OnChanges {
             this.task.sent = this.service.readingCount = this.data.controls.sentReadingControl['sent'];
             this.task.execution = this.data.controls.executionControl['execution'];
             this.task.enabled = this.data.controls.enabledControl['enabled'];
+            this.task.status = this.data.controls.statusControl['status'];
             this.task.pluginVersion = this.service.pluginVersion = this.data.controls.pluginVersionControl['pluginVersion'];
             this.isEnabled = this.task.enabled;
             this.helpText = this.task.plugin;
@@ -192,12 +194,12 @@ export class CustomNodeComponent implements OnChanges {
         }
       }
     }
-    if (this.data.label === 'AddService') {
+    
+    const labels = ['AddService', 'AddTask'];
+    if (labels.includes(this.data.label)) {
       this.data.label = "";
     }
-    if (this.data.label === 'AddTask') {
-      this.data.label = "";
-    }
+
     if (this.data.label === 'Storage') {
       this.elRef.nativeElement.style.borderColor = "#999999";
     }
@@ -230,7 +232,7 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   showLogsInQuickview() {
-    this.flowEditorService.showItemsInQuickview.next({ showLogs: true, serviceName: this.service.name });
+    this.flowEditorService.showLogsInQuickview.next({ showLogs: true, serviceName: this.service.name });
   }
 
   navToSyslogs() {

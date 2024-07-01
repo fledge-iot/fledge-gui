@@ -47,7 +47,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     private response: ResponseHandler,
     private ping: PingService,
     private router: Router,
-    private additionalServicesUtils: AdditionalServicesUtils,
+    private additionalServicesUtils: AdditionalServicesUtils
   ) {}
 
   ngOnInit() {

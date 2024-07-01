@@ -10,7 +10,7 @@
         </ul>
       </nav>
       <div *ngIf="refreshInterval !== -1 && page === 1" class="fix-pad auto-refresh">
-        <label class="checkbox">
+        <label class="checkbox" [ngClass]="{'quickview-label': sourceName}">
           <input class="checkmark" type="checkbox" [checked]='isAlive' (click)="toggleAutoRefresh($event.target.checked)">
           Auto Refresh
         </label>

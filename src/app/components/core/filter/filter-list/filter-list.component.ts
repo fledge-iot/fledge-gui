@@ -164,7 +164,7 @@ export class FilterListComponent {
     }
 
     if (this.from !== 'control-pipeline') {
-      if (this.checkPipelineItemsOrder()) {
+      if (this.checkPipelineItemsOrder() && this.deletedFilterPipeline.length === 0) {
         this.updateFilterPipeline(this.filterPipeline);
       }
       if (this.deletedFilterPipeline.length > 0) {
@@ -204,7 +204,6 @@ export class FilterListComponent {
         return true;
       }
     }
-
     // All items have the same counterparts in different positions
     return false;
   }
