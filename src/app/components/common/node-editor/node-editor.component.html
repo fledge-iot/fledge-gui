@@ -44,8 +44,8 @@
     </ng-container>
   </div>
   <ng-container *ngIf="from === 'notifications'">
-      <app-notification-service-warning [isEnabled]="serviceInfo.isEnabled" [isInstalled]="serviceInfo.isInstalled" [isAvailable]="serviceInfo.isAvailable"
-      [serviceName]="serviceInfo.name" (serviceConfigureModal)="openServiceConfigureModal()" (refreshService)="refreshServiceInfo()"></app-notification-service-warning>
+      <app-service-warning [isEnabled]="serviceInfo.isEnabled" [isInstalled]="serviceInfo.isInstalled" [isAvailable]="serviceInfo.isAvailable" [serviceType]="'Notification'"
+      [serviceName]="serviceInfo.name" (serviceConfigureModal)="openServiceConfigureModal()" (refreshService)="refreshServiceInfo()"></app-service-warning>
   </ng-container>
   <ng-container *ngIf="!isAddFilterWizard">
     <div class="rete" #rete></div>

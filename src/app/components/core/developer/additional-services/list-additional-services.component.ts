@@ -131,14 +131,14 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.ngProgress.start();
     this.schedulesService.getSchedules().
       subscribe((data: Schedule) => {      
-        this.servicesSchedules = data['schedules'].filter((sch) => this.additionalServicesUtils.expectedServices.some(es => es.schedule_process == sch.processName));
+        this.servicesSchedules = data['schedules'].filter((sch) => this.additionalServicesUtils.allExpectedServices.some(es => es.schedule_process == sch.processName));
         this.pollingScheduleID = data['schedules'].find(s => s.processName === 'manage')?.id;
         
         // If schedule of all services available then no need to make other API calls
-        if (this.servicesSchedules?.length === this.additionalServicesUtils.expectedServices.length) {
+        if (this.servicesSchedules?.length === this.additionalServicesUtils.allExpectedServices.length) {
           this.availableServicePkgs = [];
           let serviceTypes = [];
-          this.additionalServicesUtils.expectedServices.forEach(function (s) {
+          this.additionalServicesUtils.allExpectedServices.forEach(function (s) {
             serviceTypes.push(s["process"]);
           });
           this.installedAndAddedServices(serviceTypes);
@@ -163,10 +163,10 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     const addedServices = this.servicesSchedules.filter(sch => this.servicesRegistry.some(({name}) => sch.name === name));
     
     // If we get expected services in the response of /service API then no need to make other (/installed, /available) API calls
-    if (addedServices.length === this.additionalServicesUtils.expectedServices.length) {
+    if (addedServices.length === this.additionalServicesUtils.allExpectedServices.length) {
       this.availableServicePkgs = [];
       let serviceTypes = [];
-      this.additionalServicesUtils.expectedServices.forEach(function (s) {
+      this.additionalServicesUtils.allExpectedServices.forEach(function (s) {
         serviceTypes.push(s["process"]);
       });
       this.installedAndAddedServices(serviceTypes);
@@ -220,7 +220,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     let svcs = services.filter(
       (s) => !["south", "north", "storage"].includes(s)
     );
-    this.installedServicePkgs = this.additionalServicesUtils.expectedServices.filter(
+    this.installedServicePkgs = this.additionalServicesUtils.allExpectedServices.filter(
       (s) => svcs.includes(s.process)
     );
     let replacement;
@@ -259,7 +259,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
 
   public getAvailableServices(services) {
     let svcs = services;
-    const availableServices = this.additionalServicesUtils.expectedServices.filter(
+    const availableServices = this.additionalServicesUtils.allExpectedServices.filter(
       (s) => svcs.includes(s.package)
     );
     this.availableServicePkgs = availableServices.sort((a, b) => a.type.localeCompare(b.type))

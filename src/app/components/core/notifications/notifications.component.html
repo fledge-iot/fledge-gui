@@ -1,6 +1,6 @@
 <div class="container is-fluid">
-  <app-notification-service-warning [isEnabled]="isNotificationServiceEnabled" [isInstalled]="notificationServiceInstalled" [isAvailable]="isNotificationServiceAvailable" 
-  [serviceName]="notificationServiceName" (serviceConfigureModal)="openServiceConfigureModal()" (refreshService)="refreshServiceInfo()"></app-notification-service-warning>
+  <app-service-warning [isEnabled]="isNotificationServiceEnabled" [isInstalled]="notificationServiceInstalled" [isAvailable]="isNotificationServiceAvailable" 
+  [serviceName]="notificationServiceName" (serviceConfigureModal)="openServiceConfigureModal()" (refreshService)="refreshServiceInfo()" [serviceType]="'Notification'"></app-service-warning>
   <div class="card">
     <header class="card-header">
       <div id="notification-service" class="card-header-title">
@@ -19,7 +19,7 @@
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </button>
       <div *ngIf="notificationServiceInstalled && isNotificationServiceEnabled" class="cog-icon">
-        <app-service-config (serviceConfigureModal)="openServiceConfigureModal()"></app-service-config>
+        <app-service-config (serviceConfigureModal)="openServiceConfigureModal()" [from]="notification"></app-service-config>
     </div>
       <span *ngIf="isNotificationServiceEnabled"
         class="icon is-small tooltip is-pulled-right is-hovered help-pad" data-tooltip="Help"

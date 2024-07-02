@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { orderBy } from 'lodash';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
 import { Router } from '@angular/router';
 import { DocService } from '../../../../services/doc.service';
-import { AlertService, ControlPipelinesService, ProgressBarService, RolesService } from '../../../../services';
-import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-dispatcher-service.component';
+import { AlertService, ControlPipelinesService, ProgressBarService, RolesService, SharedService } from '../../../../services';
+import { AdditionalServicesUtils } from '../../developer/additional-services/additional-services-utils.service';
 
 @Component({
   selector: 'app-control-pipelines',
@@ -15,29 +15,51 @@ import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-d
 })
 export class ControlPipelinesComponent implements OnInit, OnDestroy {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
-  @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
-
+  
   pipelines = [];
   public showSpinner = false;
   public childData = {};
-  isServiceAvailable = false;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
+  private serviceDetailsSubscription: Subscription;
 
   public reenableButton = new EventEmitter<boolean>(false);
-  showConfigureModal = false;
-  serviceInfo;
+  serviceInfo = { added: false, type: '', isEnabled: true, process: 'dispatcher', name: '', isInstalled: false };
 
   constructor(private controlPipelinesService: ControlPipelinesService,
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
     private router: Router,
     public rolesService: RolesService,
-    public docService: DocService,) {}
+    public sharedService: SharedService,
+    private additionalServicesUtils: AdditionalServicesUtils,
+    public docService: DocService,) {
+      this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
+    }
 
   ngOnInit() {
+    this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
+      if (service) {
+        const dispatcherServiceDetail = service.find(s => s.process == 'dispatcher');
+        if (dispatcherServiceDetail) {
+          this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(dispatcherServiceDetail?.state) ? false : true;
+          this.serviceInfo.isInstalled = true;
+          this.serviceInfo.added = dispatcherServiceDetail?.added;
+          this.serviceInfo.name = dispatcherServiceDetail?.name;
+        } else {
+          this.serviceInfo.isEnabled = false;
+          this.serviceInfo.isInstalled = false;
+          this.serviceInfo.added = false;
+          this.serviceInfo.name = '';
+        }       
+      }
+    });
     this.showLoadingSpinner();
     this.getControlPipelines();
+  }
+
+  refreshServiceInfo() {
+    this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
   }
 
   public getControlPipelines(showProgressBar = true): void {
@@ -170,15 +192,6 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
     this.showSpinner = false;
   }
 
-  getServiceDetail(event) {
-    this.showConfigureModal = event.isOpen;
-    delete event.isOpen;
-    this.serviceInfo = event;
-    if (this.showConfigureModal) {
-      this.openServiceConfigureModal();
-    }
-  }
-
   /**
    * Open Configure Service modal
    */
@@ -186,15 +199,9 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
     this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
   }
 
-  onNotify(handleEvent) {
-    if (handleEvent) {
-      this.addDispatcherServiceComponent.getInstalledServicesList();
-    }
-    return;
-  }
-
   public ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
+    this.serviceDetailsSubscription.unsubscribe();
   }
 }

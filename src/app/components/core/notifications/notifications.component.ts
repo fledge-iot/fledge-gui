@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
@@ -11,7 +11,7 @@ import { AdditionalServicesUtils } from '../developer/additional-services/additi
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
 import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
-import { NotificationServiceWarningComponent } from './notification-service-warning/notification-service-warning.component';
+import { ServiceWarningComponent } from './service-warning/service-warning.component';
 import { ServiceConfigComponent } from './service-config/service-config.component';
 import { DocService } from '../../../services/doc.service';
 
@@ -46,7 +46,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   @ViewChild(NotificationModalComponent, { static: true }) notificationModal: NotificationModalComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
-  @ViewChild(NotificationServiceWarningComponent, { static: true }) notificationServiceWarningComponent: NotificationServiceWarningComponent;
+  @ViewChild(ServiceWarningComponent, { static: true }) notificationServiceWarningComponent: ServiceWarningComponent;
   @ViewChild(ServiceConfigComponent, { static: true }) notificationServiceConfigComponent: ServiceConfigComponent;
 
   constructor(
@@ -60,7 +60,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     private sharedService: SharedService,
     private additionalServicesUtils: AdditionalServicesUtils,
     public rolesService: RolesService) {
-      this.additionalServicesUtils.getAllServiceStatus(false);
+      this.additionalServicesUtils.getAllServiceStatus(false, 'notification');
     }
 
   ngOnInit() {
@@ -93,7 +93,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   refreshServiceInfo() {
-    this.additionalServicesUtils.getAllServiceStatus(false);
+    this.additionalServicesUtils.getAllServiceStatus(false, 'notification');
   }
 
   public getNotificationInstance() {

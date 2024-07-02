@@ -5,11 +5,11 @@ import { NotificationsService } from '../../../../services/notifications.service
 import { DocService } from '../../../../services/doc.service';
 
 @Component({
-  selector: 'app-notification-service-warning',
-  templateUrl: './notification-service-warning.component.html',
-  styleUrls: ['./notification-service-warning.component.css']
+  selector: 'app-service-warning',
+  templateUrl: './service-warning.component.html',
+  styleUrls: ['./service-warning.component.css']
 })
-export class NotificationServiceWarningComponent implements OnInit, OnChanges {
+export class ServiceWarningComponent implements OnInit, OnChanges {
   private viewPortSubscription: Subscription;
   private subscription: Subscription;
   showConfigureModal = false;
@@ -21,6 +21,7 @@ export class NotificationServiceWarningComponent implements OnInit, OnChanges {
   @Input() isInstalled: boolean;
   @Input() isAvailable: boolean;
   @Input() serviceName: string;
+  @Input() serviceType: string;
 
   constructor(
     public notificationsService: NotificationsService,

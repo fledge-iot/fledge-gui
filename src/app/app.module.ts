@@ -43,6 +43,7 @@ import { HttpsRequestInterceptor } from './services/http.request.interceptor';
 import { SharedService } from './services/shared.service';
 import { SharedModule } from './shared.module';
 import { ProgressBarComponent } from './components/common/progress-bar/progress-bar.component';
+import { AdditionalServicesUtils } from './components/core/developer/additional-services/additional-services-utils.service';
 import { ProgressBarService } from './services/progress-bar.service';
 import { DashboardModule } from './components/core/dashboard/dashboard.module';
 import { Router } from '@angular/router';
@@ -143,6 +144,14 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
       provide: HTTP_INTERCEPTORS,
       useClass: HttpsRequestInterceptor,
       multi: true,
+    },
+    {
+      provide: 'ADDITIONAL_SERVICE',
+      useExisting: AdditionalServicesUtils
+    },
+    {
+      provide: 'SHARED_SERVICE',
+      useExisting: SharedService
     }
   ],
   bootstrap: [AppComponent]
