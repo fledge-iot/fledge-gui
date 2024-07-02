@@ -119,11 +119,6 @@
                       <sup>*</sup>Value should not be greater than {{configuration.maximum}}.
                     </span>
                   </div>
-                  <ng-container *ngSwitchCase="'KVLIST'">
-                    <app-kv-list-type-configuration [configuration]="configuration" [formGroup]="form"
-                      (formState)="listTypeFormState($event, configuration?.key)"></app-kv-list-type-configuration>
-                  </ng-container>
-
                 </div>
               </div>
             </div>
