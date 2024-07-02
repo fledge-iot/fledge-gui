@@ -1,3 +1,25 @@
+## v2.5.0 [2024-06-26]
+
+### Added
+- [FOGL-8862]: The ability to create and manage backups has become a privileged operation. Likewise support bundles can only be created by administrators. [#429](https://github.com/fledge-iot/fledge-gui/pull/429)
+- [FOGL-8757]: The user management screen now shows if a user has been blocked due to excessive failed login attempts. [#428](https://github.com/fledge-iot/fledge-gui/pull/428)
+- [FOGL-8684]: Support has been added to the GUI for key/value lists in configuration items. [#422](https://github.com/fledge-iot/fledge-gui/pull/422)
+- [FOGL-8237]: A facility to read a JSON configuration item from a file and insert the contents into a configuration item has been added to the user interface. [#424](https://github.com/fledge-iot/fledge-gui/pull/424)
+- [FOGL-8615]: An option to use the flow editor interface for notifications has been added. [#412](https://github.com/fledge-iot/fledge-gui/pull/412)
+- [FOGL-8692]: Support for filter pipeline branches in north flow editor. [#418](https://github.com/fledge-iot/fledge-gui/pull/418)
+- [FOGL-7783]: An option to the graph display to scroll to the most recent reading available. [#306](https://github.com/fledge-iot/fledge-gui/pull/306)
+
+### Fixed
+- [FOGL-8773]: Missing health icon indicator on the north service node to show the service status. [#418](https://github.com/fledge-iot/fledge-gui/pull/418)
+- [FOGL-8825]: Extra GET notifications API call on Notification page load. [#430](https://github.com/fledge-iot/fledge-gui/pull/430)
+- [FOGL-8673]: Notification Service delete issue in disabled mode. [#414](https://github.com/fledge-iot/fledge-gui/pull/414)
+
+### Others
+- New & updated Brand logo & favicon [#403](https://github.com/fledge-iot/fledge-gui/pull/403)
+- UI/UX improvement and various functional bug fixes.
+
+
+
 ## v2.4.0 [2024-04-17]
 
 ### Added

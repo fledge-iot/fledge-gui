@@ -4,7 +4,6 @@ import { DeveloperFeaturesService } from '../../../../services/developer-feature
 import { chain, cloneDeep, uniqWith } from 'lodash';
 import { TabHeader } from './tab-header-slider';
 import { TabNavigationComponent } from '../tab-navigation/tab-navigation.component';
-// import { FlowEditorService } from './../../../common/node-editor/flow-editor.service';
 
 @Component({
   selector: 'app-configuration-group',
@@ -99,7 +98,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
       }
       this.category.config[k].key = k;
       return this.category.config[k];
-    }).filter(obj => !(obj.readonly || ['bucket', 'list', 'kvlist'].includes(obj.type))); // remove readonly, type=bucket, type=list and type=kvlist from config array
+    }).filter(obj => !['bucket', 'list', 'kvlist'].includes(obj.type)); // remove type=bucket, type=list and type=kvlist from config array
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
       const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic";
