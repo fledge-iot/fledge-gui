@@ -4,7 +4,7 @@
     <header class="modal-card-head">
       <span *ngIf="task" class="modal-card-title title-name">{{task.name}} <span *ngIf="isAddFilterWizard">- Add
           Filter</span>
-          <span *ngIf="!isAddFilterWizard"><i class="bi bi-info-circle plugin-info" aria-hidden="true" [title]="task?.plugin.name"></i></span>
+          <span *ngIf="!isAddFilterWizard"><i class="bi bi-info-circle info-icon" aria-hidden="true" [title]="task?.plugin.name"></i></span>
         <ng-container *ngIf="task?.processName === 'north_C'; else nTask">
           <p class="help has-text-grey modal-subtitle">North Service</p>
         </ng-container>

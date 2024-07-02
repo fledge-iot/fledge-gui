@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } fro
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective } from '@angular/forms';
 import { filter } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-list-type-configuration',
@@ -10,13 +11,15 @@ import { CustomValidator } from '../../../../directives/custom-validator';
 })
 export class ListTypeConfigurationComponent implements OnInit {
   @Input() configuration;
-  @Output() formState = new EventEmitter<boolean>();
-  form: FormGroup;
+  @Input() group: string = '';
+  @Input() from = '';
+  @Output() changedConfig = new EventEmitter<any>();
+  @Output() formStatusEvent = new EventEmitter<any>();
   listItemsForm: FormGroup;
+  initialProperties = [];
 
   constructor(
     public cdRef: ChangeDetectorRef,
-    private rootFormGroup: FormGroupDirective,
     private fb: FormBuilder) {
     this.listItemsForm = this.fb.group({
       listItems: this.fb.array([])
@@ -24,7 +27,6 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.form = this.rootFormGroup.control;
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
     values = JSON.parse(values) as [];
     values.forEach(element => {
@@ -38,7 +40,21 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   initListItem(v = '') {
-    const listItem = new FormControl(v, [CustomValidator.nospaceValidator]);
+    let listItem;
+    if (this.configuration.items == 'object') {
+      let objectConfig = cloneDeep(this.configuration.properties);
+      for (let [key, val] of Object.entries(v)) {
+        objectConfig[key].value = val;
+        if (objectConfig[key].type == 'json') {
+          objectConfig[key].value = JSON.stringify(objectConfig[key].value);
+        }
+      }
+      this.initialProperties.push(objectConfig);
+      listItem = new FormControl(objectConfig);
+    }
+    else {
+      listItem = new FormControl(v, [CustomValidator.nospaceValidator]);
+    }
     this.listItems.push(listItem);
     this.cdRef.detectChanges();
   }
@@ -50,11 +66,12 @@ export class ListTypeConfigurationComponent implements OnInit {
       return;
     }
     this.initListItem();
-    this.formState.emit(this.listItems.valid);
+    this.formStatusEvent.emit({'status': this.listItems.valid, 'group': this.group});
   }
 
   removeListItem(index: number) {
     this.listItems.removeAt(index);
+    this.initialProperties.splice(index, 1);
   }
 
   onControlValueChanges(): void {
@@ -69,8 +86,43 @@ export class ListTypeConfigurationComponent implements OnInit {
           return num;
         });
       }
-      this.form.get(this.configuration.key)?.patchValue(JSON.stringify(value))
-      this.formState.emit(this.listItems.valid);
+      if(this.configuration.items == 'object') {
+        value = this.extractListValues(value);
+      }
+      this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(value) });
+      this.formStatusEvent.emit({'status': this.listItems.valid, 'group': this.group});
     })
+  }
+
+  getChangedConfiguration(index: string, propertyChangedValues: any) {
+    for (let [ind, val] of this.listItems.value.entries()) {
+      for (let property in val) {
+        if(ind==index && property == Object.keys(propertyChangedValues)[0]) {
+          val[property].value = Object.values(propertyChangedValues)[0];
+        }
+      }
+      this.listItems.value[ind] = val;
+    }
+    let listValues = this.extractListValues(this.listItems.value);
+    this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(listValues) });
+  }
+
+  formStatus(formState: any) {
+    this.formStatusEvent.emit(formState);
+  }
+
+  extractListValues(value) {
+    let listValues = [];
+    for (let val of value) {
+      let valueObj = {};
+      for (let property in val) {
+        valueObj[property] = val[property].value ? val[property].value : val[property].default;
+        if(val[property].type == 'json'){
+          valueObj[property] = JSON.parse(valueObj[property]);
+        }
+      }
+      listValues.push(valueObj);
+    }
+    return listValues;
   }
 }
