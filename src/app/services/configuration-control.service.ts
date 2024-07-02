@@ -629,7 +629,7 @@ export class ConfigurationControlService {
   getValidConfig(config: any) {
     // remove readonly property form the local configuration copy
     Object.keys(config).forEach(key => {
-      if (config[key]?.readonly) {
+      if (config[key]?.readonly == 'true') {
         delete config[key];
       }
     })
