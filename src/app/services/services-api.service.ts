@@ -74,12 +74,6 @@ export class ServicesApiService {
     return this.http.get(`${this.GET_SERVICES_URL}/installed`).pipe(
       map(response => response),
       catchError(error => throwError(error)));
-
-
-
-    // return this.http.get(`${this.GET_SERVICES_URL}/installed`).pipe(
-    //   map(response => response),
-    //   catchError(error => throwError(error)));
   }
 
   /**
