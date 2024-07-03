@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
-import { SchedulesService, ProgressBarService, AlertService, ServicesApiService, ResponseHandler } from '../../../../services';
+import { SchedulesService, ProgressBarService, AlertService, ServicesApiService } from '../../../../services';
 import { FlowEditorService } from '../../../common/node-editor/flow-editor.service';
 import { AvailableServices, Schedule } from '../../../../models';
 import { takeUntil } from 'rxjs/operators';
@@ -13,6 +13,10 @@ import { SharedService } from '../../../../services/shared.service';
 
 export class AdditionalServicesUtils {
   destroy$: Subject<boolean> = new Subject<boolean>();
+
+  // to emit available serivces packages to use in the additional services list page
+  private servicesPkgs = new BehaviorSubject<any>(false);
+  availableServices = this.servicesPkgs.asObservable();
 
   servicesRegistry = [];
   installedServicePkgs = [];
@@ -68,9 +72,11 @@ export class AdditionalServicesUtils {
     public sharedService: SharedService,
     private alertService: AlertService) {
   }
-  public getAllServiceStatus(autoRefresh, from = null) {
-    if (from) {
+  public getAllServiceStatus(autoRefresh: boolean, from: string) {
+    if (from !== 'additional-services') {
       this.expectedServices = this.allExpectedServices.filter((s => (s.process === from)));
+    } else {
+      this.expectedServices = this.allExpectedServices;
     }
     this.servicesApiService.getAllServices()
       .pipe(takeUntil(this.destroy$))
@@ -78,11 +84,21 @@ export class AdditionalServicesUtils {
         (data: any) => {
           this.servicesRegistry = data.services.filter((el) => ['Notification', 'Management', 'Dispatcher', 'BucketStorage'].includes(el.type))
           this.sharedService.allServicesInfo.next(this.servicesRegistry);
-
           if (autoRefresh) {
             this.syncServicesStatus(this.servicesRegistry, this.installedServicePkgs);
           } else {
-            this.checkSchedulesAndServices();
+            const matchedServices = this.servicesRegistry.filter((svc) => this.expectedServices.some(es => es.type == svc.type));
+            if (matchedServices?.length === this.expectedServices.length) {
+              this.availableServicePkgs = [];
+              let serviceTypes = [];
+              this.expectedServices.forEach(function (s) {
+                serviceTypes.push(s["process"]);
+              });
+              this.showInstalledAndAddedServices(serviceTypes);
+              this.ngProgress.done();
+            } else {
+              this.checkSchedules(from);
+            }
           }
         },
         (error) => {
@@ -98,13 +114,13 @@ export class AdditionalServicesUtils {
     });
   }
 
-  public checkSchedulesAndServices() {
+  public checkSchedules(from: string) {
     this.ngProgress.start();
     this.schedulesService.getSchedules().
       subscribe((data: Schedule) => {
         this.servicesSchedules = data['schedules'].filter((sch) => this.expectedServices.some(es => es.schedule_process == sch.processName));
         this.pollingScheduleID = data['schedules'].find(s => s.processName === 'manage')?.id;
-
+        
         // If schedule of all services available then no need to make other API calls
         if (this.servicesSchedules?.length === this.expectedServices.length) {
           this.availableServicePkgs = [];
@@ -115,8 +131,8 @@ export class AdditionalServicesUtils {
           this.showInstalledAndAddedServices(serviceTypes);
           this.ngProgress.done();
         } else {
-          // If schedule of all services are not available then check expected external services in /service API
-          this.checkServices();
+          // If schedule of all services are not available then check expected external services in /installed API
+          this.checkInstalledServices(from);
         }
       },
         (error) => {
@@ -176,27 +192,9 @@ export class AdditionalServicesUtils {
     this.sharedService.installedServicePkgs.next(this.installedServicePkgs);
   }
 
-  public checkServices() {
-    const addedServices = this.servicesSchedules.filter(sch => this.servicesRegistry.some(({ name }) => sch.name === name));
-
-    // If we get expected services in the response of /service API then no need to make other (/installed, /available) API calls
-    if (addedServices.length === this.expectedServices.length) {
-      this.availableServicePkgs = [];
-      let serviceTypes = [];
-      this.expectedServices.forEach(function (s) {
-        serviceTypes.push(s["process"]);
-      });
-      this.showInstalledAndAddedServices(serviceTypes);
-      this.ngProgress.done();
-    } else {
-      this.checkInstalledServices();
-    }
-  }
-
-  public checkInstalledServices() {
+  public checkInstalledServices(from: string) {
     this.servicesApiService.getInstalledServices().subscribe((installedSvcs) => {
       const installedServices = installedSvcs['services'].filter((svc) => this.expectedServices.some(es => es.process == svc));  
-
       // If we get expected services in the response of /installed API then no need to make extra (/available) API call
       if (installedServices.length === this.expectedServices.length) {
         this.availableServicePkgs = [];
@@ -207,7 +205,10 @@ export class AdditionalServicesUtils {
         this.showInstalledAndAddedServices(serviceTypes);
         this.ngProgress.done();
       } else {
-        this.getAvailableServices();
+        this.showInstalledAndAddedServices(installedServices);
+        if (from == 'additional-services') {
+          this.getAvailableServices();
+        }      
       }
       },
         (error) => {
@@ -227,6 +228,7 @@ export class AdditionalServicesUtils {
         (s) => svcs.includes(s.package)
       );
       this.availableServicePkgs = availableServices.sort((a, b) => a.type.localeCompare(b.type));
+      this.servicesPkgs.next(this.availableServicePkgs);
       this.ngProgress.done();
     },
       (error) => {
