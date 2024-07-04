@@ -17,112 +17,113 @@ import { Subject } from 'rxjs';
 import { APIFlow, User } from '../../../../../../src/app/models';
 
 @Component({
-    selector: 'app-api-flow',
-    templateUrl: './api-flow.component.html',
-    styleUrls: ['./api-flow.component.css']
+  selector: 'app-api-flow',
+  templateUrl: './api-flow.component.html',
+  styleUrls: ['./api-flow.component.css']
 })
 
 export class APIFlowComponent implements OnInit, OnDestroy {
   @ViewChild(ServiceWarningComponent, { static: true }) notificationServiceWarningComponent: ServiceWarningComponent;
-  
-    apiFlows = [];
 
-    // To show Entry point name and description on modal, we need these variables
-    epName: string = '';
-    description: string = '';
+  apiFlows = [];
 
-    loggedInUsername: string;
-    allUsers: User[];
-  
-    // Check if it can be removed
-    apiFlowForm: UntypedFormGroup;
+  // To show Entry point name and description on modal, we need these variables
+  epName: string = '';
+  description: string = '';
 
-    editMode: {};
+  loggedInUsername: string;
+  allUsers: User[];
 
-    destroy$: Subject<boolean> = new Subject<boolean>();
+  // Check if it can be removed
+  apiFlowForm: UntypedFormGroup;
 
-    public reenableButton = new EventEmitter<boolean>(false);
+  editMode: {};
 
-    private serviceDetailsSubscription: Subscription;
-    
-    serviceInfo = { added: false, type: '', isEnabled: true, process: 'dispatcher', name: '', isInstalled: false };
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
-    constructor(
-        private alertService: AlertService,
-        private controlAPIFlowService: ControlAPIFlowService,
-        private dialogService: DialogService,
-        public docService: DocService,
-        private userService: UserService,
-        private ngProgress: ProgressBarService,
-        private fb: UntypedFormBuilder,
-        public sharedService: SharedService,
-        private router: Router,
-        private controlUtilsService: ControlUtilsService,
-        private additionalServicesUtils: AdditionalServicesUtils,
-        public rolesService: RolesService) {
-            this.apiFlowForm = this.fb.group({
-                variables: this.fb.array([])
-            });
-            this.sharedService.isUserLoggedIn
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(value => {
-                this.loggedInUsername = value.userName;
-            });
-            this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
-      }
+  public reenableButton = new EventEmitter<boolean>(false);
 
-    ngOnInit() {
-      this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
-        if (service) {
-          const dispatcherServiceDetail = service.find(s => s.process == 'dispatcher');
-          if (dispatcherServiceDetail) {
-            this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(dispatcherServiceDetail?.state) ? false : true;
-            this.serviceInfo.isInstalled = true;
-            this.serviceInfo.added = dispatcherServiceDetail?.added;
-            this.serviceInfo.name = dispatcherServiceDetail?.name;
-          } else {
-            this.serviceInfo.isEnabled = false;
-            this.serviceInfo.isInstalled = false;
-            this.serviceInfo.added = false;
-            this.serviceInfo.name = '';
-          }       
-        }
+  private serviceDetailsSubscription: Subscription;
+
+  serviceInfo = { added: false, type: '', isEnabled: true, process: 'dispatcher', name: '', isInstalled: false };
+
+  constructor(
+    private alertService: AlertService,
+    private controlAPIFlowService: ControlAPIFlowService,
+    private dialogService: DialogService,
+    public docService: DocService,
+    private userService: UserService,
+    private ngProgress: ProgressBarService,
+    private fb: UntypedFormBuilder,
+    public sharedService: SharedService,
+    private router: Router,
+    private controlUtilsService: ControlUtilsService,
+    private additionalServicesUtils: AdditionalServicesUtils,
+    public rolesService: RolesService) {
+    this.apiFlowForm = this.fb.group({
+      variables: this.fb.array([])
+    });
+    this.sharedService.isUserLoggedIn
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(value => {
+        this.loggedInUsername = value.userName;
       });
-      this.getAPIFlows();
-      this.resetEditMode();
-    }
+    this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
+  }
 
-    refreshServiceInfo() {
-      this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
-    }
+  ngOnInit() {
+    this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
+      this.serviceInfo = service;
+      // if (service) {
+      //   const dispatcherServiceDetail = service.find(s => s.process == 'dispatcher');
+      //   if (dispatcherServiceDetail) {
+      //     this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(dispatcherServiceDetail?.state) ? false : true;
+      //     this.serviceInfo.isInstalled = true;
+      //     this.serviceInfo.added = dispatcherServiceDetail?.added;
+      //     this.serviceInfo.name = dispatcherServiceDetail?.name;
+      //   } else {
+      //     this.serviceInfo.isEnabled = false;
+      //     this.serviceInfo.isInstalled = false;
+      //     this.serviceInfo.added = false;
+      //     this.serviceInfo.name = '';
+      //   }
+      //  }
+    });
+    this.getAPIFlows();
+    this.resetEditMode();
+  }
 
-    addParameter(param) {
-        const control = <UntypedFormArray>this.apiFlowForm.controls['variables'];
-        control.push(this.initParameter(param));
-    }
+  refreshServiceInfo() {
+    this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
+  }
 
-    initParameter(param) {
-        return this.fb.group({
-            vName: [param?.key, Validators.required],
-            vValue: [param?.value]
-        });    
-    }
+  addParameter(param) {
+    const control = <UntypedFormArray>this.apiFlowForm.controls['variables'];
+    control.push(this.initParameter(param));
+  }
 
-    fillParameters(param) {
-        let i = 0
-        for (const [key, value] of Object.entries(param)) {
-            this.addParameter({ index: i, key: key, value: value });
-            i++;
-        }
-    }
+  initParameter(param) {
+    return this.fb.group({
+      vName: [param?.key, Validators.required],
+      vValue: [param?.value]
+    });
+  }
 
-    getFormControls(type): AbstractControl[] {
-        return (<UntypedFormArray>this.apiFlowForm.get(type)).controls;
+  fillParameters(param) {
+    let i = 0
+    for (const [key, value] of Object.entries(param)) {
+      this.addParameter({ index: i, key: key, value: value });
+      i++;
     }
+  }
 
-    getAPIFlows() {
-      this.ngProgress.start();
-      this.controlAPIFlowService.getAllAPIFlow()
+  getFormControls(type): AbstractControl[] {
+    return (<UntypedFormArray>this.apiFlowForm.get(type)).controls;
+  }
+
+  getAPIFlows() {
+    this.ngProgress.start();
+    this.controlAPIFlowService.getAllAPIFlow()
       .subscribe(
         (data: any) => {
           /** request completed */
@@ -138,40 +139,40 @@ export class APIFlowComponent implements OnInit, OnDestroy {
             this.alertService.error(error.statusText);
           }
         });
-    }
+  }
 
-    getAndExecuteAPIFlow(name) {
-        /** request started */
-        this.ngProgress.start();
-        this.controlAPIFlowService.getAPIFlow(name)
-          .subscribe((af: APIFlow) => {
-            this.ngProgress.done();
-            let v = <UntypedFormArray>this.apiFlowForm.controls['variables'];
-            v.clear();
-            this.fillParameters(af.variables);
-            // TODO: FOGL-8079 (blank values for variables are not allowed)
-            // REMOVE:
-            // af.variables = {}
-            // ^ for forced testing only
+  getAndExecuteAPIFlow(name) {
+    /** request started */
+    this.ngProgress.start();
+    this.controlAPIFlowService.getAPIFlow(name)
+      .subscribe((af: APIFlow) => {
+        this.ngProgress.done();
+        let v = <UntypedFormArray>this.apiFlowForm.controls['variables'];
+        v.clear();
+        this.fillParameters(af.variables);
+        // TODO: FOGL-8079 (blank values for variables are not allowed)
+        // REMOVE:
+        // af.variables = {}
+        // ^ for forced testing only
 
-            if(Object.entries(af.variables).length > 0) {
-              this.openModal('confirmation-execute-dialog', af)
-            } else {
-              this.requestAPIFlow(af.name, {});
-            }
-          }, error => {
-            /** request completed */
-            this.ngProgress.done();
-            if (error.status === 0) {
-              console.log('service down ', error);
-            } else {
-              this.alertService.error(error.statusText);
-            }
-          });
-    }
+        if (Object.entries(af.variables).length > 0) {
+          this.openModal('confirmation-execute-dialog', af)
+        } else {
+          this.requestAPIFlow(af.name, {});
+        }
+      }, error => {
+        /** request completed */
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
+  }
 
-    deleteAPIFlow(id: string) {
-      this.controlAPIFlowService.deleteAPIFlow(this.epName) 
+  deleteAPIFlow(id: string) {
+    this.controlAPIFlowService.deleteAPIFlow(this.epName)
       .subscribe(
         (data: any) => {
           /** request completed */
@@ -179,7 +180,7 @@ export class APIFlowComponent implements OnInit, OnDestroy {
           this.reenableButton.emit(false);
 
           // Remove from local arrays of apiFlows
-          this.apiFlows = this.apiFlows.filter(api => api.name !== this.epName);  
+          this.apiFlows = this.apiFlows.filter(api => api.name !== this.epName);
 
           this.alertService.success(data.message, true);
           this.closeModal(id);
@@ -194,66 +195,66 @@ export class APIFlowComponent implements OnInit, OnDestroy {
             this.alertService.error(error.statusText);
           }
         });
-    }
+  }
 
-    requestAPIFlow(name, payload) {
-      this.controlUtilsService.requestAPIFlow(name, payload);
-    }
+  requestAPIFlow(name, payload) {
+    this.controlUtilsService.requestAPIFlow(name, payload);
+  }
 
-    getUsers() {
-      this.ngProgress.start();
-      this.userService.getAllUsers()
-        .subscribe(
-          (userData) => {
-            /** request completed */
-            this.ngProgress.done();
-            this.allUsers = userData['users'].map(user => {
-              return user.userName;
-            });
-          },
-          error => {
-            /** request completed */
-            this.ngProgress.done();
-            if (error.status === 0) {
-              console.log('service down ', error);
-            } else {
-              this.alertService.error(error.statusText);
-            }
+  getUsers() {
+    this.ngProgress.start();
+    this.userService.getAllUsers()
+      .subscribe(
+        (userData) => {
+          /** request completed */
+          this.ngProgress.done();
+          this.allUsers = userData['users'].map(user => {
+            return user.userName;
+          });
+        },
+        error => {
+          /** request completed */
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
         });
-    }
+  }
 
-    setEdit(name, state){
-      this.editMode["name"] = name;
-      this.editMode["edit"] = state;
-      if (state == false){
-        this.updateDescription();
-      }
+  setEdit(name, state) {
+    this.editMode["name"] = name;
+    this.editMode["edit"] = state;
+    if (state == false) {
+      this.updateDescription();
     }
+  }
 
-    resetEditMode() {
-      this.editMode = {name: null, edit: false, value: null}
-    }
+  resetEditMode() {
+    this.editMode = { name: null, edit: false, value: null }
+  }
 
-    descriptionChange(event: any) {
-      this.editMode["value"] = event
-    }
+  descriptionChange(event: any) {
+    this.editMode["value"] = event
+  }
 
-    updateDescription() {
-      if(this.editMode["value"] == null) {
-        this.resetEditMode();
-        return;
-      }
-      const name = this.editMode["name"]
-      let desc = this.editMode["value"]
+  updateDescription() {
+    if (this.editMode["value"] == null) {
       this.resetEditMode();
-      let payload = {
-        description: desc
-      };
-      this.controlAPIFlowService.updateAPIFlow(name, payload) 
+      return;
+    }
+    const name = this.editMode["name"]
+    let desc = this.editMode["value"]
+    this.resetEditMode();
+    let payload = {
+      description: desc
+    };
+    this.controlAPIFlowService.updateAPIFlow(name, payload)
       .subscribe(
         (data: any) => {
           /** request completed */
-          this.ngProgress.done();  
+          this.ngProgress.done();
           this.alertService.success(data.message, true);
           // TODO: patch locally
           this.getAPIFlows();
@@ -266,33 +267,33 @@ export class APIFlowComponent implements OnInit, OnDestroy {
           } else {
             this.alertService.error(error.statusText);
           }
-      });
-    }
+        });
+  }
 
-    openModal(id: string, af) {
-      this.epName = af.name;
-      this.description = af.description;
-      this.reenableButton.emit(false);
-      this.dialogService.open(id);
-    }
+  openModal(id: string, af) {
+    this.epName = af.name;
+    this.description = af.description;
+    this.reenableButton.emit(false);
+    this.dialogService.open(id);
+  }
 
-    /**
-     * Open Configure Service modal
-     */
-    openServiceConfigureModal() {
-      this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
-    }
+  /**
+   * Open Configure Service modal
+   */
+  openServiceConfigureModal() {
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo } });
+  }
 
-    closeModal(id: string) {
-      this.reenableButton.emit(false);
-      this.dialogService.close(id);
-    }
+  closeModal(id: string) {
+    this.reenableButton.emit(false);
+    this.dialogService.close(id);
+  }
 
-    goToLink(urlSlug: string) {
-      this.docService.goToSetPointControlDocLink(urlSlug);
-    }
+  goToLink(urlSlug: string) {
+    this.docService.goToSetPointControlDocLink(urlSlug);
+  }
 
-    ngOnDestroy() {
-      this.serviceDetailsSubscription.unsubscribe();
-    }
+  ngOnDestroy() {
+    this.serviceDetailsSubscription.unsubscribe();
+  }
 }

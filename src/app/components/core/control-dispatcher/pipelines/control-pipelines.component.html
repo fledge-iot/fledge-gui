@@ -1,6 +1,6 @@
 <div class="container is-fluid">
-  <app-service-warning [isEnabled]="serviceInfo.isEnabled" [isInstalled]="serviceInfo.isInstalled" [isAvailable]="serviceInfo.added"
-      [serviceName]="serviceInfo.name" (serviceConfigureModal)="openServiceConfigureModal()" (refreshService)="refreshServiceInfo()" [serviceType]="'Dispatcher'"></app-service-warning>
+  <app-service-warning [service]="serviceInfo" (serviceConfigureModal)="openServiceConfigureModal()"
+    (refreshService)="refreshServiceInfo()" [serviceType]="'Dispatcher'"></app-service-warning>
   <div class="card">
     <header class="card-header">
       <div class="card-header-title">
@@ -14,10 +14,11 @@
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
       <div *ngIf="serviceInfo.added" class="cog-icon">
-        <app-service-config (serviceConfigureModal)="openServiceConfigureModal()" [from]="dispatcher"></app-service-config>
+        <app-service-config (serviceConfigureModal)="openServiceConfigureModal()"
+          [from]="dispatcher"></app-service-config>
       </div>
-      <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad" data-tooltip="Help"
-        (click)="goToLink('control-pipeline-management')">
+      <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad"
+        data-tooltip="Help" (click)="goToLink('control-pipeline-management')">
         <i class="far fa-question-circle"></i>
       </span>
     </header>
@@ -95,7 +96,7 @@
                       <div class="dropdown-menu" id="dropdown-menu" role="menu">
                         <div class="dropdown-content">
                           <a class="dropdown-item" [appDisableUntilResponse]="reenableButton"
-                          (click)="openModal(pipeline.id, pipeline.name, 'deletePipeline', 'Are you sure, You want to delete the control pipeline')">
+                            (click)="openModal(pipeline.id, pipeline.name, 'deletePipeline', 'Are you sure, You want to delete the control pipeline')">
                             Delete
                           </a>
                         </div>

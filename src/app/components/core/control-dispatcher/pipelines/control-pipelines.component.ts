@@ -15,7 +15,7 @@ import { AdditionalServicesUtils } from '../../developer/additional-services/add
 })
 export class ControlPipelinesComponent implements OnInit, OnDestroy {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
-  
+
   pipelines = [];
   public showSpinner = false;
   public childData = {};
@@ -34,25 +34,26 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
     public sharedService: SharedService,
     private additionalServicesUtils: AdditionalServicesUtils,
     public docService: DocService,) {
-      this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
-    }
+    this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
+  }
 
   ngOnInit() {
     this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
-      if (service) {
-        const dispatcherServiceDetail = service.find(s => s.process == 'dispatcher');
-        if (dispatcherServiceDetail) {
-          this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(dispatcherServiceDetail?.state) ? false : true;
-          this.serviceInfo.isInstalled = true;
-          this.serviceInfo.added = dispatcherServiceDetail?.added;
-          this.serviceInfo.name = dispatcherServiceDetail?.name;
-        } else {
-          this.serviceInfo.isEnabled = false;
-          this.serviceInfo.isInstalled = false;
-          this.serviceInfo.added = false;
-          this.serviceInfo.name = '';
-        }       
-      }
+      this.serviceInfo = service;
+      // if (service) {
+      //   const dispatcherServiceDetail = service.find(s => s.process == 'dispatcher');
+      //   if (dispatcherServiceDetail) {
+      //     this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(dispatcherServiceDetail?.state) ? false : true;
+      //     this.serviceInfo.isInstalled = true;
+      //     this.serviceInfo.added = dispatcherServiceDetail?.added;
+      //     this.serviceInfo.name = dispatcherServiceDetail?.name;
+      //   } else {
+      //     this.serviceInfo.isEnabled = false;
+      //     this.serviceInfo.isInstalled = false;
+      //     this.serviceInfo.added = false;
+      //     this.serviceInfo.name = '';
+      //   }
+      // }
     });
     this.showLoadingSpinner();
     this.getControlPipelines();
@@ -136,7 +137,7 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
   * @param id   pipeline id to delete
   * @param name pipeline name
   */
-   openModal(id, name, key, message) {
+  openModal(id, name, key, message) {
     this.childData = {
       id: id,
       name: name,
@@ -196,7 +197,7 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
    * Open Configure Service modal
    */
   openServiceConfigureModal() {
-    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo } });
   }
 
   public ngOnDestroy(): void {

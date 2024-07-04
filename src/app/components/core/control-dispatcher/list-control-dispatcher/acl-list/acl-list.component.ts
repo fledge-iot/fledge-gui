@@ -16,9 +16,9 @@ import { AdditionalServicesUtils } from '../../../developer/additional-services/
 })
 export class AclListComponent implements OnInit, OnDestroy {
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
-  
+
   controlAcls: any = [];
-  
+
   acl;
   private subscription: Subscription;
   private serviceDetailsSubscription: Subscription;
@@ -37,25 +37,28 @@ export class AclListComponent implements OnInit, OnDestroy {
     public sharedService: SharedService,
     private additionalServicesUtils: AdditionalServicesUtils,
     private ngProgress: ProgressBarService) {
-      this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
+    this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
   }
 
   ngOnInit(): void {
     this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
-      if (service) {
-        const dispatcherServiceDetail = service.find(s => s.process == 'dispatcher');
-        if (dispatcherServiceDetail) {
-          this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(dispatcherServiceDetail?.state) ? false : true;
-          this.serviceInfo.isInstalled = true;
-          this.serviceInfo.added = dispatcherServiceDetail?.added;
-          this.serviceInfo.name = dispatcherServiceDetail?.name;
-        } else {
-          this.serviceInfo.isEnabled = false;
-          this.serviceInfo.isInstalled = false;
-          this.serviceInfo.added = false;
-          this.serviceInfo.name = '';
-        }       
-      }
+      console.log('service', service);
+      this.serviceInfo = service;
+
+      // if (service) {
+      //   const dispatcherServiceDetail = service.find(s => s.process == 'dispatcher');
+      //   if (dispatcherServiceDetail) {
+      //     this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(dispatcherServiceDetail?.state) ? false : true;
+      //     this.serviceInfo.isInstalled = true;
+      //     this.serviceInfo.added = dispatcherServiceDetail?.added;
+      //     this.serviceInfo.name = dispatcherServiceDetail?.name;
+      //   } else {
+      //     this.serviceInfo.isEnabled = false;
+      //     this.serviceInfo.isInstalled = false;
+      //     this.serviceInfo.added = false;
+      //     this.serviceInfo.name = '';
+      //   }
+      // }
     });
     this.getACLs();
   }
@@ -158,7 +161,7 @@ export class AclListComponent implements OnInit, OnDestroy {
    * Open Configure Service modal
    */
   openServiceConfigureModal() {
-    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo } });
   }
 
   goToLink(urlSlug: string) {

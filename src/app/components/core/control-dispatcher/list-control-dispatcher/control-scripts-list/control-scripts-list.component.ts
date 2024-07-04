@@ -22,7 +22,7 @@ export class ControlScriptsListComponent implements OnInit {
   private subscription: Subscription;
   private serviceDetailsSubscription: Subscription;
   public reenableButton = new EventEmitter<boolean>(false);
-  
+
   serviceInfo = { added: false, type: '', isEnabled: true, process: 'dispatcher', name: '', isInstalled: false };
 
   constructor(
@@ -35,30 +35,31 @@ export class ControlScriptsListComponent implements OnInit {
     public sharedService: SharedService,
     private additionalServicesUtils: AdditionalServicesUtils,
     public rolesService: RolesService) {
-      this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
-      this.subscription = this.controlService.triggerRefreshEvent.subscribe(tab => {
-        if (tab === 'scripts') {
-          this.getControlScripts();
-        }
-      })
+    this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
+    this.subscription = this.controlService.triggerRefreshEvent.subscribe(tab => {
+      if (tab === 'scripts') {
+        this.getControlScripts();
+      }
+    })
   }
 
   ngOnInit(): void {
     this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
-      if (service) {
-        const dispatcherServiceDetail = service.find(s => s.process == 'dispatcher');
-        if (dispatcherServiceDetail) {
-          this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(dispatcherServiceDetail?.state) ? false : true;
-          this.serviceInfo.isInstalled = true;
-          this.serviceInfo.added = dispatcherServiceDetail?.added;
-          this.serviceInfo.name = dispatcherServiceDetail?.name;
-        } else {
-          this.serviceInfo.isEnabled = false;
-          this.serviceInfo.isInstalled = false;
-          this.serviceInfo.added = false;
-          this.serviceInfo.name = '';
-        }       
-      }
+      this.serviceInfo = service;
+      // if (service) {
+      //   const dispatcherServiceDetail = service.find(s => s.process == 'dispatcher');
+      //   if (dispatcherServiceDetail) {
+      //     this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(dispatcherServiceDetail?.state) ? false : true;
+      //     this.serviceInfo.isInstalled = true;
+      //     this.serviceInfo.added = dispatcherServiceDetail?.added;
+      //     this.serviceInfo.name = dispatcherServiceDetail?.name;
+      //   } else {
+      //     this.serviceInfo.isEnabled = false;
+      //     this.serviceInfo.isInstalled = false;
+      //     this.serviceInfo.added = false;
+      //     this.serviceInfo.name = '';
+      //   }
+      // }
     });
     this.getControlScripts();
   }
@@ -130,7 +131,7 @@ export class ControlScriptsListComponent implements OnInit {
    * Open Configure Service modal
    */
   openServiceConfigureModal() {
-    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo } });
   }
 
   public ngOnDestroy(): void {

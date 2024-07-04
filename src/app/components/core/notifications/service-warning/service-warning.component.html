@@ -1,19 +1,17 @@
-<ng-container *ngIf="isEnabled === false">
-    <article class="message is-warning">
-        <div class="message-body">
-            <span *ngIf="isInstalled === false">{{serviceType}} service is not installed.</span>
-            <span *ngIf="isInstalled && isAvailable === false">{{serviceType}} service is not
-                added.</span>
-            <span *ngIf="isAvailable && isEnabled === false">{{serviceType}} service is not
-                enabled.</span>
-            &nbsp;<a *ngIf="rolesService.hasEditPermissions() && (isInstalled === false || isAvailable === false || isEnabled === false)"
-            (click)="openConfigureModal()"><strong>Configure</strong></a>
-            <button (click)="refreshServiceInfo()" class="button is-small" id="refresh-check">
-                <span class="icon">
-                <i class="fa fa-sm fa-sync" aria-hidden="true" title="Recheck"></i>
-                </span>
-            </button>
-        </div>
-    </article>
+<ng-container *ngIf="service && !service?.isEnabled">
+  <article class="message is-warning">
+    <div class="message-body">
+      <span *ngIf="!service.isInstalled">{{serviceType}} service is not installed.</span>
+      <span *ngIf="service.isInstalled && !service.isAvailable">{{serviceType}} service is not added.</span>
+      <span *ngIf="service.isAvailable && !service.isEnabled">{{serviceType}} service is not enabled.</span>
+      &nbsp;<a
+        *ngIf="rolesService.hasEditPermissions() && (!service.isInstalled  || !service.isAvailable  || !service.isEnabled)"
+        (click)="openConfigureModal()"><strong>Configure</strong></a>
+      <button (click)="refreshServiceInfo()" class="button is-small" id="refresh-check">
+        <span class="icon">
+          <i class="fa fa-sm fa-sync" aria-hidden="true" title="Recheck"></i>
+        </span>
+      </button>
+    </div>
+  </article>
 </ng-container>
-  

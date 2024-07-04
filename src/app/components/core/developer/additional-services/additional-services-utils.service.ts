@@ -120,7 +120,7 @@ export class AdditionalServicesUtils {
       subscribe((data: Schedule) => {
         this.servicesSchedules = data['schedules'].filter((sch) => this.expectedServices.some(es => es.schedule_process == sch.processName));
         this.pollingScheduleID = data['schedules'].find(s => s.processName === 'manage')?.id;
-        
+
         // If schedule of all services available then no need to make other API calls
         if (this.servicesSchedules?.length === this.expectedServices.length) {
           this.availableServicePkgs = [];
@@ -189,12 +189,25 @@ export class AdditionalServicesUtils {
     const addedServices = this.installedServicePkgs.filter((s) => s.added === true);
     const servicesToAdd = this.installedServicePkgs.filter((s) => s.added === false);
     this.installedServicePkgs = addedServices.sort((a, b) => a.type.localeCompare(b.type)).concat(servicesToAdd.sort((a, b) => a.type.localeCompare(b.type)));
-    this.sharedService.installedServicePkgs.next(this.installedServicePkgs);
+    console.log('this.installedServicePkgs', this.installedServicePkgs);
+    const service = { name: '', added: false, isEnabled: false, isInstalled: false };
+    if (this.installedServicePkgs.length > 0) {
+      const serviceDetail = this.installedServicePkgs.find(s => ['bucket', 'dispatcher', 'notification', 'management'].includes(s.process));
+      console.log('serviceDetail', serviceDetail);
+      if (serviceDetail) {
+        service.isEnabled = ["shutdown", "disabled", "installed"].includes(serviceDetail.state) ? false : true;
+        service.isInstalled = true;
+        service.added = serviceDetail?.added;
+        service.name = serviceDetail?.name;
+      }
+    }
+    console.log(service);
+    this.sharedService.installedServicePkgs.next(service);
   }
 
   public checkInstalledServices(from: string) {
     this.servicesApiService.getInstalledServices().subscribe((installedSvcs) => {
-      const installedServices = installedSvcs['services'].filter((svc) => this.expectedServices.some(es => es.process == svc));  
+      const installedServices = installedSvcs['services'].filter((svc) => this.expectedServices.some(es => es.process == svc));
       // If we get expected services in the response of /installed API then no need to make extra (/available) API call
       if (installedServices.length === this.expectedServices.length) {
         this.availableServicePkgs = [];
@@ -208,17 +221,17 @@ export class AdditionalServicesUtils {
         this.showInstalledAndAddedServices(installedServices);
         if (from == 'additional-services') {
           this.getAvailableServices();
-        }      
+        }
       }
-      },
-        (error) => {
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    },
+      (error) => {
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
   public getAvailableServices() {

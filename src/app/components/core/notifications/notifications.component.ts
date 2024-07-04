@@ -60,25 +60,27 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     private sharedService: SharedService,
     private additionalServicesUtils: AdditionalServicesUtils,
     public rolesService: RolesService) {
-      this.additionalServicesUtils.getAllServiceStatus(false, 'notification');
-    }
+    this.additionalServicesUtils.getAllServiceStatus(false, 'notification');
+  }
 
   ngOnInit() {
     this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
-      if (service) {
-        const notificationServiceDetail = service.find(s => s.process == 'notification');
-        if (notificationServiceDetail) {
-          this.isNotificationServiceEnabled = ["shutdown", "disabled", "installed"].includes(notificationServiceDetail?.state) ? false : true;
-          this.notificationServiceInstalled = true;
-          this.isNotificationServiceAvailable = notificationServiceDetail?.added;
-          this.notificationServiceName = notificationServiceDetail.name;
-        } else {
-          this.isNotificationServiceEnabled = false;
-          this.notificationServiceInstalled = false;
-          this.isNotificationServiceAvailable = false;
-          this.notificationServiceName = '';
-        }       
-      }
+      console.log('service', service);
+      this.serviceInfo = service;
+      // if (service) {
+      //   const notificationServiceDetail = service.find(s => s.process == 'notification');
+      //   if (notificationServiceDetail) {
+      //     this.isNotificationServiceEnabled = ["shutdown", "disabled", "installed"].includes(notificationServiceDetail?.state) ? false : true;
+      //     this.notificationServiceInstalled = true;
+      //     this.isNotificationServiceAvailable = notificationServiceDetail?.added;
+      //     this.notificationServiceName = notificationServiceDetail.name;
+      //   } else {
+      //     this.isNotificationServiceEnabled = false;
+      //     this.notificationServiceInstalled = false;
+      //     this.isNotificationServiceAvailable = false;
+      //     this.notificationServiceName = '';
+      //   }
+      //}
     });
     this.getNotificationInstance();
     this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
@@ -147,11 +149,11 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   addNotificationInstance() {
     this.router.navigate(['/notification/add']);
   }
-  
+
   /**
    * Open Configure Service modal
    */
-   openServiceConfigureModal() {
+  openServiceConfigureModal() {
     const serviceInfo = {
       name: this.notificationServiceName,
       isEnabled: this.isNotificationServiceEnabled,
@@ -159,7 +161,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       process: 'notification',
       isInstalled: this.notificationServiceInstalled
     }
-    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo } });
   }
 
   goToLink(urlSlug: string) {
