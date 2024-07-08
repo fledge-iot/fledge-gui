@@ -3,7 +3,7 @@
     <div class="column">
       <ng-container *ngFor="let configuration of configurations$ | async">
         <div [formGroup]="form" novalidate>
-          <div class="config-div" *ngIf="configuration.readonly != 'true'">
+          <div class="config-div" *ngIf="configuration?.readonly != 'true'">
             <div class="field" [ngClass]="{'is-horizontal': from !== 'control-pipeline'}">
               <div class="field-label has-text-left" [ngClass]="{'is-margin': from === 'control-pipeline'}">
                 <label class="label tooltip has-tooltip-multiline config-label"
@@ -17,107 +17,113 @@
                   [style.max-width.px]="['CODE', 'SCRIPT', 'JSON'].includes(configuration.controlType) && cdmrField.offsetWidth !== 0 ? cdmrField.offsetWidth : ''"
                   [ngClass]="{'codemirror-field': ['CODE', 'SCRIPT', 'JSON'].includes(configuration.controlType)}">
                   <div class="column is-11 p-0">
-                    <input *ngSwitchCase="'TEXT'" [formControlName]="configuration.key" [id]="configuration.key"
-                      [type]="configuration.type" class="input is-fullwidth is-small">
-                    <div *ngSwitchCase="'DROPDOWN'" class="select is-small">
-                      <select [id]="configuration.key" [formControlName]="configuration.key">
-                        <option *ngFor="let opt of configuration.options" [value]="opt">{{opt}}</option>
-                      </select>
-                    </div>
+                    <ng-container
+                      *ngIf="configuration?.permissions && !rolesService?.hasConfigItemPermission(configuration?.permissions); else permissionsView">
+                      <span class="help">{{configuration.value}}</span>
+                    </ng-container>
+                    <ng-template #permissionsView>
+                      <input *ngSwitchCase="'TEXT'" [formControlName]="configuration.key" [id]="configuration.key"
+                        [type]="configuration.type" class="input is-fullwidth is-small" />
+                      <div *ngSwitchCase="'DROPDOWN'" class="select is-small">
+                        <select [id]="configuration.key" [formControlName]="configuration.key">
+                          <option *ngFor="let opt of configuration.options" [value]="opt">{{opt}}</option>
+                        </select>
+                      </div>
 
-                    <label *ngSwitchCase="'CHECKBOX'" class="checkbox" [id]="configuration.key">
-                      <input [formControlName]="configuration.key" [type]="configuration.type"
-                        [checked]="configuration.value.toLowerCase() == 'true'"
-                        (change)="setCheckboxState(configuration.key,$event)" />
-                    </label>
+                      <label *ngSwitchCase="'CHECKBOX'" class="checkbox" [id]="configuration.key">
+                        <input [formControlName]="configuration.key" [type]="configuration.type"
+                          [checked]="configuration.value.toLowerCase() == 'true'"
+                          (change)="setCheckboxState(configuration.key,$event)" />
+                      </label>
 
-                    <input *ngSwitchCase="'INTEGER'" [formControlName]="configuration.key" [id]="configuration.key"
-                      [type]="configuration.type" class="input is-fullwidth is-small" [minValue]="configuration.minimum"
-                      [maxValue]="configuration.maximum" appNumberOnly />
+                      <input *ngSwitchCase="'INTEGER'" [formControlName]="configuration.key" [id]="configuration.key"
+                        [type]="configuration.type" class="input is-fullwidth is-small"
+                        [minValue]="configuration.minimum" [maxValue]="configuration.maximum" appNumberOnly />
 
-                    <input *ngSwitchCase="'FLOAT'" [formControlName]="configuration.key" [id]="configuration.key"
-                      [type]="configuration.type" class="input is-fullwidth is-small" [minValue]="configuration.minimum"
-                      [maxValue]="configuration.maximum" appNumberOnly />
+                      <input *ngSwitchCase="'FLOAT'" [formControlName]="configuration.key" [id]="configuration.key"
+                        [type]="configuration.type" class="input is-fullwidth is-small"
+                        [minValue]="configuration.minimum" [maxValue]="configuration.maximum" appNumberOnly />
 
-                    <ng-container *ngSwitchCase="'JSON'">
-                      <ngx-codemirror [formControlName]="configuration.key" #jsonEditor
+                      <ng-container *ngSwitchCase="'JSON'">
+                        <ngx-codemirror [formControlName]="configuration.key" #jsonEditor
+                          [ngClass]="{'readonly-editor': form.controls[configuration.key]?.status === 'DISABLED' }"
+                          [options]="setCodeMirrorOption(configuration)" [autoFocus]="true"
+                          [jsonValue]="form.controls[configuration.key]">
+                        </ngx-codemirror>
+                        <span *ngIf="!configuration.validFileExtension" class="help is-danger">
+                          Cannot recognise, upload a valid *.json extension file
+                        </span>
+                        <div class="config-div is-fullwidth">
+                          <input class="input is-small is-fullwidth" type="file"
+                            (change)="fileChange($event, configuration, 'json')" />
+                        </div>
+                        <span
+                          *ngIf="configuration.validFileExtension && form?.controls[configuration.key]?.hasError('jsonValue')"
+                          class="help is-danger">
+                          Invalid JSON
+                        </span>
+                      </ng-container>
+
+                      <ng-container *ngSwitchCase="'SCRIPT'">
+                        <ngx-codemirror #scriptCode
+                          [ngClass]="{'readonly-editor': !configuration.fileName ||  form.controls[configuration.key]?.status === 'DISABLED' , 'dark-bg-color': !configuration.fileName && selectedTheme === 'darcula'}"
+                          [formControlName]="configuration.key" [options]="setCodeMirrorOption(configuration)"
+                          [autoFocus]="true">
+                        </ngx-codemirror>
+                        <p class="help" *ngIf="configuration?.fileName">
+                          {{configuration?.fileName | truncate:"/" }}
+                        </p>
+                        <span *ngIf="!configuration.validFileExtension" class="help is-danger">
+                          Cannot recognise, upload a valid *.py extension file
+                        </span>
+                        <div class="config-div is-fullwidth">
+                          <input class="input is-small is-fullwidth" multiple type="file"
+                            (change)="fileChange($event, configuration, 'py')"
+                            [formControlName]="configuration.key + '-file-control'" />
+                        </div>
+                      </ng-container>
+
+                      <ngx-codemirror *ngSwitchCase="'CODE'" [formControlName]="configuration.key" #codeEditor
                         [ngClass]="{'readonly-editor': form.controls[configuration.key]?.status === 'DISABLED' }"
-                        [options]="setCodeMirrorOption(configuration)" [autoFocus]="true"
-                        [jsonValue]="form.controls[configuration.key]">
+                        [options]="configuration.editorOptions" [autoFocus]="true">
                       </ngx-codemirror>
-                      <span *ngIf="!configuration.validFileExtension" class="help is-danger">
-                        Cannot recognise, upload a valid *.json extension file
+
+                      <div class="field has-addons " *ngSwitchCase="'PASSWORD'">
+                        <div class="control">
+                          <input #pwd class="input is-fullwidth is-small" [formControlName]="configuration.key"
+                            [type]="configuration.type" placeholder="password" [attr.maxLength]="configuration?.length"
+                            trim="blur" />
+                        </div>
+                        <div class="control">
+                          <button type="button" class="button is-small" (click)="togglePassword(pwd)"
+                            [disabled]="form.controls[configuration.key]?.status === 'DISABLED'">
+                            <span class="icon is-small">
+                              <i class="{{pwd.type === 'password'? 'fa fa-sm fa-eye-slash' : 'fa fa-sm fa-eye'}}"></i>
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                      <div *ngSwitchCase="'ACL'" class="select is-small">
+                        <select [id]="configuration.key" [formControlName]="configuration.key">
+                          <!-- all acls -->
+                          <option *ngFor="let acl of configControlService.acls" [value]="acl.name">
+                            {{acl?.name ? acl?.name : 'None'}}
+                          </option>
+                        </select>
+                      </div>
+                      <input *ngSwitchCase="'URL'" [formControlName]="configuration.key" [id]="configuration.key"
+                        [type]="configuration.type" class="input is-fullwidth is-small" />
+
+                      <span *ngIf="form?.controls[configuration.key]?.hasError('required')" class="help is-danger">
+                        <sup>*</sup>required
                       </span>
-                      <div class="config-div is-fullwidth">
-                        <input class="input is-small is-fullwidth" type="file"
-                          (change)="fileChange($event, configuration, 'json')" />
-                      </div>
-                      <span
-                        *ngIf="configuration.validFileExtension && form?.controls[configuration.key]?.hasError('jsonValue')"
-                        class="help is-danger">
-                        Invalid JSON
+                      <span *ngIf="form?.controls[configuration.key]?.hasError('minValue')" class="help is-danger">
+                        <sup>*</sup>Value should not be less than {{configuration.minimum}}.
                       </span>
-                    </ng-container>
-
-                    <ng-container *ngSwitchCase="'SCRIPT'">
-                      <ngx-codemirror #scriptCode
-                        [ngClass]="{'readonly-editor': !configuration.fileName ||  form.controls[configuration.key]?.status === 'DISABLED' , 'dark-bg-color': !configuration.fileName && selectedTheme === 'darcula'}"
-                        [formControlName]="configuration.key" [options]="setCodeMirrorOption(configuration)"
-                        [autoFocus]="true">
-                      </ngx-codemirror>
-                      <p class="help" *ngIf="configuration?.fileName">
-                        {{configuration?.fileName | truncate:"/" }}
-                      </p>
-                      <span *ngIf="!configuration.validFileExtension" class="help is-danger">
-                        Cannot recognise, upload a valid *.py extension file
+                      <span *ngIf="form?.controls[configuration.key]?.hasError('maxValue')" class="help is-danger">
+                        <sup>*</sup>Value should not be greater than {{configuration.maximum}}.
                       </span>
-                      <div class="config-div is-fullwidth">
-                        <input class="input is-small is-fullwidth" multiple type="file"
-                          (change)="fileChange($event, configuration, 'py')"
-                          [formControlName]="configuration.key + '-file-control'" />
-                      </div>
-                    </ng-container>
-
-                    <ngx-codemirror *ngSwitchCase="'CODE'" [formControlName]="configuration.key" #codeEditor
-                      [ngClass]="{'readonly-editor': form.controls[configuration.key]?.status === 'DISABLED' }"
-                      [options]="configuration.editorOptions" [autoFocus]="true">
-                    </ngx-codemirror>
-
-                    <div class="field has-addons " *ngSwitchCase="'PASSWORD'">
-                      <div class="control">
-                        <input #pwd class="input is-fullwidth is-small" [formControlName]="configuration.key"
-                          [type]="configuration.type" placeholder="password" [attr.maxLength]="configuration?.length"
-                          trim="blur" />
-                      </div>
-                      <div class="control">
-                        <button type="button" class="button is-small" (click)="togglePassword(pwd)"
-                          [disabled]="form.controls[configuration.key]?.status === 'DISABLED'">
-                          <span class="icon is-small">
-                            <i class="{{pwd.type === 'password'? 'fa fa-sm fa-eye-slash' : 'fa fa-sm fa-eye'}}"></i>
-                          </span>
-                        </button>
-                      </div>
-                    </div>
-                    <div *ngSwitchCase="'ACL'" class="select is-small">
-                      <select [id]="configuration.key" [formControlName]="configuration.key">
-                        <!-- all acls -->
-                        <option *ngFor="let acl of configControlService.acls" [value]="acl.name">
-                          {{acl?.name ? acl?.name : 'None'}}
-                        </option>
-                      </select>
-                    </div>
-                    <input *ngSwitchCase="'URL'" [formControlName]="configuration.key" [id]="configuration.key"
-                      [type]="configuration.type" class="input is-fullwidth is-small" />
-
-                    <span *ngIf="form?.controls[configuration.key]?.hasError('required')" class="help is-danger">
-                      <sup>*</sup>required
-                    </span>
-                    <span *ngIf="form?.controls[configuration.key]?.hasError('minValue')" class="help is-danger">
-                      <sup>*</sup>Value should not be less than {{configuration.minimum}}.
-                    </span>
-                    <span *ngIf="form?.controls[configuration.key]?.hasError('maxValue')" class="help is-danger">
-                      <sup>*</sup>Value should not be greater than {{configuration.maximum}}.
-                    </span>
+                    </ng-template>
                   </div>
                   <ng-container *ngSwitchCase="'LIST'">
                     <app-list-type-configuration [configuration]="configuration" [formGroup]="form"
@@ -127,7 +133,6 @@
                     <app-kv-list-type-configuration [configuration]="configuration" [formGroup]="form"
                       (formState)="listTypeFormState($event, configuration?.key)"></app-kv-list-type-configuration>
                   </ng-container>
-
                 </div>
               </div>
             </div>

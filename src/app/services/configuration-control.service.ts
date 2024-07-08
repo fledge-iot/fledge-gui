@@ -12,6 +12,7 @@ export class ConfigurationBase<T> {
   readonly: string;
   editable: boolean;
   mandatory: string;
+  permissions?: string[];
   maximum: string;
   minimum: string;
   order: number;
@@ -41,6 +42,7 @@ export class ConfigurationBase<T> {
     controlType?: string;
     type?: string;
     options?: [];
+    permissions?: string[];
     length?: string;
     editorOptions?: {};
     file?: string;
@@ -53,12 +55,13 @@ export class ConfigurationBase<T> {
     this.key = options.key || '';
     this.label = options.label || '';
     this.description = options.description;
-    this.readonly = options.readonly === undefined ? 'false' : options.readonly;
-    this.mandatory = options.mandatory === undefined ? 'false' : options.mandatory;
+    this.readonly = options.readonly ?? 'false';
+    this.mandatory = options.mandatory ?? 'false';
+    this.permissions = options.permissions;
     this.required = options.mandatory === undefined ? false : (options.mandatory == 'true');
-    this.editable = options.editable === undefined ? true : options.editable;
+    this.editable = options.editable ?? true;
     // assign a big number to the property which doesn't have 'order' key to show the property at last
-    this.order = options.order === undefined ? 999 : options.order;
+    this.order = options.order ?? 999;
     this.length = options.length;
     this.minimum = options.minimum;
     this.maximum = options.maximum;
@@ -180,6 +183,7 @@ export class ConfigurationControlService {
             maximum: element.maximum,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             validity: element.validity
           }));
@@ -195,6 +199,7 @@ export class ConfigurationControlService {
             maximum: element.maximum,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             validity: element.validity
           }));
@@ -208,6 +213,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             validity: element.validity
           }));
@@ -221,6 +227,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             options: element.options,
             order: element.order,
             validity: element.validity
@@ -236,6 +243,7 @@ export class ConfigurationControlService {
             value: JSON.stringify(JSON.parse(element.value), null, ' '),
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             editorOptions: this.setEditorConfig(element.type),
             validity: element.validity
@@ -250,6 +258,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             editorOptions: this.setEditorConfig(element.type),
             validity: element.validity
@@ -264,6 +273,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             validity: element.validity,
           }));
@@ -277,6 +287,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             validity: element.validity
           }));
@@ -290,6 +301,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             length: element.length,
             order: element.order,
             validity: element.validity
@@ -304,6 +316,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             file: element.file,
             editorOptions: this.setEditorConfig(element.type),
@@ -319,6 +332,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             editorOptions: this.setEditorConfig(element.type),
             validity: element.validity
@@ -333,6 +347,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             validity: element.validity,
           });
@@ -353,6 +368,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             validity: element.validity,
           });
@@ -376,6 +392,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             validity: element.validity
           }));

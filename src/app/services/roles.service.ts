@@ -33,6 +33,12 @@ export class RolesService {
     return [appRoles.admin, appRoles.control, appRoles.anonymous].includes(roleId);
   }
 
+  public hasConfigItemPermission(permissions: string[] = []) {
+    const roleId = Number(sessionStorage.getItem('roleId'));
+    const roleName = appRoles[roleId];
+    return permissions.includes(roleName);
+  }
+
   hasEditPermissionsOnPage(page: string) {
     if (page == 'control-pipeline') {
       return this.hasControlAccess();
