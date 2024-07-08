@@ -129,7 +129,12 @@ export class NodeEditorComponent implements OnInit {
         this.getNorthboundServices();
       }
       if (this?.from === 'notifications') {
-        this.additionalServicesUtils.getAllServiceStatus(false, 'notification');
+        this.route.paramMap
+          .pipe(map(() => window.history.state)).subscribe((data: any) => {
+            if (!data?.shouldSkipCalls) {
+              this.additionalServicesUtils.getAllServiceStatus(false, 'notification');
+            }
+          })
         this.getNotificationInstances();
       }
 
@@ -338,7 +343,7 @@ export class NodeEditorComponent implements OnInit {
                 if (r.notifications) {
                   this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
                     if (service) {
-                      const notificationServiceDetail = service.find(s => s.process == 'notification');
+                      const notificationServiceDetail = service.installed.find(s => s.process == 'notification');
                       if (notificationServiceDetail) {
                         this.serviceInfo = notificationServiceDetail;
                         this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(notificationServiceDetail?.state) ? false : true;

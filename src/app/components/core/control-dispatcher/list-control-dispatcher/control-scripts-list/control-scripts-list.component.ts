@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { orderBy } from 'lodash';
+import { map } from 'rxjs/operators';
 import { AlertService, ProgressBarService, RolesService, SharedService } from '../../../../../services';
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
@@ -22,7 +23,7 @@ export class ControlScriptsListComponent implements OnInit {
   private subscription: Subscription;
   private serviceDetailsSubscription: Subscription;
   public reenableButton = new EventEmitter<boolean>(false);
-  
+
   serviceInfo = { added: false, type: '', isEnabled: true, process: 'dispatcher', name: '', isInstalled: false };
 
   constructor(
@@ -32,21 +33,27 @@ export class ControlScriptsListComponent implements OnInit {
     public docService: DocService,
     private ngProgress: ProgressBarService,
     private router: Router,
+    public activatedRoute: ActivatedRoute,
     public sharedService: SharedService,
     private additionalServicesUtils: AdditionalServicesUtils,
     public rolesService: RolesService) {
-      this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
-      this.subscription = this.controlService.triggerRefreshEvent.subscribe(tab => {
-        if (tab === 'scripts') {
-          this.getControlScripts();
+    this.activatedRoute.paramMap
+      .pipe(map(() => window.history.state)).subscribe((data: any) => {
+        if (!data?.shouldSkipCalls) {
+          this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
         }
       })
+    this.subscription = this.controlService.triggerRefreshEvent.subscribe(tab => {
+      if (tab === 'scripts') {
+        this.getControlScripts();
+      }
+    })
   }
 
   ngOnInit(): void {
     this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
       if (service) {
-        const dispatcherServiceDetail = service.find(s => s.process == 'dispatcher');
+        const dispatcherServiceDetail = service.installed.find(s => s.process == 'dispatcher');
         if (dispatcherServiceDetail) {
           this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(dispatcherServiceDetail?.state) ? false : true;
           this.serviceInfo.isInstalled = true;
@@ -57,7 +64,7 @@ export class ControlScriptsListComponent implements OnInit {
           this.serviceInfo.isInstalled = false;
           this.serviceInfo.added = false;
           this.serviceInfo.name = '';
-        }       
+        }
       }
     });
     this.getControlScripts();
@@ -130,7 +137,7 @@ export class ControlScriptsListComponent implements OnInit {
    * Open Configure Service modal
    */
   openServiceConfigureModal() {
-    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo } });
   }
 
   public ngOnDestroy(): void {

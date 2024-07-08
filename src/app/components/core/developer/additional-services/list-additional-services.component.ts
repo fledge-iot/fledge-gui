@@ -33,10 +33,10 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   public timer: any = '';
 
   private serviceDetailsSubscription: Subscription;
-  
+
   public reenableButton = new EventEmitter<boolean>(false);
   @ViewChildren(AdditionalServicesContextMenuComponent) contextMenus: QueryList<AdditionalServicesContextMenuComponent>;
-  
+
   destroy$: Subject<boolean> = new Subject<boolean>();
   constructor(
     public sharedService: SharedService,
@@ -49,7 +49,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     private ping: PingService,
     private router: Router,
     public additionalServicesUtils: AdditionalServicesUtils
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.ping.pingIntervalChanged
@@ -70,16 +70,11 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.showLoadingText();
     this.additionalServicesUtils.getAllServiceStatus(false, 'additional-services');
     this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
-      if (service) {
-        this.installedServicePkgs = service;
+      if (service.installed && service.availableToInstall) {
+        this.installedServicePkgs = service.installed;
+        this.availableServicePkgs = service.availableToInstall;
         this.hideLoadingText();
       }
-    });
-    this.additionalServicesUtils.availableServices.subscribe(service => {
-      if (service) {
-        this.availableServicePkgs = service; 
-        this.hideLoadingText();
-      }    
     });
   }
 
@@ -110,7 +105,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     service['fromListPage'] = true;
 
     this.setService(service);
-    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...service }});
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...service } });
   }
 
   getData(handleEvent = true) {
@@ -133,9 +128,9 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
         this.ngProgress.done();
         this.reenableButton.emit(false);
         if (error.status === 0) {
-            console.log("service down ", error);
+          console.log("service down ", error);
         } else {
-            this.alertService.error(error.statusText);
+          this.alertService.error(error.statusText);
         }
       }
     );
@@ -177,12 +172,12 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
 
   stateUpdate() {
     if (["shutdown", "disabled"].includes(this.service.state)) {
-        this.additionalServicesUtils.enableService(this.service.name);
-        // enabling service takes time to get the updated state from API
-        this.getUpdatedState('running');
+      this.additionalServicesUtils.enableService(this.service.name);
+      // enabling service takes time to get the updated state from API
+      this.getUpdatedState('running');
     } else {
       this.additionalServicesUtils.disableService(this.service.name);
-      this.getUpdatedState('shutdown');  
+      this.getUpdatedState('shutdown');
     }
   }
 
@@ -214,7 +209,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
             }),
             delayWhen(() => {
               const delay = i * initialDelay;
-              console.log(new Date().toLocaleString(), `retrying after ${delay} msec...`);             
+              console.log(new Date().toLocaleString(), `retrying after ${delay} msec...`);
               return timer(delay);
             }), // delay between api calls
             // Set the number of attempts.
@@ -223,7 +218,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
             concatMap(o => {
               if (i > 3) {
                 this.ngProgress.done();
-                this.afterStateUpdate(); 
+                this.afterStateUpdate();
                 return;
               }
               return of(o);

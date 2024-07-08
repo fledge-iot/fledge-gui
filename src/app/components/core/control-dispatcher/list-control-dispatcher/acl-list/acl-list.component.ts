@@ -1,10 +1,11 @@
 import { Component, OnInit, ViewChild, EventEmitter, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { map as _map } from 'rxjs/operators';
 import { AlertService, SharedService, ProgressBarService, RolesService } from '../../../../../services';
 import { ConfirmationDialogComponent } from '../../../../common/confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
-import { orderBy } from 'lodash';
+import { orderBy, map } from 'lodash';
 import { AclService } from '../../../../../services/acl.service';
 import { DocService } from '../../../../../services/doc.service';
 import { AdditionalServicesUtils } from '../../../developer/additional-services/additional-services-utils.service';
@@ -16,9 +17,9 @@ import { AdditionalServicesUtils } from '../../../developer/additional-services/
 })
 export class AclListComponent implements OnInit, OnDestroy {
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;
-  
+
   controlAcls: any = [];
-  
+
   acl;
   private subscription: Subscription;
   private serviceDetailsSubscription: Subscription;
@@ -35,15 +36,21 @@ export class AclListComponent implements OnInit, OnDestroy {
     private router: Router,
     public rolesService: RolesService,
     public sharedService: SharedService,
+    public activatedRoute: ActivatedRoute,
     private additionalServicesUtils: AdditionalServicesUtils,
     private ngProgress: ProgressBarService) {
-      this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
+    this.activatedRoute.paramMap
+      .pipe(_map(() => window.history.state)).subscribe((data: any) => {
+        if (!data?.shouldSkipCalls) {
+          this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
+        }
+      })
   }
 
   ngOnInit(): void {
     this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
       if (service) {
-        const dispatcherServiceDetail = service.find(s => s.process == 'dispatcher');
+        const dispatcherServiceDetail = service.installed.find(s => s.process == 'dispatcher');
         if (dispatcherServiceDetail) {
           this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(dispatcherServiceDetail?.state) ? false : true;
           this.serviceInfo.isInstalled = true;
@@ -54,7 +61,7 @@ export class AclListComponent implements OnInit, OnDestroy {
           this.serviceInfo.isInstalled = false;
           this.serviceInfo.added = false;
           this.serviceInfo.name = '';
-        }       
+        }
       }
     });
     this.getACLs();
@@ -158,7 +165,7 @@ export class AclListComponent implements OnInit, OnDestroy {
    * Open Configure Service modal
    */
   openServiceConfigureModal() {
-    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo } });
   }
 
   goToLink(urlSlug: string) {

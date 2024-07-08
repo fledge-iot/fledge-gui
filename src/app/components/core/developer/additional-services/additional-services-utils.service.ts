@@ -15,8 +15,8 @@ export class AdditionalServicesUtils {
   destroy$: Subject<boolean> = new Subject<boolean>();
 
   // to emit available serivces packages to use in the additional services list page
-  private servicesPkgs = new BehaviorSubject<any>(false);
-  availableServices = this.servicesPkgs.asObservable();
+  // private servicesPkgs = new BehaviorSubject<any>(false);
+  // availableServices = this.servicesPkgs.asObservable();
 
   servicesRegistry = [];
   installedServicePkgs = [];
@@ -120,7 +120,7 @@ export class AdditionalServicesUtils {
       subscribe((data: Schedule) => {
         this.servicesSchedules = data['schedules'].filter((sch) => this.expectedServices.some(es => es.schedule_process == sch.processName));
         this.pollingScheduleID = data['schedules'].find(s => s.processName === 'manage')?.id;
-        
+
         // If schedule of all services available then no need to make other API calls
         if (this.servicesSchedules?.length === this.expectedServices.length) {
           this.availableServicePkgs = [];
@@ -188,13 +188,14 @@ export class AdditionalServicesUtils {
     });
     const addedServices = this.installedServicePkgs.filter((s) => s.added === true);
     const servicesToAdd = this.installedServicePkgs.filter((s) => s.added === false);
+
     this.installedServicePkgs = addedServices.sort((a, b) => a.type.localeCompare(b.type)).concat(servicesToAdd.sort((a, b) => a.type.localeCompare(b.type)));
-    this.sharedService.installedServicePkgs.next(this.installedServicePkgs);
+    this.sharedService.installedServicePkgs.next({ installed: this.installedServicePkgs, availableToInstall: this.availableServicePkgs });
   }
 
   public checkInstalledServices(from: string) {
     this.servicesApiService.getInstalledServices().subscribe((installedSvcs) => {
-      const installedServices = installedSvcs['services'].filter((svc) => this.expectedServices.some(es => es.process == svc));  
+      const installedServices = installedSvcs['services'].filter((svc) => this.expectedServices.some(es => es.process == svc));
       // If we get expected services in the response of /installed API then no need to make extra (/available) API call
       if (installedServices.length === this.expectedServices.length) {
         this.availableServicePkgs = [];
@@ -208,17 +209,17 @@ export class AdditionalServicesUtils {
         this.showInstalledAndAddedServices(installedServices);
         if (from == 'additional-services') {
           this.getAvailableServices();
-        }      
+        }
       }
-      },
-        (error) => {
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+    },
+      (error) => {
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
   public getAvailableServices() {
@@ -228,7 +229,7 @@ export class AdditionalServicesUtils {
         (s) => svcs.includes(s.package)
       );
       this.availableServicePkgs = availableServices.sort((a, b) => a.type.localeCompare(b.type));
-      this.servicesPkgs.next(this.availableServicePkgs);
+      this.sharedService.installedServicePkgs.next({ installed: this.installedServicePkgs, availableToInstall: this.availableServicePkgs });
       this.ngProgress.done();
     },
       (error) => {
@@ -277,7 +278,7 @@ export class AdditionalServicesUtils {
     );
   }
 
-  navToAdditionalServicePage(fromListPage, serviceProcessName) {
+  navToAdditionalServicePage(fromListPage, serviceProcessName, skip = false) {
     let routeToNavigate = '/developer/options/additional-services';
     if (!fromListPage) {
       switch (serviceProcessName) {
@@ -295,7 +296,7 @@ export class AdditionalServicesUtils {
           break;
       }
     }
-    this.router.navigate([routeToNavigate]);
+    this.router.navigate([routeToNavigate], { state: { ...{ 'shouldSkipCalls': skip } } });
     return;
   }
 
