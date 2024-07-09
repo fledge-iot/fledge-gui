@@ -9,7 +9,7 @@ import { DocService } from '../../../../services/doc.service';
   templateUrl: './service-warning.component.html',
   styleUrls: ['./service-warning.component.css']
 })
-export class ServiceWarningComponent implements OnInit, OnChanges {
+export class ServiceWarningComponent implements OnInit {
   private viewPortSubscription: Subscription;
   private subscription: Subscription;
   showConfigureModal = false;
@@ -17,10 +17,7 @@ export class ServiceWarningComponent implements OnInit, OnChanges {
   @Output() serviceConfigureModal = new EventEmitter<Object>();
   @Output() refreshService = new EventEmitter<any>();
 
-  @Input() isEnabled: boolean;
-  @Input() isInstalled: boolean;
-  @Input() isAvailable: boolean;
-  @Input() serviceName: string;
+  @Input() service;
   @Input() serviceType: string;
 
   constructor(
@@ -33,16 +30,18 @@ export class ServiceWarningComponent implements OnInit, OnChanges {
     public rolesService: RolesService
   ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes) {
-      this.isEnabled = changes?.isEnabled?.currentValue ? changes?.isEnabled?.currentValue : this.isEnabled;
-      this.isInstalled = changes?.isInstalled?.currentValue ? changes?.isInstalled?.currentValue : this.isInstalled;
-      this.isAvailable = changes?.isAvailable?.currentValue ? changes?.isAvailable?.currentValue : this.isAvailable;
-      this.serviceName = changes?.serviceName?.currentValue ? changes?.serviceName?.currentValue : this.serviceName;
-    }
-  }
+  // ngOnChanges(changes: SimpleChanges) {
+  //   console.log('changes', changes);
+  //   console.log('serviceType', this.serviceType);
+  //   console.log('service22', this.service);
+  //   if (changes && changes?.service?.currentValue?.process === this.serviceType.toLowerCase()) {
+  //     this.service = changes.service?.currentValue;
+  //     console.log('currentValue', changes.service?.currentValue);
+  //     console.log('service33', this.service);
+  //   }
+  // }
 
   /**
    * Open Configure Service modal

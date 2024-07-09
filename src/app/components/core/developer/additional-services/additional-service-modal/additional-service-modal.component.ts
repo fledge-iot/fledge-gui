@@ -1,4 +1,4 @@
-import { Component, ViewChild, HostListener, EventEmitter } from '@angular/core';
+import { Component, ViewChild, HostListener, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -11,7 +11,7 @@ import { DialogService } from '../../../../common/confirmation-dialog/dialog.ser
 import { AlertDialogComponent } from '../../../../common/alert-dialog/alert-dialog.component';
 import { isEmpty, cloneDeep } from 'lodash';
 import { concatMap, delayWhen, retryWhen, take, tap, map } from 'rxjs/operators';
-import { BehaviorSubject, of, throwError, timer } from 'rxjs';
+import { BehaviorSubject, of, Subscription, throwError, timer } from 'rxjs';
 import { DocService } from '../../../../../services/doc.service';
 import { ConfigurationGroupComponent } from '../../../configuration-manager/configuration-group/configuration-group.component';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../../utils';
@@ -23,7 +23,7 @@ import { AdditionalServicesUtils } from '../additional-services-utils.service';
   templateUrl: './additional-service-modal.component.html',
   styleUrls: ['./additional-service-modal.component.css']
 })
-export class AdditionalServiceModalComponent {
+export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
   category: any;
   serviceName = '';
   btnText = 'Add';
@@ -57,6 +57,8 @@ export class AdditionalServiceModalComponent {
   fromListPage: boolean;
   public reenableButton = new EventEmitter<boolean>(false);
 
+  private paramsSubscription: Subscription;
+
   constructor(
     public activatedRoute: ActivatedRoute,
     private router: Router,
@@ -75,7 +77,7 @@ export class AdditionalServiceModalComponent {
     public rolesService: RolesService) { }
 
   ngOnInit() {
-    this.activatedRoute.paramMap
+    this.paramsSubscription = this.activatedRoute.paramMap
       .pipe(map(() => window.history.state)).subscribe(service => {
         if (service?.process) {
           this.fromListPage = service.fromListPage;
@@ -197,6 +199,7 @@ export class AdditionalServiceModalComponent {
       type: this.serviceInfo.type.toLowerCase(),
       enabled: formValues.enabled
     };
+    console.log('service123', this.serviceInfo);
     if (!installationState) {
       this.ngProgress.start();
     }
@@ -208,7 +211,7 @@ export class AdditionalServiceModalComponent {
           this.serviceInfo.added = true;
           this.btnText = 'Save';
           this.toggleModal(false);
-          this.getUpdatedState('addService', payload.name);
+          this.getUpdatedState('addService', payload.name, formValues.enabled);
         },
         (error) => {
           this.ngProgress.done();
@@ -352,14 +355,14 @@ export class AdditionalServiceModalComponent {
     this.getUpdatedState(true);
   }
 
-  getUpdatedState(status, name = null) {
+  getUpdatedState(status, name = null, isEnabled = null) {
     let i = 1;
+    const serviceName = name ? name : this.serviceName;
     this.schedulesService.getSchedules()
       .pipe(
         take(1),
         // checking the response object for schedule  
         tap((response: any) => {
-          const serviceName = name ? name : this.serviceName;
           const schedule = response['schedules'].find(s => s.name === serviceName);
           // if param value is 'addService' then, check if schedule is not available yet
           // throw an error to re-fetch:
@@ -411,19 +414,18 @@ export class AdditionalServiceModalComponent {
           ))
       ).subscribe(() => {
         this.ngProgress.done();
-        // toggle the value of variable after enabling/disabling the service
-        let serviceData = { name: '', process: '', added: false, state: '' };
-        if (status !== 'addService') {
-          this.isServiceEnabled = !this.isServiceEnabled;
-          serviceData.name = this.serviceName;
-          serviceData.process = this.serviceInfo.process;
-          serviceData.added = this.serviceInfo.added;
-          serviceData.state = status === true ? 'running' : 'shutdown';
-        }
-
+        let serviceDetail = { name: '', added: false, isEnabled: false, isInstalled: false, process: this.serviceInfo.process };
+        serviceDetail.isEnabled = isEnabled !== null ? isEnabled : status;
+        serviceDetail.isInstalled = true;
+        serviceDetail.added = this.serviceInfo.added;
+        serviceDetail.name = serviceName;
+        serviceDetail.process = this.serviceInfo.process;
         this.toggleModal(false);
         this.reenableButton.emit(false);
-        this.sharedService.installedServicePkgs.next([serviceData]);
+
+        // set updated service details to get on different service pages
+        this.sharedService.installedServicePkgs.next({ installed: serviceDetail });
+
         this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process, true);
       });
   }
@@ -598,5 +600,9 @@ export class AdditionalServiceModalComponent {
       this.docService.goToSetPointControlDocLink('control-dispatcher-service');
     }
     return;
+  }
+
+  ngOnDestroy() {
+    this.paramsSubscription.unsubscribe();
   }
 }

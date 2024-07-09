@@ -23,10 +23,10 @@ export class AclListComponent implements OnInit, OnDestroy {
   acl;
   private subscription: Subscription;
   private serviceDetailsSubscription: Subscription;
+  private paramsSubscription: Subscription;
 
   public reenableButton = new EventEmitter<boolean>(false);
-  serviceInfo = { added: false, type: '', isEnabled: true, process: 'dispatcher', name: '', isInstalled: false };
-
+  serviceInfo = { added: false, isEnabled: true, name: '', isInstalled: false };
 
   constructor(
     private aclService: AclService,
@@ -39,29 +39,21 @@ export class AclListComponent implements OnInit, OnDestroy {
     public activatedRoute: ActivatedRoute,
     private additionalServicesUtils: AdditionalServicesUtils,
     private ngProgress: ProgressBarService) {
-    this.activatedRoute.paramMap
+    // If we are redirecting back after enabling/disabling/adding the service then no need to make all calls again
+    this.paramsSubscription = this.activatedRoute.paramMap
       .pipe(_map(() => window.history.state)).subscribe((data: any) => {
         if (!data?.shouldSkipCalls) {
           this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
         }
       })
+    // Issue may cause by refreshing the page because of old state data, so need to update history state
+    history.replaceState({ shouldSkipCalls: false }, '');
   }
 
   ngOnInit(): void {
     this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
-      if (service) {
-        const dispatcherServiceDetail = service.installed.find(s => s.process == 'dispatcher');
-        if (dispatcherServiceDetail) {
-          this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(dispatcherServiceDetail?.state) ? false : true;
-          this.serviceInfo.isInstalled = true;
-          this.serviceInfo.added = dispatcherServiceDetail?.added;
-          this.serviceInfo.name = dispatcherServiceDetail?.name;
-        } else {
-          this.serviceInfo.isEnabled = false;
-          this.serviceInfo.isInstalled = false;
-          this.serviceInfo.added = false;
-          this.serviceInfo.name = '';
-        }
+      if (service.installed) {
+        this.serviceInfo = service.installed;
       }
     });
     this.getACLs();
@@ -177,6 +169,7 @@ export class AclListComponent implements OnInit, OnDestroy {
       this.subscription.unsubscribe();
     }
     this.serviceDetailsSubscription.unsubscribe();
+    this.paramsSubscription.unsubscribe();
   }
 }
 

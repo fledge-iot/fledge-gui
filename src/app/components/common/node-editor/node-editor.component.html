@@ -33,9 +33,11 @@
       </ng-container>
     </div>
     <div *ngIf="serviceInfo.isEnabled && serviceInfo.isInstalled && from === 'notifications'">
-      <app-service-config (serviceConfigureModal)="openServiceConfigureModal()" [from]="'flow-editor'"></app-service-config>
-      <span class="icon is-small tooltip has-tooltip-left has-tooltip-arrow is-pulled-right is-hovered pb-3 text-btn help-icon" data-tooltip="Help"
-        (click)="goToLink('using-the-notification-service')">
+      <app-service-config (serviceConfigureModal)="openServiceConfigureModal()" [from]="'flow-editor'">
+      </app-service-config>
+      <span
+        class="icon is-small tooltip has-tooltip-left has-tooltip-arrow is-pulled-right is-hovered pb-3 text-btn help-icon"
+        data-tooltip="Help" (click)="goToLink('using-the-notification-service')">
         <i class="far fa-question-circle"></i>
       </span>
     </div>
@@ -44,8 +46,9 @@
     </ng-container>
   </div>
   <ng-container *ngIf="from === 'notifications'">
-      <app-service-warning [isEnabled]="serviceInfo.isEnabled" [isInstalled]="serviceInfo.isInstalled" [isAvailable]="serviceInfo.isAvailable" [serviceType]="'Notification'"
-      [serviceName]="serviceInfo.name" (serviceConfigureModal)="openServiceConfigureModal()" (refreshService)="refreshServiceInfo()"></app-service-warning>
+    <app-service-warning [service]="serviceInfo" [serviceType]="'Notification'"
+      (serviceConfigureModal)="openServiceConfigureModal()" (refreshService)="refreshServiceInfo()">
+    </app-service-warning>
   </ng-container>
   <ng-container *ngIf="!isAddFilterWizard">
     <div class="rete" #rete></div>
@@ -87,23 +90,25 @@
     <ng-container *ngIf="showLogs && from !== 'notifications'">
       <app-system-log [sourceName]="serviceName" #systemLogs></app-system-log>
     </ng-container>
-    <!-- Notification Log in Quickview -->  
+    <!-- Notification Log in Quickview -->
     <ng-container *ngIf="showLogs && from === 'notifications'">
-      <app-notification-log [sourceName]="serviceName" [notificationService]="serviceInfo.name" #notificationLogs></app-notification-log>
+      <app-notification-log [sourceName]="serviceName" [notificationService]="serviceInfo.name" #notificationLogs>
+      </app-notification-log>
     </ng-container>
 
     <!-- Notification Instance Configuration in Quickview -->
     <ng-container *ngIf="showNotificationConfiguration && from === 'notifications'">
-      <app-configuration-group #notificationConfigView *ngIf="category" [sourceName]="serviceName" [category]="category" [from]="'notifications'"
-        (changedConfigEvent)="getChangedNotificationConfig($event)"
+      <app-configuration-group #notificationConfigView *ngIf="category" [sourceName]="serviceName" [category]="category"
+        [from]="'notifications'" (changedConfigEvent)="getChangedNotificationConfig($event)"
         (formStatusEvent)="validConfigurationForm = $event">
       </app-configuration-group>
-      <hr *ngIf="notification != undefined" class="hr-text notification-hr" [attr.data-content]="'Rule - ' + notification.rule">
+      <hr *ngIf="notification != undefined" class="hr-text notification-hr"
+        [attr.data-content]="'Rule - ' + notification.rule">
       <div class="columns">
         <div class="column">
           <div class="field">
-            <app-configuration-group #ruleConfigView *ngIf="ruleCategory" [sourceName]="serviceName" [category]="ruleCategory"
-              [from]="'rule-modal'" (changedConfigEvent)="getChangedRuleConfig($event)"
+            <app-configuration-group #ruleConfigView *ngIf="ruleCategory" [sourceName]="serviceName"
+              [category]="ruleCategory" [from]="'rule-modal'" (changedConfigEvent)="getChangedRuleConfig($event)"
               (formStatusEvent)="validConfigurationForm = $event">
             </app-configuration-group>
           </div>
@@ -114,8 +119,8 @@
       <div class="columns">
         <div class="column">
           <div class="field">
-            <app-configuration-group #deliveryConfigView *ngIf="deliveryCategory"
-              [category]="deliveryCategory" [sourceName]="serviceName" [from]="'delivery-modal'"
+            <app-configuration-group #deliveryConfigView *ngIf="deliveryCategory" [category]="deliveryCategory"
+              [sourceName]="serviceName" [from]="'delivery-modal'"
               (changedConfigEvent)="getChangedDeliveryConfig($event)"
               (formStatusEvent)="validConfigurationForm = $event">
             </app-configuration-group>
@@ -127,7 +132,8 @@
           <div class="column">
             <div class="field is-grouped is-pulled-left">
               <p class="control">
-                <button class="button is-small is-link ml-4" (click)="saveNotificationConfiguration()" [appDisableUntilResponse]="reenableButton">Save</button>
+                <button class="button is-small is-link ml-4" (click)="saveNotificationConfiguration()"
+                  [appDisableUntilResponse]="reenableButton">Save</button>
               </p>
             </div>
           </div>
@@ -139,8 +145,8 @@
     </ng-container>
     <ng-container *ngIf="showReadings">
       <app-asset-tracker [service]="readingService" [isAlive]="isAlive" [reenableButton]="reenableButton"
-      (selectedAsset)="selectAsset($event)"
-      (reloadReadings)="getSouthservices()" (exportReading)="getAssetReadings(readingService)"></app-asset-tracker>
+        (selectedAsset)="selectAsset($event)" (reloadReadings)="getSouthservices()"
+        (exportReading)="getAssetReadings(readingService)"></app-asset-tracker>
     </ng-container>
   </app-quickview>
 </div>
@@ -148,12 +154,14 @@
 <app-confirmation-dialog id="delete-service-dialog" *ngIf="rolesService.hasEditPermissions()">
   <header class="modal-card-head">
     <span class="modal-card-title is-size-6">
-      {{ task && task?.execution == "task" ? "Delete Task": (from === 'notifications' ? 'Delete Instance' : 'Delete Service')}}
+      {{ task && task?.execution == "task" ? "Delete Task": (from === 'notifications' ? 'Delete Instance' : 'Delete
+      Service')}}
     </span>
     <button class="delete" aria-label="close" (click)="closeModal('delete-service-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Deleting {{dialogServiceName}} {{ task && task?.execution == "task"? 'task': (from === 'notifications' ? 'instance' : 'service')}} cannot be undone. Continue?
+    Deleting {{dialogServiceName}} {{ task && task?.execution == "task"? 'task': (from === 'notifications' ? 'instance'
+    : 'service')}} cannot be undone. Continue?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('delete-service-dialog')">Cancel</button>
@@ -202,6 +210,7 @@
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('state-change-dialog')">Cancel</button>
-    <button class="button is-small" [ngClass]="{'is-danger': btnText === 'Disable', 'is-info': btnText === 'Enable'}" (click)="toggleState(btnText)">{{btnText}}</button>
+    <button class="button is-small" [ngClass]="{'is-danger': btnText === 'Disable', 'is-info': btnText === 'Enable'}"
+      (click)="toggleState(btnText)">{{btnText}}</button>
   </footer>
 </app-confirmation-dialog>

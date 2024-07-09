@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject, BehaviorSubject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { SchedulesService, ProgressBarService, AlertService, ServicesApiService } from '../../../../services';
 import { FlowEditorService } from '../../../common/node-editor/flow-editor.service';
@@ -13,10 +13,6 @@ import { SharedService } from '../../../../services/shared.service';
 
 export class AdditionalServicesUtils {
   destroy$: Subject<boolean> = new Subject<boolean>();
-
-  // to emit available serivces packages to use in the additional services list page
-  // private servicesPkgs = new BehaviorSubject<any>(false);
-  // availableServices = this.servicesPkgs.asObservable();
 
   servicesRegistry = [];
   installedServicePkgs = [];
@@ -94,7 +90,7 @@ export class AdditionalServicesUtils {
               this.expectedServices.forEach(function (s) {
                 serviceTypes.push(s["process"]);
               });
-              this.showInstalledAndAddedServices(serviceTypes);
+              this.showInstalledAndAddedServices(serviceTypes, from);
               this.ngProgress.done();
             } else {
               this.checkSchedules(from);
@@ -128,7 +124,7 @@ export class AdditionalServicesUtils {
           this.expectedServices.forEach(function (s) {
             serviceTypes.push(s["process"]);
           });
-          this.showInstalledAndAddedServices(serviceTypes);
+          this.showInstalledAndAddedServices(serviceTypes, from);
           this.ngProgress.done();
         } else {
           // If schedule of all services are not available then check expected external services in /installed API
@@ -145,7 +141,7 @@ export class AdditionalServicesUtils {
         });
   }
 
-  public showInstalledAndAddedServices(services) {
+  public showInstalledAndAddedServices(services, from: string) {
     let svcs = services.filter(
       (s) => !["south", "north", "storage"].includes(s)
     );
@@ -190,7 +186,20 @@ export class AdditionalServicesUtils {
     const servicesToAdd = this.installedServicePkgs.filter((s) => s.added === false);
 
     this.installedServicePkgs = addedServices.sort((a, b) => a.type.localeCompare(b.type)).concat(servicesToAdd.sort((a, b) => a.type.localeCompare(b.type)));
-    this.sharedService.installedServicePkgs.next({ installed: this.installedServicePkgs, availableToInstall: this.availableServicePkgs });
+    if (from !== 'additional-services') {
+      const service = { name: '', added: false, isEnabled: false, isInstalled: false, process: from };
+      const serviceDetail = this.installedServicePkgs.find(s => ['bucket', 'dispatcher', 'notification', 'management'].includes(s.process));
+      if (serviceDetail) {
+        service.isEnabled = ["shutdown", "disabled", "installed"].includes(serviceDetail.state) ? false : true;
+        service.isInstalled = true;
+        service.added = serviceDetail?.added;
+        service.name = serviceDetail?.name;
+        service.process = serviceDetail?.process;
+      }
+      this.sharedService.installedServicePkgs.next({ installed: service, availableToInstall: this.availableServicePkgs });
+    } else {
+      this.sharedService.installedServicePkgs.next({ installed: this.installedServicePkgs, availableToInstall: this.availableServicePkgs });
+    }
   }
 
   public checkInstalledServices(from: string) {
@@ -203,10 +212,10 @@ export class AdditionalServicesUtils {
         this.expectedServices.forEach(function (s) {
           serviceTypes.push(s["process"]);
         });
-        this.showInstalledAndAddedServices(serviceTypes);
+        this.showInstalledAndAddedServices(serviceTypes, from);
         this.ngProgress.done();
       } else {
-        this.showInstalledAndAddedServices(installedServices);
+        this.showInstalledAndAddedServices(installedServices, from);
         if (from == 'additional-services') {
           this.getAvailableServices();
         }

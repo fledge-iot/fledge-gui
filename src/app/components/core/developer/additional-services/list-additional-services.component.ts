@@ -69,8 +69,10 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
 
     this.showLoadingText();
     this.additionalServicesUtils.getAllServiceStatus(false, 'additional-services');
+
     this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
-      if (service.installed && service.availableToInstall) {
+      // check "service.installed" is an array or not (FYI; it is an object in case of separate service pages)
+      if (service.installed instanceof Array && service.availableToInstall) {
         this.installedServicePkgs = service.installed;
         this.availableServicePkgs = service.availableToInstall;
         this.hideLoadingText();
