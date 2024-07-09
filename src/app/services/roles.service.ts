@@ -33,13 +33,12 @@ export class RolesService {
     return [appRoles.admin, appRoles.control, appRoles.anonymous].includes(roleId);
   }
 
-  public hasConfigItemPermission(permissions: string[] = []) {
+  public hadEditPermissionsOnConfigItem(allowedRoles: string[] = []) {
     try {
       const roleId = Number(sessionStorage.getItem('roleId'));
       const roleName = appRoles[roleId];
       const loginSkipped = JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'));
-      console.log('loginSkipped', loginSkipped, permissions.includes(roleName));
-      return loginSkipped || permissions.includes(roleName);
+      return loginSkipped || allowedRoles.includes(roleName);
     } catch (error) {
       console.log('Invalid JSON', error);
     }
