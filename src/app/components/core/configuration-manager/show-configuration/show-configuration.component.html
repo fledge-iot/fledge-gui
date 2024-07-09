@@ -16,12 +16,12 @@
                 <div [ngSwitch]="configuration.controlType" class="field" #cdmrField
                   [style.max-width.px]="['CODE', 'SCRIPT', 'JSON'].includes(configuration.controlType) && cdmrField.offsetWidth !== 0 ? cdmrField.offsetWidth : ''"
                   [ngClass]="{'codemirror-field': ['CODE', 'SCRIPT', 'JSON'].includes(configuration.controlType)}">
-                  <div class="column is-11 p-0">
-                    <ng-container
-                      *ngIf="configuration?.permissions && !rolesService?.hasConfigItemPermission(configuration?.permissions); else permissionsView">
-                      <span class="help">{{configuration.value}}</span>
-                    </ng-container>
-                    <ng-template #permissionsView>
+                  <ng-container
+                    *ngIf="configuration?.permissions && !rolesService?.hasConfigItemPermission(configuration?.permissions); else permissionsView">
+                    <span class="help">{{configuration.value}}</span>
+                  </ng-container>
+                  <ng-template #permissionsView>
+                    <div class="column is-11 p-0">
                       <input *ngSwitchCase="'TEXT'" [formControlName]="configuration.key" [id]="configuration.key"
                         [type]="configuration.type" class="input is-fullwidth is-small" />
                       <div *ngSwitchCase="'DROPDOWN'" class="select is-small">
@@ -123,16 +123,16 @@
                       <span *ngIf="form?.controls[configuration.key]?.hasError('maxValue')" class="help is-danger">
                         <sup>*</sup>Value should not be greater than {{configuration.maximum}}.
                       </span>
-                    </ng-template>
-                  </div>
-                  <ng-container *ngSwitchCase="'LIST'">
-                    <app-list-type-configuration [configuration]="configuration" [formGroup]="form"
-                      (formState)="listTypeFormState($event, configuration?.key)"></app-list-type-configuration>
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'KVLIST'">
-                    <app-kv-list-type-configuration [configuration]="configuration" [formGroup]="form"
-                      (formState)="listTypeFormState($event, configuration?.key)"></app-kv-list-type-configuration>
-                  </ng-container>
+                    </div>
+                    <ng-container *ngSwitchCase="'LIST'">
+                      <app-list-type-configuration [configuration]="configuration" [formGroup]="form"
+                        (formState)="listTypeFormState($event, configuration?.key)"></app-list-type-configuration>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'KVLIST'">
+                      <app-kv-list-type-configuration [configuration]="configuration" [formGroup]="form"
+                        (formState)="listTypeFormState($event, configuration?.key)"></app-kv-list-type-configuration>
+                    </ng-container>
+                  </ng-template>
                 </div>
               </div>
             </div>

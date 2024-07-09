@@ -34,9 +34,15 @@ export class RolesService {
   }
 
   public hasConfigItemPermission(permissions: string[] = []) {
-    const roleId = Number(sessionStorage.getItem('roleId'));
-    const roleName = appRoles[roleId];
-    return permissions.includes(roleName);
+    try {
+      const roleId = Number(sessionStorage.getItem('roleId'));
+      const roleName = appRoles[roleId];
+      const loginSkipped = JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'));
+      console.log('loginSkipped', loginSkipped, permissions.includes(roleName));
+      return loginSkipped || permissions.includes(roleName);
+    } catch (error) {
+      console.log('Invalid JSON', error);
+    }
   }
 
   hasEditPermissionsOnPage(page: string) {
