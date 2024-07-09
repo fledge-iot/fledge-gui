@@ -319,4 +319,22 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     const formStatus = groupTabFormsStatus.every(g => (g.status === true || g.status === undefined));
     this.formStatusEvent.emit(formStatus);
   }
+
+  toggleCard(index) {
+    let cardBody = document.getElementById('card-content-'+index);
+    let cardSpan = document.getElementById('card-span-'+index);
+    let cardIcon = document.getElementById('card-icon-'+index);
+    if(cardBody.classList.contains('is-hidden')){
+      cardBody.classList.remove('is-hidden');
+      cardSpan.title = 'Collapse';
+      cardIcon.classList.remove('fa-chevron-right');
+      cardIcon.classList.add('fa-chevron-down');
+    }
+    else{
+      cardBody.classList.add('is-hidden');
+      cardSpan.title = 'Expand';
+      cardIcon.classList.remove('fa-chevron-down');
+      cardIcon.classList.add('fa-chevron-right');
+    }
+  }
 }

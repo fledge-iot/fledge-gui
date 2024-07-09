@@ -100,3 +100,19 @@
   font-size: 0.9rem !important;
   font-weight: 500;
 }
+
+.toogle-icon {
+  display: inline-flex;
+  height: 1.2em;
+  width: 1.2em;
+  background-color: whitesmoke;
+  border-radius: 50%;
+}
+
+.card-shadow {
+  box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.01), 0 0px 0 1px rgba(10, 10, 10, 0.02) !important;
+}
+
+.card-header-shadow {
+  box-shadow: 0 0.125em 0.25em rgba(10, 10, 10, 0.01);
+}
