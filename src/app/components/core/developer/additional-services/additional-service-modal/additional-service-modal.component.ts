@@ -154,7 +154,7 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
     }
   }
 
-  public toggleModal(isOpen: Boolean) {
+  public toggleModal(isOpen: boolean) {
     this.serviceInstallationState = false;
     this.reenableButton.emit(false);
     const serviceModal = <HTMLDivElement>document.getElementById('additional-service-modal');
@@ -199,7 +199,6 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
       type: this.serviceInfo.type.toLowerCase(),
       enabled: formValues.enabled
     };
-    console.log('service123', this.serviceInfo);
     if (!installationState) {
       this.ngProgress.start();
     }
@@ -599,7 +598,6 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
     if (this.serviceInfo.process === 'dispatcher') {
       this.docService.goToSetPointControlDocLink('control-dispatcher-service');
     }
-    return;
   }
 
   ngOnDestroy() {

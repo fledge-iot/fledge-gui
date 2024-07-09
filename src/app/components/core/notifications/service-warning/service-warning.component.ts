@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, OnChanges, Input, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ProgressBarService, SchedulesService, ServicesApiService, SharedService, RolesService } from '../../../../services';
 import { NotificationsService } from '../../../../services/notifications.service';
@@ -31,17 +31,6 @@ export class ServiceWarningComponent implements OnInit {
   ) { }
 
   ngOnInit(): void { }
-
-  // ngOnChanges(changes: SimpleChanges) {
-  //   console.log('changes', changes);
-  //   console.log('serviceType', this.serviceType);
-  //   console.log('service22', this.service);
-  //   if (changes && changes?.service?.currentValue?.process === this.serviceType.toLowerCase()) {
-  //     this.service = changes.service?.currentValue;
-  //     console.log('currentValue', changes.service?.currentValue);
-  //     console.log('service33', this.service);
-  //   }
-  // }
 
   /**
    * Open Configure Service modal

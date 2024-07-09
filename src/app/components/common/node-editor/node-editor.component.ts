@@ -1095,10 +1095,10 @@ export class NodeEditorComponent implements OnInit {
     this.serviceSubscription.unsubscribe();
     this.removeFilterSubscription.unsubscribe();
     this.exportReadingSubscription.unsubscribe();
-    this.paramsSubscription.unsubscribe();
     this.logsSubscription.unsubscribe();
     if (this.from === 'notifications') {
       this.serviceDetailsSubscription?.unsubscribe();
+      this.paramsSubscription.unsubscribe();
     }
     this.destroy$.next(true);
     this.destroy$.unsubscribe();

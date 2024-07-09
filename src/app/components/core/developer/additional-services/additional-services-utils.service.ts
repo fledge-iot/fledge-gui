@@ -190,7 +190,7 @@ export class AdditionalServicesUtils {
       const service = { name: '', added: false, isEnabled: false, isInstalled: false, process: from };
       const serviceDetail = this.installedServicePkgs.find(s => ['bucket', 'dispatcher', 'notification', 'management'].includes(s.process));
       if (serviceDetail) {
-        service.isEnabled = ["shutdown", "disabled", "installed"].includes(serviceDetail.state) ? false : true;
+        service.isEnabled = !["shutdown", "disabled", "installed"].includes(serviceDetail.state);
         service.isInstalled = true;
         service.added = serviceDetail?.added;
         service.name = serviceDetail?.name;
@@ -306,11 +306,10 @@ export class AdditionalServicesUtils {
       }
     }
     this.router.navigate([routeToNavigate], { state: { ...{ 'shouldSkipCalls': skip } } });
-    return;
   }
 
   public isDeveloperFeatureOn(): boolean {
     const devFeature = JSON.parse(localStorage.getItem('DEV_FEATURES'));
-    return devFeature ? devFeature : false;
+    return devFeature || false;
   }
 }
