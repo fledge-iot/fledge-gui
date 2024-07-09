@@ -58,7 +58,7 @@
       <ng-container *ngFor="let g of groups; let i=index;">
         <ng-container *ngIf="from == 'config-manager';else showGroup">
           <ng-container *ngIf="['bucket', 'list', 'kvlist'].includes(g?.type); else showConfigTemplate">
-            <div class="card mb-2 card-shadow">
+            <div class="card mb-2 card-shadow ml-1 custom-width">
               <header class="card-header has-background-white card-header-shadow">
                 <div class="card-header-title">
                   <p class="subtitle is-6">{{g.key}}</p>
