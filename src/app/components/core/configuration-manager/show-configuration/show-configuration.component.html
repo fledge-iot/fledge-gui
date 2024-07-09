@@ -17,7 +17,7 @@
                   [style.max-width.px]="['CODE', 'SCRIPT', 'JSON'].includes(configuration.controlType) && cdmrField.offsetWidth !== 0 ? cdmrField.offsetWidth : ''"
                   [ngClass]="{'codemirror-field': ['CODE', 'SCRIPT', 'JSON'].includes(configuration.controlType)}">
                   <ng-container
-                    *ngIf="configuration?.permissions && !rolesService?.allowedRoles(configuration?.permissions); else permissionsView">
+                    *ngIf="configuration?.permissions && !rolesService?.hadEditPermissionsOnConfigItem(configuration?.permissions); else permissionsView">
                     <span class="help">{{configuration.value}}</span>
                   </ng-container>
                   <ng-template #permissionsView>

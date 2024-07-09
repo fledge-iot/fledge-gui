@@ -40,7 +40,7 @@ export class RolesService {
       const loginSkipped = JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'));
       return loginSkipped || allowedRoles.includes(roleName);
     } catch (error) {
-      console.log('Invalid JSON', error);
+      console.log(error);
     }
   }
 
