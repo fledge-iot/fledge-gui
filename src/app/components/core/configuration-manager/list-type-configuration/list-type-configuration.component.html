@@ -5,18 +5,23 @@
         <div class="columns">
           <div class="column is-11">
             <input *ngIf="configuration.items == 'integer'" class="input is-small" type="text" formControlName="{{i}}"
-              [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appIntegerOnly>
+              [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appIntegerOnly
+              [ngClass]="{'is-static': !rolesService.hasEditPermissions()}"
+              [readOnly]="!rolesService.hasEditPermissions()">
             <input *ngIf="configuration.items == 'float'" class="input is-small" type="text" formControlName="{{i}}"
-              [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appFloatOnly>
+              [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appFloatOnly
+              [ngClass]="{'is-static': !rolesService.hasEditPermissions()}"
+              [readOnly]="!rolesService.hasEditPermissions()">
             <input *ngIf="configuration.items == 'string'" class="input is-small" type="text" formControlName="{{i}}"
-              [attr.maxLength]="configuration?.length">
+              [attr.maxLength]="configuration?.length" [ngClass]="{'is-static': !rolesService.hasEditPermissions()}"
+              [readOnly]="!rolesService.hasEditPermissions()">
             <ng-container *ngIf="configuration.items == 'object'">
-              <app-show-configuration [groupConfiguration]="initialProperties[i]" [fullConfiguration]="initialProperties[i]"
-                (event)="getChangedConfiguration(i, $event)" (formStatusEvent)="formStatus($event)" [from]="from"
-                [group]="group"></app-show-configuration>
+              <app-show-configuration [groupConfiguration]="initialProperties[i]"
+                [fullConfiguration]="initialProperties[i]" (event)="getChangedConfiguration(i, $event)"
+                (formStatusEvent)="formStatus($event)" [from]="from" [group]="group"></app-show-configuration>
             </ng-container>
           </div>
-          <div class="column pl-0 pt-2">
+          <div class="column pl-0 pt-2" *ngIf="rolesService.hasEditPermissions()">
             <span class="icon">
               <button class="delete is-small" (click)="removeListItem(i)"></button>
             </span>
@@ -33,10 +38,10 @@
       </span>
     </div>
   </ng-container>
-  <div class="field">
+  <div class="field" *ngIf="rolesService.hasEditPermissions()">
     <p class="control" *ngIf="!configuration.listSize || configuration.listSize != listItems.controls.length ">
       <button class="button is-small" (click)="addListItem()"
-      [ngClass]="{'px-0 pt-1 is-ghost': configuration.items != 'object'}">
+        [ngClass]="{'px-0 pt-1 is-ghost': configuration.items != 'object'}">
         <span class="icon is-small mr-0">
           <i class="bi bi-plus bi-sm"></i>
         </span>
