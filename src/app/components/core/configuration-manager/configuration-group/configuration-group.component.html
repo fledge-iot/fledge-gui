@@ -55,22 +55,58 @@
   <ng-template #group>
     <!-- if user coming from config-manager component don't show the group border -->
     <div [ngClass]="{'highlight': from !== 'config-manager', 'custom-quickview-configuration': sourceName}">
-      <ng-container *ngFor="let g of groups">
+      <ng-container *ngFor="let g of groups; let i=index;">
         <ng-container *ngIf="from == 'config-manager';else showGroup">
-          <app-bucket-configuration *ngIf="g.type == 'bucket'" [dataModel]="g.config"
-            (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)" [from]="from"
-            [group]="g.group"></app-bucket-configuration>
-
-          <app-show-configuration *ngIf="g?.type != 'bucket'" [groupConfiguration]="g.config" [group]="g.group"
-            [from]="from" [selectedGroup]="selectedGroup" [fullConfiguration]="category.config"
-            (event)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)"></app-show-configuration>
+          <ng-container *ngIf="['bucket', 'list', 'kvlist'].includes(g?.type); else showConfigTemplate">
+            <div class="card mb-2 card-shadow ml-1 custom-width">
+              <header class="card-header has-background-white card-header-shadow">
+                <div class="card-header-title">
+                  <p class="subtitle is-6">{{g.key}}</p>
+                </div>
+                <button class="card-header-icon" (click)="toggleCard(i)">
+                  <span class="icon is-small toogle-icon" id="card-span-{{i}}" title="'Expand'">
+                    <i id="card-icon-{{i}}" class="fas fa-2xs fa-chevron-right" aria-hidden="true"></i>
+                  </span>
+                </button>
+              </header>
+              <div class="card-content is-hidden" id="card-content-{{i}}">
+                <div class="content">
+                  <app-bucket-configuration *ngIf="g.type == 'bucket'" [dataModel]="g.config"
+                    (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)" [from]="from"
+                    [group]="g.group"></app-bucket-configuration>
+        
+                  <app-list-type-configuration *ngIf="g?.type == 'list'" [configuration]="g.config"
+                    [group]="g.group" [from]="from" (changedConfig)="getChangedConfiguration($event)"
+                    (formStatusEvent)="formStatus($event)"></app-list-type-configuration>
+                  
+                  <app-kv-list-type-configuration *ngIf="g?.type == 'kvlist'"
+                    [configuration]="g.config" [group]="g.group" [from]="from" (changedConfig)="getChangedConfiguration($event)"
+                    (formStatusEvent)="formStatus($event)"></app-kv-list-type-configuration>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #showConfigTemplate>
+            <app-show-configuration *ngIf="!['bucket', 'list', 'kvlist'].includes(g?.type)" 
+              [groupConfiguration]="g.config" [group]="g.group"
+              [from]="from" [selectedGroup]="selectedGroup" [fullConfiguration]="category.config"
+              (event)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)"></app-show-configuration>
+          </ng-template>
         </ng-container>
         <ng-template #showGroup>
           <app-bucket-configuration *ngIf="g.type == 'bucket' && selectedGroup == g.group" [dataModel]="g.config"
             (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)" [from]="from"
             [group]="g.group"></app-bucket-configuration>
 
-          <app-show-configuration *ngIf="g?.type != 'bucket'" [hidden]="selectedGroup !== g.group"
+          <app-list-type-configuration *ngIf="g?.type == 'list'" [hidden]="selectedGroup !== g.group" [configuration]="g.config"
+           [group]="g.group" [from]="from" (changedConfig)="getChangedConfiguration($event)"
+            (formStatusEvent)="formStatus($event)"></app-list-type-configuration>
+
+          <app-kv-list-type-configuration *ngIf="g?.type == 'kvlist'" [hidden]="selectedGroup !== g.group" [configuration]="g.config"
+           [group]="g.group" [from]="from" (changedConfig)="getChangedConfiguration($event)"
+            (formStatusEvent)="formStatus($event)"></app-kv-list-type-configuration>
+            
+          <app-show-configuration *ngIf="!['bucket', 'list', 'kvlist'].includes(g?.type)" [hidden]="selectedGroup !== g.group"
             [groupConfiguration]="g.config" [group]="g.group" [from]="from" [selectedGroup]="selectedGroup"
             [fullConfiguration]="category.config" (event)="getChangedConfiguration($event)"
             (formStatusEvent)="formStatus($event)"></app-show-configuration>
