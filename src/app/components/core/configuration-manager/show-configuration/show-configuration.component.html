@@ -2,25 +2,25 @@
   <ng-container *ngIf="rolesService?.hasEditPermissionsOnPage(from); else staticView">
     <div class="column">
       <ng-container *ngFor="let configuration of configurations$ | async">
-        <div [formGroup]="form" novalidate>
-          <div class="config-div" *ngIf="configuration?.readonly != 'true'">
-            <div class="field" [ngClass]="{'is-horizontal': from !== 'control-pipeline'}">
-              <div class="field-label has-text-left" [ngClass]="{'is-margin': from === 'control-pipeline'}">
-                <label class="label tooltip has-tooltip-multiline config-label"
-                  [ngClass]="from === 'control-pipeline' ? 'has-tooltip-top has-tooltip-arrow' : 'has-tooltip-right has-tooltip-arrow'"
-                  [attr.for]="configuration.key" [attr.data-tooltip]="configuration.description">
-                  {{configuration.label}}
-                </label>
-              </div>
-              <div class="field-body">
-                <div [ngSwitch]="configuration.controlType" class="field" #cdmrField
-                  [style.max-width.px]="['CODE', 'SCRIPT', 'JSON'].includes(configuration.controlType) && cdmrField.offsetWidth !== 0 ? cdmrField.offsetWidth : ''"
-                  [ngClass]="{'codemirror-field': ['CODE', 'SCRIPT', 'JSON'].includes(configuration.controlType)}">
-                  <ng-container
-                    *ngIf="configuration?.permissions && !rolesService?.hadEditPermissionsOnConfigItem(configuration?.permissions); else permissionsView">
-                    <span class="help">{{configuration.value}}</span>
-                  </ng-container>
-                  <ng-template #permissionsView>
+        <ng-container *ngIf="configuration?.permissions && !rolesService?.hadEditPermissionsOnConfigItem(configuration?.permissions);
+          else permissionsView">
+          <app-static-configuration [configuration]="configuration" />
+        </ng-container>
+        <ng-template #permissionsView>
+          <div [formGroup]="form" novalidate>
+            <div class="config-div" *ngIf="configuration?.readonly != 'true'">
+              <div class="field" [ngClass]="{'is-horizontal': from !== 'control-pipeline'}">
+                <div class="field-label has-text-left" [ngClass]="{'is-margin': from === 'control-pipeline'}">
+                  <label class="label tooltip has-tooltip-multiline config-label"
+                    [ngClass]="from === 'control-pipeline' ? 'has-tooltip-top has-tooltip-arrow' : 'has-tooltip-right has-tooltip-arrow'"
+                    [attr.for]="configuration.key" [attr.data-tooltip]="configuration.description">
+                    {{configuration.label}}
+                  </label>
+                </div>
+                <div class="field-body">
+                  <div [ngSwitch]="configuration.controlType" class="field" #cdmrField [style.max-width.px]="['CODE', 'SCRIPT', 'JSON'].includes(configuration.controlType)
+                    && cdmrField.offsetWidth !== 0 ? cdmrField.offsetWidth : ''"
+                    [ngClass]="{'codemirror-field': ['CODE', 'SCRIPT', 'JSON'].includes(configuration.controlType)}">
                     <div class="column is-11 p-0">
                       <input *ngSwitchCase="'TEXT'" [formControlName]="configuration.key" [id]="configuration.key"
                         [type]="configuration.type" class="input is-fullwidth is-small" />
@@ -132,12 +132,12 @@
                       <app-kv-list-type-configuration [configuration]="configuration" [formGroup]="form"
                         (formState)="listTypeFormState($event, configuration?.key)"></app-kv-list-type-configuration>
                     </ng-container>
-                  </ng-template>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </ng-template>
       </ng-container>
     </div>
   </ng-container>
@@ -145,47 +145,7 @@
   <ng-template #staticView>
     <div class="column">
       <ng-container *ngFor="let configuration of configurations$ | async">
-        <div class="config-div" *ngIf="configuration.readonly != 'true'">
-          <div class="field is-horizontal">
-            <div class="field-label has-text-left">
-              <label class="label tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline config-label"
-                [attr.for]="configuration.key" [attr.data-tooltip]="configuration.description">
-                {{configuration.label}}
-              </label>
-            </div>
-            <div class="field-body">
-              <div [ngSwitch]="configuration.controlType" class="field" #cdmrField
-                [style.max-width.px]="['CODE', 'SCRIPT', 'JSON'].includes(configuration.controlType) && cdmrField.offsetWidth !== 0 ? cdmrField.offsetWidth : ''"
-                [ngClass]="{'codemirror-field': ['CODE', 'SCRIPT', 'JSON'].includes(configuration.controlType)}">
-
-                <label *ngSwitchCase="'CHECKBOX'" class="checkbox" [id]="configuration.key">
-                  <input [type]="configuration.type" [checked]="configuration.value.toLowerCase() == 'true'"
-                    disabled="true" />
-                </label>
-
-                <ngx-codemirror *ngSwitchCase="'JSON'" #jsonEditor [options]="configuration.editorOptions"
-                  [disabled]="true" [ngModel]="configuration.value" class="readonly-editor">
-                </ngx-codemirror>
-
-                <ng-container *ngSwitchCase="'SCRIPT'">
-                  <ngx-codemirror #scriptCode [ngModel]="configuration.value" [options]="configuration.editorOptions"
-                    class="readonly-editor" [disabled]="true">
-                  </ngx-codemirror>
-                </ng-container>
-
-                <ng-container *ngSwitchCase="'CODE'">
-                  <ngx-codemirror [ngModel]="configuration.value" [options]="configuration.editorOptions"
-                    class="readonly-editor" [disabled]="true">
-                  </ngx-codemirror>
-                </ng-container>
-
-                <input *ngSwitchDefault [id]="configuration.key" [type]="configuration.type"
-                  class="input is-fullwidth is-small is-static has-text-grey-dark" type="text"
-                  [value]='(configuration.value ? configuration.value : "None")' readonly>
-              </div>
-            </div>
-          </div>
-        </div>
+        <app-static-configuration [configuration]="configuration" />
       </ng-container>
     </div>
   </ng-template>
