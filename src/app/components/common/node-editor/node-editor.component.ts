@@ -409,7 +409,7 @@ export class NodeEditorComponent implements OnInit {
   }
 
   getNorthTasks() {
-    this.northService.getNorthTasks(true)
+    this.northService.getNorthTasks(false)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
         const tasks = data as NorthTask[];
@@ -437,7 +437,7 @@ export class NodeEditorComponent implements OnInit {
   }
 
   getSouthservices() {
-    this.servicesApiService.getSouthServices(true)
+    this.servicesApiService.getSouthServices(false)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
         const services = data.services as Service[];
@@ -496,13 +496,13 @@ export class NodeEditorComponent implements OnInit {
   }
 
   getSouthboundServices() {
-    this.initialApiCallsStack.push(this.servicesApiService.getSouthServices(true)
+    this.initialApiCallsStack.push(this.servicesApiService.getSouthServices(false)
       .pipe(takeUntil(this.destroy$))
     )
   }
 
   getNorthboundServices() {
-    this.initialApiCallsStack.push(this.northService.getNorthTasks(true)
+    this.initialApiCallsStack.push(this.northService.getNorthTasks(false)
       .pipe(map(response => ({ tasks: response })), takeUntil(this.destroy$))
     )
   }
