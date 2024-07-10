@@ -79,16 +79,26 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   }
 
   categeryConfiguration() {
-    let modelConfig = []
+    let modelConfig = [];
+    let listConfig = [];
+    let kvlistConfig = [];
     this.groups = [];
     const configItems = Object.keys(this.category.config).map(k => {
       if (this.category.config[k].type == 'bucket') {
         this.category.config[k].key = k;
         modelConfig.push(this.category.config[k]);
       }
+      else if(this.category.config[k].type == 'list') {
+        this.category.config[k].key = k;
+        listConfig.push(this.category.config[k]);
+      }
+      else if(this.category.config[k].type == 'kvlist') {
+        this.category.config[k].key = k;
+        kvlistConfig.push(this.category.config[k]);
+      }
       this.category.config[k].key = k;
       return this.category.config[k];
-    }).filter(obj => obj.type != 'bucket'); // remove type=bucket items from config array
+    }).filter(obj => !['bucket', 'list', 'kvlist'].includes(obj.type)); // remove type=bucket, type=list and type=kvlist from config array
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
       const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic";
@@ -103,6 +113,22 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         this.groups.push({ category: this.category.name, group: (mConfig.displayName ? mConfig.displayName : mConfig.description), config: mConfig, type: mConfig.type, key: mConfig.key });
       });
     }
+
+    if (listConfig.length > 0) {
+      listConfig.forEach(config => {
+        if (!config.hasOwnProperty('value')) {
+          config.value = config.default;
+        }
+        this.groups.push({ category: this.category.name, group: (config.displayName ? config.displayName : config.description), config: config, type: config.type, key: config.key });
+      });
+    }
+
+    kvlistConfig.forEach(config => {
+      if (!config.hasOwnProperty('value')) {
+        config.value = config.default;
+      }
+      this.groups.push({ category: this.category.name, group: (config.displayName ? config.displayName : config.description), config: config, type: config.type, key: config.key });
+    });
     // merge configuration of same group
     this.groups = uniqWith(this.groups, (pre, cur) => {
       if (pre.group == cur.group) {
@@ -292,5 +318,23 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     // check the condition for every element to see if all groups have valid status
     const formStatus = groupTabFormsStatus.every(g => (g.status === true || g.status === undefined));
     this.formStatusEvent.emit(formStatus);
+  }
+
+  toggleCard(index) {
+    let cardBody = document.getElementById('card-content-'+index);
+    let cardSpan = document.getElementById('card-span-'+index);
+    let cardIcon = document.getElementById('card-icon-'+index);
+    if(cardBody.classList.contains('is-hidden')){
+      cardBody.classList.remove('is-hidden');
+      cardSpan.title = 'Collapse';
+      cardIcon.classList.remove('fa-chevron-right');
+      cardIcon.classList.add('fa-chevron-down');
+    }
+    else{
+      cardBody.classList.add('is-hidden');
+      cardSpan.title = 'Expand';
+      cardIcon.classList.remove('fa-chevron-down');
+      cardIcon.classList.add('fa-chevron-right');
+    }
   }
 }
