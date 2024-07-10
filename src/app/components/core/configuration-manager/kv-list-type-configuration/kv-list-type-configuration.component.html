@@ -7,7 +7,7 @@
             <div class="column is-5">
               <input formControlName="key" placeholder="key" class="input is-small" name="type" type="text">
               <span *ngIf="kvListItems?.controls[i]?.controls['key']?.invalid" class="help is-danger">
-                <sup>*required</sup>
+                <sup>*</sup>required
               </span>
             </div>
             <div class="column is-6">
@@ -40,7 +40,7 @@
                     <div class="column is-11 p-0">
                       <input formControlName="key" placeholder="key" class="input is-small is-fullwidth" name="type" type="text">
                       <span *ngIf="kvListItems?.controls[i]?.controls['key']?.invalid" class="help is-danger">
-                        <sup>*required</sup>
+                        <sup>*</sup>required
                       </span>
                     </div>
                   </div>
