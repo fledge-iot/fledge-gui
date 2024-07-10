@@ -55,6 +55,10 @@ export class KvListTypeConfigurationComponent implements OnInit {
         if (objectConfig[key].type == 'json') {
           objectConfig[key].value = JSON.stringify(objectConfig[key].value);
         }
+        // if cofiguration item has permissions array, pass that to the child config items
+        if (this.configuration?.permissions) {
+          objectConfig[key].permissions = this.configuration.permissions;
+        }
       }
       this.initialProperties.push(objectConfig);
       return this.fb.group({

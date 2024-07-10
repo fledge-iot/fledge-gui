@@ -41,7 +41,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     return this.listItemsForm.get('listItems') as FormArray;
   }
 
-  initListItem(v = '') {
+  initListItem(v: any = '') {
     let listItem;
     if (this.configuration.items == 'object') {
       let objectConfig = cloneDeep(this.configuration.properties);
@@ -49,6 +49,10 @@ export class ListTypeConfigurationComponent implements OnInit {
         objectConfig[key].value = val;
         if (objectConfig[key].type == 'json') {
           objectConfig[key].value = JSON.stringify(objectConfig[key].value);
+        }
+        // if cofiguration item has permissions array, pass that to the child config items
+        if (this.configuration?.permissions) {
+          objectConfig[key].permissions = this.configuration.permissions;
         }
       }
       this.initialProperties.push(objectConfig);

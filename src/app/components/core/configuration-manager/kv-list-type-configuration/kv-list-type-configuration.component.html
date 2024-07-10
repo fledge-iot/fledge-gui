@@ -6,8 +6,8 @@
           <ng-container *ngIf="configuration.items != 'object'; else objectTemplate">
             <div class="column is-5">
               <input formControlName="key" placeholder="key" class="input is-small" name="type" type="text"
-                [ngClass]="{'is-static': !rolesService.hasEditPermissions()}"
-                [readOnly]="!rolesService.hasEditPermissions()">
+                [ngClass]="{'is-static': !rolesService.hasEditPermissions() || !rolesService?.hadEditPermissionsOnConfigItem(configuration?.permissions)}"
+                [readOnly]="!rolesService.hasEditPermissions() || !rolesService?.hadEditPermissionsOnConfigItem(configuration?.permissions)">
               <span *ngIf="kvListItems?.controls[i]?.controls['key']?.invalid" class="help is-danger">
                 <sup>*</sup>required
               </span>
@@ -15,15 +15,16 @@
             <div class="column is-6">
               <input *ngIf="configuration.items == 'integer'" class="input is-small" type="text" formControlName="value"
                 [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appIntegerOnly
-                [ngClass]="{'is-static': !rolesService.hasEditPermissions()}"
-                [readOnly]="!rolesService.hasEditPermissions()">
+                [ngClass]="{'is-static': !rolesService.hasEditPermissions() || !rolesService?.hadEditPermissionsOnConfigItem(configuration?.permissions)}"
+                [readOnly]="!rolesService.hasEditPermissions() || !rolesService?.hadEditPermissionsOnConfigItem(configuration?.permissions)">
               <input *ngIf="configuration.items == 'float'" class="input is-small" type="text" formControlName="value"
                 [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appFloatOnly
-                [ngClass]="{'is-static': !rolesService.hasEditPermissions()}"
-                [readOnly]="!rolesService.hasEditPermissions()">
+                [ngClass]="{'is-static': !rolesService.hasEditPermissions() || !rolesService?.hadEditPermissionsOnConfigItem(configuration?.permissions)}"
+                [readOnly]="!rolesService.hasEditPermissions() || !rolesService?.hadEditPermissionsOnConfigItem(configuration?.permissions)">
               <input *ngIf="configuration.items == 'string'" class="input is-small" type="text" formControlName="value"
-                [attr.maxLength]="configuration?.length" [ngClass]="{'is-static': !rolesService.hasEditPermissions()}"
-                [readOnly]="!rolesService.hasEditPermissions()">
+                [attr.maxLength]="configuration?.length"
+                [ngClass]="{'is-static': !rolesService.hasEditPermissions() || !rolesService?.hadEditPermissionsOnConfigItem(configuration?.permissions)}"
+                [readOnly]="!rolesService.hasEditPermissions() || !rolesService?.hadEditPermissionsOnConfigItem(configuration?.permissions)">
               <div *ngIf="configuration.items == 'enumeration'" class="select is-small">
                 <select formControlName="value">
                   <option *ngFor="let option of configuration?.options" [value]="option">
@@ -47,8 +48,9 @@
                   <div class="field">
                     <div class="column is-11 p-0">
                       <input formControlName="key" placeholder="key" class="input is-small is-fullwidth" name="type"
-                        type="text" [ngClass]="{'is-static': !rolesService.hasEditPermissions()}"
-                        [readOnly]="!rolesService.hasEditPermissions()">
+                        type="text"
+                        [ngClass]="{'is-static': !rolesService.hasEditPermissions() || !rolesService?.hadEditPermissionsOnConfigItem(configuration?.permissions)}"
+                        [readOnly]="!rolesService.hasEditPermissions() || !rolesService?.hadEditPermissionsOnConfigItem(configuration?.permissions)">
                       <span *ngIf="kvListItems?.controls[i]?.controls['key']?.invalid" class="help is-danger">
                         <sup>*</sup>required
                       </span>
@@ -62,7 +64,8 @@
                 (formStatusEvent)="formStatus($event)" [from]="from" [group]="group"></app-show-configuration>
             </div>
           </ng-template>
-          <div class="column is-1 pl-2 pt-2 has-text-right" *ngIf="rolesService.hasEditPermissions()">
+          <div class="column is-1 pl-2 pt-2 has-text-right"
+            *ngIf="rolesService.hasEditPermissions() && rolesService?.hadEditPermissionsOnConfigItem(configuration?.permissions)">
             <span class="icon">
               <button class="delete is-small" (click)="removeListItem(i)"></button>
             </span>
@@ -78,7 +81,8 @@
         </div>
       </div>
     </ng-container>
-    <div class="field" *ngIf="rolesService.hasEditPermissions()">
+    <div class="field"
+      *ngIf="rolesService.hasEditPermissions() && rolesService?.hadEditPermissionsOnConfigItem(configuration?.permissions)">
       <p class="control" *ngIf="!configuration.listSize || configuration.listSize != kvListItems.controls.length ">
         <button class="button is-small mb-1" (click)="addListItem()"
           [ngClass]="{'px-0 pt-1 is-ghost': configuration.items != 'object'}">

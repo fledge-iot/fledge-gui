@@ -38,7 +38,7 @@ export class RolesService {
       const roleId = Number(sessionStorage.getItem('roleId'));
       const roleName = appRoles[roleId];
       const loginSkipped = JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'));
-      return loginSkipped || allowedRoles.includes(roleName);
+      return loginSkipped || roleName == 'admin' || allowedRoles.length == 0 || allowedRoles.includes(roleName);
     } catch (error) {
       console.log(error);
     }
