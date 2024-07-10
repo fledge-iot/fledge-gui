@@ -358,7 +358,7 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   getNorthboundTasks() {
-    this.northService.getNorthTasks(true)
+    this.northService.getNorthTasks(false)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
         const tasks = data as NorthTask[];
@@ -386,7 +386,7 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   getSouthboundServices() {
-    this.servicesApiService.getSouthServices(true)
+    this.servicesApiService.getSouthServices(false)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
         const services = data.services as Service[];
