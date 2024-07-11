@@ -214,6 +214,8 @@ export class AdditionalServicesUtils {
         this.showInstalledAndAddedServices(installedServices, from);
         if (from == 'additional-services') {
           this.getAvailableServices();
+        } else {
+          this.ngProgress.done();
         }
       }
     },
