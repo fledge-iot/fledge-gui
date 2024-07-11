@@ -52,6 +52,10 @@ export class RolesService {
     }
   }
 
+  hasAccessPermission(allowedRoles: string[] = []) {
+    return this.hasEditPermissions() && this?.hadEditPermissionsOnConfigItem(allowedRoles);
+  }
+
   /**
    * To check if user have data_view role
    * @returns true|false based on user role
