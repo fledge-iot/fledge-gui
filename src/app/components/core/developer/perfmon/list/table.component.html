@@ -17,38 +17,38 @@
   <div class="card">
     <div class="card-content">
       <div class="content">
-       
+
         <!-- <div>{{ counters | json }}</div> -->
         <form>
           <div class="form-group">
-            <label for="">Counter</label> &nbsp;
-            <select class="form-control form-control-sm" #counter (change)="setCounter($event)"> 
+            <label for="">Services</label> &nbsp;
+            <select class="form-control form-control-sm" #counter (change)="setCounter($event)">
               <option value="All">
-                All 
-              </option> 
-              <option *ngFor="let c of counters" [value]="c"> 
-                  {{c}} 
-              </option> 
+                All
+              </option>
+              <option *ngFor="let c of counters" [value]="c">
+                {{c}}
+              </option>
             </select>
-          </div>        
+          </div>
         </form>
-        <hr/>
+        <hr />
         <div class="has-text-centered" *ngIf="perfMonitors.length === 0">
           <small class="no-rec">No data</small>
         </div>
 
         <ng-container *ngIf="perfMonitors.length > 0">
-          <table class="table is-fullwidth scroll is-responsive is-hoverable is-narrow" cellpadding="0" cellspacing="0">
+          <table class="table is-fullwidth scroll is-responsive is-hoverable is-narrow">
             <tbody>
               <tr></tr>
               <tr *ngFor="let pm of perfMonitors" class="parent">
                 <ng-container *ngIf="selectedCounter === 'All'">
                   <td class="align-content content-pad">
-                    <small><b>{{pm?.monitor}}</b></small>
+                    <small><b>{{pm?.key}}</b></small>
                   </td>
                 </ng-container>
                 <td class="align-content content-pad">
-                  <div *ngFor="let pmv of pm?.values"> 
+                  <div *ngFor="let pmv of pm?.value">
                     <pre>{{ pmv | json }}</pre>
                   </div>
                 </td>

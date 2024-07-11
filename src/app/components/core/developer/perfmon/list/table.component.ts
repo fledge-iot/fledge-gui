@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { AlertService, ProgressBarService, RolesService } from '../../../../../services';
 import { PerfMonService } from '../../../../../services/perfmon.service';
 import { SharedService } from '../../../../../services/shared.service';
-import { map } from 'lodash';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'tabuate-performance-monitors',
@@ -15,7 +15,7 @@ export class PerfMonComponent implements OnInit {
   private viewPortSubscription: Subscription;
   viewPort: any = '';
   perfMonitors = [];
-
+  perfMonitorsCopy = [];
   counters = []
   services = []
   selectedCounter = "All"
@@ -35,16 +35,19 @@ export class PerfMonComponent implements OnInit {
     this.getMonitors();
   }
 
-  setCounter(e){ 
+  setCounter(e) {
     this.selectedCounter = e.target.value;
-    if (e.target.value !== 'All'){
+    console.log(this.selectedCounter);
+    if (e.target.value !== 'All') {
       // FIXME
-      this.perfMonitors = this.perfMonitors.filter(item => e.target.value == item.monitor)
+      this.perfMonitors = this.perfMonitorsCopy.filter(item => e.target.value == item.key)
+      console.log(this.perfMonitors);
+
     } else {
       // TODO: Use proper data structure and Reset locally
       this.getMonitors();
     }
-  } 
+  }
 
   getMonitors() {
     this.ngProgress.start();
@@ -53,13 +56,20 @@ export class PerfMonComponent implements OnInit {
         (data: any) => {
           /** request completed */
           this.ngProgress.done();
-          console.log(data.monitors);
           // for table show (sorted by ts) latest record for each service per counter
-          this.perfMonitors = data.monitors;
-          
-          var x = data.monitors.map( m => m.monitor);
-          this.counters = x;
-          console.log(x);
+          this.counters = Object.keys(data.monitors[0]);
+          Object.keys(data.monitors[0]).forEach(k => {
+            console.log(k, data.monitors[0][k]);
+
+            const items = Object.keys(data.monitors[0][k]).map(key => {
+              return { key, value: data.monitors[0][k][key] }
+            })
+            console.log(items);
+            this.perfMonitors.push({ key: k, value: items });
+          });
+          this.perfMonitorsCopy = cloneDeep(this.perfMonitors);
+          console.log(this.perfMonitors);
+
 
           // Should list services and counters
           // then should be able to multiselect services and counters
@@ -67,7 +77,7 @@ export class PerfMonComponent implements OnInit {
           // - We can check if a service does not have pefmon checked then don;t list that
           // we should show chart per counter (and also have a grid/tabular view to allow sort/export)
           // should be able to filter for a time range, t1 to t2, last x units from now
-          
+
           /// group by services in get all
           // - counter: x, values {"s": [] } or
           // - counter: x, data: [{"service": "s", values":[], {"service": "s2", values":[]}]
