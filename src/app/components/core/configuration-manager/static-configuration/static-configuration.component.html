@@ -1,10 +1,15 @@
 <div class="config-div" *ngIf="configuration.readonly != 'true'">
   <div class="field is-horizontal">
     <div class="field-label has-text-left">
-      <label class="label tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline config-label"
+      <label
+        class="label tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline config-label is-inline-block"
         [attr.for]="configuration.key" [attr.data-tooltip]="configuration.description">
         {{configuration.label}}
       </label>
+      <span class="px-1" *ngIf="rolesService?.hasEditPermissions()">
+        <i class="bi bi-xs bi-info-circle info-icon" aria-hidden="true"
+          title="Insufficient privileges to modify this"></i>
+      </span>
     </div>
     <div class="field-body">
       <div [ngSwitch]="configuration.controlType" class="field" #cdmrField

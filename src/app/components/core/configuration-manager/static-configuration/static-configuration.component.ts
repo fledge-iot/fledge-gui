@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+import { RolesService } from '../../../../services';
 
 @Component({
   standalone: true,
@@ -12,7 +13,7 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 })
 export class StaticConfigurationComponent {
   @Input() configuration;
-  constructor() { }
+  constructor(public rolesService: RolesService) { }
 
   public codeMirrorConfiguration(type: string) {
     const editorOptions = {
