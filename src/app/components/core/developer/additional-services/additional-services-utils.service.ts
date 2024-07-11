@@ -80,21 +80,21 @@ export class AdditionalServicesUtils {
         (data: any) => {
           this.servicesRegistry = data.services.filter((el) => ['Notification', 'Management', 'Dispatcher', 'BucketStorage'].includes(el.type))
           this.sharedService.allServicesInfo.next(this.servicesRegistry);
-          if (autoRefresh) {
-            this.syncServicesStatus(this.servicesRegistry, this.installedServicePkgs);
-          } else {
-            const matchedServices = this.servicesRegistry.filter((svc) => this.expectedServices.some(es => es.type == svc.type));
-            if (matchedServices?.length === this.expectedServices.length) {
-              this.availableServicePkgs = [];
-              let serviceTypes = [];
-              this.expectedServices.forEach(function (s) {
-                serviceTypes.push(s["process"]);
-              });
-              this.showInstalledAndAddedServices(serviceTypes, from);
-              this.ngProgress.done();
-            } else {
-              this.checkSchedules(from);
-            }
+
+          const matchedServices = this.servicesRegistry.filter((svc) => this.expectedServices.some(es => es.type == svc.type));
+          this.syncServicesStatus(matchedServices, this.installedServicePkgs);
+
+          if (matchedServices?.length === this.expectedServices.length) {
+            this.availableServicePkgs = [];
+            let serviceTypes = [];
+            this.expectedServices.forEach(function (s) {
+              serviceTypes.push(s["process"]);
+            });
+            this.showInstalledAndAddedServices(serviceTypes, from);
+            this.ngProgress.done();
+          }
+          if (matchedServices?.length !== this.expectedServices.length && !autoRefresh) {
+            this.checkSchedules(from);
           }
         },
         (error) => {
@@ -172,11 +172,6 @@ export class AdditionalServicesUtils {
         replacement.state = foundService.status;
         replacement.enabled = foundService.enabled;
         atIndex = idx;
-      }
-      // If service and schedule both are available then consider schedule state
-      // (FYI; after enabling/disabling the service,  service API takes time to update the status)
-      if (foundService && foundSchedule) {
-        replacement.state = foundSchedule.enabled === true ? 'running' : 'disabled';
       }
       if (atIndex != -1) {
         this.installedServicePkgs[atIndex] = replacement;
