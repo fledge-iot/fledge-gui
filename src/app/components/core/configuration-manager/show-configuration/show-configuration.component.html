@@ -33,7 +33,7 @@
 
                     <input *ngSwitchCase="'INTEGER'" [formControlName]="configuration.key" [id]="configuration.key"
                       [type]="configuration.type" class="input is-fullwidth is-small" [minValue]="configuration.minimum"
-                      [maxValue]="configuration.maximum" appNumberOnly />
+                      [maxValue]="configuration.maximum" appIntegerOnly />
 
                     <input *ngSwitchCase="'FLOAT'" [formControlName]="configuration.key" [id]="configuration.key"
                       [type]="configuration.type" class="input is-fullwidth is-small" [minValue]="configuration.minimum"
@@ -119,15 +119,6 @@
                       <sup>*</sup>Value should not be greater than {{configuration.maximum}}.
                     </span>
                   </div>
-                  <ng-container *ngSwitchCase="'LIST'">
-                    <app-list-type-configuration [configuration]="configuration" [formGroup]="form"
-                      (formState)="listTypeFormState($event, configuration?.key)"></app-list-type-configuration>
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'KVLIST'">
-                    <app-kv-list-type-configuration [configuration]="configuration" [formGroup]="form"
-                      (formState)="listTypeFormState($event, configuration?.key)"></app-kv-list-type-configuration>
-                  </ng-container>
-
                 </div>
               </div>
             </div>
