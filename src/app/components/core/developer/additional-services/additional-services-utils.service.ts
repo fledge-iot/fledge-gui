@@ -69,23 +69,31 @@ export class AdditionalServicesUtils {
     private alertService: AlertService) {
   }
   public getAllServiceStatus(autoRefresh: boolean, from: string) {
+    // There are two more additional services exist in the FogLAMP. Get the current service name (Fledge/FogLAMP) and show resepected services detail accordingly
+    const currentService = JSON.parse(sessionStorage.getItem('SERVICE_NAME'));
+    let expectedExternalServiceType = ['Notification', 'Dispatcher'];
+    if (currentService === 'FogLAMP') {
+      expectedExternalServiceType = ['Notification', 'Management', 'Dispatcher', 'BucketStorage'];
+    }
+
     if (from !== 'additional-services') {
       this.expectedServices = this.allExpectedServices.filter((s => (s.process === from)));
     } else {
-      this.expectedServices = this.allExpectedServices;
+      this.expectedServices = this.allExpectedServices.filter((el) => expectedExternalServiceType.includes(el.type))
     }
     this.servicesApiService.getAllServices()
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (data: any) => {
-          this.servicesRegistry = data.services.filter((el) => ['Notification', 'Management', 'Dispatcher', 'BucketStorage'].includes(el.type))
-          this.sharedService.allServicesInfo.next(this.servicesRegistry);
-
-          const matchedServices = this.servicesRegistry.filter((svc) => this.expectedServices.some(es => es.type == svc.type));
-          if (from === 'additional-services') {
-            this.syncServicesStatus(matchedServices, this.installedServicePkgs);
+          let servicesRegistry = data.services.filter((el) => expectedExternalServiceType.includes(el.type))
+          if (from !== 'additional-services') {
+            servicesRegistry = data.services.filter((s => (s.type.toLowerCase() === from)));
           }
-          if (matchedServices?.length === this.expectedServices.length) {
+          this.servicesRegistry = servicesRegistry;
+
+          this.sharedService.allServicesInfo.next(this.servicesRegistry);
+          const matchedServices = this.servicesRegistry.filter((svc) => this.expectedServices.some(es => es.type == svc.type));
+          if (this.servicesRegistry?.length === this.expectedServices.length) {
             this.availableServicePkgs = [];
             let serviceTypes = [];
             this.expectedServices.forEach(function (s) {
@@ -101,14 +109,6 @@ export class AdditionalServicesUtils {
         (error) => {
           console.log('service down ', error);
         });
-  }
-  syncServicesStatus(servicesRecord, installedServicePkgs) {
-    servicesRecord.forEach(function (s) {
-      if (s.name && installedServicePkgs.length > 0) {
-        const service = installedServicePkgs.find(svc => svc.name === s.name);
-        service.state = s.status;
-      }
-    });
   }
 
   public checkSchedules(from: string) {

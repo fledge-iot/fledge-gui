@@ -55,6 +55,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.ping.pingIntervalChanged
       .pipe(takeUntil(this.destroy$))
       .subscribe((pingTime: number) => {
+
         if (pingTime === -1) {
           this.isManualRefresh = true;
           this.stop();

@@ -53,6 +53,7 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
   return () => ping.pingService()
     .then((data) => {
       sessionStorage.setItem('LOGIN_SKIPPED', JSON.stringify(data['authenticationOptional']));
+      sessionStorage.setItem('SERVICE_NAME', JSON.stringify(data['serviceName']));
       if (!location.href.includes('ott') && sessionStorage.getItem('token') === null && !JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'))) {
         router.navigate(['/login']);
         sharedService.loginScreenSubject.next(true);
