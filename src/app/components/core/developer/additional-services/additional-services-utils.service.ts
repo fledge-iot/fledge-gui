@@ -82,8 +82,9 @@ export class AdditionalServicesUtils {
           this.sharedService.allServicesInfo.next(this.servicesRegistry);
 
           const matchedServices = this.servicesRegistry.filter((svc) => this.expectedServices.some(es => es.type == svc.type));
-          this.syncServicesStatus(matchedServices, this.installedServicePkgs);
-
+          if (from === 'additional-services') {
+            this.syncServicesStatus(matchedServices, this.installedServicePkgs);
+          }
           if (matchedServices?.length === this.expectedServices.length) {
             this.availableServicePkgs = [];
             let serviceTypes = [];
