@@ -413,6 +413,89 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
           ))
       ).subscribe(() => {
         this.ngProgress.done();
+
+        // For Bucket service page, we need to wait for updated service response also 
+        if (this.serviceInfo.process !== 'bucket' && !this.fromListPage) {
+          let serviceDetail = { name: '', added: false, isEnabled: false, isInstalled: false, process: this.serviceInfo.process };
+          serviceDetail.isEnabled = isEnabled !== null ? isEnabled : status;
+          serviceDetail.isInstalled = true;
+          serviceDetail.added = this.serviceInfo.added;
+          serviceDetail.name = serviceName;
+          serviceDetail.process = this.serviceInfo.process;
+          this.toggleModal(false);
+          this.reenableButton.emit(false);
+
+          // set updated service details to get on different service pages
+          this.sharedService.installedServicePkgs.next({ installed: serviceDetail });
+
+          this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process, true);
+        } else {
+          this.getUpdatedServiceState(status, serviceName, isEnabled);
+        }
+      });
+  }
+
+  getUpdatedServiceState(status, serviceName, isEnabled = null) {
+    let i = 1;
+    this.servicesApiService.getAllServices()
+      .pipe(
+        take(1),
+        // checking the response object for service  
+        tap((response: any) => {
+          const service = response.services.find((svc: any) => {
+            if (svc.type === 'BucketStorage') {
+              return svc;
+            }
+          });
+          if (status === 'addService') {
+            if (!service) {
+              i++;
+              throw response;
+            }
+            return;
+          } else {
+            // if service.status !== status then
+            // throw an error to re-fetch:
+            const expectedStatus = status ? 'running' : 'shutdown';
+            if (service.status !== expectedStatus) {
+              i++;
+              throw response;
+            }
+          }
+        }),
+        retryWhen(result =>
+          result.pipe(
+            // only if a server returned an error, stop trying and pass the error down
+            tap(serviceStatus => {
+              if (serviceStatus.error) {
+                this.ngProgress.done();
+                this.toggleModal(false);
+                this.reenableButton.emit(false);
+                this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
+                throw serviceStatus.error;
+              }
+            }),
+            delayWhen(() => {
+              const delay = i * this.initialDelay;
+              console.log(new Date().toLocaleString(), `retrying after ${delay} msec...`);
+              return timer(delay);
+            }), // delay between api calls
+            // Set the number of attempts.
+            take(3),
+            // Throw error after exceed number of attempts
+            concatMap(o => {
+              if (i > 3) {
+                this.ngProgress.done();
+                this.toggleModal(false);
+                this.reenableButton.emit(false);
+                this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
+                return;
+              }
+              return of(o);
+            }),
+          ))
+      ).subscribe(() => {
+        this.ngProgress.done();
         let serviceDetail = { name: '', added: false, isEnabled: false, isInstalled: false, process: this.serviceInfo.process };
         serviceDetail.isEnabled = isEnabled !== null ? isEnabled : status;
         serviceDetail.isInstalled = true;
