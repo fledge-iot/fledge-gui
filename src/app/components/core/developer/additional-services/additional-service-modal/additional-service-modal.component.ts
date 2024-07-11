@@ -439,7 +439,12 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
     this.servicesApiService.deleteService(serviceName).subscribe(
       (data: any) => {
         this.ngProgress.done();
-        this.navToAdditionalService();
+
+        // set updated service details to get on different service pages
+        const serviceDetail = { name: '', added: false, isEnabled: false, isInstalled: true, process: this.serviceInfo.process };
+        this.sharedService.installedServicePkgs.next({ installed: serviceDetail });
+        this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process, true);
+
         this.alertService.success(data["result"], true);
         this.closeDeleteModal("dialog-delete-confirmation");
         this.toggleModal(false);
