@@ -550,4 +550,11 @@ async function removeOldConnection(nodeId) {
   for (let c of outputConnections) {
     await editor.removeConnection(c);
   }
+
+}
+
+export function applyContentReordering(nodeId: string) {
+  let view = area.nodeViews.get(nodeId);
+  let { content } = area.area;
+  content.reorder(view.element, null);
 }

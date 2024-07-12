@@ -429,6 +429,15 @@ export class CustomNodeComponent implements OnChanges {
     this.flowEditorService.exportReading.next({serviceName: this.service.name});
   }
 
+  moveNodeToFront() {
+    this.flowEditorService.nodeClick.next({nodeId: this.nodeId});
+  }
+
+  toggleDropdown() {
+    const dropDown = document.querySelector('#nodeDropdown-'+this.nodeId);
+    dropDown.classList.toggle('is-active');
+  }
+
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.addFilterSubscription?.unsubscribe();

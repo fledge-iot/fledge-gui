@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
-import { createEditor, getUpdatedFilterPipeline, deleteConnection, removeNode, updateNode, updateFilterNode } from './editor';
+import { createEditor, getUpdatedFilterPipeline, deleteConnection, removeNode, updateNode, updateFilterNode, applyContentReordering } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   AssetsService, ConfigurationControlService, ConfigurationService, FileUploaderService,
@@ -48,6 +48,7 @@ export class NodeEditorComponent implements OnInit {
   private serviceDetailsSubscription: Subscription;
   private logsSubscription: Subscription;
   private paramsSubscription: Subscription;
+  private nodeClickSubscription: Subscription;
 
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
@@ -257,6 +258,10 @@ export class NodeEditorComponent implements OnInit {
       let service = this.services.find(service => (service.name == data.serviceName));
       this.getAssetReadings(service);
     });
+
+    this.nodeClickSubscription = this.flowEditorService.nodeClick.pipe(skip(1)).subscribe(data =>{
+      this.moveNodeToFront(data.nodeId);
+    })
 
     this.isAlive = true;
     this.ping.pingIntervalChanged
@@ -1087,6 +1092,10 @@ export class NodeEditorComponent implements OnInit {
     this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo } });
   }
 
+  moveNodeToFront(nodeId: string) {
+    applyContentReordering(nodeId);
+  }
+
   ngOnDestroy() {
     this.isAlive = false;
     this.subscription.unsubscribe();
@@ -1096,6 +1105,7 @@ export class NodeEditorComponent implements OnInit {
     this.removeFilterSubscription.unsubscribe();
     this.exportReadingSubscription.unsubscribe();
     this.logsSubscription.unsubscribe();
+    this.nodeClickSubscription.unsubscribe();
     if (this.from === 'notifications') {
       this.serviceDetailsSubscription?.unsubscribe();
       this.paramsSubscription.unsubscribe();
