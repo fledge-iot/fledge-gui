@@ -415,8 +415,9 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
         this.ngProgress.done();
 
         // For Bucket service page, we need to check response of /service API for updated state after enabling the service
-        if (this.serviceInfo.process === 'bucket' && status === true && !this.fromListPage) {
-          this.getUpdatedServiceState(serviceName);
+        // Apply condition when process is 'bucket' && not additional services list page && (enabling the service || adding bucket service in enabled mode)
+        if (this.serviceInfo.process === 'bucket' && !this.fromListPage && (status === true || (status === 'addService' && isEnabled))) {
+          this.getUpdatedServiceState(serviceName, status);
         } else {
           let serviceDetail = { name: '', added: false, isEnabled: false, isInstalled: false, process: this.serviceInfo.process };
           serviceDetail.isEnabled = isEnabled !== null ? isEnabled : status;
@@ -435,7 +436,7 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
       });
   }
 
-  getUpdatedServiceState(serviceName) {
+  getUpdatedServiceState(serviceName, status) {
     let i = 1;
     this.servicesApiService.getAllServices()
       .pipe(
@@ -447,11 +448,21 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
               return svc;
             }
           });
-          // if service.status !== 'running' then
+          // if param value is 'addService' then, check if service is not available yet
           // throw an error to re-fetch:
-          if (service.status !== 'running') {
-            i++;
-            throw response;
+          if (status === 'addService') {
+            if (!service) {
+              i++;
+              throw response;
+            }
+            return;
+          } else {
+            // if service.status !== status then
+            // throw an error to re-fetch:
+            if (service.status !== 'running') {
+              i++;
+              throw response;
+            }
           }
         }),
         retryWhen(result =>
