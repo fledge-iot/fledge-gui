@@ -30,7 +30,6 @@ import { AddPipelineFilterComponent } from './pipelines/add-pipeline-filter/add-
 import { ControlPipelinesService, NotificationsService, AssetsService, FilterService } from '../../../services';
 import { AlertDialogModule } from '../../common/alert-dialog/alert-dialog.module';
 import { FilterModule } from '../filter/filter.module';
-import { AddDispatcherServiceComponent } from './add-dispatcher-service/add-dispatcher-service.component';
 import { APIFlowComponent } from './api-flow/api-flow.component';
 import { AddEditAPIFlowComponent } from './api-flow/add-edit-api-flow/add-edit-api-flow.component';
 import { DeveloperModule } from './../developer/developer.module';
@@ -105,7 +104,6 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    AddDispatcherServiceComponent,
     ControlScriptsListComponent,
     AddControlScriptComponent,
     AddStepComponent,

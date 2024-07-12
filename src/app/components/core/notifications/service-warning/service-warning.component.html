@@ -1,0 +1,19 @@
+<ng-container *ngIf="service?.isEnabled === false">
+    <article class="message is-warning">
+        <div class="message-body">
+            <span *ngIf="service?.isInstalled === false">{{serviceType}} service is not installed.</span>
+            <span *ngIf="service?.isInstalled && service?.added === false">{{serviceType}} service is not
+                added.</span>
+            <span *ngIf="service?.added && service?.isEnabled === false">{{serviceType}} service is not
+                enabled.</span>
+            &nbsp;<a
+                *ngIf="rolesService.hasEditPermissions() && (service?.isInstalled === false || service?.added === false || service?.isEnabled === false)"
+                (click)="openConfigureModal()"><strong>Configure</strong></a>
+            <button (click)="refreshServiceInfo()" class="button is-small" id="refresh-check">
+                <span class="icon">
+                    <i class="fa fa-sm fa-sync" aria-hidden="true" title="Recheck"></i>
+                </span>
+            </button>
+        </div>
+    </article>
+</ng-container>
