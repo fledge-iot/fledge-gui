@@ -357,66 +357,6 @@ export class CustomNodeComponent implements OnChanges {
         });
   }
 
-  getNorthboundTasks() {
-    this.northService.getNorthTasks(false)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data: any) => {
-        const tasks = data as NorthTask[];
-        this.fetchedTask = tasks.find(task => (task.name == this.service.name));
-        if (this.fetchedTask) {
-          this.service.status = this.fetchedTask?.status;
-          let readingCount = this.fetchedTask.sent;
-          this.service.readingCount = readingCount;
-          this.service.schedule_enabled = this.fetchedTask.enabled;
-          if (this.service.schedule_enabled === true) {
-            this.isEnabled = true;
-          }
-          else {
-            this.isEnabled = false;
-          }
-        }
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.toastService.error(error.statusText);
-          }
-        });
-  }
-
-  getSouthboundServices() {
-    this.servicesApiService.getSouthServices(false)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data: any) => {
-        const services = data.services as Service[];
-        this.fetchedService = services.find(service => (service.name == this.service.name));
-        if (this.fetchedService) {
-          this.service.status = this.fetchedService.status;
-          let assetCount = this.fetchedService.assets.length;
-          let readingCount = this.fetchedService.assets.reduce((total, asset) => {
-            return total + asset.count;
-          }, 0)
-          this.service.assetCount = assetCount;
-          this.service.readingCount = readingCount;
-          this.service.schedule_enabled = this.fetchedService.schedule_enabled;
-          if (this.service.schedule_enabled === true) {
-            this.isEnabled = true;
-          }
-          else {
-            this.isEnabled = false;
-          }
-        }
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.toastService.error(error.statusText);
-          }
-        });
-  }
-
   removeFilter() {
     this.flowEditorService.removeFilter.next({ id: this.nodeId });
   }

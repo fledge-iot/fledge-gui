@@ -125,10 +125,10 @@ export class NodeEditorComponent implements OnInit {
       this.from = params.from;
       this.source = params.name;
       if (this?.from === 'south') {
-        this.getSouthboundServices();
+        this.createApiCallStack('south');
       }
       if (this?.from === 'north') {
-        this.getNorthboundServices();
+        this.createApiCallStack('north');
       }
       if (this?.from === 'notifications') {
         // If we are redirecting back after enabling/disabling/adding the service then no need to make all calls again
@@ -141,11 +141,11 @@ export class NodeEditorComponent implements OnInit {
         // Issue may cause by refreshing the page because of old state data, so need to update history state
         history.replaceState({ shouldSkipCalls: false }, '');
 
-        this.getNotificationInstances();
+        this.createApiCallStack('notifications');
       }
 
       if (this?.from !== 'notifications' && this.source) {
-        this.getFilterPipeline();
+        this.createApiCallStack('filter');
       }
     });
   }
@@ -278,10 +278,10 @@ export class NodeEditorComponent implements OnInit {
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
         if (this.from == 'north') {
-          this.getNorthTasks();
+          this.getNorthTasks(true);
         }
         if (this.from == 'south') {
-          this.getSouthservices();
+          this.getSouthservices(true);
         }
       });
     this.removeFilterSubscription = this.flowEditorService.removeFilter.pipe(skip(1)).subscribe(data => {
@@ -413,8 +413,8 @@ export class NodeEditorComponent implements OnInit {
     this.deliveryPluginChangedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.deliveryConfiguration);
   }
 
-  getNorthTasks() {
-    this.northService.getNorthTasks(false)
+  getNorthTasks(caching: boolean) {
+    this.northService.getNorthTasks(caching)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
         const tasks = data as NorthTask[];
@@ -441,8 +441,8 @@ export class NodeEditorComponent implements OnInit {
         });
   }
 
-  getSouthservices() {
-    this.servicesApiService.getSouthServices(false)
+  getSouthservices(caching: boolean) {
+    this.servicesApiService.getSouthServices(caching)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
         const services = data.services as Service[];
@@ -494,28 +494,27 @@ export class NodeEditorComponent implements OnInit {
         });
   }
 
-  getFilterPipeline() {
-    this.initialApiCallsStack.push(this.filterService.getFilterPipeline(this.source)
-      .pipe(map(response => response))
-      .pipe(catchError(error => of(error))))
-  }
-
-  getSouthboundServices() {
-    this.initialApiCallsStack.push(this.servicesApiService.getSouthServices(false)
-      .pipe(takeUntil(this.destroy$))
-    )
-  }
-
-  getNorthboundServices() {
-    this.initialApiCallsStack.push(this.northService.getNorthTasks(false)
-      .pipe(map(response => ({ tasks: response })), takeUntil(this.destroy$))
-    )
-  }
-
-  getNotificationInstances() {
-    this.initialApiCallsStack.push(this.notificationsService.getNotificationInstance()
-      .pipe(takeUntil(this.destroy$))
-    )
+  createApiCallStack(type: string) {
+    if (type == 'south') {
+      this.initialApiCallsStack.push(this.servicesApiService.getSouthServices(false)
+        .pipe(takeUntil(this.destroy$))
+        .pipe(catchError(error => of(error))))
+    }
+    else if (type == 'north') {
+      this.initialApiCallsStack.push(this.northService.getNorthTasks(false)
+        .pipe(map(response => ({ tasks: response })), takeUntil(this.destroy$))
+        .pipe(catchError(error => of(error))))
+    }
+    else if (type == 'notifications') {
+      this.initialApiCallsStack.push(this.notificationsService.getNotificationInstance()
+        .pipe(takeUntil(this.destroy$))
+        .pipe(catchError(error => of(error))))
+    }
+    else if (type == 'filter') {
+      this.initialApiCallsStack.push(this.filterService.getFilterPipeline(this.source)
+        .pipe(map(response => response))
+        .pipe(catchError(error => of(error))))
+    }
   }
 
   public getCategory(): void {
