@@ -50,7 +50,6 @@ export class BucketConfigurationComponent implements OnInit {
         this.bucketModelConfiguration[key].value = this.dataModel.value[key];
       }
     }
-    console.log(this.bucketModelConfiguration);
   }
 
   getChangedConfiguration(propertyChangedValues: any) {
