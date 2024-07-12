@@ -3,6 +3,7 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { filter } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
+import { RolesService } from '../../../../services';
 
 @Component({
   selector: 'app-kv-list-type-configuration',
@@ -20,6 +21,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
 
   constructor(
     public cdRef: ChangeDetectorRef,
+    public rolesService: RolesService,
     private fb: FormBuilder) {
     this.kvListItemsForm = this.fb.group({
       kvListItems: this.fb.array([])
@@ -40,7 +42,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
   }
 
   initListItem(param) {
-    if (this.configuration.items == 'enumeration'){
+    if (this.configuration.items == 'enumeration') {
       return this.fb.group({
         key: [param?.key, [Validators.required, CustomValidator.nospaceValidator]],
         value: [param?.value ? param?.value : this.configuration.options?.[0]]
@@ -52,6 +54,10 @@ export class KvListTypeConfigurationComponent implements OnInit {
         objectConfig[key].value = val;
         if (objectConfig[key].type == 'json') {
           objectConfig[key].value = JSON.stringify(objectConfig[key].value);
+        }
+        // if cofiguration item has permissions array, pass that to the child config items
+        if (this.configuration?.permissions) {
+          objectConfig[key].permissions = this.configuration.permissions;
         }
       }
       this.initialProperties.push(objectConfig);
@@ -73,7 +79,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
       return;
     }
     this.kvListItems.push(this.initListItem({ key: '', value: '' }));
-    this.formStatusEvent.emit({'status': this.kvListItems.valid, 'group': this.group});
+    this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
   }
 
   removeListItem(index: number) {
@@ -97,13 +103,13 @@ export class KvListTypeConfigurationComponent implements OnInit {
           }
         }
         let itemValue = item.value;
-        if(this.configuration.items == 'object') {
+        if (this.configuration.items == 'object') {
           itemValue = this.extractKvListValues(item.value);
         }
         transformedObject[item.key] = itemValue;
       });
       this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(transformedObject) });
-      this.formStatusEvent.emit({'status': this.kvListItems.valid, 'group': this.group});
+      this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
     })
   }
 
@@ -111,7 +117,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
     const transformedObject = {};
     for (let [ind, val] of this.kvListItems.value.entries()) {
       for (let property in val.value) {
-        if(ind==index && property == Object.keys(propertyChangedValues)[0]) {
+        if (ind == index && property == Object.keys(propertyChangedValues)[0]) {
           val.value[property].value = Object.values(propertyChangedValues)[0];
         }
       }
@@ -119,7 +125,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
       transformedObject[val.key] = this.extractKvListValues(val.value);
     }
     this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(transformedObject) });
-    this.formStatusEvent.emit({'status': this.kvListItems.valid, 'group': this.group});
+    this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
   }
 
   formStatus(formState: any) {
@@ -130,7 +136,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
     let valueObj = {};
     for (let property in value) {
       valueObj[property] = value[property].value ? value[property].value : value[property].default;
-      if(value[property].type == 'json'){
+      if (value[property].type == 'json') {
         valueObj[property] = JSON.parse(valueObj[property]);
       }
     }

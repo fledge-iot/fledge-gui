@@ -16,7 +16,7 @@ import { cloneDeep, isEmpty } from 'lodash';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import { NorthTask } from '../../core/north/north-task';
 import { Notification } from '../../core/notifications/notification';
-import { NotificationServiceWarningComponent } from '../../core/notifications/notification-service-warning/notification-service-warning.component';
+import { ServiceWarningComponent } from '../../core/notifications/service-warning/service-warning.component';
 import { ServiceConfigComponent } from '../../core/notifications/service-config/service-config.component';
 import Utils, { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
 import { DocService } from '../../../services/doc.service';
@@ -28,7 +28,7 @@ import { DocService } from '../../../services/doc.service';
 })
 export class NodeEditorComponent implements OnInit {
 
-  @ViewChild(NotificationServiceWarningComponent, { static: true }) notificationServiceWarningComponent: NotificationServiceWarningComponent;
+  @ViewChild(ServiceWarningComponent, { static: true }) notificationServiceWarningComponent: ServiceWarningComponent;
   @ViewChild(ServiceConfigComponent, { static: true }) notificationServiceConfigComponent: ServiceConfigComponent;
   @ViewChild("rete") container!: ElementRef;
 
@@ -47,6 +47,7 @@ export class NodeEditorComponent implements OnInit {
   private exportReadingSubscription: Subscription;
   private serviceDetailsSubscription: Subscription;
   private logsSubscription: Subscription;
+  private paramsSubscription: Subscription;
 
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
@@ -129,7 +130,16 @@ export class NodeEditorComponent implements OnInit {
         this.createApiCallStack('north');
       }
       if (this?.from === 'notifications') {
-        this.additionalServicesUtils.getAllServiceStatus(false);
+        // If we are redirecting back after enabling/disabling/adding the service then no need to make all calls again
+        this.paramsSubscription = this.route.paramMap
+          .pipe(map(() => window.history.state)).subscribe((data: any) => {
+            if (!data?.shouldSkipCalls) {
+              this.additionalServicesUtils.getAllServiceStatus(false, 'notification');
+            }
+          })
+        // Issue may cause by refreshing the page because of old state data, so need to update history state
+        history.replaceState({ shouldSkipCalls: false }, '');
+
         this.createApiCallStack('notifications');
       }
 
@@ -140,7 +150,7 @@ export class NodeEditorComponent implements OnInit {
   }
 
   refreshServiceInfo() {
-    this.additionalServicesUtils.getAllServiceStatus(false);
+    this.additionalServicesUtils.getAllServiceStatus(false, 'notification');
   }
 
   @HostListener('document:keydown.delete', ['$event']) onKeydownHandler() {
@@ -337,20 +347,8 @@ export class NodeEditorComponent implements OnInit {
                 }
                 if (r.notifications) {
                   this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
-                    if (service) {
-                      const notificationServiceDetail = service.find(s => s.process == 'notification');
-                      if (notificationServiceDetail) {
-                        this.serviceInfo = notificationServiceDetail;
-                        this.serviceInfo.isEnabled = ["shutdown", "disabled", "installed"].includes(notificationServiceDetail?.state) ? false : true;
-                        this.serviceInfo.isInstalled = true;
-                        this.serviceInfo.isAvailable = notificationServiceDetail?.added;
-                        this.serviceInfo.name = notificationServiceDetail?.name;
-                      } else {
-                        this.serviceInfo.isEnabled = false;
-                        this.serviceInfo.isInstalled = false;
-                        this.serviceInfo.isAvailable = false;
-                        this.serviceInfo.name = '';
-                      }
+                    if (service.installed) {
+                      this.serviceInfo = service.installed;
                       const notifications = r.notifications as Notification[];
                       this.notifications = notifications;
                       this.notification = notifications.find(n => (n.name == this.source));
@@ -1099,6 +1097,7 @@ export class NodeEditorComponent implements OnInit {
     this.logsSubscription.unsubscribe();
     if (this.from === 'notifications') {
       this.serviceDetailsSubscription?.unsubscribe();
+      this.paramsSubscription.unsubscribe();
     }
     this.destroy$.next(true);
     this.destroy$.unsubscribe();

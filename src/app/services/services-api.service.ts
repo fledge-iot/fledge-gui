@@ -70,19 +70,19 @@ export class ServicesApiService {
   /**
    *  GET  | /fledge/service/installed
    */
-  async getInstalledServices() {
-    return await this.http.get(`${this.GET_SERVICES_URL}/installed`).pipe(
+  getInstalledServices() {
+    return this.http.get(`${this.GET_SERVICES_URL}/installed`).pipe(
       map(response => response),
-      catchError(error => throwError(error))).toPromise();
+      catchError(error => throwError(error)));
   }
 
   /**
    *  GET  | /fledge/service/available
    */
-  async getAvailableServices() {
-    return await this.http.get(`${this.GET_SERVICES_URL}/available`).pipe(
+  getAvailableServices() {
+    return this.http.get(`${this.GET_SERVICES_URL}/available`).pipe(
       map(response => response),
-      catchError(error => throwError(error))).toPromise();
+      catchError(error => throwError(error)));
   }
 
   /**

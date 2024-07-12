@@ -3,6 +3,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective } fr
 import { filter } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
+import { RolesService } from '../../../../services';
 
 @Component({
   selector: 'app-list-type-configuration',
@@ -20,6 +21,7 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   constructor(
     public cdRef: ChangeDetectorRef,
+    public rolesService: RolesService,
     private fb: FormBuilder) {
     this.listItemsForm = this.fb.group({
       listItems: this.fb.array([])
@@ -39,7 +41,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     return this.listItemsForm.get('listItems') as FormArray;
   }
 
-  initListItem(v = '') {
+  initListItem(v: any = '') {
     let listItem;
     if (this.configuration.items == 'object') {
       let objectConfig = cloneDeep(this.configuration.properties);
@@ -47,6 +49,10 @@ export class ListTypeConfigurationComponent implements OnInit {
         objectConfig[key].value = val;
         if (objectConfig[key].type == 'json') {
           objectConfig[key].value = JSON.stringify(objectConfig[key].value);
+        }
+        // if cofiguration item has permissions array, pass that to the child config items
+        if (this.configuration?.permissions) {
+          objectConfig[key].permissions = this.configuration.permissions;
         }
       }
       this.initialProperties.push(objectConfig);
@@ -66,7 +72,7 @@ export class ListTypeConfigurationComponent implements OnInit {
       return;
     }
     this.initListItem();
-    this.formStatusEvent.emit({'status': this.listItems.valid, 'group': this.group});
+    this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
   }
 
   removeListItem(index: number) {
@@ -86,18 +92,18 @@ export class ListTypeConfigurationComponent implements OnInit {
           return num;
         });
       }
-      if(this.configuration.items == 'object') {
+      if (this.configuration.items == 'object') {
         value = this.extractListValues(value);
       }
       this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(value) });
-      this.formStatusEvent.emit({'status': this.listItems.valid, 'group': this.group});
+      this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
     })
   }
 
   getChangedConfiguration(index: string, propertyChangedValues: any) {
     for (let [ind, val] of this.listItems.value.entries()) {
       for (let property in val) {
-        if(ind==index && property == Object.keys(propertyChangedValues)[0]) {
+        if (ind == index && property == Object.keys(propertyChangedValues)[0]) {
           val[property].value = Object.values(propertyChangedValues)[0];
         }
       }
@@ -117,7 +123,7 @@ export class ListTypeConfigurationComponent implements OnInit {
       let valueObj = {};
       for (let property in val) {
         valueObj[property] = val[property].value ? val[property].value : val[property].default;
-        if(val[property].type == 'json'){
+        if (val[property].type == 'json') {
           valueObj[property] = JSON.parse(valueObj[property]);
         }
       }

@@ -1,15 +1,15 @@
-import { Component, OnInit, Output, EventEmitter, OnChanges, Input, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ProgressBarService, SchedulesService, ServicesApiService, SharedService, RolesService } from '../../../../services';
 import { NotificationsService } from '../../../../services/notifications.service';
 import { DocService } from '../../../../services/doc.service';
 
 @Component({
-  selector: 'app-notification-service-warning',
-  templateUrl: './notification-service-warning.component.html',
-  styleUrls: ['./notification-service-warning.component.css']
+  selector: 'app-service-warning',
+  templateUrl: './service-warning.component.html',
+  styleUrls: ['./service-warning.component.css']
 })
-export class NotificationServiceWarningComponent implements OnInit, OnChanges {
+export class ServiceWarningComponent implements OnInit {
   private viewPortSubscription: Subscription;
   private subscription: Subscription;
   showConfigureModal = false;
@@ -17,10 +17,8 @@ export class NotificationServiceWarningComponent implements OnInit, OnChanges {
   @Output() serviceConfigureModal = new EventEmitter<Object>();
   @Output() refreshService = new EventEmitter<any>();
 
-  @Input() isEnabled: boolean;
-  @Input() isInstalled: boolean;
-  @Input() isAvailable: boolean;
-  @Input() serviceName: string;
+  @Input() service;
+  @Input() serviceType: string;
 
   constructor(
     public notificationsService: NotificationsService,
@@ -32,16 +30,7 @@ export class NotificationServiceWarningComponent implements OnInit, OnChanges {
     public rolesService: RolesService
   ) { }
 
-  ngOnInit(): void {}
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes) {
-      this.isEnabled = changes?.isEnabled?.currentValue ? changes?.isEnabled?.currentValue : this.isEnabled;
-      this.isInstalled = changes?.isInstalled?.currentValue ? changes?.isInstalled?.currentValue : this.isInstalled;
-      this.isAvailable = changes?.isAvailable?.currentValue ? changes?.isAvailable?.currentValue : this.isAvailable;
-      this.serviceName = changes?.serviceName?.currentValue ? changes?.serviceName?.currentValue : this.serviceName;
-    }
-  }
+  ngOnInit(): void { }
 
   /**
    * Open Configure Service modal

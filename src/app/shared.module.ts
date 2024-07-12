@@ -19,11 +19,12 @@ import { TabNavigationComponent } from './components/core/configuration-manager/
 import { AddServiceWizardComponent } from './components/core/south/add-service-wizard/add-service-wizard.component';
 import { AddTaskWizardComponent } from './components/core/north/add-task-wizard/add-task-wizard.component';
 import { TaskScheduleComponent } from './components/core/north/task-schedule/task-schedule.component';
-import { NotificationServiceWarningComponent } from './components/core/notifications/notification-service-warning/notification-service-warning.component';
+import { ServiceWarningComponent } from './components/core/notifications/service-warning/service-warning.component';
 import { ServiceConfigComponent } from './components/core/notifications/service-config/service-config.component';
 
 import { ListTypeConfigurationComponent } from './components/core/configuration-manager/list-type-configuration/list-type-configuration.component';
 import { KvListTypeConfigurationComponent } from './components/core/configuration-manager/kv-list-type-configuration/kv-list-type-configuration.component';
+import { StaticConfigurationComponent } from './components/core/configuration-manager/static-configuration/static-configuration.component';
 
 @NgModule({
   imports: [
@@ -33,7 +34,8 @@ import { KvListTypeConfigurationComponent } from './components/core/configuratio
     FormsModule,
     DirectivesModule,
     NgSelectModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    StaticConfigurationComponent
   ],
   declarations: [
     ConfigurationGroupComponent,
@@ -51,7 +53,7 @@ import { KvListTypeConfigurationComponent } from './components/core/configuratio
     AddServiceWizardComponent,
     AddTaskWizardComponent,
     TaskScheduleComponent,
-    NotificationServiceWarningComponent,
+    ServiceWarningComponent,
     ServiceConfigComponent
   ],
   exports: [
@@ -67,7 +69,7 @@ import { KvListTypeConfigurationComponent } from './components/core/configuratio
     AddServiceWizardComponent,
     AddTaskWizardComponent,
     TaskScheduleComponent,
-    NotificationServiceWarningComponent,
+    ServiceWarningComponent,
     ServiceConfigComponent
   ]
 })
