@@ -45,10 +45,11 @@
               <div class="field is-horizontal">
                 <div class="field-label has-text-left">
                   <label class="label tooltip has-tooltip-multiline config-label has-tooltip-right has-tooltip-arrow"
-                    [attr.data-tooltip]="configuration.description">Key</label>
+                    [attr.data-tooltip]="configuration.description"
+                    [ngClass]="{'is-inline-block': !rolesService.hasAccessPermission(configuration?.permissions)}">Key</label>
                   <span class="ml-1" *ngIf="!rolesService.hasAccessPermission(configuration?.permissions)">
-                    <i *ngIf="rolesService?.hasEditPermissions()" class="bi bi-xs bi-info-circle info-icon"
-                      aria-hidden="true" title="Insufficient privileges to modify this"></i>
+                    <i class="bi bi-xs bi-info-circle info-icon" aria-hidden="true"
+                      title="Insufficient privileges to modify this"></i>
                   </span>
                 </div>
                 <div class="field-body">
