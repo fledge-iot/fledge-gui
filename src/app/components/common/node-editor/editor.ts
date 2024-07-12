@@ -556,5 +556,16 @@ async function removeOldConnection(nodeId) {
 export function applyContentReordering(nodeId: string) {
   let view = area.nodeViews.get(nodeId);
   let { content } = area.area;
+  // Bring selected node in front of other nodes for better visual clarity
   content.reorder(view.element, null);
+}
+
+export function closeDropdowns() {
+  let idStartsWith = "nodeDropdown";
+  let dropDowns = document.querySelectorAll(`[id^=${idStartsWith}]`);
+  for(let i in dropDowns){
+    if(dropDowns[i].classList?.contains('is-active')){
+      dropDowns[i].classList.remove('is-active');
+    }
+  }
 }

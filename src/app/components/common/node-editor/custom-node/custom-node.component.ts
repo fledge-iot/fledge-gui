@@ -434,8 +434,10 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   toggleDropdown() {
-    const dropDown = document.querySelector('#nodeDropdown-'+this.nodeId);
-    dropDown.classList.toggle('is-active');
+    setTimeout(() => {
+      const dropDown = document.querySelector('#nodeDropdown-'+this.nodeId);
+      dropDown.classList.toggle('is-active');
+    }, 1);
   }
 
   ngOnDestroy() {

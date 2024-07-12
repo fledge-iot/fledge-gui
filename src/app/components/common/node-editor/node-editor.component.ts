@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
-import { createEditor, getUpdatedFilterPipeline, deleteConnection, removeNode, updateNode, updateFilterNode, applyContentReordering } from './editor';
+import { createEditor, getUpdatedFilterPipeline, deleteConnection, removeNode, updateNode, updateFilterNode, applyContentReordering, closeDropdowns } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   AssetsService, ConfigurationControlService, ConfigurationService, FileUploaderService,
@@ -159,6 +159,8 @@ export class NodeEditorComponent implements OnInit {
   }
   @HostListener('click')
   onClick() {
+    // close dropdowns of all nodes on canvas click
+    closeDropdowns();
     if (this.rolesService.hasEditPermissions()) {
       this.flowEditorService.canvasClick.next({ canvasClicked: true, connectionId: this.selectedConnectionId });
     }
