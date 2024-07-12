@@ -414,8 +414,10 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
       ).subscribe(() => {
         this.ngProgress.done();
 
-        // For Bucket service page, we need to wait for updated service response also 
-        if (this.serviceInfo.process !== 'bucket' && !this.fromListPage) {
+        // For Bucket service page, we need to check response of /service API for updated state after enabling the service
+        if (this.serviceInfo.process === 'bucket' && status === true && !this.fromListPage) {
+          this.getUpdatedServiceState(serviceName);
+        } else {
           let serviceDetail = { name: '', added: false, isEnabled: false, isInstalled: false, process: this.serviceInfo.process };
           serviceDetail.isEnabled = isEnabled !== null ? isEnabled : status;
           serviceDetail.isInstalled = true;
@@ -429,13 +431,11 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
           this.sharedService.installedServicePkgs.next({ installed: serviceDetail });
 
           this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process, true);
-        } else {
-          this.getUpdatedServiceState(status, serviceName, isEnabled);
         }
       });
   }
 
-  getUpdatedServiceState(status, serviceName, isEnabled = null) {
+  getUpdatedServiceState(serviceName) {
     let i = 1;
     this.servicesApiService.getAllServices()
       .pipe(
@@ -447,20 +447,11 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
               return svc;
             }
           });
-          if (status === 'addService') {
-            if (!service) {
-              i++;
-              throw response;
-            }
-            return;
-          } else {
-            // if service.status !== status then
-            // throw an error to re-fetch:
-            const expectedStatus = status ? 'running' : 'shutdown';
-            if (service.status !== expectedStatus) {
-              i++;
-              throw response;
-            }
+          // if service.status !== 'running' then
+          // throw an error to re-fetch:
+          if (service.status !== 'running') {
+            i++;
+            throw response;
           }
         }),
         retryWhen(result =>
@@ -471,7 +462,7 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
                 this.ngProgress.done();
                 this.toggleModal(false);
                 this.reenableButton.emit(false);
-                this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
+                this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, 'bucket');
                 throw serviceStatus.error;
               }
             }),
@@ -488,7 +479,7 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
                 this.ngProgress.done();
                 this.toggleModal(false);
                 this.reenableButton.emit(false);
-                this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
+                this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, 'bucket');
                 return;
               }
               return of(o);
@@ -496,18 +487,12 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
           ))
       ).subscribe(() => {
         this.ngProgress.done();
-        let serviceDetail = { name: '', added: false, isEnabled: false, isInstalled: false, process: this.serviceInfo.process };
-        serviceDetail.isEnabled = isEnabled !== null ? isEnabled : status;
-        serviceDetail.isInstalled = true;
-        serviceDetail.added = this.serviceInfo.added;
-        serviceDetail.name = serviceName;
-        serviceDetail.process = this.serviceInfo.process;
-        this.toggleModal(false);
-        this.reenableButton.emit(false);
+        let serviceDetail = { name: serviceName, added: true, isEnabled: true, isInstalled: true, process: 'bucket' };
 
         // set updated service details to get on different service pages
         this.sharedService.installedServicePkgs.next({ installed: serviceDetail });
-
+        this.toggleModal(false);
+        this.reenableButton.emit(false);
         this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process, true);
       });
   }
