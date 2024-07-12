@@ -24,6 +24,7 @@ import { ServiceConfigComponent } from './components/core/notifications/service-
 
 import { ListTypeConfigurationComponent } from './components/core/configuration-manager/list-type-configuration/list-type-configuration.component';
 import { KvListTypeConfigurationComponent } from './components/core/configuration-manager/kv-list-type-configuration/kv-list-type-configuration.component';
+import { StaticConfigurationComponent } from './components/core/configuration-manager/static-configuration/static-configuration.component';
 
 @NgModule({
   imports: [
@@ -33,7 +34,8 @@ import { KvListTypeConfigurationComponent } from './components/core/configuratio
     FormsModule,
     DirectivesModule,
     NgSelectModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    StaticConfigurationComponent
   ],
   declarations: [
     ConfigurationGroupComponent,
