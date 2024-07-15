@@ -14,8 +14,10 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
   selectedGroup = 'Basic';
   @Input() category;
-  groups = [];
+  @Input() plugin;
+  @Input() serviceStatus = false;
 
+  groups = [];
   tabs: TabHeader;
 
   @Output() changedConfigEvent = new EventEmitter<any>();
@@ -88,11 +90,11 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         this.category.config[k].key = k;
         modelConfig.push(this.category.config[k]);
       }
-      else if(this.category.config[k].type == 'list') {
+      else if (this.category.config[k].type == 'list') {
         this.category.config[k].key = k;
         listConfig.push(this.category.config[k]);
       }
-      else if(this.category.config[k].type == 'kvlist') {
+      else if (this.category.config[k].type == 'kvlist') {
         this.category.config[k].key = k;
         kvlistConfig.push(this.category.config[k]);
       }
@@ -321,16 +323,16 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   }
 
   toggleCard(index) {
-    let cardBody = document.getElementById('card-content-'+index);
-    let cardSpan = document.getElementById('card-span-'+index);
-    let cardIcon = document.getElementById('card-icon-'+index);
-    if(cardBody.classList.contains('is-hidden')){
+    let cardBody = document.getElementById('card-content-' + index);
+    let cardSpan = document.getElementById('card-span-' + index);
+    let cardIcon = document.getElementById('card-icon-' + index);
+    if (cardBody.classList.contains('is-hidden')) {
       cardBody.classList.remove('is-hidden');
       cardSpan.title = 'Collapse';
       cardIcon.classList.remove('fa-chevron-right');
       cardIcon.classList.add('fa-chevron-down');
     }
-    else{
+    else {
       cardBody.classList.add('is-hidden');
       cardSpan.title = 'Expand';
       cardIcon.classList.remove('fa-chevron-down');
