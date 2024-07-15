@@ -80,17 +80,19 @@ export class UserProfileComponent implements OnInit {
   }
 
   getAccessMethod(accessMethod) {
+    let method;
     switch (accessMethod) {
       case 'cert':
-        return 'Certificate';
+        method = 'Certificate';
         break;
       case 'pwd':
-        return 'Password';
+        method = 'Password';
         break;
       default:
-        return 'Any';
+        method = 'Any';
         break;
     }
+    return method;
   }
 
   public resetUserForm(form: NgForm) {
@@ -100,7 +102,7 @@ export class UserProfileComponent implements OnInit {
     this.isShow = false;
   }
 
-  public toggleModal(isOpen: Boolean) {
+  public toggleModal(isOpen: boolean) {
     const userProfileModal = <HTMLDivElement>document.getElementById('user_profile_modal');
     if (isOpen) {
       userProfileModal.classList.add('is-active');
@@ -154,16 +156,17 @@ export class UserProfileComponent implements OnInit {
 
   /**
     *  Sign Out
-    *  @param id  user id
+    *  @param data
     */
-  clearAllSessions(id) {
+  clearAllSessions(data: any) {
+    const userId = data.id
     this.ngProgress.start();
-    this.authService.clearAllSessions(id).
+    this.authService.clearAllSessions(userId).
       subscribe(
         () => {
           sessionStorage.clear();
           this.ngProgress.done();
-          this.alertService.success('All active sessions cleared');
+          this.alertService.success('All active sessions cleared', true);
           this.router.navigate(['/login'], { replaceUrl: true });
         },
         error => {
