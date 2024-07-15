@@ -159,7 +159,6 @@ export class NodeEditorComponent implements OnInit {
   }
   @HostListener('click')
   onClick() {
-    // close dropdowns of all nodes on canvas click
     if (this.rolesService.hasEditPermissions()) {
       this.flowEditorService.canvasClick.next({ canvasClicked: true, connectionId: this.selectedConnectionId });
     }
