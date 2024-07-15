@@ -1,4 +1,4 @@
-<div class="node-container" *ngIf="data.label!=='Storage'; else storageTemplate" (click)="moveNodeToFront()">
+<div class="node-container" *ngIf="data.label!=='Storage'; else storageTemplate">
   <ng-container *ngIf="data.label!==''; else addServiceTemplate">
     <div class="title" data-testid="title">
       <div class="is-flex is-justify-content-space-between is-align-items-baseline">
@@ -135,10 +135,11 @@
           </span>
         </ng-container>
         <ng-container *ngIf="data.label!=='Filter'">
-          <div id="nodeDropdown-{{nodeId}}" class="dropdown" *ngIf="!source || rolesService.hasEditPermissions()">
+          <div id="nodeDropdown-{{nodeId}}" class="dropdown" *ngIf="!source || rolesService.hasEditPermissions()"
+            (mouseenter)="openDropdown()" (mouseleave)="closeDropdown()">
             <div class="dropdown-trigger">
               <button class="button is-white is-small pt-0 pb-0 dropdown-button" aria-haspopup="true"
-                aria-controls="dropdown-menu3" (click)="toggleDropdown()">
+                aria-controls="dropdown-menu3">
                 <span class="icon is-small">
                   <i class="fas fa-ellipsis-v fa-xs fa-fw" aria-hidden="true"></i>
                 </span>
