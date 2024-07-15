@@ -168,7 +168,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     } else if (userData.key == 'enableUser') {
       this.enableUser(userData.id);
     } else if (userData.key == 'clearSessions') {
-      this.clearAllSessions(userData.key);
+      this.clearAllSessions(userData);
     } else if (userData.key == 'unblockUser') {
       this.unblockUser(userData.id);
     }
@@ -259,11 +259,13 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   }
 
   /**
-     *  Sign Out
-     */
-  clearAllSessions(id) {
+  *  Sign Out
+  *  @param data
+  */
+  clearAllSessions(data) {
+    const userId = data.id;
     this.ngProgress.start();
-    this.authService.clearAllSessions(id).
+    this.authService.clearAllSessions(userId).
       subscribe(
         () => {
           this.ngProgress.done();
