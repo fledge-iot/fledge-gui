@@ -62,7 +62,8 @@
   <app-quickview [showReadings]="showReadings" [showLogs]="showLogs">
     <ng-container *ngIf="showPluginConfiguration">
       <app-configuration-group *ngIf="category" [category]="category" [from]="'south'" [sourceName]="serviceName"
-        (changedConfigEvent)="getChangedConfig($event)"
+        (changedConfigEvent)="getChangedConfig($event)" [plugin]="category?.config.plugin.value"
+        [serviceStatus]="category.config.enable.value"
         (changedAdvanceConfigEvent)="getChangedAdvanceConfiguration($event)"
         (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
       <div class="container is-fluid" *ngIf="category">
