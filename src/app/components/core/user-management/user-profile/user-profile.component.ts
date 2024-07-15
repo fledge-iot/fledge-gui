@@ -156,12 +156,12 @@ export class UserProfileComponent implements OnInit {
 
   /**
     *  Sign Out
-    *  @param data {key , id}
+    *  @param data
     */
   clearAllSessions(data: any) {
-    const id = data.id
+    const userId = data.id
     this.ngProgress.start();
-    this.authService.clearAllSessions(id).
+    this.authService.clearAllSessions(userId).
       subscribe(
         () => {
           sessionStorage.clear();
