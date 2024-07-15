@@ -63,8 +63,7 @@
     <ng-container *ngIf="showPluginConfiguration">
       <app-configuration-group *ngIf="category" [category]="category" [from]="'south'" [sourceName]="serviceName"
         (changedConfigEvent)="getChangedConfig($event)" [plugin]="category?.config.plugin.value"
-        [serviceStatus]="category.config.enable.value"
-        (changedAdvanceConfigEvent)="getChangedAdvanceConfiguration($event)"
+        [serviceStatus]="getServiceStatus()" (changedAdvanceConfigEvent)="getChangedAdvanceConfiguration($event)"
         (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
       <div class="container is-fluid" *ngIf="category">
         <div class="columns" *ngIf="rolesService.hasEditPermissions()">
