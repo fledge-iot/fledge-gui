@@ -78,6 +78,7 @@ export class CustomNodeComponent implements OnChanges {
   showDeleteIcon = false;
   nodeId = '';
   pluginVersion = '';
+  timeoutId;
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -367,6 +368,22 @@ export class CustomNodeComponent implements OnChanges {
 
   getAssetReadings() {
     this.flowEditorService.exportReading.next({serviceName: this.service.name});
+  }
+
+  openDropdown() {
+    this.timeoutId = setTimeout(() => {
+      this.flowEditorService.nodeClick.next({nodeId: this.nodeId});
+      const dropDown = document.querySelector('#nodeDropdown-'+this.nodeId);
+      dropDown.classList.add('is-active');
+    }, 250);
+  }
+
+  closeDropdown(){
+    clearTimeout(this.timeoutId);
+    const dropDown = document.querySelector('#nodeDropdown-'+this.nodeId);
+    if(dropDown.classList.contains('is-active')){
+      dropDown.classList.remove('is-active');
+    }
   }
 
   ngOnDestroy() {

@@ -135,7 +135,8 @@
           </span>
         </ng-container>
         <ng-container *ngIf="data.label!=='Filter'">
-          <div class="dropdown is-hoverable" *ngIf="!source || rolesService.hasEditPermissions()">
+          <div id="nodeDropdown-{{nodeId}}" class="dropdown" *ngIf="!source || rolesService.hasEditPermissions()"
+            (mouseenter)="openDropdown()" (mouseleave)="closeDropdown()">
             <div class="dropdown-trigger">
               <button class="button is-white is-small pt-0 pb-0 dropdown-button" aria-haspopup="true"
                 aria-controls="dropdown-menu3">
