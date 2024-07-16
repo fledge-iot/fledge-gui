@@ -1,25 +1,29 @@
 import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
-import { createEditor, getUpdatedFilterPipeline, deleteConnection, removeNode, updateNode, updateFilterNode, applyContentReordering } from './editor';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  AssetsService, ConfigurationControlService, ConfigurationService, FileUploaderService,
-  FilterService, GenerateCsvService, NorthService, PingService, ProgressBarService,
-  ResponseHandler, RolesService, NotificationsService,
-  ServicesApiService, ToastService, SharedService
-} from './../../../services';
-import { AdditionalServicesUtils } from '../../core/developer/additional-services/additional-services-utils.service';
-import { catchError, delay, map, mergeMap, repeatWhen, skip, take, takeUntil, takeWhile } from 'rxjs/operators';
-import { Service } from '../../core/south/south-service';
-import { EMPTY, Subject, Subscription, forkJoin, interval, of } from 'rxjs';
-import { FlowEditorService } from './flow-editor.service';
 import { cloneDeep, isEmpty } from 'lodash';
-import { DialogService } from '../confirmation-dialog/dialog.service';
+import { EMPTY, Subject, Subscription, forkJoin, interval, of } from 'rxjs';
+import { catchError, delay, map, mergeMap, repeatWhen, skip, take, takeUntil, takeWhile } from 'rxjs/operators';
+import { DocService } from '../../../services/doc.service';
+import Utils, { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
+import { AdditionalServicesUtils } from '../../core/developer/additional-services/additional-services-utils.service';
 import { NorthTask } from '../../core/north/north-task';
 import { Notification } from '../../core/notifications/notification';
-import { ServiceWarningComponent } from '../../core/notifications/service-warning/service-warning.component';
 import { ServiceConfigComponent } from '../../core/notifications/service-config/service-config.component';
-import Utils, { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
-import { DocService } from '../../../services/doc.service';
+import { ServiceWarningComponent } from '../../core/notifications/service-warning/service-warning.component';
+import { Service } from '../../core/south/south-service';
+import { DialogService } from '../confirmation-dialog/dialog.service';
+import {
+  AssetsService, ConfigurationControlService, ConfigurationService, FileUploaderService,
+  FilterService, GenerateCsvService, NorthService,
+  NotificationsService,
+  PingService, ProgressBarService,
+  ResponseHandler, RolesService,
+  ServicesApiService,
+  SharedService,
+  ToastService
+} from './../../../services';
+import { createEditor, deleteConnection, getUpdatedFilterPipeline, removeNode, updateFilterNode, updateNode, applyContentReordering } from './editor';
+import { FlowEditorService } from './flow-editor.service';
 
 @Component({
   selector: 'app-node-editor',
@@ -1081,6 +1085,16 @@ export class NodeEditorComponent implements OnInit {
             this.toastService.error(error.statusText);
           }
         });
+  }
+
+  getServiceStatus() {
+    if (this.from == 'south') {
+      const service: Service = this.services.find(service => service.name === this.serviceName);
+      return service.status;
+    } else if (this.from == 'north') {
+      const task: NorthTask = this.tasks.find(task => task.name === this.serviceName);
+      return task.enabled;
+    }
   }
 
   /**
