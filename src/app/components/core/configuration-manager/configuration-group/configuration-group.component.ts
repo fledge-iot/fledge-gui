@@ -12,13 +12,11 @@ import { TabNavigationComponent } from '../tab-navigation/tab-navigation.compone
 })
 export class ConfigurationGroupComponent implements AfterViewInit {
 
-  selectedGroup = 'Basic';
-  @Input() category;
-  @Input() plugin;
+  @Input() category: any;
+  @Input() plugin: string;
   @Input() serviceStatus = false;
-
-  groups = [];
-  tabs: TabHeader;
+  @Input() from: string;
+  @Input() sourceName: string;
 
   @Output() changedConfigEvent = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<boolean>();
@@ -26,15 +24,14 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
   @ViewChild(TabNavigationComponent) tabNavigationComponent: TabNavigationComponent;
 
+  selectedGroup = 'Basic';
+  groups = [];
+  tabs: TabHeader;
+
   // To hold the changed configuration values of a plugin
   configFormValues = {};
-
   pages = ['south', 'north', 'notifications', 'additional-services'];
-  @Input() from;
-  @Input() sourceName;
-  @Input() categoryType;
   categoryKey = '';
-
   advanceConfiguration: any
   securityConfiguration: any;
   changedAdvanceConfiguration: any;
