@@ -29,24 +29,25 @@ hr {
 }
 
 .hr-text:before {
-    content: '';
-    background: linear-gradient(to right, transparent, #818078, transparent);
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 100%;
-    height: 1px;
-  }
-.hr-text:after {
-    content: attr(data-content);
-    position: relative;
-    display: inline-block;
-    color: black;
+  content: '';
+  background: linear-gradient(to right, transparent, #818078, transparent);
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+}
 
-    padding: 0 .5em;
-    line-height: 1.5em;
-    color: #818078;
-    background-color: #fff;
+.hr-text:after {
+  content: attr(data-content);
+  position: relative;
+  display: inline-block;
+  color: black;
+
+  padding: 0 .5em;
+  line-height: 1.5em;
+  color: #818078;
+  background-color: #fff;
 }
 
 .help-icon {
@@ -55,4 +56,18 @@ hr {
 
 .notification-hr {
   margin: 0.7rem !important;
+}
+
+:host ::ng-deep [rete-context-menu] {
+  width: auto;
+  height: auto;
+  font-size: smaller;
+
+  context-menu-search input.search {
+    background: grey;
+  }
+
+  context-menu-item.block {
+    background: grey;
+  }
 }
