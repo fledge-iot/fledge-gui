@@ -9,7 +9,7 @@ import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } fr
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
 import { CustomNodeComponent } from "./custom-node/custom-node.component";
 import { CustomNotificationNodeComponent } from "./custom-notification-node/custom-notification-node.component";
-import { HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
+import { HistoryActions, HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
 import { addCustomBackground } from "./custom-background";
 import { easeInOut } from "popmotion";
 import { insertableNodes } from "./insert-node";
@@ -41,6 +41,7 @@ class Connection<A extends Node, B extends Node> extends ClassicPreset.Connectio
 
 let editor = new NodeEditor<Schemes>();
 let area: AreaPlugin<Schemes, AreaExtra>;
+let history = new HistoryPlugin<Schemes, HistoryActions<Schemes>>({timing: 100});
 
 
 export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, data) {
@@ -50,7 +51,6 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   const render = new AngularPlugin<Schemes, AreaExtra>({ injector });
   const arrange = new AutoArrangePlugin<Schemes>();
-  const history = new HistoryPlugin<Schemes>();
   const animatedApplier = new ArrangeAppliers.TransitionApplier<Schemes, never>(
     {
       duration: 500,
@@ -247,6 +247,7 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
     );
     await arrange.layout();
     AreaExtensions.zoomAt(area, editor.getNodes());
+    history.clear();
   }
   else {
     const nodes = data.from == 'south' ? data.services : data.tasks;
@@ -288,6 +289,7 @@ async function nodesGrid(area: AreaPlugin<Schemes,
   const service = from == 'south' ? new AddService() : from == 'north' ? new AddTask() : new AddNotification(isServiceAvailable);
   await editor.addNode(service);
   await area.translate(service.id, { x: 250 * j, y: 150 * k });
+  history.clear();
 }
 
 export function getUpdatedFilterPipeline() {
