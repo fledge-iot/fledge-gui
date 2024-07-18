@@ -58,16 +58,22 @@ hr {
   margin: 0.7rem !important;
 }
 
-:host ::ng-deep [rete-context-menu] {
-  width: auto;
-  height: auto;
+::ng-deep [rete-context-menu] {
+  width: 80px !important;
+  text-align: center;
   font-size: smaller;
 
   context-menu-search input.search {
-    background: grey;
+    background: rgba(0, 0, 0, 0.5);
   }
 
   context-menu-item.block {
-    background: grey;
+    background-color: black;
+    border-radius: 0.2rem !important;
+  }
+
+  context-menu-item.block:hover {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
   }
 }
