@@ -113,11 +113,9 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
           label: 'Delete',
           key: 'delete',
           async handler() {
-            if ('source' in context && 'target' in context) {
-              // connection
-              const connectionId = context.id
-              await editor.removeConnection(connectionId)
-            }
+            // connection
+            const connectionId = context.id
+            await editor.removeConnection(connectionId)
           }
         }
         return {
