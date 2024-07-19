@@ -1,37 +1,37 @@
-import { isEmpty } from 'lodash';
 import { Injector } from "@angular/core";
-import { NodeEditor, GetSchemes, ClassicPreset } from "rete";
-import { AreaPlugin, AreaExtensions, Area2D } from "rete-area-plugin";
-import { AngularPlugin, Presets, AngularArea2D } from "rete-angular-plugin/16";
-import { ConnectionPlugin, Presets as ConnectionPresets, ClassicFlow, BidirectFlow } from "rete-connection-plugin";
-import { AutoArrangePlugin, Presets as ArrangePresets, ArrangeAppliers } from "rete-auto-arrange-plugin";
-import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from "rete-context-menu-plugin";
+import { CurveFactory, curveBasis } from "d3-shape";
+import { isEmpty } from 'lodash';
+import { easeInOut } from "popmotion";
+import { ClassicPreset, GetSchemes, NodeEditor } from "rete";
+import { AngularArea2D, AngularPlugin, Presets } from "rete-angular-plugin/16";
+import { Area2D, AreaExtensions, AreaPlugin } from "rete-area-plugin";
+import { ArrangeAppliers, Presets as ArrangePresets, AutoArrangePlugin } from "rete-auto-arrange-plugin";
+import { ConnectionPathPlugin } from "rete-connection-path-plugin";
+import { BidirectFlow, ConnectionPlugin } from "rete-connection-plugin";
+import { ContextMenuExtra, ContextMenuPlugin } from "rete-context-menu-plugin";
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
+import { HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
+import { MinimapExtra, MinimapPlugin } from "rete-minimap-plugin";
+import { NorthTask } from '../../core/north/north-task';
+import { colors } from "./color-palette";
+import { EnabledControl, StatusControl } from './controls/common-custom-control';
+import { SentReadingsControl } from './controls/north-custom-control';
+import { ChannelControl, NotificationTypeControl, RuleControl, ServiceStatusControl } from "./controls/notification-custom-control";
+import { AssetControl, ReadingControl } from "./controls/south-custom-control";
+import { addCustomBackground } from "./custom-background";
+import { CustomConnectionComponent } from "./custom-connection/custom-connection.component";
 import { CustomNodeComponent } from "./custom-node/custom-node.component";
 import { CustomNotificationNodeComponent } from "./custom-notification-node/custom-notification-node.component";
-import { HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
-import { addCustomBackground } from "./custom-background";
-import { easeInOut } from "popmotion";
-import { insertableNodes } from "./insert-node";
-import { CustomConnectionComponent } from "./custom-connection/custom-connection.component";
 import { CustomSocketComponent } from "./custom-socket/custom-socket.component";
-import { South } from "./nodes/south";
-import { Notification } from "./nodes/notification";
-import { Storage } from "./storage";
 import { Filter } from "./filter";
-import { AddService } from "./nodes/add-service";
-import { MinimapExtra, MinimapPlugin } from "rete-minimap-plugin";
-import { CurveFactory, curveBasis } from "d3-shape";
-import { ConnectionPathPlugin } from "rete-connection-path-plugin";
-import { colors } from "./color-palette";
-import { North } from "./nodes/north";
-import { AddTask } from "./nodes/add-task";
+import { insertableNodes } from "./insert-node";
 import { AddNotification } from "./nodes/add-notification";
-import { ChannelControl, RuleControl, NotificationTypeControl, ServiceStatusControl } from "./controls/notification-custom-control";
-import { AssetControl, ReadingControl } from "./controls/south-custom-control";
-import { SentReadingsControl } from './controls/north-custom-control';
-import { EnabledControl, StatusControl } from './controls/common-custom-control';
-import { NorthTask } from '../../core/north/north-task';
+import { AddService } from "./nodes/add-service";
+import { AddTask } from "./nodes/add-task";
+import { North } from "./nodes/north";
+import { Notification } from "./nodes/notification";
+import { South } from "./nodes/south";
+import { Storage } from "./storage";
 
 type Node = South | North | Filter | Notification;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
@@ -105,15 +105,27 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
       if (context === 'root') {
         return {
           searchBar: false,
-          list: [
-            {
-              label: 'Filter', key: '1', handler: () => {
-                let filter = new Filter(socket, { pluginName: '', enabled: 'false', filterName: 'Filter' });
-                editor.addNode(filter);
-              }
-            }
-          ]
+          list: []
         }
+      }
+      if ('source' in context && 'target' in context) {
+        const deleteItem = {
+          label: 'Delete',
+          key: 'delete',
+          async handler() {
+            // connection
+            const connectionId = context.id
+            await editor.removeConnection(connectionId)
+          }
+        }
+        return {
+          searchBar: false,
+          list: [deleteItem]
+        }
+      }
+      return {
+        searchBar: false,
+        list: []
       }
     }
   })
@@ -123,7 +135,6 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   render.addPreset(Presets.classic.setup(
     {
       customize: {
-
         node() {
           if (data.from == 'notifications') {
             return CustomNotificationNodeComponent;
@@ -159,7 +170,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   if (data.source) {
     area.use(minimap);
     if (rolesService.hasEditPermissions()) {
-      // area.use(contextMenu);
+      area.use(contextMenu);
       let newDockFilter = () => {
         setTimeout(() => {
           let dropStrategy: any = dock.dropStrategy;
@@ -181,7 +192,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     }
   }
   setCustomBackground(area) // Set custom background
-  
+
   if (data.from !== 'notifications') {
     createNodesAndConnections(socket, editor, arrange, area, data);
   } else {
@@ -439,19 +450,19 @@ export function updateNode(data) {
           let readingCount = service.assets.reduce((total, asset) => {
             return total + asset.count;
           }, 0)
-  
+
           assetControls.count = assetCount;
           readingControl.count = readingCount;
           enabledControl.enabled = service.schedule_enabled;
           statusControl.status = service.status;
-  
+
           area.update("control", assetControls.id);
           area.update("control", readingControl.id);
           area.update("control", enabledControl.id);
           area.update("control", statusControl.id);
           area.update('node', node.id);
         }
-        
+
       }
       if (node.label == 'North' && data.from == 'north') {
         const sentReadingControl = node.controls.sentReadingControl as SentReadingsControl;
@@ -463,7 +474,7 @@ export function updateNode(data) {
           area.update("control", sentReadingControl.id);
           area.update("control", enabledControl.id);
           area.update('node', node.id);
-        }     
+        }
       }
       if (node.label == 'Notification' && data.from == 'notifications') {
         const serviceStatusControl = node.controls.serviceStatusControl as ServiceStatusControl;
@@ -477,14 +488,14 @@ export function updateNode(data) {
           enabledControl.enabled = notification.enable;
           notificationTypeControl.type = notification.notificationType;
           serviceStatusControl.enabled = data.isServiceEnabled;
-  
+
           area.update("control", channelControl.id);
           area.update("control", ruleControl.id);
           area.update("control", enabledControl.id);
           area.update("control", notificationTypeControl.id);
           area.update("control", serviceStatusControl.id);
           area.update('node', node.id);
-        }  
+        }
       }
     }
   });
