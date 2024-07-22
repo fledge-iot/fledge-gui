@@ -10,7 +10,7 @@ import { ConnectionPathPlugin } from "rete-connection-path-plugin";
 import { BidirectFlow, ConnectionPlugin } from "rete-connection-plugin";
 import { ContextMenuExtra, ContextMenuPlugin } from "rete-context-menu-plugin";
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
-import { HistoryActions, HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
+import { HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
 import { MinimapExtra, MinimapPlugin } from "rete-minimap-plugin";
 import { NorthTask } from '../../core/north/north-task';
 import { colors } from "./color-palette";
@@ -41,7 +41,7 @@ class Connection<A extends Node, B extends Node> extends ClassicPreset.Connectio
 
 let editor = new NodeEditor<Schemes>();
 let area: AreaPlugin<Schemes, AreaExtra>;
-let history = new HistoryPlugin<Schemes, HistoryActions<Schemes>>({timing: 100});
+let history: HistoryPlugin<Schemes>;
 
 
 export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, data) {
@@ -51,6 +51,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   const render = new AngularPlugin<Schemes, AreaExtra>({ injector });
   const arrange = new AutoArrangePlugin<Schemes>();
+  history = new HistoryPlugin<Schemes>();
   const animatedApplier = new ArrangeAppliers.TransitionApplier<Schemes, never>(
     {
       duration: 500,
