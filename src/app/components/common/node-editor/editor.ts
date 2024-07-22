@@ -10,7 +10,7 @@ import { ConnectionPathPlugin } from "rete-connection-path-plugin";
 import { BidirectFlow, ConnectionPlugin } from "rete-connection-plugin";
 import { ContextMenuExtra, ContextMenuPlugin } from "rete-context-menu-plugin";
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
-import { HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
+import { HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
 import { MinimapExtra, MinimapPlugin } from "rete-minimap-plugin";
 import { NorthTask } from '../../core/north/north-task';
 import { colors } from "./color-palette";
@@ -42,7 +42,8 @@ class Connection<A extends Node, B extends Node> extends ClassicPreset.Connectio
 let editor = new NodeEditor<Schemes>();
 let area: AreaPlugin<Schemes, AreaExtra>;
 let history: HistoryPlugin<Schemes>;
-
+let dock: DockPlugin<Schemes>;
+let newDockFilter;
 
 export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, data) {
   const socket = new ClassicPreset.Socket("socket");
@@ -131,7 +132,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     }
   })
 
-  const dock = new DockPlugin<Schemes>();
+  dock = new DockPlugin<Schemes>();
 
   render.addPreset(Presets.classic.setup(
     {
@@ -158,7 +159,6 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   render.addPreset(Presets.contextMenu.setup());
   dock.addPreset(DockPresets.classic.setup({ area, size: 70, scale: 0.6 }));
   // scopes.addPreset(ScopesPresets.classic.setup());
-  HistoryExtensions.keyboard(history);
   history.addPreset(HistoryPresets.classic.setup());
   render.addPreset(Presets.minimap.setup({ size: 150 }));
 
@@ -172,7 +172,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     area.use(minimap);
     if (rolesService.hasEditPermissions()) {
       area.use(contextMenu);
-      let newDockFilter = () => {
+      newDockFilter = () => {
         setTimeout(() => {
           let dropStrategy: any = dock.dropStrategy;
           let dsEditorNodes = dropStrategy.editor.nodes;
@@ -572,4 +572,32 @@ export function applyContentReordering(nodeId: string) {
   let { content } = area.area;
   // Bring selected node in front of other nodes for better visual clarity
   content.reorder(view.element, null);
+}
+
+export function undoAction() {
+  let actionName = getActionName();
+  history.undo().then(() => {
+    if (actionName == 'AddNodeAction') {
+      dock.add(newDockFilter);
+    }
+  })
+}
+
+export function redoAction() {
+  history.redo().then(() => {
+    let actionName = getActionName();
+    if (actionName == 'AddNodeAction') {
+      dock.remove(newDockFilter);
+    }
+  })
+}
+
+function getActionName() {
+  let historySnapshot = history.getHistorySnapshot();
+  let historyLenth = historySnapshot.length;
+  let actionName;
+  if (historyLenth >= 2) {
+    actionName = Object.getPrototypeOf(historySnapshot[historyLenth - 2].action).constructor.name;
+  }
+  return actionName;
 }
