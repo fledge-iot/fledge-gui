@@ -528,13 +528,14 @@ function existsInPipeline(pipeline, filterName) {
   return false;
 }
 
-export function removeNode(nodeId) {
+export async function removeNode(nodeId) {
   for (const c of editor
     .getConnections()
     .filter((c) => c.source === nodeId || c.target === nodeId)) {
-    editor.removeConnection(c.id);
+    await editor.removeConnection(c.id);
   }
   editor.removeNode(nodeId);
+  dock.add(newDockFilter);
 }
 
 async function removeOldConnection(nodeId) {
@@ -575,29 +576,49 @@ export function applyContentReordering(nodeId: string) {
 }
 
 export function undoAction() {
-  let actionName = getActionName();
+  let secondLastActionName = getSecondLastActionName();
+  let lastActionName = getLastActionName();
   history.undo().then(() => {
-    if (actionName == 'AddNodeAction') {
+    if (secondLastActionName == 'AddNodeAction') {
       dock.add(newDockFilter);
     }
-  })
-}
-
-export function redoAction() {
-  history.redo().then(() => {
-    let actionName = getActionName();
-    if (actionName == 'AddNodeAction') {
+    if(lastActionName == 'RemoveNodeAction'){
       dock.remove(newDockFilter);
     }
   })
 }
 
-function getActionName() {
+export function redoAction() {
+  let beforeRedoSecondLastActionName = getSecondLastActionName();
+  let beforeRedoLastActionName = getLastActionName();
+  history.redo().then(() => {
+    let afterRedoSecondLastActionName = getSecondLastActionName();
+    let afterRedoLastActionName = getLastActionName();
+    if (afterRedoSecondLastActionName == 'AddNodeAction' && beforeRedoSecondLastActionName != 'AddNodeAction') {
+      dock.remove(newDockFilter);
+    }
+    if(afterRedoLastActionName == 'RemoveNodeAction' && beforeRedoLastActionName != 'RemoveNodeAction'){
+      dock.add(newDockFilter);
+    }
+  })
+}
+
+function getSecondLastActionName() {
   let historySnapshot = history.getHistorySnapshot();
-  let historyLenth = historySnapshot.length;
+  let historyLength = historySnapshot.length;
   let actionName;
-  if (historyLenth >= 2) {
-    actionName = Object.getPrototypeOf(historySnapshot[historyLenth - 2].action).constructor.name;
+  if (historyLength >= 2) {
+    actionName = Object.getPrototypeOf(historySnapshot[historyLength - 2].action).constructor.name;
+  }
+  return actionName;
+}
+
+function getLastActionName() {
+  let historySnapshot = history.getHistorySnapshot();
+  let historyLength = historySnapshot.length;
+  let actionName;
+  if (historyLength >= 1) {
+    actionName = Object.getPrototypeOf(historySnapshot[historyLength - 1].action).constructor.name;
   }
   return actionName;
 }
