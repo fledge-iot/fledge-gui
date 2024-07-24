@@ -1,13 +1,12 @@
+import { curveBasis, CurveFactory } from "d3-shape";
 import { Injector } from "@angular/core";
-import { CurveFactory, curveBasis } from "d3-shape";
 import { isEmpty } from 'lodash';
 import { easeInOut } from "popmotion";
 import { ClassicPreset, GetSchemes, NodeEditor } from "rete";
 import { AngularArea2D, AngularPlugin, Presets } from "rete-angular-plugin/16";
-import { Area2D, AreaExtensions, AreaPlugin } from "rete-area-plugin";
+import { AreaExtensions, AreaPlugin } from "rete-area-plugin";
 import { ArrangeAppliers, Presets as ArrangePresets, AutoArrangePlugin } from "rete-auto-arrange-plugin";
-import { ConnectionPathPlugin } from "rete-connection-path-plugin";
-import { BidirectFlow, ConnectionPlugin } from "rete-connection-plugin";
+import { ConnectionPlugin } from "rete-connection-plugin";
 import { ContextMenuExtra, ContextMenuPlugin } from "rete-context-menu-plugin";
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
 import { HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
@@ -32,16 +31,29 @@ import { North } from "./nodes/north";
 import { Notification } from "./nodes/notification";
 import { South } from "./nodes/south";
 import { Storage } from "./storage";
+import { createSelector } from "./selector";
+import { Connector } from "./connector";
+import { ConnectionPathPlugin } from 'rete-connection-path-plugin';
 
 type Node = South | North | Filter | Notification;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 type AreaExtra = AngularArea2D<Schemes> | MinimapExtra | ContextMenuExtra;
 
-class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> { curve?: CurveFactory; }
+export class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> {
+  selected?: boolean
+  click: (data: Connection<A, B>) => void
+  remove: (data: Connection<A, B>) => void
+  curve?: CurveFactory
+
+  constructor(events: { click: (data: Connection<A, B>) => void, remove: (data: Connection<A, B>) => void }, source: A, target: B, public isLoop?: boolean) {
+    super(source, 'port', target, 'port')
+    this.click = events.click
+    this.remove = events.remove
+  }
+}
 
 let editor = new NodeEditor<Schemes>();
 let area: AreaPlugin<Schemes, AreaExtra>;
-
 
 export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, data) {
   const socket = new ClassicPreset.Socket("socket");
@@ -60,32 +72,30 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   const minimap = new MinimapPlugin<Schemes>({
     boundViewport: true
   });
-  const pathPlugin = new ConnectionPathPlugin<Schemes, Area2D<Schemes>>({
+
+  const pathPlugin = new ConnectionPathPlugin<Schemes, AreaExtra>({
     curve: (c) => c.curve || curveBasis,
-    // transformer: () => Transformers.classic({ vertical: false }),
-    arrow: () => { return { marker: 'M6,-6 L6,6 L20,0 z' } }
+    arrow: () => { return { marker: 'M4,-4 L4,4 L16,0 z' } }
   });
 
   // @ts-ignore
-  // render.use(pathPlugin);
+  render.use(pathPlugin);
 
   insertableNodes(area, {
     async createConnections(node, connection) {
-      removeOldConnection(node.id)
+      removeOldConnection(connectionEvents, node.id)
       await editor.addConnection(
         new Connection(
+          connectionEvents,
           editor.getNode(connection.source),
-          connection.sourceOutput,
-          node,
-          "port"
+          node
         )
       );
       await editor.addConnection(
         new Connection(
+          connectionEvents,
           node,
-          "port",
-          editor.getNode(connection.target),
-          connection.targetInput
+          editor.getNode(connection.target)
         )
       );
       arrange.layout({
@@ -93,12 +103,6 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
       });
     }
   });
-
-  // const contextMenu = new ContextMenuPlugin<Schemes>({
-  //     items: ContextMenuPresets.classic.setup([
-  //         ["Filter", () => new Filter(socket, 'Filter')]
-  //     ])
-  // });
 
   const contextMenu = new ContextMenuPlugin<Schemes>({
     items(context) {
@@ -131,7 +135,6 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   })
 
   const dock = new DockPlugin<Schemes>();
-
   render.addPreset(Presets.classic.setup(
     {
       customize: {
@@ -151,12 +154,20 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     }
   ));
 
-  // connection.addPreset(ConnectionPresets.classic.setup());
-  connection.addPreset(() => new BidirectFlow())
+  const connectionEvents = {
+    click: (data: Schemes['Connection']) => {
+      selector.selectConnection(data)
+    },
+    remove: (data: Schemes['Connection']) => {
+      editor.removeConnection(data.id)
+    }
+  }
+
+  const selector = createSelector(area, flowEditorService);
+  connection.addPreset(() => new Connector(connectionEvents));
   arrange.addPreset(ArrangePresets.classic.setup());
   render.addPreset(Presets.contextMenu.setup());
   dock.addPreset(DockPresets.classic.setup({ area, size: 70, scale: 0.6 }));
-  // scopes.addPreset(ScopesPresets.classic.setup());
   HistoryExtensions.keyboard(history);
   history.addPreset(HistoryPresets.classic.setup());
   render.addPreset(Presets.minimap.setup({ size: 150 }));
@@ -168,9 +179,9 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   area.use(dock);
   area.use(history);
   if (data.source) {
-    area.use(minimap);
     if (rolesService.hasEditPermissions()) {
       area.use(contextMenu);
+      area.use(minimap);
       let newDockFilter = () => {
         setTimeout(() => {
           let dropStrategy: any = dock.dropStrategy;
@@ -194,7 +205,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   setCustomBackground(area) // Set custom background
 
   if (data.from !== 'notifications') {
-    createNodesAndConnections(socket, editor, arrange, area, data);
+    createNodesAndConnections(socket, editor, arrange, area, data, connectionEvents);
   } else {
     nodesGrid(area, data.notifications, socket, data.from, data.isServiceEnabled);
   }
@@ -204,7 +215,8 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
   editor: NodeEditor<Schemes>,
   arrange: AutoArrangePlugin<Schemes, never>,
   area: AreaPlugin<Schemes, AreaExtra>,
-  data: any) {
+  data: any,
+  connectionEvents) {
 
   if (data.source) {
     const db = new Storage(socket);
@@ -229,7 +241,7 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
         let nextNode = new Filter(socket, nextNodeConfig);
         await editor.addNode(nextNode);
         await editor.addConnection(
-          new ClassicPreset.Connection(previousNode, "port", nextNode, "port")
+          new Connection(connectionEvents, previousNode, nextNode)
         );
         previousNode = nextNode;
       }
@@ -242,19 +254,17 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
           let nextNode = new Filter(socket, nextNodeConfig);
           await editor.addNode(nextNode);
           await editor.addConnection(
-            new ClassicPreset.Connection(tempNode, "port", nextNode, "port")
-          );
+            new Connection(connectionEvents, tempNode, nextNode));
           tempNode = nextNode;
         }
 
         await editor.addConnection(
-          new ClassicPreset.Connection(tempNode, "port", lastNode, "port")
-        );
+          new Connection(connectionEvents, tempNode, lastNode));
         colorNumber = (colorNumber + 1) % (colors.length);
       }
     }
     await editor.addConnection(
-      new ClassicPreset.Connection(previousNode, "port", lastNode, "port")
+      new Connection(connectionEvents, previousNode, lastNode)
     );
     await arrange.layout();
     AreaExtensions.zoomAt(area, editor.getNodes());
@@ -534,7 +544,7 @@ export function removeNode(nodeId) {
   editor.removeNode(nodeId);
 }
 
-async function removeOldConnection(nodeId) {
+async function removeOldConnection(connectionEvents, nodeId) {
   let connections = editor.getConnections();
   let source: Node;
   let target: Node[] = [];
@@ -552,7 +562,7 @@ async function removeOldConnection(nodeId) {
   }
   for (let t of target) {
     await editor.addConnection(
-      new ClassicPreset.Connection(source, "port", t, "port")
+      new Connection(connectionEvents, source, t)
     );
   }
   if (inputConnId) {

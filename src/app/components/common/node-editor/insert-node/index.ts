@@ -1,20 +1,18 @@
-import { ClassicPreset, GetSchemes, NodeEditor } from "rete";
+import { BaseSchemes, GetSchemes, NodeEditor } from "rete";
 import { AreaPlugin } from "rete-area-plugin";
-import { Size } from "rete-area-plugin/_types/types";
-import { Position } from "./types";
+import { Position, Size } from "./types";
 import { checkElementIntersectPath } from "./utils";
-import { North } from "../nodes/north";
-import { South } from "../nodes/south";
 
-type Node = South | North;
-type Schemes = GetSchemes<Node & Size, Connection<Node, Node>>;
-class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> { };
+type Schemes = GetSchemes<
+  BaseSchemes["Node"] & Size,
+  BaseSchemes["Connection"]
+>;
 
 export function checkIntersection(
   position: Position,
   size: { width: number; height: number },
   connections: (readonly [string, HTMLElement])[]
-) {
+): false | string {
   const paths = connections.map(([id, element]) => {
     const path = element.querySelector("path");
 
@@ -23,14 +21,12 @@ export function checkIntersection(
     return [id, element, path] as const;
   });
 
-  let intersectedConnections = []
-  for (const [id, , path] of paths.reverse()) {
+  for (const [id, , path] of paths) {
     if (checkElementIntersectPath({ ...position, ...size }, path)) {
-      intersectedConnections.push(id);
+      return id;
     }
   }
-
-  return intersectedConnections;
+  return false;
 }
 
 type Props<S extends Schemes> = {
@@ -40,12 +36,13 @@ type Props<S extends Schemes> = {
   ) => Promise<void>;
 };
 
+
 export function insertableNodes<S extends Schemes>(
   area: AreaPlugin<S, any>,
   props: Props<S>
 ) {
   area.addPipe(async (context) => {
-    if (context.type === "nodedragged") {
+    if (context.type === "nodetranslated") {
       const editor = area.parentScope<NodeEditor<S>>(NodeEditor);
       const node = editor.getNode(context.data.id);
       const view = area.nodeViews.get(context.data.id);
@@ -53,11 +50,13 @@ export function insertableNodes<S extends Schemes>(
         ([id, view]) => [id, view.element] as const
       );
 
-      if (view && node.label !== "South" && node.label !== "Storage" && node.label !== "North") {
-        const intersectedConnections = checkIntersection(view.position, node, cons);
-        for (let id of intersectedConnections) {
+      if (view) {
+        const id = checkIntersection(view.position, node, cons);
+
+        if (id) {
           const exist = editor.getConnection(id);
-          if (exist && (exist.source !== node.id && exist.target !== node.id)) {
+
+          if (exist.source !== node.id && exist.target !== node.id) {
             await editor.removeConnection(id);
             await props.createConnections(node, exist);
           }

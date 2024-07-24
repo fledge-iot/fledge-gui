@@ -1,56 +1,40 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 import { ClassicPreset } from 'rete';
-import { classicConnectionPath } from 'rete-render-utils'
 import { Position } from '../types';
-import { FlowEditorService } from '../flow-editor.service';
-import { Subscription } from 'rxjs';
-import { RolesService } from '../../../../services/roles.service';
+
+type Connection = ClassicPreset.Connection<
+  ClassicPreset.Node,
+  ClassicPreset.Node
+> & {
+  selected?: boolean,
+  isLoop?: boolean
+  click: (c: Connection) => void
+  remove: (c: Connection) => void
+}
 
 @Component({
   selector: 'app-custom-connection',
   templateUrl: './custom-connection.component.html',
   styleUrls: ['./custom-connection.component.css']
 })
-export class CustomConnectionComponent implements OnInit {
-
-  @Input() data!: ClassicPreset.Connection<ClassicPreset.Node, ClassicPreset.Node>;
+export class CustomConnectionComponent {
+  @Input() data!: Connection
   @Input() start: Position
   @Input() end: Position
   @Input() path: string
-  @ViewChild('svgpath', { static: true }) svgpath: ElementRef;
-  selected: boolean = false;
-  private canvasClickSubscription: Subscription;
-  selectedConnectionId = "";
 
-  constructor(public flowEditorService: FlowEditorService,
-    public rolesService: RolesService,) { }
+  @ViewChild('menu') menu!: ElementRef;
+  @ViewChild('svg') connection!: ElementRef<SVGAElement>;
+  @ViewChild('svgpath', { static: true }) pathRef: ElementRef<SVGPathElement>;
 
-  ngOnInit(): void {
-    this.canvasClickSubscription = this.flowEditorService.canvasClick.subscribe(data => {
-      this.selectedConnectionId = data.connectionId;
-      if (data.canvasClicked === true) {
-        if (this.selected) {
-          this.svgpath.nativeElement.style.stroke = "steelblue";
-          this.selected = false;
-          this.flowEditorService.connectionInfo.next({ id: this.data.id, selected: this.selected });
-        }
-      }
-    })
-  }
-
-  selectConnection(): void {
-    if (this.rolesService.hasEditPermissions()) {
-      setTimeout(() => {
-        if (!this.selected && this.selectedConnectionId !== this.data.id) {
-          this.svgpath.nativeElement.style.stroke = "rgb(255, 217, 44)";
-          this.selected = true;
-          this.flowEditorService.connectionInfo.next({ id: this.data.id, selected: this.selected });
-        }
-      }, 1);
-    }
-  }
-
-  ngOnDestroy() {
-    this.canvasClickSubscription?.unsubscribe();
-  }
+  // code block to show label on the connection line
+  // get point() {
+  //   if (!this.pathRef) return { x: 0, y: 0 }
+  //   const path = this.pathRef.nativeElement
+  //   if (path.getTotalLength() != 0) {
+  //     const point = path?.getPointAtLength(path.getTotalLength() / 2)
+  //     return point;
+  //   }
+  //   return { x: 0, y: 0 }
+  // }
 }
