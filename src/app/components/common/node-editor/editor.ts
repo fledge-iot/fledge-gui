@@ -609,7 +609,7 @@ function getSecondLastActionName() {
   let actionName;
   if (historyLength >= 2) {
     // FIXME: use different approach for retrieving actionName
-    actionName = Object.getPrototypeOf(historySnapshot[historyLength - 2].action).constructor.name;
+    // actionName = Object.getPrototypeOf(historySnapshot[historyLength - 2].action).constructor.name;
   }
   return actionName;
 }
@@ -620,7 +620,7 @@ function getLastActionName() {
   let actionName;
   if (historyLength >= 1) {
     // FIXME: use different approach for retrieving actionName
-    actionName = Object.getPrototypeOf(historySnapshot[historyLength - 1].action).constructor.name;
+    // actionName = Object.getPrototypeOf(historySnapshot[historyLength - 1].action).constructor.name;
   }
   return actionName;
 }
