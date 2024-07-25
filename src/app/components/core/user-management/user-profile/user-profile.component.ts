@@ -40,33 +40,16 @@ export class UserProfileComponent implements OnInit {
     this.userService.getUser(id)
       .subscribe(
         (userData) => {
-          this.userService.getRole()
-            .subscribe(
-              (roleRecord) => {
-                this.ngProgress.done();
-                roleRecord['roles'].filter(role => {
-                  if (role.id === userData['roleId']) {
-                    userData['roleName'] = this.roleService.getRoleName(role.id);
-                  }
-                });
-                this.userRecord = {
-                  userId: userData['userId'],
-                  userName: userData['userName'],
-                  real_name: userData['realName'],
-                  roleId: userData['roleId'],
-                  roleName: userData['roleName'],
-                  access_method: this.getAccessMethod(userData['accessMethod']),
-                  description: userData['description']
-                };
-              },
-              error => {
-                this.ngProgress.done();
-                if (error.status === 0) {
-                  console.log('service down ', error);
-                } else {
-                  this.alertService.error(error.statusText);
-                }
-              });
+            this.ngProgress.done();
+            this.userRecord = {
+              userId: userData['userId'],
+              userName: userData['userName'],
+              real_name: userData['realName'],
+              roleId: userData['roleId'],
+              roleName: this.roleService.getRoleName(userData['roleId']),
+              access_method: this.getAccessMethod(userData['accessMethod']),
+              description: userData['description']
+            }
         },
         error => {
           /** request completed */

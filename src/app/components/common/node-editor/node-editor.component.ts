@@ -22,7 +22,7 @@ import {
   SharedService,
   ToastService
 } from './../../../services';
-import { createEditor, deleteConnection, getUpdatedFilterPipeline, removeNode, updateFilterNode, updateNode, applyContentReordering } from './editor';
+import { createEditor, deleteConnection, getUpdatedFilterPipeline, removeNode, updateFilterNode, updateNode, applyContentReordering, undoAction, redoAction } from './editor';
 import { FlowEditorService } from './flow-editor.service';
 
 @Component({
@@ -158,8 +158,17 @@ export class NodeEditorComponent implements OnInit {
     this.additionalServicesUtils.getAllServiceStatus(false, 'notification');
   }
 
-  @HostListener('document:keydown.delete', ['$event']) onKeydownHandler() {
-    this.deleteSelectedConnection();
+  @HostListener('document:keydown', ['$event'])
+  onKeydownHandler(event) {
+    if ((event.ctrlKey || event.metaKey) && event.keyCode == 90) {
+      undoAction();
+    }
+    if ((event.ctrlKey || event.metaKey) && event.keyCode == 89) {
+      redoAction();
+    }
+    if (event.key === 'Delete') {
+      this.deleteSelectedConnection();
+    }
   }
 
   ngOnInit(): void {

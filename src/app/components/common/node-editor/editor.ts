@@ -9,7 +9,7 @@ import { ArrangeAppliers, Presets as ArrangePresets, AutoArrangePlugin } from "r
 import { ConnectionPlugin } from "rete-connection-plugin";
 import { ContextMenuExtra, ContextMenuPlugin } from "rete-context-menu-plugin";
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
-import { HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
+import { HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
 import { MinimapExtra, MinimapPlugin } from "rete-minimap-plugin";
 import { NorthTask } from '../../core/north/north-task';
 import { colors } from "./color-palette";
@@ -54,6 +54,9 @@ export class Connection<A extends Node, B extends Node> extends ClassicPreset.Co
 
 let editor = new NodeEditor<Schemes>();
 let area: AreaPlugin<Schemes, AreaExtra>;
+let history: HistoryPlugin<Schemes>;
+let dock: DockPlugin<Schemes>;
+let newDockFilter;
 
 export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, data) {
   const socket = new ClassicPreset.Socket("socket");
@@ -62,7 +65,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   const render = new AngularPlugin<Schemes, AreaExtra>({ injector });
   const arrange = new AutoArrangePlugin<Schemes>();
-  const history = new HistoryPlugin<Schemes>();
+  history = new HistoryPlugin<Schemes>();
   const animatedApplier = new ArrangeAppliers.TransitionApplier<Schemes, never>(
     {
       duration: 500,
@@ -134,7 +137,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     }
   })
 
-  const dock = new DockPlugin<Schemes>();
+  dock = new DockPlugin<Schemes>();
   render.addPreset(Presets.classic.setup(
     {
       customize: {
@@ -168,7 +171,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   arrange.addPreset(ArrangePresets.classic.setup());
   render.addPreset(Presets.contextMenu.setup());
   dock.addPreset(DockPresets.classic.setup({ area, size: 70, scale: 0.6 }));
-  HistoryExtensions.keyboard(history);
+  // scopes.addPreset(ScopesPresets.classic.setup());
   history.addPreset(HistoryPresets.classic.setup());
   render.addPreset(Presets.minimap.setup({ size: 150 }));
 
@@ -181,8 +184,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   if (data.source) {
     if (rolesService.hasEditPermissions()) {
       area.use(contextMenu);
-      area.use(minimap);
-      let newDockFilter = () => {
+      newDockFilter = () => {
         setTimeout(() => {
           let dropStrategy: any = dock.dropStrategy;
           let dsEditorNodes = dropStrategy.editor.nodes;
@@ -268,6 +270,7 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
     );
     await arrange.layout();
     AreaExtensions.zoomAt(area, editor.getNodes());
+    history.clear();
   }
   else {
     const nodes = data.from == 'south' ? data.services : data.tasks;
@@ -309,6 +312,7 @@ async function nodesGrid(area: AreaPlugin<Schemes,
   const service = from == 'south' ? new AddService() : from == 'north' ? new AddTask() : new AddNotification(isServiceAvailable);
   await editor.addNode(service);
   await area.translate(service.id, { x: 250 * j, y: 150 * k });
+  history.clear();
 }
 
 export function getUpdatedFilterPipeline() {
@@ -535,13 +539,14 @@ function existsInPipeline(pipeline, filterName) {
   return false;
 }
 
-export function removeNode(nodeId) {
+export async function removeNode(nodeId) {
   for (const c of editor
     .getConnections()
     .filter((c) => c.source === nodeId || c.target === nodeId)) {
-    editor.removeConnection(c.id);
+    await editor.removeConnection(c.id);
   }
   editor.removeNode(nodeId);
+  dock.add(newDockFilter);
 }
 
 async function removeOldConnection(connectionEvents, nodeId) {
@@ -579,4 +584,54 @@ export function applyContentReordering(nodeId: string) {
   let { content } = area.area;
   // Bring selected node in front of other nodes for better visual clarity
   content.reorder(view.element, null);
+}
+
+export function undoAction() {
+  let secondLastActionName = getSecondLastActionName();
+  let lastActionName = getLastActionName();
+  history.undo().then(() => {
+    if (secondLastActionName == 'AddNodeAction') {
+      dock.add(newDockFilter);
+    }
+    if (lastActionName == 'RemoveNodeAction') {
+      dock.remove(newDockFilter);
+    }
+  })
+}
+
+export function redoAction() {
+  let beforeRedoSecondLastActionName = getSecondLastActionName();
+  let beforeRedoLastActionName = getLastActionName();
+  history.redo().then(() => {
+    let afterRedoSecondLastActionName = getSecondLastActionName();
+    let afterRedoLastActionName = getLastActionName();
+    if (afterRedoSecondLastActionName == 'AddNodeAction' && beforeRedoSecondLastActionName != 'AddNodeAction') {
+      dock.remove(newDockFilter);
+    }
+    if (afterRedoLastActionName == 'RemoveNodeAction' && beforeRedoLastActionName != 'RemoveNodeAction') {
+      dock.add(newDockFilter);
+    }
+  })
+}
+
+function getSecondLastActionName() {
+  let historySnapshot = history.getHistorySnapshot();
+  let historyLength = historySnapshot.length;
+  let actionName;
+  if (historyLength >= 2) {
+    // FIXME: use different approach for retrieving actionName
+    // actionName = Object.getPrototypeOf(historySnapshot[historyLength - 2].action).constructor.name;
+  }
+  return actionName;
+}
+
+function getLastActionName() {
+  let historySnapshot = history.getHistorySnapshot();
+  let historyLength = historySnapshot.length;
+  let actionName;
+  if (historyLength >= 1) {
+    // FIXME: use different approach for retrieving actionName
+    // actionName = Object.getPrototypeOf(historySnapshot[historyLength - 1].action).constructor.name;
+  }
+  return actionName;
 }
