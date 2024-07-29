@@ -1,11 +1,12 @@
-import { curveBasis, CurveFactory } from "d3-shape";
 import { Injector } from "@angular/core";
+import { curveBasis, CurveFactory } from "d3-shape";
 import { isEmpty } from 'lodash';
 import { easeInOut } from "popmotion";
 import { ClassicPreset, GetSchemes, NodeEditor } from "rete";
 import { AngularArea2D, AngularPlugin, Presets } from "rete-angular-plugin/16";
 import { AreaExtensions, AreaPlugin } from "rete-area-plugin";
 import { ArrangeAppliers, Presets as ArrangePresets, AutoArrangePlugin } from "rete-auto-arrange-plugin";
+import { ConnectionPathPlugin } from 'rete-connection-path-plugin';
 import { ConnectionPlugin } from "rete-connection-plugin";
 import { ContextMenuExtra, ContextMenuPlugin } from "rete-context-menu-plugin";
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
@@ -13,6 +14,7 @@ import { HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
 import { MinimapExtra, MinimapPlugin } from "rete-minimap-plugin";
 import { NorthTask } from '../../core/north/north-task';
 import { colors } from "./color-palette";
+import { Connector } from "./connector";
 import { EnabledControl, StatusControl } from './controls/common-custom-control';
 import { SentReadingsControl } from './controls/north-custom-control';
 import { ChannelControl, NotificationTypeControl, RuleControl, ServiceStatusControl } from "./controls/notification-custom-control";
@@ -30,10 +32,8 @@ import { AddTask } from "./nodes/add-task";
 import { North } from "./nodes/north";
 import { Notification } from "./nodes/notification";
 import { South } from "./nodes/south";
-import { Storage } from "./storage";
 import { createSelector } from "./selector";
-import { Connector } from "./connector";
-import { ConnectionPathPlugin } from 'rete-connection-path-plugin';
+import { Storage } from "./storage";
 
 type Node = South | North | Filter | Notification;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
@@ -86,21 +86,24 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
 
   insertableNodes(area, {
     async createConnections(node, connection) {
-      removeOldConnection(connectionEvents, node.id)
-      await editor.addConnection(
-        new Connection(
-          connectionEvents,
-          editor.getNode(connection.source),
-          node
+      if (!isEmpty(node.inputs)) {
+        await editor.addConnection(
+          new Connection(
+            connectionEvents,
+            editor.getNode(connection.source),
+            node
+          )
+        );
+      }
+      if (!isEmpty(node.outputs)) {
+        await editor.addConnection(
+          new Connection(
+            connectionEvents,
+            node,
+            editor.getNode(connection.target)
+          )
         )
-      );
-      await editor.addConnection(
-        new Connection(
-          connectionEvents,
-          node,
-          editor.getNode(connection.target)
-        )
-      );
+      }
       arrange.layout({
         applier: animatedApplier
       });
@@ -219,17 +222,14 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
   area: AreaPlugin<Schemes, AreaExtra>,
   data: any,
   connectionEvents) {
-
   if (data.source) {
-    const db = new Storage(socket);
+    const db = new Storage(socket, data.from);
     const plugin = data.from == 'south' ? new South(socket, data.service) : new North(socket, data.task);;
     //  FIX ME: Array index based change
     if (data.from == 'south') {
       await editor.addNode(plugin);
-      await editor.addNode(db);
     } else {
       await editor.addNode(db);
-      await editor.addNode(plugin);
     }
 
     let fpLen = data.filterPipeline.length;
@@ -264,6 +264,12 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
           new Connection(connectionEvents, tempNode, lastNode));
         colorNumber = (colorNumber + 1) % (colors.length);
       }
+    }
+
+    if (data.from == 'south') {
+      await editor.addNode(db);
+    } else {
+      await editor.addNode(plugin);
     }
     await editor.addConnection(
       new Connection(connectionEvents, previousNode, lastNode)
@@ -524,16 +530,14 @@ function rgbToHex(r, g, b) {
 }
 
 function existsInPipeline(pipeline, filterName) {
-  for (let i = 0; i < pipeline.length; i++) {
-    if (typeof (pipeline[i]) === "string") {
-      if (pipeline[i] === filterName) {
+  for (const element of pipeline) {
+    if (typeof (element) === "string") {
+      if (element === filterName) {
         return true;
       }
     }
-    else {
-      if (pipeline[i].indexOf(filterName) !== -1) {
-        return true;
-      }
+    else if (element.indexOf(filterName) !== -1) {
+      return true;
     }
   }
   return false;
@@ -547,36 +551,6 @@ export async function removeNode(nodeId) {
   }
   editor.removeNode(nodeId);
   dock.add(newDockFilter);
-}
-
-async function removeOldConnection(connectionEvents, nodeId) {
-  let connections = editor.getConnections();
-  let source: Node;
-  let target: Node[] = [];
-  let inputConnId;
-  let outputConnections = [];
-  for (let i = 0; i < connections.length; i++) {
-    if (connections[i].source === nodeId) {
-      target.push(editor.getNode(connections[i].target));
-      outputConnections.push(connections[i].id);
-    }
-    if (connections[i].target === nodeId) {
-      source = editor.getNode(connections[i].source);
-      inputConnId = connections[i].id;
-    }
-  }
-  for (let t of target) {
-    await editor.addConnection(
-      new Connection(connectionEvents, source, t)
-    );
-  }
-  if (inputConnId) {
-    await editor.removeConnection(inputConnId);
-  }
-  for (let c of outputConnections) {
-    await editor.removeConnection(c);
-  }
-
 }
 
 export function applyContentReordering(nodeId: string) {

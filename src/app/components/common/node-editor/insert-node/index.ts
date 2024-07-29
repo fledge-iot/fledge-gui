@@ -1,7 +1,11 @@
-import { BaseSchemes, GetSchemes, NodeEditor } from "rete";
+import { BaseSchemes, ClassicPreset, GetSchemes, NodeEditor } from "rete";
 import { AreaPlugin } from "rete-area-plugin";
 import { Position, Size } from "./types";
 import { checkElementIntersectPath } from "./utils";
+import { Filter } from "../filter";
+import { South } from "../nodes/south";
+import { North } from "../nodes/north";
+import { Connection } from "../editor";
 
 type Schemes = GetSchemes<
   BaseSchemes["Node"] & Size,
@@ -42,21 +46,27 @@ export function insertableNodes<S extends Schemes>(
   props: Props<S>
 ) {
   area.addPipe(async (context) => {
-    if (context.type === "nodetranslated") {
+    if (context.type == 'nodetranslated') {
       const editor = area.parentScope<NodeEditor<S>>(NodeEditor);
-      const node = editor.getNode(context.data.id);
+      const node = editor.getNode(context.data.id) as South | Filter | North
       const view = area.nodeViews.get(context.data.id);
       const cons = Array.from(area.connectionViews.entries()).map(
         ([id, view]) => [id, view.element] as const
       );
-
       if (view) {
         const id = checkIntersection(view.position, node, cons);
-
         if (id) {
           const exist = editor.getConnection(id);
-
           if (exist.source !== node.id && exist.target !== node.id) {
+            // stop storage drag & drop
+            if (["Storage", "North", "South"].includes(node.label)) {
+              return;
+            }
+            const connectionEvents = {
+              click: () => { },
+              remove: () => { }
+            }
+            removeOldConnection(connectionEvents, node.id, editor)
             await editor.removeConnection(id);
             await props.createConnections(node, exist);
           }
@@ -65,4 +75,31 @@ export function insertableNodes<S extends Schemes>(
     }
     return context;
   });
+}
+
+async function removeOldConnection(connectionEvents, nodeId: string, editor) {
+  let connections = editor.getConnections();
+  let source;
+  let target = [];
+  let inputConnId;
+  let outputConnections = [];
+  for (const element of connections) {
+    if (element.source === nodeId) {
+      target.push(editor.getNode(element.target) as ClassicPreset.Node);
+      outputConnections.push(element.id);
+    }
+    if (element.target === nodeId) {
+      source = editor.getNode(element.source) as ClassicPreset.Node;
+      inputConnId = element.id;
+    }
+  }
+  for (let t of target) {
+    await editor.addConnection(new Connection(connectionEvents, source, t));
+  }
+  if (inputConnId) {
+    await editor.removeConnection(inputConnId);
+  }
+  for (let c of outputConnections) {
+    await editor.removeConnection(c);
+  }
 }

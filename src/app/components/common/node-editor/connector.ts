@@ -7,15 +7,19 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
   constructor(props: { click: (data: S['Connection']) => void, remove: (data: S['Connection']) => void }) {
     super({
       makeConnection<K extends any[]>(initial: SocketData, socket: SocketData, context: Context<S, K>) {
-        context.editor.addConnection({
-          id: getUID(),
-          source: initial.nodeId,
-          sourceOutput: initial.key,
-          target: socket.nodeId,
-          targetInput: socket.key,
-          isLoop: initial.nodeId === socket.nodeId,
-          ...props
-        })
+        if (initial.nodeId === socket.nodeId) {
+          return;
+        }
+        context.editor.addConnection(
+          {
+            id: getUID(),
+            source: initial.nodeId,
+            sourceOutput: initial.key,
+            target: socket.nodeId,
+            targetInput: socket.key,
+            isLoop: false,
+            ...props
+          })
         return true
       }
     })
