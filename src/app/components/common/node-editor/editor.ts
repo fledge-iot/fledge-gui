@@ -47,8 +47,9 @@ export class Connection<A extends Node, B extends Node> extends ClassicPreset.Co
 
   constructor(events: { click: (data: Connection<A, B>) => void, remove: (data: Connection<A, B>) => void }, source: A, target: B, public isLoop?: boolean) {
     super(source, 'port', target, 'port')
-    this.click = events.click
-    this.remove = events.remove
+    this.click = events.click;
+    this.remove = events.remove;
+    this.isLoop = false;
   }
 }
 
@@ -223,13 +224,15 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
   data: any,
   connectionEvents) {
   if (data.source) {
-    const db = new Storage(socket, data.from);
-    const plugin = data.from == 'south' ? new South(socket, data.service) : new North(socket, data.task);;
+    const db = new Storage(socket);
+    const plugin = data.from == 'south' ? new South(socket, data.service) : new North(socket, data.task);
     //  FIX ME: Array index based change
     if (data.from == 'south') {
       await editor.addNode(plugin);
+      await editor.addNode(db);
     } else {
       await editor.addNode(db);
+      await editor.addNode(plugin);
     }
 
     let fpLen = data.filterPipeline.length;
@@ -266,11 +269,6 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
       }
     }
 
-    if (data.from == 'south') {
-      await editor.addNode(db);
-    } else {
-      await editor.addNode(plugin);
-    }
     await editor.addConnection(
       new Connection(connectionEvents, previousNode, lastNode)
     );

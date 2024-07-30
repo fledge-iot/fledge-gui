@@ -48,7 +48,7 @@ export function insertableNodes<S extends Schemes>(
   area.addPipe(async (context) => {
     if (context.type == 'nodetranslated') {
       const editor = area.parentScope<NodeEditor<S>>(NodeEditor);
-      const node = editor.getNode(context.data.id) as South | Filter | North
+      const node = editor.getNode(context.data.id) as South | Filter | North;
       const view = area.nodeViews.get(context.data.id);
       const cons = Array.from(area.connectionViews.entries()).map(
         ([id, view]) => [id, view.element] as const
@@ -56,20 +56,22 @@ export function insertableNodes<S extends Schemes>(
       if (view) {
         const id = checkIntersection(view.position, node, cons);
         if (id) {
-          const exist = editor.getConnection(id);
-          if (exist.source !== node.id && exist.target !== node.id) {
-            // stop storage drag & drop
-            if (["Storage", "North", "South"].includes(node.label)) {
-              return;
+          setTimeout(async () => {
+            const exist = editor.getConnection(id);
+            if (exist && exist.source !== node.id && exist.target !== node.id) {
+              // stop storage drag & drop
+              if (["Storage", "North", "South"].includes(node.label)) {
+                return;
+              }
+              const connectionEvents = {
+                click: () => { },
+                remove: () => { }
+              }
+              removeOldConnection(connectionEvents, node, editor)
+              await editor.removeConnection(id);
+              await props.createConnections(node, exist);
             }
-            const connectionEvents = {
-              click: () => { },
-              remove: () => { }
-            }
-            removeOldConnection(connectionEvents, node.id, editor)
-            await editor.removeConnection(id);
-            await props.createConnections(node, exist);
-          }
+          }, 0);
         }
       }
     }
@@ -77,18 +79,19 @@ export function insertableNodes<S extends Schemes>(
   });
 }
 
-async function removeOldConnection(connectionEvents, nodeId: string, editor) {
+async function removeOldConnection(connectionEvents, node, editor) {
+  console.log('node', node);
   let connections = editor.getConnections();
   let source;
   let target = [];
   let inputConnId;
   let outputConnections = [];
   for (const element of connections) {
-    if (element.source === nodeId) {
+    if (element.source === node.id) {
       target.push(editor.getNode(element.target) as ClassicPreset.Node);
       outputConnections.push(element.id);
     }
-    if (element.target === nodeId) {
+    if (element.target === node.id) {
       source = editor.getNode(element.source) as ClassicPreset.Node;
       inputConnId = element.id;
     }

@@ -6,12 +6,9 @@ export class Storage extends ClassicPreset.Node {
   width = 100;
   parent?: string;
 
-  constructor(socket: ClassicPreset.Socket, from: string) {
+  constructor(socket: ClassicPreset.Socket) {
     super("Storage");
-    if (from == 'south') {
-      this.addInput("port", new ClassicPreset.Input(socket));
-    } else {
-      this.addOutput("port", new ClassicPreset.Output(socket));
-    }
+    this.addInput("port", new ClassicPreset.Input(socket));
+    this.addOutput("port", new ClassicPreset.Output(socket));
   }
 }
