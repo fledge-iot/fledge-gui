@@ -13,10 +13,9 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
           return;
         }
         // Avoid connection loop in pipeline
-        const fromNode = context.editor.getNode(initial.nodeId);
         const toNode = context.editor.getNode(socket.nodeId);
         const pipeline = getUpdatedFilterPipeline();
-        if (typeof pipeline == 'object' && (pipeline.includes(fromNode.label) || pipeline.includes(toNode.label))) {
+        if (typeof pipeline == 'object' && (pipeline.includes(toNode.label))) {
           return;
         }
 
