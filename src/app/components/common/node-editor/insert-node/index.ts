@@ -67,6 +67,7 @@ export function insertableNodes<S extends Schemes>(
                 click: () => { },
                 remove: () => { }
               }
+              // remove old connection while inserting new node in the connection
               removeOldConnection(connectionEvents, node, editor)
               await editor.removeConnection(id);
               await props.createConnections(node, exist);
@@ -80,19 +81,18 @@ export function insertableNodes<S extends Schemes>(
 }
 
 async function removeOldConnection(connectionEvents, node, editor) {
-  console.log('node', node);
-  let connections = editor.getConnections();
+  let connections = await editor.getConnections();
   let source;
   let target = [];
   let inputConnId;
   let outputConnections = [];
   for (const element of connections) {
     if (element.source === node.id) {
-      target.push(editor.getNode(element.target) as ClassicPreset.Node);
+      target.push(await editor.getNode(element.target) as ClassicPreset.Node);
       outputConnections.push(element.id);
     }
     if (element.target === node.id) {
-      source = editor.getNode(element.source) as ClassicPreset.Node;
+      source = await editor.getNode(element.source) as ClassicPreset.Node;
       inputConnId = element.id;
     }
   }
