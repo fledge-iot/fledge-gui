@@ -58,6 +58,14 @@ let area: AreaPlugin<Schemes, AreaExtra>;
 let history: HistoryPlugin<Schemes>;
 let dock: DockPlugin<Schemes>;
 let newDockFilter;
+let arrange: AutoArrangePlugin<Schemes>;
+
+export const animatedApplier = new ArrangeAppliers.TransitionApplier<Schemes, never>(
+  {
+    duration: 500,
+    timingFunction: easeInOut
+  }
+);
 
 export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, data) {
   const socket = new ClassicPreset.Socket("socket");
@@ -65,14 +73,8 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   area = new AreaPlugin<Schemes, AreaExtra>(container);
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   const render = new AngularPlugin<Schemes, AreaExtra>({ injector });
-  const arrange = new AutoArrangePlugin<Schemes>();
+  arrange = new AutoArrangePlugin<Schemes>();
   history = new HistoryPlugin<Schemes>();
-  const animatedApplier = new ArrangeAppliers.TransitionApplier<Schemes, never>(
-    {
-      duration: 500,
-      timingFunction: easeInOut
-    }
-  );
   const minimap = new MinimapPlugin<Schemes>({
     boundViewport: true
   });
@@ -542,13 +544,34 @@ function existsInPipeline(pipeline, filterName) {
 }
 
 export async function removeNode(nodeId) {
-  for (const c of editor
-    .getConnections()
-    .filter((c) => c.source === nodeId || c.target === nodeId)) {
+  const connectionEvents = {
+    click: () => { },
+    remove: () => { }
+  }
+  let source: Node;
+  let target: Node;
+  const connections = editor.getConnections()
+    .filter(c => (c.source === nodeId || c.target === nodeId))
+  for (const c of connections) {
     await editor.removeConnection(c.id);
+    if (editor.getNode(c.source).label !== 'Filter') {
+      source = editor.getNode(c.source);
+    }
+    if (editor.getNode(c.target).label !== 'Filter') {
+      target = editor.getNode(c.target);
+    }
   }
   editor.removeNode(nodeId);
   dock.add(newDockFilter);
+  // pull back the removed connection when filter placeholder node removed
+  if (source && target) {
+    await editor.addConnection(new Connection(connectionEvents, source, target));
+    area.update('node', source.id)
+    area.update('node', source.id)
+    arrange.layout({
+      applier: animatedApplier
+    });
+  }
 }
 
 export function applyContentReordering(nodeId: string) {
