@@ -189,6 +189,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   area.use(history);
   if (data.source) {
     if (rolesService.hasEditPermissions()) {
+      area.use(minimap);
       area.use(contextMenu);
       newDockFilter = () => {
         setTimeout(() => {
