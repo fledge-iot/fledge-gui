@@ -75,6 +75,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   const render = new AngularPlugin<Schemes, AreaExtra>({ injector });
   arrange = new AutoArrangePlugin<Schemes>();
   history = new HistoryPlugin<Schemes>();
+  dock = new DockPlugin<Schemes>();
   const minimap = new MinimapPlugin<Schemes>({
     boundViewport: true
   });
@@ -143,7 +144,6 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     }
   })
 
-  dock = new DockPlugin<Schemes>();
   render.addPreset(Presets.classic.setup(
     {
       customize: {
@@ -301,24 +301,25 @@ async function nodesGrid(area: AreaPlugin<Schemes,
   AreaExtra>, nodeItems: [],
   socket: ClassicPreset.Socket,
   from: string, isServiceAvailable = null) {
+  const service = from == 'south' ? new AddService() : from == 'north' ? new AddTask() : new AddNotification(isServiceAvailable);
+  await editor.addNode(service);
+  await area.translate(service.id, { x: 0, y: 0 });
+
   const canvasWidth = area.container.parentElement.clientWidth;
   const itemCount = Math.round(canvasWidth / 275);
-  let j = 0;
+  let j = 1;
   let k = 0;
   for (let i = 0; i < nodeItems.length; i++) {
     const plugin = from == 'south' ? new South(socket, nodeItems[i]) : from == 'north' ? new North(socket, nodeItems[i]) : new Notification(socket, nodeItems[i]);
     await editor.addNode(plugin);
     if (j < itemCount) {
-      await area.translate(plugin.id, { x: 250 * j, y: 150 * k });
+      await area.translate(plugin.id, { x: 250 * j, y: 130 * k });
       j++;
       if (j == itemCount) {
         j = 0; k++;
       }
     }
   }
-  const service = from == 'south' ? new AddService() : from == 'north' ? new AddTask() : new AddNotification(isServiceAvailable);
-  await editor.addNode(service);
-  await area.translate(service.id, { x: 250 * j, y: 150 * k });
   history.clear();
 }
 
