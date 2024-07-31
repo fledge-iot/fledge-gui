@@ -6,7 +6,7 @@ import { DocService } from '../../../services/doc.service';
 import { SharedService } from '../../../services/shared.service';
 import { buildRoutes } from '../../../../menu-utils';
 import { DeveloperFeaturesService } from '../../../services/developer-features.service';
-import { RolesService, } from '../../../services';
+import { RolesService } from '../../../services';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FlowEditorService } from '../../common/node-editor/flow-editor.service';
@@ -19,6 +19,7 @@ import { FlowEditorService } from '../../common/node-editor/flow-editor.service'
 export class SideMenuComponent implements OnInit {
   public step = '';
   @Output() toggle: EventEmitter<any> = new EventEmitter();
+  @Output() sidebarCollapsedEvent: EventEmitter<any> = new EventEmitter();
   microfrontends: Microfrontend[] = [];
 
   isLogsListOpen = false;
@@ -27,6 +28,7 @@ export class SideMenuComponent implements OnInit {
   isServiceRunning = true;
   private destroySubject: Subject<void> = new Subject();
 
+  isSidemenuCollapsed = false;
 
   toggleSideMenu() {
     this.toggle.next('toggleSidebar');
@@ -72,6 +74,13 @@ export class SideMenuComponent implements OnInit {
 
   goToLink() {
     this.docService.goToLink();
+  }
+
+  toggleSidemenuState() {
+    let sidemenu = document.getElementById('sidemenu') as HTMLDivElement;
+    sidemenu.classList.toggle('collapsed');
+    this.isSidemenuCollapsed = !this.isSidemenuCollapsed;
+    this.sidebarCollapsedEvent.emit(this.isSidemenuCollapsed);
   }
 
   ngOnDestroy() {

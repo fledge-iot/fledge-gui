@@ -1,74 +1,77 @@
-<aside class="menu">
+<aside class="menu" id="sidemenu">
   <ul class="menu-list">
     <section [ngClass]="{'disabled':  !isServiceRunning}" (click)="toggleSideMenu(); $event.preventDefault()">
       <li>
-        <a id="dashboard" routerLinkActive="is-active" routerLink="/" [routerLinkActiveOptions]={exact:true}>
+        <a class="sidemenu-link" id="dashboard" routerLinkActive="is-active" routerLink="/"
+          [routerLinkActiveOptions]={exact:true}>
           <span><i class="bi bi-speedometer2 bi-sm"></i> </span>
-          Dashboard
+          <span class="sidemenu-text">Dashboard</span>
         </a>
       </li>
       <li>
-        <a id="asset" routerLinkActive="is-active" routerLink='/asset'>
+        <a class="sidemenu-link" id="asset" routerLinkActive="is-active" routerLink='/asset'>
           <span class="menu-text"><i class="bi bi-graph-up bi-xs"></i></span>
-          Assets &amp; Readings
+          <span class="sidemenu-text">Assets &amp; Readings</span>
         </a>
       </li>
       <article requiredViewEditorRole>
         <li>
-          <a id=" south" routerLinkActive="is-active"
+          <a class="sidemenu-link" id="south" routerLinkActive="is-active"
             [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/south']: ['/south']">
             <span class="menu-text"><i class="bi bi-pc-display-horizontal bi-xs sidebar-icon"></i></span>
-            South
+            <span class="sidemenu-text">South</span>
           </a>
         </li>
         <li>
-          <a id="north" routerLinkActive="is-active"
+          <a class="sidemenu-link" id="north" routerLinkActive="is-active"
             [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/north']: ['/north']">
             <span><i class="bi bi-cloud-upload bi-sm"></i></span>
-            North
+            <span class="sidemenu-text">North</span>
           </a>
         </li>
         <li>
-          <a id="notification" routerLinkActive="is-active"
+          <a class="sidemenu-link" id="notification" routerLinkActive="is-active"
             [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/notifications']: ['/notification']">
             <span><i class="bi bi-lightning-charge bi-sm"></i></span>
-            Notifications
+            <span class="sidemenu-text">Notifications</span>
           </a>
         </li>
         <li>
-          <a type="button" [ngClass]="{'has-background-light':  isControlListOpen }" id="control"
-            (click)="isControlListOpen = !isControlListOpen; ; $event.stopPropagation()" class="px-2">
-            <div class="is-flex is-align-items-center">
+          <a class="sidemenu-link px-2" type="button" [ngClass]="{'has-background-light':  isControlListOpen }"
+            id="control" (click)="isControlListOpen = !isControlListOpen; ; $event.stopPropagation()">
+            <div class="is-align-items-center" [ngClass]="{'is-flex':  !isSidemenuCollapsed }">
               <span class="menu-text">
                 <svg id="control-dispatch">
                   <use xlink:href="assets/icons/svg/control-dispatch.svg#control-dispatch" />
                 </svg>
               </span>
-              <span class="is-flex-grow-3">Control</span>
-              <span class="icon is-small menu-toogle-icon is-pulled-right"
+              <span class="is-flex-grow-3 sidemenu-text">Control</span>
+              <span class="icon is-small menu-toogle-icon" [ngClass]="{'is-pulled-right':  !isSidemenuCollapsed }"
                 [title]="isControlListOpen ? 'Collapse' : 'Expand'">
                 <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
-                  aria-hidden="true"></i>
+                  class="toggle-submenu-dropdown" aria-hidden="true"></i>
               </span>
             </div>
           </a>
           <div [hidden]="!isControlListOpen">
             <ul>
               <li>
-                <a id="acl" routerLinkActive="is-active" routerLink='control-dispatcher/acl'>
+                <a class="submenu-text" id="acl" routerLinkActive="is-active" routerLink='control-dispatcher/acl'>
                   ACLs
                 </a>
               </li>
               <li>
-                <a id="entry-point" routerLinkActive="is-active" routerLink='control-dispatcher/entry-points'>
+                <a class="submenu-text" id="entry-point" routerLinkActive="is-active"
+                  routerLink='control-dispatcher/entry-points'>
                   API Entry Points
                 </a>
               </li>
               <li>
-                <a id="pipelines" routerLinkActive="is-active" routerLink='control-dispatcher/pipelines'>Pipelines</a>
+                <a class="submenu-text" id="pipelines" routerLinkActive="is-active"
+                  routerLink='control-dispatcher/pipelines'>Pipelines</a>
               </li>
               <li>
-                <a id="script" routerLinkActive="is-active" routerLink='control-dispatcher/script'>
+                <a class="submenu-text" id="script" routerLinkActive="is-active" routerLink='control-dispatcher/script'>
                   Scripts
                 </a>
               </li>
@@ -76,100 +79,111 @@
           </div>
         </li>
         <li>
-          <a id="configuration" routerLinkActive="is-active" routerLink='/configuration'>
+          <a class="sidemenu-link" id="configuration" routerLinkActive="is-active" routerLink='/configuration'>
             <span><i class="bi bi-gear-wide-connected bi-sm"></i></span>
-            Configuration
+            <span class="sidemenu-text">Configuration</span>
           </a>
         </li>
         <li>
-          <a id="schedules" routerLinkActive="is-active" routerLink='/schedules'>
+          <a class="sidemenu-link" id="schedules" routerLinkActive="is-active" routerLink='/schedules'>
             <span class="menu-text"><i class="bi bi-calendar2-week bi-xs sidebar-icon"></i></span>
-            Schedules
+            <span class="sidemenu-text">Schedules</span>
           </a>
         </li>
         <li>
-          <a id="certificate" routerLinkActive="is-active" routerLink='/certificate'>
+          <a class="sidemenu-link" id="certificate" routerLinkActive="is-active" routerLink='/certificate'>
             <span><i class="bi bi-filetype-key bi-sm"></i></span>
-            Certificate Store
+            <span class="sidemenu-text">Certificate Store</span>
           </a>
         </li>
         <li>
           <ng-container *ngFor="let mfe of microfrontends">
-            <a *ngIf="mfe?.displayName" routerLinkActive="is-active" [routerLink]="mfe.routePath">
+            <a class="sidemenu-link" *ngIf="mfe?.displayName" routerLinkActive="is-active" [routerLink]="mfe.routePath">
               <span *ngIf="mfe.displayName === 'ML Models'"><i class="bi bi-bucket bi-sm"></i></span>
-              {{mfe.displayName}}</a>
+              <span class="sidemenu-text">{{mfe.displayName}}</span></a>
           </ng-container>
         </li>
         <li *ngIf="rolesService.hasAdminPermissionsOrAnonymousAllowed()">
-          <a id="backup-restore" routerLinkActive="is-active" routerLink='/backup-restore'>
+          <a class="sidemenu-link" id="backup-restore" routerLinkActive="is-active" routerLink='/backup-restore'>
             <span><i class="bi bi-database-gear bi-sm"></i></span>
-            Backup &amp; Restore
+            <span class="sidemenu-text">Backup &amp; Restore</span>
           </a>
         </li>
         <li>
-          <a type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
+          <a class="sidemenu-link" type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
             (click)="isLogsListOpen = !isLogsListOpen; $event.stopPropagation()">
             <span><i class="bi bi-file-earmark-text bi-sm mr-1"></i></span>
-            <span>Logs</span>
-            <span class="icon is-small menu-toogle-icon is-pulled-right"
+            <span class="sidemenu-text">Logs</span>
+            <span class="icon is-small menu-toogle-icon" [ngClass]="{'is-pulled-right':  !isSidemenuCollapsed }"
               [title]="isLogsListOpen ? 'Collapse' : 'Expand'">
               <i [ngClass]="isLogsListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
-                aria-hidden="true"></i>
+                class="toggle-submenu-dropdown" aria-hidden="true"></i>
             </span>
           </a>
           <div [hidden]="!isLogsListOpen">
             <ul>
               <li>
-                <a id="audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>
+                <a class="submenu-text" id="audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>
               </li>
               <li>
-                <a id="notification-log" routerLinkActive="is-active" routerLink='logs/notifications'>Notifications</a>
+                <a class="submenu-text" id="notification-log" routerLinkActive="is-active"
+                  routerLink='logs/notifications'>Notifications</a>
               </li>
               <li>
-                <a id="packages" routerLinkActive="is-active" routerLink='logs/packages'>Packages</a>
+                <a class="submenu-text" id="packages" routerLinkActive="is-active"
+                  routerLink='logs/packages'>Packages</a>
               </li>
               <li>
-                <a id="syslog" routerLinkActive="is-active" routerLink='logs/syslog'>System</a>
+                <a class="submenu-text" id="syslog" routerLinkActive="is-active" routerLink='logs/syslog'>System</a>
               </li>
               <li>
-                <a id="tasks" routerLinkActive="is-active" routerLink='logs/tasks'>Tasks</a>
+                <a class="submenu-text" id="tasks" routerLinkActive="is-active" routerLink='logs/tasks'>Tasks</a>
               </li>
             </ul>
           </div>
         </li>
         <li *ngIf="isAdmin">
-          <a id="user-management" routerLinkActive="is-active" routerLink='/user-management'>
+          <a class="sidemenu-link" id="user-management" routerLinkActive="is-active" routerLink='/user-management'>
             <span><i class="bi bi-people bi-sm"></i></span>
-            User Management
+            <span class="sidemenu-text">User Management</span>
           </a>
         </li>
         <li *ngIf="rolesService.hasAdminPermissionsOrAnonymousAllowed()">
-          <a id="support" routerLinkActive="is-active" routerLink='/support'>
+          <a class="sidemenu-link" id="support" routerLinkActive="is-active" routerLink='/support'>
             <span><i class="bi bi-file-medical bi-sm"></i></span>
-            Support
+            <span class="sidemenu-text">Support</span>
           </a>
         </li>
         <li>
-          <a id="developer" routerLinkActive="is-active" routerLink='/developer/options'
+          <a class="sidemenu-link" id="developer" routerLinkActive="is-active" routerLink='/developer/options'
             *ngIf="developerFeaturesService.getDeveloperFeatureControl() &&  rolesService.hasEditPermissions()">
             <span><i class="bi bi-code-slash bi-sm"></i></span>
-            Developer
+            <span class="sidemenu-text">Developer</span>
           </a>
         </li>
       </article>
     </section>
     <li>
-      <a id="setting" routerLinkActive="is-active" routerLink='/setting'
+      <a class="sidemenu-link" id="setting" routerLinkActive="is-active" routerLink='/setting'
         (click)="toggleSideMenu(); $event.preventDefault()">
         <span><i class="bi bi-gear bi-sm"></i></span>
-        Settings
+        <span class="sidemenu-text">Settings</span>
       </a>
     </li>
     <li>
-      <a id="help" (click)="goToLink()" (click)="toggleSideMenu(); $event.preventDefault()">
+      <a class="sidemenu-link" id="help" (click)="goToLink()" (click)="toggleSideMenu(); $event.preventDefault()">
         <span><i class="bi bi-question-circle bi-sm"></i></span>
-        Help
+        <span class="sidemenu-text">Help</span>
       </a>
     </li>
+    <hr class="sidebar-divider d-none d-md-block">
+    <div class="has-text-centered">
+      <a type="button" (click)="toggleSidemenuState()" id="sidebarToggle">
+        <span class="icon">
+          <i [ngClass]="isSidemenuCollapsed ? 'fas fa-circle-chevron-right' : 'fas fa-circle-chevron-left'"
+            aria-hidden="true"></i>
+        </span>
+      </a>
+    </div>
   </ul>
 </aside>
