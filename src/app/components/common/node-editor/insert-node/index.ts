@@ -49,6 +49,10 @@ export function insertableNodes<S extends Schemes>(
     if (context.type == 'nodetranslated') {
       const editor = area.parentScope<NodeEditor<S>>(NodeEditor);
       const node = editor.getNode(context.data.id) as South | Filter | North;
+      const connectionEvents = {
+        click: () => { },
+        remove: () => { }
+      }
       const view = area.nodeViews.get(context.data.id);
       const cons = Array.from(area.connectionViews.entries()).map(
         ([id, view]) => [id, view.element] as const
@@ -62,10 +66,6 @@ export function insertableNodes<S extends Schemes>(
               // stop storage drag & drop
               if (["Storage", "North", "South"].includes(node.label)) {
                 return;
-              }
-              const connectionEvents = {
-                click: () => { },
-                remove: () => { }
               }
               // remove old connection while inserting new node in the connection
               removeOldConnection(connectionEvents, node, editor)

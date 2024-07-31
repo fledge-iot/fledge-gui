@@ -108,9 +108,9 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
           )
         )
       }
-      arrange.layout({
-        applier: animatedApplier
-      });
+      // arrange.layout({
+      //   applier: animatedApplier
+      // });
     }
   });
 
