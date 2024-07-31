@@ -187,6 +187,9 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   area.use(arrange);
   area.use(dock);
   area.use(history);
+  // stop dock item click event
+  dock.clickStrategy = { add() { } }
+
   if (data.source) {
     if (rolesService.hasEditPermissions()) {
       area.use(minimap);

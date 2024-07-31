@@ -15,8 +15,12 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
         // Avoid connection loop in pipeline
         const toNode = context.editor.getNode(socket.nodeId);
         const pipeline = getUpdatedFilterPipeline();
-        if (typeof pipeline == 'object' && (pipeline.includes(toNode.label))) {
-          return;
+        let exists = false;
+        if (typeof pipeline == 'object') {
+          exists = contains(toNode.label, pipeline);
+          if (exists) {
+            return;
+          }
         }
 
         context.editor.addConnection(
@@ -33,4 +37,20 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
       }
     })
   }
+}
+
+export function contains(item: any, array: any[]): boolean {
+  for (const element of array) {
+    if (Array.isArray(element)) {
+      // If the element is an array, check recursively
+      if (contains(item, element)) {
+        return true;
+      }
+    } else if (element === item) {
+      // If the element matches the item, return true
+      return true;
+    }
+  }
+  // If the item is not found, return false
+  return false;
 }
