@@ -45,7 +45,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     private configService: ConfigurationService,
     private configurationControlService: ConfigurationControlService,
     private alertService: AlertService
-    // public flowEditorService: FlowEditorService
   ) { }
 
   ngAfterViewInit() {
@@ -107,32 +106,19 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         kvlistConfig.push(this.category.config[k]);
       }
     })
+
     if (modelConfig.length > 0) {
-      modelConfig.forEach(mConfig => {
-        if (!mConfig.hasOwnProperty('value')) {
-          mConfig.value = mConfig.default;
-        }
-        this.groups.push({ category: this.category.name, group: (mConfig.group ? mConfig.group : mConfig.key), config: mConfig, type: mConfig.type, key: mConfig.key });
-      });
+      this.buildGroupOfItems(modelConfig);
     }
 
     if (listConfig.length > 0) {
-      listConfig.forEach(config => {
-        if (!config.hasOwnProperty('value')) {
-          config.value = config.default;
-        }
-        this.groups.push({ category: this.category.name, group: (config.group ? config.group : config.key), config: config, type: config.type, key: config.key });
-      });
+      this.buildGroupOfItems(listConfig);
     }
 
     if (kvlistConfig.length > 0) {
-      kvlistConfig.forEach(config => {
-        if (!config.hasOwnProperty('value')) {
-          config.value = config.default;
-        }
-        this.groups.push({ category: this.category.name, group: (config.group ? config.group : config.key), config: config, type: config.type, key: config.key });
-      });
+      this.buildGroupOfItems(kvlistConfig);
     }
+
     // merge configuration of same group
     this.groups = uniqWith(this.groups, (pre, cur) => {
       if (pre.group == cur.group) {
@@ -153,6 +139,15 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     this.getGroups();
     // set initial group
     this.selectedGroup = this.groups[0]?.group;
+  }
+
+  buildGroupOfItems(configItems) {
+    configItems?.forEach(config => {
+      if (!config.hasOwnProperty('value')) {
+        config.value = config.default;
+      }
+      this.groups.push({ category: this.category.name, group: config.key, config: config, type: config.type, key: config.key });
+    });
   }
 
   /**
