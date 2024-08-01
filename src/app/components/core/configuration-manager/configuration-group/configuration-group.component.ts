@@ -82,34 +82,37 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     let listConfig = [];
     let kvlistConfig = [];
     this.groups = [];
-    const configItems = Object.keys(this.category.config).map(k => {
-      if (this.category.config[k].type == 'bucket') {
+    const configItems = Object.keys(this.category.config)
+      // remove readonly true config items from the group
+      .filter((key: any) => (this.category.config[key].readonly !== 'true'))
+      .map(k => {
         this.category.config[k].key = k;
-        modelConfig.push(this.category.config[k]);
-      }
-      else if (this.category.config[k].type == 'list') {
-        this.category.config[k].key = k;
-        listConfig.push(this.category.config[k]);
-      }
-      else if (this.category.config[k].type == 'kvlist') {
-        this.category.config[k].key = k;
-        kvlistConfig.push(this.category.config[k]);
-      }
-      this.category.config[k].key = k;
-      return this.category.config[k];
-    }).filter(obj => !['bucket', 'list', 'kvlist'].includes(obj.type)); // remove type=bucket, type=list and type=kvlist from config array
+        return this.category.config[k];
+      }).filter(obj => !['bucket', 'list', 'kvlist'].includes(obj.type)); // remove type=bucket, type=list and type=kvlist from config array
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
       const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic";
       return { category: this.category.name, group: g, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })), type: g }
     }).value();
 
+    Object.keys(this.category.config).map(k => {
+      this.category.config[k].key = k;
+      if (this.category.config[k].type == 'bucket') {
+        modelConfig.push(this.category.config[k]);
+      }
+      else if (this.category.config[k].type == 'list') {
+        listConfig.push(this.category.config[k]);
+      }
+      else if (this.category.config[k].type == 'kvlist') {
+        kvlistConfig.push(this.category.config[k]);
+      }
+    })
     if (modelConfig.length > 0) {
       modelConfig.forEach(mConfig => {
         if (!mConfig.hasOwnProperty('value')) {
           mConfig.value = mConfig.default;
         }
-        this.groups.push({ category: this.category.name, group: (mConfig.displayName ? mConfig.displayName : mConfig.description), config: mConfig, type: mConfig.type, key: mConfig.key });
+        this.groups.push({ category: this.category.name, group: (mConfig.group ? mConfig.group : mConfig.key), config: mConfig, type: mConfig.type, key: mConfig.key });
       });
     }
 
@@ -118,16 +121,18 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         if (!config.hasOwnProperty('value')) {
           config.value = config.default;
         }
-        this.groups.push({ category: this.category.name, group: (config.displayName ? config.displayName : config.description), config: config, type: config.type, key: config.key });
+        this.groups.push({ category: this.category.name, group: (config.group ? config.group : config.key), config: config, type: config.type, key: config.key });
       });
     }
 
-    kvlistConfig.forEach(config => {
-      if (!config.hasOwnProperty('value')) {
-        config.value = config.default;
-      }
-      this.groups.push({ category: this.category.name, group: (config.displayName ? config.displayName : config.description), config: config, type: config.type, key: config.key });
-    });
+    if (kvlistConfig.length > 0) {
+      kvlistConfig.forEach(config => {
+        if (!config.hasOwnProperty('value')) {
+          config.value = config.default;
+        }
+        this.groups.push({ category: this.category.name, group: (config.group ? config.group : config.key), config: config, type: config.type, key: config.key });
+      });
+    }
     // merge configuration of same group
     this.groups = uniqWith(this.groups, (pre, cur) => {
       if (pre.group == cur.group) {
@@ -188,8 +193,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
           const categoryChildren = data.categories?.filter(cat => (cat.key == `${this.categoryKey}Advanced`) || (cat.key == `${this.categoryKey}Security`));
           categoryChildren.forEach(cat => {
             // Set group of advance/security configuration
-            cat.group = cat?.key.includes(`${this.categoryKey}Advanced`) ? 'Advanced Configuration' :
-              (cat?.key.includes(`${this.categoryKey}Security`) ? 'Security Configuration' : cat?.displayName);
+            cat.group = cat?.key.includes(`${this.categoryKey}Advanced`) ? 'Advanced' :
+              (cat?.key.includes(`${this.categoryKey}Security`) ? 'Security' : cat?.displayName);
             // Get child category configuration
             this.getConfig(cat);
           });
