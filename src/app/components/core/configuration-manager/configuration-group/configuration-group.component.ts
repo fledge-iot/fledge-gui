@@ -128,8 +128,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
       return false;
     });
 
-
-
     // sort group items having default configuration as first element
     this.groups = this.groups
       .sort((a, b) => a.group.name.localeCompare(b.group.name))
@@ -142,7 +140,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     this.getGroups();
     // set initial group
     this.selectedGroup = this.groups[0]?.group;
-    console.log('groups', this.groups);
   }
 
   buildGroupOfItems(configItems) {
