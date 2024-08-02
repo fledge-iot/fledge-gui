@@ -24,7 +24,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
   @ViewChild(TabNavigationComponent) tabNavigationComponent: TabNavigationComponent;
 
-  selectedGroup = 'Basic';
+  selectedGroup = { key: 'Basic', name: 'Basic' };
   groups = [];
   tabs: TabHeader;
 
@@ -91,7 +91,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
       const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic";
-      return { category: this.category.name, group: g, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })), type: g }
+      return { category: this.category.name, group: { key: g, name: g }, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })), type: g }
     }).value();
 
     Object.keys(this.category.config).map(k => {
@@ -121,24 +121,28 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
     // merge configuration of same group
     this.groups = uniqWith(this.groups, (pre, cur) => {
-      if (pre.group == cur.group) {
+      if (pre.group.key == cur.group.key) {
         cur.config = { ...cur.config, ...pre.config };
         return true;
       }
       return false;
     });
 
+
+
     // sort group items having default configuration as first element
     this.groups = this.groups
-      .sort((a, b) => a.group.localeCompare(b.group))
+      .sort((a, b) => a.group.name.localeCompare(b.group.name))
       .reduce((acc, e) => {
-        e.group === 'Basic' ? acc.unshift(e) : acc.push(e);
+        e.group.key === 'Basic' ? acc.unshift(e) : acc.push(e);
         return acc;
       }, []);
+
 
     this.getGroups();
     // set initial group
     this.selectedGroup = this.groups[0]?.group;
+    console.log('groups', this.groups);
   }
 
   buildGroupOfItems(configItems) {
@@ -146,7 +150,13 @@ export class ConfigurationGroupComponent implements AfterViewInit {
       if (!config.hasOwnProperty('value')) {
         config.value = config.default;
       }
-      this.groups.push({ category: this.category.name, group: config.key, config: config, type: config.type, key: config.key });
+      let isGroupNameExist = this.groups.some(obj => Object.values(obj.group).includes(config.displayName ? config.displayName : config.key));
+      let group = { key: config.key, name: config.displayName ? config.displayName : config.key };
+      if (isGroupNameExist) {
+        group = { key: config.key, name: config.key }
+      }
+
+      this.groups.push({ category: this.category.name, group, config: config, type: config.type, key: config.key });
     });
   }
 
@@ -154,12 +164,12 @@ export class ConfigurationGroupComponent implements AfterViewInit {
    * Set tab in the group
    * @param tab tab index
    */
-  selectTab(tab: string) {
-    if (tab !== this.selectedGroup) {
+  selectTab(tab) {
+    if (tab.key !== this.selectedGroup.key) {
       this.selectedGroup = tab;
     }
     if (this.tabNavigationComponent) {
-      const tabIndex = this.groupTabs.findIndex(t => t === this.selectedGroup);
+      const tabIndex = this.groupTabs.findIndex(t => t.key === this.selectedGroup.key);
       this.tabNavigationComponent.setTab(tabIndex);
     }
   }
@@ -167,7 +177,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   getGroups() {
     this.groupTabs = [...this.groups.map(g => g.group), ...this.dynamicCategoriesGroup.map(g => g.group),];
     if (this.developerFeaturesService.getDeveloperFeatureControl() && this.pages.includes(this.from)) {
-      this.groupTabs.push('Developer');
+      this.groupTabs.push({ key: 'Developer', name: 'Developer' });
     }
   }
 
@@ -188,8 +198,11 @@ export class ConfigurationGroupComponent implements AfterViewInit {
           const categoryChildren = data.categories?.filter(cat => (cat.key == `${this.categoryKey}Advanced`) || (cat.key == `${this.categoryKey}Security`));
           categoryChildren.forEach(cat => {
             // Set group of advance/security configuration
-            cat.group = cat?.key.includes(`${this.categoryKey}Advanced`) ? 'Advanced' :
-              (cat?.key.includes(`${this.categoryKey}Security`) ? 'Security' : cat?.displayName);
+            cat.group = {
+              key: cat.key,
+              name: cat?.key.includes(`${this.categoryKey}Advanced`) ? 'Advanced' :
+                (cat?.key.includes(`${this.categoryKey}Security`) ? 'Security' : cat?.displayName)
+            };
             // Get child category configuration
             this.getConfig(cat);
           });
@@ -203,6 +216,10 @@ export class ConfigurationGroupComponent implements AfterViewInit {
           }
         }
       );
+  }
+
+  developerTabStatus(tabs: any) {
+    return !tabs.some(d => (d.key == 'Developer'))
   }
 
   /**
@@ -288,10 +305,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     else {
       dynamicGroups.push(config);
     }
-
-    dynamicGroups = dynamicGroups.sort((a, b) => a.group.localeCompare(b.group))
+    dynamicGroups = dynamicGroups.sort((a, b) => a.group.key.localeCompare(b.group.key))
       .reduce((acc, e) => {
-        e.group === 'Basic' ? acc.unshift(e) : acc.push(e);
+        e.group.key === 'Basic' ? acc.unshift(e) : acc.push(e);
         return acc;
       }, []);
 
@@ -304,9 +320,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
   formStatus(formState: any) {
     // find the object of changed form from groups array
-    let groupObject = this.groups.find((g: any) => g.group === formState.group);
+    let groupObject = this.groups.find((g: any) => g.group.key === formState.group.key);
     if (!groupObject) {
-      groupObject = this.dynamicCategoriesGroup.find((g: any) => g.group === formState.group)
+      groupObject = this.dynamicCategoriesGroup.find((g: any) => g.group.key === formState.group.key)
     }
     // Set the status of respected tab
     if (groupObject) {
