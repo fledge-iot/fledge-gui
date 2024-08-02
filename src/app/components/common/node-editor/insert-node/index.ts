@@ -41,38 +41,47 @@ type Props<S extends Schemes> = {
 };
 
 
+export const connectionEvents = {
+  click: () => { },
+  remove: () => { }
+}
+
 export function insertableNodes<S extends Schemes>(
   area: AreaPlugin<S, any>,
   props: Props<S>
 ) {
   area.addPipe(async (context) => {
-    if (context.type == 'nodetranslated') {
+    if (!(context && typeof context === 'object' && 'type' in context)) return context
+
+    if (context.type == 'nodedragged' || (context.type === 'rendered' && context.data?.payload?.label == 'Filter' && ['node', 'connection'].includes(context.data.type))) {
+      console.log(context.data);
+      const id = context.type === 'rendered' ? context.data.payload.id : context.data.id;
+      console.log(id);
+
+
       const editor = area.parentScope<NodeEditor<S>>(NodeEditor);
-      const node = editor.getNode(context.data.id) as South | Filter | North;
-      const connectionEvents = {
-        click: () => { },
-        remove: () => { }
-      }
-      const view = area.nodeViews.get(context.data.id);
+      const node = editor.getNode(id) as South | Filter | North;
+
+      const view = area.nodeViews.get(id);
       const cons = Array.from(area.connectionViews.entries()).map(
         ([id, view]) => [id, view.element] as const
       );
       if (view) {
         const id = checkIntersection(view.position, node, cons);
         if (id) {
-          setTimeout(async () => {
-            const exist = editor.getConnection(id);
-            if (exist && exist.source !== node.id && exist.target !== node.id) {
-              // stop storage drag & drop
-              if (["Storage", "North", "South"].includes(node.label)) {
-                return;
-              }
-              // remove old connection while inserting new node in the connection
-              removeOldConnection(connectionEvents, node, editor)
-              await editor.removeConnection(id);
-              await props.createConnections(node, exist);
+          //  setTimeout(async () => {
+          const exist = editor.getConnection(id);
+          if (exist && exist.source !== node.id && exist.target !== node.id) {
+            // stop storage drag & drop
+            if (["Storage", "North", "South"].includes(node.label)) {
+              return;
             }
-          }, 0);
+            // remove old connection while inserting new node in the connection
+            removeOldConnection(node, editor)
+            await editor.removeConnection(id);
+            await props.createConnections(node, exist);
+          }
+          //   }, 0);
         }
       }
     }
@@ -80,7 +89,7 @@ export function insertableNodes<S extends Schemes>(
   });
 }
 
-async function removeOldConnection(connectionEvents, node, editor) {
+async function removeOldConnection(node, editor) {
   let connections = await editor.getConnections();
   let source;
   let target = [];
