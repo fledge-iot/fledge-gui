@@ -154,8 +154,8 @@
 <app-confirmation-dialog id="delete-service-dialog" *ngIf="rolesService.hasEditPermissions()">
   <header class="modal-card-head">
     <span class="modal-card-title is-size-6">
-      {{ task && task?.execution == "task" ? "Delete Task": (from === 'notifications' ? 'Delete Instance' : 'Delete
-      Service')}}
+      {{ task && task?.execution == "task" ? "Delete Task": (from === 'notifications'
+      ? 'Delete Instance' : 'Delete Service')}}
     </span>
     <button class="delete" aria-label="close" (click)="closeModal('delete-service-dialog')"></button>
   </header>

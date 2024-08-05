@@ -160,23 +160,17 @@ export class NodeEditorComponent implements OnInit {
 
   @HostListener('document:keydown', ['$event'])
   onKeydownHandler(event) {
-    if((event.ctrlKey || event.metaKey) && event.keyCode == 90){
+    if ((event.ctrlKey || event.metaKey) && event.keyCode == 90) {
       undoAction();
     }
-    if((event.ctrlKey || event.metaKey) && event.keyCode == 89){
+    if ((event.ctrlKey || event.metaKey) && event.keyCode == 89) {
       redoAction();
     }
-    if(event.key === 'Delete'){
+    if (event.key === 'Delete') {
       this.deleteSelectedConnection();
     }
   }
 
-  @HostListener('click')
-  onClick() {
-    if (this.rolesService.hasEditPermissions()) {
-      this.flowEditorService.canvasClick.next({ canvasClicked: true, connectionId: this.selectedConnectionId });
-    }
-  }
   ngOnInit(): void {
     this.logsSubscription = this.flowEditorService.showLogsInQuickview.subscribe(data => {
       this.showLogs = data.showLogs ? true : false;
@@ -273,7 +267,7 @@ export class NodeEditorComponent implements OnInit {
       this.getAssetReadings(service);
     });
 
-    this.nodeClickSubscription = this.flowEditorService.nodeClick.pipe(skip(1)).subscribe(data =>{
+    this.nodeClickSubscription = this.flowEditorService.nodeClick.pipe(skip(1)).subscribe(data => {
       this.moveNodeToFront(data.nodeId);
     })
 

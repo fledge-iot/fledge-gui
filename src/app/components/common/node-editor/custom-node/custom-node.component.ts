@@ -195,7 +195,7 @@ export class CustomNodeComponent implements OnChanges {
         }
       }
     }
-    
+
     const labels = ['AddService', 'AddTask'];
     if (labels.includes(this.data.label)) {
       this.data.label = "";
@@ -367,21 +367,21 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   getAssetReadings() {
-    this.flowEditorService.exportReading.next({serviceName: this.service.name});
+    this.flowEditorService.exportReading.next({ serviceName: this.service.name });
   }
 
   openDropdown() {
     this.timeoutId = setTimeout(() => {
-      this.flowEditorService.nodeClick.next({nodeId: this.nodeId});
-      const dropDown = document.querySelector('#nodeDropdown-'+this.nodeId);
+      this.flowEditorService.nodeClick.next({ nodeId: this.nodeId });
+      const dropDown = document.querySelector('#nodeDropdown-' + this.nodeId);
       dropDown.classList.add('is-active');
     }, 250);
   }
 
-  closeDropdown(){
+  closeDropdown() {
     clearTimeout(this.timeoutId);
-    const dropDown = document.querySelector('#nodeDropdown-'+this.nodeId);
-    if(dropDown.classList.contains('is-active')){
+    const dropDown = document.querySelector('#nodeDropdown-' + this.nodeId);
+    if (dropDown.classList.contains('is-active')) {
       dropDown.classList.remove('is-active');
     }
   }
