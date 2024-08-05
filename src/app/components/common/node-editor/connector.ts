@@ -39,8 +39,9 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
   }
 }
 
-export function contains(item: any, array: any[]): boolean {
-  for (const element of array) {
+export function contains(item: any, pipeliine: any[]): boolean {
+  // check element in filter pipeline
+  for (const element of pipeliine) {
     if (Array.isArray(element)) {
       // If the element is an array, check recursively
       if (contains(item, element)) {
