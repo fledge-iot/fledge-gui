@@ -30,7 +30,7 @@
               </h6>
             </li>
             <ng-container *ngIf="!['notifications', 'additional-services'].includes(from)">
-              <li [ngClass]="{'is-active': selectedGroup.key == 'Developer'}"
+              <li [ngClass]="{'is-active': selectedGroup?.key == 'Developer'}"
                 *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissionsOnPage(from)">
                 <h6 class="is-6 is-small-font">
                   <a (click)="selectTab({key: 'Developer', name: 'Developer'})">Developer</a>
