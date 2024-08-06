@@ -54,7 +54,7 @@
             </div>
           </a>
           <div [hidden]="!isControlListOpen">
-            <ul>
+            <ul [ngClass]="{'pl-0':  isSidemenuCollapsed }">
               <li>
                 <a class="submenu-text" id="acl" routerLinkActive="is-active" routerLink='control-dispatcher/acl'>
                   ACLs
@@ -121,7 +121,7 @@
             </span>
           </a>
           <div [hidden]="!isLogsListOpen">
-            <ul>
+            <ul [ngClass]="{'pl-0':  isSidemenuCollapsed }">
               <li>
                 <a class="submenu-text" id="audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>
               </li>
@@ -154,12 +154,43 @@
             <span class="sidemenu-text">Support</span>
           </a>
         </li>
-        <li>
+        <!-- <li>
           <a class="sidemenu-link" id="developer" routerLinkActive="is-active" routerLink='/developer/options'
             *ngIf="developerFeaturesService.getDeveloperFeatureControl() &&  rolesService.hasEditPermissions()">
             <span><i class="bi bi-code-slash bi-sm"></i></span>
             <span class="sidemenu-text">Developer</span>
           </a>
+        </li> -->
+        <li class="is-relative">
+          <a class="sidemenu-link" type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="developer"
+            (click)="isDeveloperListOpen = !isDeveloperListOpen; $event.stopPropagation()">
+            <span><i class="bi bi-file-earmark-text bi-sm mr-1"></i></span>
+            <span class="sidemenu-text">Developer</span>
+            <span class="icon is-small menu-toogle-icon" [ngClass]="{'is-pulled-right':  !isSidemenuCollapsed }"
+              [title]="isDeveloperListOpen ? 'Collapse' : 'Expand'">
+              <i [ngClass]="isDeveloperListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
+                class="toggle-submenu-dropdown" aria-hidden="true"></i>
+            </span>
+          </a>
+          <div class="submenu-div" [hidden]="!isDeveloperListOpen">
+            <ul class="submenu-list" [ngClass]="{'pl-0':  isSidemenuCollapsed }">
+              <li>
+                <a class="submenu-text" id="python-packages" routerLinkActive="is-active"
+                  routerLink='/developer/options/python/package/list'>Manage Python
+                  Packages</a>
+              </li>
+              <li>
+                <a class="submenu-text" id="additional-services" routerLinkActive="is-active"
+                  routerLink='/developer/options/additional-services'>Additional Services
+                </a>
+              </li>
+              <!-- <li>
+                <a class="submenu-text" id="additional-services" routerLinkActive="is-active"
+                  routerLink='/developer/perfmon'>Performance Monitors
+                </a>
+              </li> -->
+            </ul>
+          </div>
         </li>
       </article>
     </section>

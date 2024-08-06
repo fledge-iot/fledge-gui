@@ -92,3 +92,22 @@ svg#control-dispatch {
 #sidemenu.collapsed .toggle-submenu-dropdown {
   font-size: 0.5rem;
 }
+
+#sidemenu.collapsed .submenu-div {
+  position: absolute;
+  left: calc(6.5rem + 1.5rem / 2);
+  z-index: 1;
+  top: 2px;
+  animation-name: growIn;
+  animation-duration: .2s;
+  margin: 0;
+}
+
+#sidemenu.collapsed .submenu-list {
+  padding: 0.5rem 0;
+  min-width: 10rem;
+  font-size: 0.85rem;
+  margin: 0 0 1rem 0;
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  border-radius: 0.35rem;
+}

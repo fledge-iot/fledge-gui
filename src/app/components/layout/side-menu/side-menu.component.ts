@@ -24,6 +24,7 @@ export class SideMenuComponent implements OnInit {
 
   isLogsListOpen = false;
   isControlListOpen = false;
+  isDeveloperListOpen = false;
   isAdmin = false;
   isServiceRunning = true;
   private destroySubject: Subject<void> = new Subject();
