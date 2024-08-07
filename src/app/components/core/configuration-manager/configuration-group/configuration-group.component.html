@@ -1,5 +1,6 @@
 <div class="container" [ngClass]="{'is-fluid': sourceName}">
-  <nav *ngIf="sourceName && from !== 'rule-modal' && from !== 'delivery-modal'" class="breadcrumb" aria-label="breadcrumbs">
+  <nav *ngIf="sourceName && from !== 'rule-modal' && from !== 'delivery-modal'" class="breadcrumb"
+    aria-label="breadcrumbs">
     <ul>
       <li class="is-active"><a>{{sourceName}}</a></li>
       <li class="is-active">
@@ -11,28 +12,33 @@
     <nav id="group_navigation" class="groupNav dragscroll mouse-scroll" role="tablist">
       <div id="groupNavContents" class="nav" [ngClass]="{'groupNav_contents': !sourceName}">
         <div class="tabs" *ngIf="from !== 'config-manager'"
-          [ngClass]="{'is-fullwidth': sourceName && groupTabs?.length > 1 && from !== 'notifications' && !groupTabs.includes('Developer'), 'is-boxed': !sourceName}">
+          [ngClass]="{'is-fullwidth': sourceName && groupTabs?.length > 1 && from !== 'notifications' && developerTabState(groupTabs), 'is-boxed': !sourceName}">
           <ul>
-            <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup == g.group}">
+            <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup.key == g.group.key}">
               <h6 class="is-6 is-small-font">
                 <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false}">
-                  {{g.group}}
+                  <span class="info_icon_hover">
+                    {{g.group.name}}
+                    <i *ngIf="g.group?.description" class="bi bi-xs bi-info-circle info-icon" aria-hidden="true"
+                      [title]="g.group?.description"></i>
+                  </span>
                 </a>
+
               </h6>
             </li>
             <!-- Advanced and security group -->
-            <li *ngFor="let g of dynamicCategoriesGroup" [ngClass]="{'is-active': selectedGroup == g.group}">
+            <li *ngFor="let g of dynamicCategoriesGroup" [ngClass]="{'is-active': selectedGroup.key == g.group.key}">
               <h6 class="is-6 is-small-font">
                 <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false}">
-                  {{g.group}}
+                  {{g.group.name}}
                 </a>
               </h6>
             </li>
             <ng-container *ngIf="!['notifications', 'additional-services'].includes(from)">
-              <li [ngClass]="{'is-active': selectedGroup == 'Developer'}"
+              <li [ngClass]="{'is-active': selectedGroup?.key == 'Developer'}"
                 *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissionsOnPage(from)">
                 <h6 class="is-6 is-small-font">
-                  <a (click)="selectTab('Developer')">Developer</a>
+                  <a (click)="selectTab({key: 'Developer', name: 'Developer'})">Developer</a>
                 </h6>
               </li>
             </ng-container>
@@ -72,65 +78,67 @@
               <div class="card-content is-hidden" id="card-content-{{i}}">
                 <div class="content">
                   <app-bucket-configuration *ngIf="g.type == 'bucket'" [dataModel]="g.config"
-                    (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)" [from]="from"
-                    [group]="g.group"></app-bucket-configuration>
-        
+                    (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)"
+                    [from]="from" [group]="g.group.key"></app-bucket-configuration>
+
                   <app-list-type-configuration *ngIf="g?.type == 'list'" [configuration]="g.config"
-                    [group]="g.group" [from]="from" (changedConfig)="getChangedConfiguration($event)"
+                    [group]="g.group.key" [from]="from" (changedConfig)="getChangedConfiguration($event)"
                     (formStatusEvent)="formStatus($event)"></app-list-type-configuration>
-                  
-                  <app-kv-list-type-configuration *ngIf="g?.type == 'kvlist'"
-                    [configuration]="g.config" [group]="g.group" [from]="from" (changedConfig)="getChangedConfiguration($event)"
+
+                  <app-kv-list-type-configuration *ngIf="g?.type == 'kvlist'" [configuration]="g.config"
+                    [group]="g.group.key" [from]="from" (changedConfig)="getChangedConfiguration($event)"
                     (formStatusEvent)="formStatus($event)"></app-kv-list-type-configuration>
                 </div>
               </div>
             </div>
           </ng-container>
           <ng-template #showConfigTemplate>
-            <app-show-configuration *ngIf="!['bucket', 'list', 'kvlist'].includes(g?.type)" 
-              [groupConfiguration]="g.config" [group]="g.group"
-              [from]="from" [selectedGroup]="selectedGroup" [fullConfiguration]="category.config"
-              (event)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)"></app-show-configuration>
+            <app-show-configuration *ngIf="!['bucket', 'list', 'kvlist'].includes(g?.type)"
+              [groupConfiguration]="g.config" [group]="g.group.key" [from]="from" [selectedGroup]="selectedGroup.key"
+              [fullConfiguration]="category.config" (event)="getChangedConfiguration($event)"
+              (formStatusEvent)="formStatus($event)"></app-show-configuration>
           </ng-template>
         </ng-container>
         <ng-template #showGroup>
-          <app-bucket-configuration *ngIf="g.type == 'bucket' && selectedGroup == g.group" [dataModel]="g.config"
-            (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)" [from]="from"
-            [group]="g.group"></app-bucket-configuration>
+          <app-bucket-configuration *ngIf="g.type == 'bucket' && selectedGroup.key == g.group.key"
+            [dataModel]="g.config" (changedConfig)="getChangedConfiguration($event)"
+            (formStatusEvent)="formStatus($event)" [from]="from" [group]="g.group.key"></app-bucket-configuration>
 
-          <app-list-type-configuration *ngIf="g?.type == 'list'" [hidden]="selectedGroup !== g.group" [configuration]="g.config"
-           [group]="g.group" [from]="from" (changedConfig)="getChangedConfiguration($event)"
+          <app-list-type-configuration *ngIf="g?.type == 'list'" [hidden]="selectedGroup.key !== g.group.key"
+            [configuration]="g.config" [group]="g.group.key" [from]="from"
+            (changedConfig)="getChangedConfiguration($event)"
             (formStatusEvent)="formStatus($event)"></app-list-type-configuration>
 
-          <app-kv-list-type-configuration *ngIf="g?.type == 'kvlist'" [hidden]="selectedGroup !== g.group" [configuration]="g.config"
-           [group]="g.group" [from]="from" (changedConfig)="getChangedConfiguration($event)"
+          <app-kv-list-type-configuration *ngIf="g?.type == 'kvlist'" [hidden]="selectedGroup.key !== g.group.key"
+            [configuration]="g.config" [group]="g.group.key" [from]="from"
+            (changedConfig)="getChangedConfiguration($event)"
             (formStatusEvent)="formStatus($event)"></app-kv-list-type-configuration>
-            
-          <app-show-configuration *ngIf="!['bucket', 'list', 'kvlist'].includes(g?.type)" [hidden]="selectedGroup !== g.group"
-            [groupConfiguration]="g.config" [group]="g.group" [from]="from" [selectedGroup]="selectedGroup"
-            [fullConfiguration]="category.config" (event)="getChangedConfiguration($event)"
-            (formStatusEvent)="formStatus($event)"></app-show-configuration>
+
+          <app-show-configuration *ngIf="!['bucket', 'list', 'kvlist'].includes(g?.type)"
+            [hidden]="selectedGroup.key !== g.group.key" [groupConfiguration]="g.config" [group]="g.group.key"
+            [from]="from" [selectedGroup]="selectedGroup.key" [fullConfiguration]="category.config"
+            (event)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)"></app-show-configuration>
         </ng-template>
       </ng-container>
       <!-- Advanced and security group configuration -->
       <ng-container *ngFor="let g of dynamicCategoriesGroup">
         <ng-container *ngIf="g.category == category?.name+'Advanced'; else SecurityGroup">
-          <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config" [group]="g.group"
-            [selectedGroup]="selectedGroup" [fullConfiguration]="g.config" [from]="from"
+          <app-show-configuration [hidden]="selectedGroup.key !== g.group.key" [groupConfiguration]="g.config"
+            [group]="g.group.key" [selectedGroup]="selectedGroup.key" [fullConfiguration]="g.config" [from]="from"
             (event)="getChangedAdvanceConfiguration($event)"
             (formStatusEvent)="formStatus($event)"></app-show-configuration>
         </ng-container>
         <ng-template #SecurityGroup>
           <ng-container *ngIf="g.category == category?.name+'Security'; else pluginGroup">
-            <app-show-configuration [hidden]="selectedGroup !== g.group" [groupConfiguration]="g.config"
-              [group]="g.group" [selectedGroup]="selectedGroup" [fullConfiguration]="g.config" [from]="from"
+            <app-show-configuration [hidden]="selectedGroup.key !== g.group.key" [groupConfiguration]="g.config"
+              [group]="g.group.key" [selectedGroup]="selectedGroup.key" [fullConfiguration]="g.config" [from]="from"
               (event)="getChangedSecurityConfiguration($event)"
               (formStatusEvent)="formStatus($event)"></app-show-configuration>
           </ng-container>
         </ng-template>
       </ng-container>
       <ng-container *ngIf="!['notifications', 'additional-services'].includes(from)">
-        <app-plugin-persist-data *ngIf="selectedGroup == 'Developer' && pages.includes(from)"
+        <app-plugin-persist-data *ngIf="selectedGroup.key == 'Developer' && pages.includes(from)"
           [serviceStaus]="serviceStatus" [serviceName]="category?.name" [pluginName]="plugin">
         </app-plugin-persist-data>
       </ng-container>
