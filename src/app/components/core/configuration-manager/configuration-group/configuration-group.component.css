@@ -120,3 +120,11 @@
 .custom-width {
   width: 94%;
 }
+
+.info_icon_hover i {
+  visibility: hidden;
+}
+
+.info_icon_hover:hover i {
+  visibility: visible;
+}

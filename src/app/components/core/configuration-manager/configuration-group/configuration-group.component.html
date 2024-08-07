@@ -12,13 +12,18 @@
     <nav id="group_navigation" class="groupNav dragscroll mouse-scroll" role="tablist">
       <div id="groupNavContents" class="nav" [ngClass]="{'groupNav_contents': !sourceName}">
         <div class="tabs" *ngIf="from !== 'config-manager'"
-          [ngClass]="{'is-fullwidth': sourceName && groupTabs?.length > 1 && from !== 'notifications' && developerTabStatus(groupTabs), 'is-boxed': !sourceName}">
+          [ngClass]="{'is-fullwidth': sourceName && groupTabs?.length > 1 && from !== 'notifications' && developerTabState(groupTabs), 'is-boxed': !sourceName}">
           <ul>
             <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup.key == g.group.key}">
               <h6 class="is-6 is-small-font">
                 <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false}">
-                  {{g.group.name}}
+                  <span class="info_icon_hover">
+                    {{g.group.name}}
+                    <i *ngIf="g.group?.description" class="bi bi-xs bi-info-circle info-icon" aria-hidden="true"
+                      [title]="g.group?.description"></i>
+                  </span>
                 </a>
+
               </h6>
             </li>
             <!-- Advanced and security group -->
