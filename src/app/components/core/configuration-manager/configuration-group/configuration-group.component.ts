@@ -130,8 +130,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
     // sort group items having default configuration as first element
     this.groups = this.groups
-      .sort((a, b) => a.group.name.localeCompare(b.group.name))
-      .reduce((acc, e) => {
+      .sort((a, b) => {
+        return ((+a?.order) - (+b?.order)) || a.group.name.localeCompare(b.group.name)
+      }).reduce((acc, e) => {
         e.group.key === 'Basic' ? acc.unshift(e) : acc.push(e);
         return acc;
       }, []);
@@ -140,6 +141,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     this.getGroups();
     // set initial group
     this.selectedGroup = this.groups[0]?.group;
+    console.log(this.groups);
   }
 
   buildGroupOfItems(configItems) {
@@ -154,8 +156,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         group = { key: config.key, name: config.key, description: config.description }
       }
 
-      this.groups.push({ category: this.category.name, group, config: config, type: config.type, key: config.key });
+      this.groups.push({ category: this.category.name, group, config: config, type: config.type, key: config.key, ...(config.order && { order: config.order }) });
     });
+
   }
 
   /**

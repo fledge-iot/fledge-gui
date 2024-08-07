@@ -78,11 +78,8 @@
                 (formStatusEvent)="formStatus($event)" [from]="from" [group]="group"></app-show-configuration>
             </div>
           </ng-template>
-          <div class="column is-1 pl-2 pt-2 has-text-right"
-            *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
-            <span class="icon">
-              <button class="delete is-small" (click)="removeListItem(i)"></button>
-            </span>
+          <div class="column is-1 my-2" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
+            <button class="delete is-small" (click)="removeListItem(i)"></button>
           </div>
         </div>
         <div>

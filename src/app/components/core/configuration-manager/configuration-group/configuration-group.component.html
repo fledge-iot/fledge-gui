@@ -67,7 +67,7 @@
             <div class="card mb-2 card-shadow ml-1 custom-width">
               <header class="card-header has-background-white card-header-shadow">
                 <div class="card-header-title">
-                  <p class="subtitle is-6">{{g.key}}</p>
+                  <p class="subtitle is-6" [title]="g.group.description">{{g.group.name ? g.group.name : g.key }}</p>
                 </div>
                 <button class="card-header-icon" (click)="toggleCard(i)">
                   <span class="icon is-small toogle-icon" id="card-span-{{i}}" title="'Expand'">
