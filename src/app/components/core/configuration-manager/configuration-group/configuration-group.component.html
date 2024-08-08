@@ -17,7 +17,7 @@
             <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup.key == g.group.key}">
               <h6 class="is-6 is-small-font">
                 <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false}">
-                  <span class="info_icon_hover">
+                  <span class="group-desc">
                     {{g.group.name}}
                     <i *ngIf="g.group?.description" class="bi bi-xs bi-info-circle info-icon" aria-hidden="true"
                       [title]="g.group?.description"></i>
@@ -67,7 +67,14 @@
             <div class="card mb-2 card-shadow ml-1 custom-width">
               <header class="card-header has-background-white card-header-shadow">
                 <div class="card-header-title">
-                  <p class="subtitle is-6" [title]="g.group.description">{{g.group.name ? g.group.name : g.key }}</p>
+                  <span class="subtitle is-6">
+                    <span [title]="g.group.description">
+                      {{g.group.name ? g.group.name : g.key}}
+                    </span>
+                    <i *ngIf="!rolesService?.hasAccessPermission(g.config?.permissions)"
+                      class="bi bi-xs bi-info-circle info-icon pull-right" aria-hidden="true"
+                      title="Insufficient privileges to modify this"></i>
+                  </span>
                 </div>
                 <button class="card-header-icon" (click)="toggleCard(i)">
                   <span class="icon is-small toogle-icon" id="card-span-{{i}}" title="'Expand'">

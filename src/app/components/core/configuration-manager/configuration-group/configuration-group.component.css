@@ -121,10 +121,10 @@
   width: 94%;
 }
 
-.info_icon_hover i {
+.group-desc i {
   visibility: hidden;
 }
 
-.info_icon_hover:hover i {
+.group-desc:hover i {
   visibility: visible;
 }

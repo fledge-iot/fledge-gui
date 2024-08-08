@@ -30,9 +30,8 @@
             </ng-container>
             <ng-template #staticView>
               <div class="column is-5">
-                <span class="help">{{kvListItems?.controls[i]?.controls['key'].value}}
-                  <i *ngIf="rolesService?.hasEditPermissions()" class="bi bi-xs bi-info-circle info-icon"
-                    aria-hidden="true" title="Insufficient privileges to modify this"></i>
+                <span class="help">
+                  {{kvListItems?.controls[i]?.controls['key'].value}}
                 </span>
               </div>
               <div class="column is-5">
@@ -47,10 +46,6 @@
                   <label class="label tooltip has-tooltip-multiline config-label has-tooltip-right has-tooltip-arrow"
                     [attr.data-tooltip]="configuration.description"
                     [ngClass]="{'is-inline-block': !rolesService.hasAccessPermission(configuration?.permissions)}">Key</label>
-                  <span class="ml-1" *ngIf="!rolesService.hasAccessPermission(configuration?.permissions)">
-                    <i class="bi bi-xs bi-info-circle info-icon" aria-hidden="true"
-                      title="Insufficient privileges to modify this"></i>
-                  </span>
                 </div>
                 <div class="field-body">
                   <div class="field">

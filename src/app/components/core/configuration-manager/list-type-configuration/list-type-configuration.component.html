@@ -15,8 +15,6 @@
             <ng-template #staticView>
               <span *ngIf="configuration.items !== 'object'" class="help">
                 {{listItems?.controls[i]?.value}}
-                <i *ngIf="rolesService?.hasEditPermissions()" class="bi bi-xs bi-info-circle info-icon"
-                  aria-hidden="true" title="Insufficient privileges to modify this"></i>
               </span>
             </ng-template>
             <ng-container *ngIf="configuration.items == 'object'">
