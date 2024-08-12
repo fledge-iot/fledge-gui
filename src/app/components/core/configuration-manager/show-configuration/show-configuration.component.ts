@@ -66,7 +66,7 @@ export class ShowConfigurationComponent implements OnInit {
                 const file = this.createScriptFile(data[k].toString(), configuration);
                 this.event.emit({ [configuration.key]: file });
               } else {
-                this.formStatusEvent.emit({ 'status': this.form.status === 'VALID' ? true : false, 'group': this.group, from: this.from });
+                this.formStatusEvent.emit({ 'status': this.form.status === 'VALID' ? true : false, 'group': this.group });
                 if (this.form.valid) {
                   this.event.emit(data);
                 }
