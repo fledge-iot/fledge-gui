@@ -11,7 +11,9 @@
       <li>
         <a class="sidemenu-link" id="asset" routerLinkActive="is-active" routerLink='/asset'>
           <span class="menu-text"><i class="bi bi-graph-up bi-xs"></i></span>
-          <span class="sidemenu-text">Assets &amp; Readings</span>
+          <span class="sidemenu-text">
+            {{isSidemenuCollapsed ? 'Readings' : 'Assets &amp; Readings'}}
+          </span>
         </a>
       </li>
       <article requiredViewEditorRole>
@@ -93,7 +95,7 @@
         <li>
           <a class="sidemenu-link" id="certificate" routerLinkActive="is-active" routerLink='/certificate'>
             <span><i class="bi bi-filetype-key bi-sm"></i></span>
-            <span class="sidemenu-text">Certificate Store</span>
+            <span class="sidemenu-text">{{isSidemenuCollapsed ? 'Certificates' : 'Certificate Store'}}</span>
           </a>
         </li>
         <li>
@@ -106,7 +108,7 @@
         <li *ngIf="rolesService.hasAdminPermissionsOrAnonymousAllowed()">
           <a class="sidemenu-link" id="backup-restore" routerLinkActive="is-active" routerLink='/backup-restore'>
             <span><i class="bi bi-database-gear bi-sm"></i></span>
-            <span class="sidemenu-text">Backup &amp; Restore</span>
+            <span class="sidemenu-text">{{isSidemenuCollapsed ? 'Backups' : 'Backup &amp; Restore'}}</span>
           </a>
         </li>
         <li>
@@ -176,7 +178,7 @@
             <ul class="submenu-list" [ngClass]="{'pl-0':  isSidemenuCollapsed }">
               <li>
                 <a class="submenu-text" id="python-packages" routerLinkActive="is-active"
-                  routerLink='/developer/options/python/package/list'>Manage Python
+                  routerLink='/developer/options/python/package/list'>Python
                   Packages</a>
               </li>
               <li>
@@ -207,8 +209,8 @@
         <span class="sidemenu-text">Help</span>
       </a>
     </li>
-    <hr class="sidebar-divider d-none d-md-block">
-    <div class="has-text-centered">
+    <hr *ngIf="viewPort !== 'mobile'" class="sidebar-divider d-none d-md-block">
+    <div *ngIf="viewPort !== 'mobile'" class="has-text-centered">
       <a type="button" (click)="toggleSidemenuState()" id="sidebarToggle">
         <span class="icon">
           <i [ngClass]="isSidemenuCollapsed ? 'fas fa-circle-chevron-right' : 'fas fa-circle-chevron-left'"
