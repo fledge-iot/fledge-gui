@@ -141,7 +141,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     this.getGroups();
     // set initial group
     this.selectedGroup = this.groups[0]?.group;
-    console.log(this.groups);
   }
 
   buildGroupOfItems(configItems) {
