@@ -23,7 +23,8 @@
                     [ngClass]="{'codemirror-field': ['CODE', 'SCRIPT', 'JSON'].includes(configuration.controlType)}">
                     <div class="column is-11 p-0">
                       <input *ngSwitchCase="'TEXT'" [formControlName]="configuration.key" [id]="configuration.key"
-                        [type]="configuration.type" class="input is-fullwidth is-small" />
+                        [type]="configuration.type" class="input is-fullwidth is-small"
+                        [maxLength]="configuration.length" />
                       <div *ngSwitchCase="'DROPDOWN'" class="select is-small">
                         <select [id]="configuration.key" [formControlName]="configuration.key">
                           <option *ngFor="let opt of configuration.options" [value]="opt">{{opt}}</option>
@@ -122,6 +123,9 @@
                       </span>
                       <span *ngIf="form?.controls[configuration.key]?.hasError('maxValue')" class="help is-danger">
                         <sup>*</sup>Value should not be greater than {{configuration.maximum}}.
+                      </span>
+                      <span *ngIf="form?.controls[configuration.key]?.hasError('maxLength')" class="help is-danger">
+                        <sup>*</sup>Length should not be more than {{configuration.length}}.
                       </span>
                     </div>
                     <ng-container *ngSwitchCase="'LIST'">
