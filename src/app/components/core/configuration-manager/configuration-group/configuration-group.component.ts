@@ -320,9 +320,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
   formStatus(formState: any) {
     // find the object of changed form from groups array
-    let groupObject = this.groups.find((g: any) => g.group.key === formState.group.key);
+    let groupObject = this.groups.find((g: any) => g.group.key === formState.group);
     if (!groupObject) {
-      groupObject = this.dynamicCategoriesGroup.find((g: any) => g.group.key === formState.group.key)
+      groupObject = this.dynamicCategoriesGroup.find((g: any) => g.group.key === formState.group)
     }
     // Set the status of respected tab
     if (groupObject) {
