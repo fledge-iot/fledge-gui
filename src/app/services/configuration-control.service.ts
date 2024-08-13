@@ -394,6 +394,7 @@ export class ConfigurationControlService {
             label: this.setDisplayName(element),
             description: element.description,
             value: element.value,
+            length: element.length,
             readonly: element.readonly,
             mandatory: element.mandatory,
             permissions: element.permissions,

@@ -826,12 +826,12 @@ export class NodeEditorComponent implements OnInit {
   }
 
   checkFormState() {
-    const noChange = isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration);
+    const noChange = !this.validConfigurationForm || isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration);
     return noChange;
   }
 
   checkFilterFormState() {
-    const noChange = isEmpty(this.changedFilterConfig);
+    const noChange = !this.validFilterConfigForm || isEmpty(this.changedFilterConfig);
     return noChange;
   }
 
