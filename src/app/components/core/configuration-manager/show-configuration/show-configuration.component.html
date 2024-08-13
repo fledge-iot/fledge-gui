@@ -125,7 +125,7 @@
                         <sup>*</sup>Value should not be greater than {{configuration.maximum}}.
                       </span>
                       <span *ngIf="form?.controls[configuration.key]?.hasError('maxLength')" class="help is-danger">
-                        <sup>*</sup>Length should not be more than {{configuration.length}}.
+                        <sup>*</sup>*Value should not be more than {{configuration.length}} characters.
                       </span>
                     </div>
                     <ng-container *ngSwitchCase="'LIST'">
