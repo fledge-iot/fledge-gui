@@ -1,7 +1,7 @@
-import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { AlertService, ConfigurationControlService, ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
-import { chain, cloneDeep, uniqWith } from 'lodash';
+import { chain, cloneDeep, uniqWith, isEmpty } from 'lodash';
 import { TabHeader } from './tab-header-slider';
 import { TabNavigationComponent } from '../tab-navigation/tab-navigation.component';
 
@@ -44,7 +44,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     public rolesService: RolesService,
     private configService: ConfigurationService,
     private configurationControlService: ConfigurationControlService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private cdrf: ChangeDetectorRef
   ) { }
 
   ngAfterViewInit() {
@@ -53,6 +54,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     window.addEventListener('resize', () => {
       this.tabs.setOverFlow();
     })
+    this.cdrf.detectChanges();
   }
 
   // left slider click
@@ -350,6 +352,20 @@ export class ConfigurationGroupComponent implements AfterViewInit {
       cardSpan.title = 'Expand';
       cardIcon.classList.remove('fa-chevron-down');
       cardIcon.classList.add('fa-chevron-right');
+    }
+  }
+
+  isEmpty(value: any, itemIndex: number) {
+    try {
+      let cardBody = document.getElementById('card-content-' + itemIndex);
+      if (cardBody) {
+        value = JSON.parse(value);
+        return isEmpty(value) && cardBody.classList.contains('is-hidden');
+      }
+    } catch (error) {
+      console.log('error', error);
+      // if any error don't show No items label
+      return false;
     }
   }
 }
