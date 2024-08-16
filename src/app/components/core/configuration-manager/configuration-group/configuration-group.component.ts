@@ -355,13 +355,18 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     }
   }
 
-  isEmpty(value: any, itemIndex: number) {
+  isCollapsed(itemIndex: number) {
+    let cardBody = document.getElementById('card-content-' + itemIndex);
+    if (cardBody) {
+      return cardBody.classList.contains('is-hidden');
+    }
+    return false;
+  }
+
+  isEmpty(value: any) {
     try {
-      let cardBody = document.getElementById('card-content-' + itemIndex);
-      if (cardBody) {
-        value = JSON.parse(value);
-        return isEmpty(value) && cardBody.classList.contains('is-hidden');
-      }
+      value = JSON.parse(value);
+      return isEmpty(value);
     } catch (error) {
       console.log('error', error);
       // if any error don't show No items label
