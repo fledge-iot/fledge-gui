@@ -459,4 +459,8 @@ span.tooltip {
   padding: 1em 0.75em !important
 }
 
+.is-size-9 {
+  font-size: 0.9rem;
+}
+
 /*****************/
