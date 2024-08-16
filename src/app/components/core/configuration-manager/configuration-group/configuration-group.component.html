@@ -71,7 +71,7 @@
                     <span [title]="g.group.description">
                       {{g.group.name ? g.group.name : g.key}}
                     </span>
-                    <i *ngIf="!rolesService?.hasAccessPermission(g.config?.permissions)"
+                    <i *ngIf="rolesService?.hasEditPermissions() && !rolesService?.hadEditPermissionsOnConfigItem(g.config?.permissions)"
                       class="bi bi-xs bi-info-circle info-icon pull-right" aria-hidden="true"
                       title="Insufficient privileges to modify this"></i>
                   </div>
