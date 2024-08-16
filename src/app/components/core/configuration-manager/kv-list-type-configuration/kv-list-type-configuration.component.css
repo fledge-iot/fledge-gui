@@ -20,3 +20,11 @@
   border-radius: 2px !important;
   box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.07), 0 0px 0 1px rgba(10, 10, 10, 0.02) !important;
 }
+
+.toogle-icon {
+  display: inline-flex;
+  height: 1.2em;
+  width: 1.2em;
+  background-color: whitesmoke;
+  border-radius: 50%;
+}

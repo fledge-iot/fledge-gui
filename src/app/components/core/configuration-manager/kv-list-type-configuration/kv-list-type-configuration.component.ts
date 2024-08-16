@@ -142,4 +142,22 @@ export class KvListTypeConfigurationComponent implements OnInit {
     }
     return valueObj;
   }
+
+  toggleCard(index) {
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
+    let cardSpan = document.getElementById('card-span-' + this.configuration.key + '-' + index);
+    let cardIcon = document.getElementById('card-icon-' + this.configuration.key + '-' + index);
+    if (cardBody.classList.contains('is-hidden')) {
+      cardBody.classList.remove('is-hidden');
+      cardSpan.title = 'Collapse';
+      cardIcon.classList.remove('fa-chevron-right');
+      cardIcon.classList.add('fa-chevron-down');
+    }
+    else {
+      cardBody.classList.add('is-hidden');
+      cardSpan.title = 'Expand';
+      cardIcon.classList.remove('fa-chevron-down');
+      cardIcon.classList.add('fa-chevron-right');
+    }
+  }
 }
