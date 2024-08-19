@@ -316,10 +316,10 @@ export class NodeEditorComponent implements OnInit {
       let isServiceExist = true;
       if (this.initialApiCallsStack.length > 0) {
         this.ngProgress.start();
-        let retries = 2; // Retries
+        let retries = 4; // Retries
         forkJoin(this.initialApiCallsStack)
           .pipe(mergeMap(res => {
-            // Retry GET tasks call 3 times when task as a service created, It takes time to populate in the GET tasks response
+            // Retry GET tasks call (retries + 1) time when task as a service created, It takes time to populate in the GET tasks response
             if (this.source && this.from == 'north') {
               const tasks = res[0]['tasks'];
               isServiceExist = tasks?.some(t => (t.name == this.source));
@@ -329,7 +329,7 @@ export class NodeEditorComponent implements OnInit {
           }),
             repeatWhen(notifications => {
               return notifications.pipe(
-                delay(1000),
+                delay(1500),
                 takeWhile(() => !isServiceExist && retries-- > 0)
               )
             }),
@@ -403,7 +403,7 @@ export class NodeEditorComponent implements OnInit {
               if (this.from !== 'notifications') {
                 createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
               }
-              // Navigate to the list page when service or task not exist
+              // Navigate to the list page when service and task not exist
               if ((!data.task && !data.service)) {
                 this.router.navigate(['/flow/editor', data.from]);
                 return;
