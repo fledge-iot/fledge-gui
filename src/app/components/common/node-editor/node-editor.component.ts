@@ -2,7 +2,7 @@ import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, Vi
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty } from 'lodash';
 import { EMPTY, Subject, Subscription, forkJoin, interval, of } from 'rxjs';
-import { catchError, delay, filter, map, mergeMap, repeat, repeatWhen, retry, retryWhen, skip, switchMap, take, takeUntil, takeWhile, tap } from 'rxjs/operators';
+import { catchError, delay, map, mergeMap, repeatWhen, skip, take, takeUntil, takeWhile } from 'rxjs/operators';
 import { DocService } from '../../../services/doc.service';
 import Utils, { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../utils';
 import { AdditionalServicesUtils } from '../../core/developer/additional-services/additional-services-utils.service';
