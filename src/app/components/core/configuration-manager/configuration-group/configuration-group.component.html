@@ -76,8 +76,13 @@
                       title="Insufficient privileges to modify this"></i>
                   </div>
                 </div>
-                <div *ngIf="isEmpty(g.config.value) && isCollapsed(i)" class="is-align-self-center">
+                <div *ngIf="!configFormValues.hasOwnProperty(g.config.key) && isEmpty(g.config.value)
+                && isCollapsed(i)" class="is-align-self-center">
                   <span class="help is-italic has-text-grey mt-0">No Items</span>
+                </div>
+                <div *ngIf="configFormValues.hasOwnProperty(g.config.key) && isCollapsed(i)"
+                  class="is-align-self-center">
+                  <span class="help is-italic has-text-grey mt-0">Pending Changes</span>
                 </div>
                 <div class="is-align-self-center">
                   <button class="card-header-icon" (click)="toggleCard(i)">
