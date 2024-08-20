@@ -11,7 +11,8 @@
       </nav>
       <div *ngIf="refreshInterval !== -1 && page === 1" class="fix-pad auto-refresh">
         <label class="checkbox" [ngClass]="{'quickview-label': sourceName}">
-          <input class="checkmark" type="checkbox" [checked]='isAlive' (click)="toggleAutoRefresh($event.target.checked)">
+          <input class="checkmark" type="checkbox" [checked]='isAlive'
+            (click)="toggleAutoRefresh($event.target.checked)">
           Auto Refresh
         </label>
       </div>
@@ -40,8 +41,9 @@
             <label class="label is-pulled-left">Service</label>
             <ng-container *ngIf="showConfigButton && sourceName==undefined">
               <button class="btn small-btn config-gear" (click)="navToInstanceConfiguration()">
-                <span class="ml-2 has-tooltip-right has-tooltip-arrow tooltip is-hovered" data-tooltip="Instance configuration details">
-                      <i class="bi bi-gear-wide-connected"></i>
+                <span class="ml-1 has-tooltip-right has-tooltip-arrow tooltip is-hovered"
+                  data-tooltip="Instance configuration details">
+                  <i class="bi bi-gear-wide-connected"></i>
                 </span>
               </button>
             </ng-container>
@@ -110,8 +112,8 @@
           </div>
           <div class="column">
             <label class="label">Search</label>
-            <input type="search" class="input is-fullwidth is-small" placeholder="search text"
-              [(ngModel)]="searchTerm" #search/>
+            <input type="search" class="input is-fullwidth is-small" placeholder="search text" [(ngModel)]="searchTerm"
+              #search />
           </div>
         </div>
       </div>

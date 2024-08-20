@@ -1,7 +1,7 @@
-import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { AlertService, ConfigurationControlService, ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
-import { chain, cloneDeep, uniqWith } from 'lodash';
+import { chain, cloneDeep, uniqWith, isEmpty } from 'lodash';
 import { TabHeader } from './tab-header-slider';
 import { TabNavigationComponent } from '../tab-navigation/tab-navigation.component';
 
@@ -44,7 +44,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     public rolesService: RolesService,
     private configService: ConfigurationService,
     private configurationControlService: ConfigurationControlService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private cdrf: ChangeDetectorRef
   ) { }
 
   ngAfterViewInit() {
@@ -53,6 +54,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     window.addEventListener('resize', () => {
       this.tabs.setOverFlow();
     })
+    this.cdrf.detectChanges();
   }
 
   // left slider click
@@ -130,8 +132,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
     // sort group items having default configuration as first element
     this.groups = this.groups
-      .sort((a, b) => a.group.name.localeCompare(b.group.name))
-      .reduce((acc, e) => {
+      .sort((a, b) => {
+        return ((+a?.order) - (+b?.order)) || a.group.name.localeCompare(b.group.name)
+      }).reduce((acc, e) => {
         e.group.key === 'Basic' ? acc.unshift(e) : acc.push(e);
         return acc;
       }, []);
@@ -154,8 +157,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         group = { key: config.key, name: config.key, description: config.description }
       }
 
-      this.groups.push({ category: this.category.name, group, config: config, type: config.type, key: config.key });
+      this.groups.push({ category: this.category.name, group, config: config, type: config.type, key: config.key, ...(config.order && { order: config.order }) });
     });
+
   }
 
   /**
@@ -348,6 +352,25 @@ export class ConfigurationGroupComponent implements AfterViewInit {
       cardSpan.title = 'Expand';
       cardIcon.classList.remove('fa-chevron-down');
       cardIcon.classList.add('fa-chevron-right');
+    }
+  }
+
+  isCollapsed(itemIndex: number) {
+    let cardBody = document.getElementById('card-content-' + itemIndex);
+    if (cardBody) {
+      return cardBody.classList.contains('is-hidden');
+    }
+    return false;
+  }
+
+  isEmpty(value: any) {
+    try {
+      value = JSON.parse(value);
+      return isEmpty(value);
+    } catch (error) {
+      console.log('error', error);
+      // if any error don't show No items label
+      return false;
     }
   }
 }
