@@ -17,7 +17,7 @@
             <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup.key == g.group.key}">
               <h6 class="is-6 is-small-font">
                 <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false}">
-                  <span class="info_icon_hover">
+                  <span class="group-desc">
                     {{g.group.name}}
                     <i *ngIf="g.group?.description" class="bi bi-xs bi-info-circle info-icon" aria-hidden="true"
                       [title]="g.group?.description"></i>
@@ -64,31 +64,54 @@
       <ng-container *ngFor="let g of groups; let i=index;">
         <ng-container *ngIf="from == 'config-manager';else showGroup">
           <ng-container *ngIf="['bucket', 'list', 'kvlist'].includes(g?.type); else showConfigTemplate">
-            <div class="card mb-2 card-shadow ml-1 custom-width">
+            <div class="card mt-0 mb-1 card-shadow ml-1 custom-width">
               <header class="card-header has-background-white card-header-shadow">
                 <div class="card-header-title">
-                  <p class="subtitle is-6">{{g.key}}</p>
+                  <div class="subtitle is-size-9">
+                    <span [title]="g.group.description">
+                      {{g.group.name ? g.group.name : g.key}}
+                    </span>
+                    <i *ngIf="rolesService?.hasEditPermissions() && !rolesService?.hadEditPermissionsOnConfigItem(g.config?.permissions)"
+                      class="bi bi-xs bi-info-circle info-icon pull-right" aria-hidden="true"
+                      title="Insufficient privileges to modify this"></i>
+                  </div>
                 </div>
-                <button class="card-header-icon" (click)="toggleCard(i)">
-                  <span class="icon is-small toogle-icon" id="card-span-{{i}}" title="'Expand'">
-                    <i id="card-icon-{{i}}" class="fas fa-2xs fa-chevron-right" aria-hidden="true"></i>
-                  </span>
-                </button>
+                <div *ngIf="!configFormValues.hasOwnProperty(g.config.key) && isEmpty(g.config.value)
+                && isCollapsed(i)" class="is-align-self-center">
+                  <span class="help is-italic has-text-grey mt-0">No Items</span>
+                </div>
+                <div *ngIf="configFormValues.hasOwnProperty(g.config.key) && isCollapsed(i)"
+                  class="is-align-self-center">
+                  <span class="help is-italic has-text-grey mt-0">Pending Changes</span>
+                </div>
+                <div class="is-align-self-center">
+                  <button class="card-header-icon" (click)="toggleCard(i)">
+                    <span class="icon is-small toogle-icon" id="card-span-{{i}}" title="'Expand'">
+                      <i id="card-icon-{{i}}" class="fas fa-2xs fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
               </header>
               <div class="card-content is-hidden" id="card-content-{{i}}">
-                <div class="content">
-                  <app-bucket-configuration *ngIf="g.type == 'bucket'" [dataModel]="g.config"
-                    (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)"
-                    [from]="from" [group]="g.group.key"></app-bucket-configuration>
+                <ng-container
+                  *ngIf="isEmpty(g.config.value) && !rolesService?.hasAccessPermission(g.config?.permissions); else content">
+                  <span class="help is-italic has-text-grey mt-0">No Items</span>
+                </ng-container>
+                <ng-template #content>
+                  <div class="content">
+                    <app-bucket-configuration *ngIf="g.type == 'bucket'" [dataModel]="g.config"
+                      (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)"
+                      [from]="from" [group]="g.group.key"></app-bucket-configuration>
 
-                  <app-list-type-configuration *ngIf="g?.type == 'list'" [configuration]="g.config"
-                    [group]="g.group.key" [from]="from" (changedConfig)="getChangedConfiguration($event)"
-                    (formStatusEvent)="formStatus($event)"></app-list-type-configuration>
+                    <app-list-type-configuration *ngIf="g?.type == 'list'" [configuration]="g.config"
+                      [group]="g.group.key" [from]="from" (changedConfig)="getChangedConfiguration($event)"
+                      (formStatusEvent)="formStatus($event)"></app-list-type-configuration>
 
-                  <app-kv-list-type-configuration *ngIf="g?.type == 'kvlist'" [configuration]="g.config"
-                    [group]="g.group.key" [from]="from" (changedConfig)="getChangedConfiguration($event)"
-                    (formStatusEvent)="formStatus($event)"></app-kv-list-type-configuration>
-                </div>
+                    <app-kv-list-type-configuration *ngIf="g?.type == 'kvlist'" [configuration]="g.config"
+                      [group]="g.group.key" [from]="from" (changedConfig)="getChangedConfiguration($event)"
+                      (formStatusEvent)="formStatus($event)"></app-kv-list-type-configuration>
+                  </div>
+                </ng-template>
               </div>
             </div>
           </ng-container>
