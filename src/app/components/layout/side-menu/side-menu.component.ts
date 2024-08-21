@@ -11,6 +11,8 @@ import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FlowEditorService } from '../../common/node-editor/flow-editor.service';
 
+declare let $: any;
+
 @Component({
   selector: 'app-side-menu',
   templateUrl: './side-menu.component.html',
@@ -87,6 +89,32 @@ export class SideMenuComponent implements OnInit {
     sidemenu.classList.toggle('collapsed');
     this.isSidemenuCollapsed = !this.isSidemenuCollapsed;
     this.sidebarCollapsedEvent.emit(this.isSidemenuCollapsed);
+  }
+
+  openSubmenu(menuLink) {
+    switch (menuLink) {
+      case 'control':
+        this.isControlListOpen = !this.isControlListOpen;
+        break;
+      case 'logs':
+        this.isLogsListOpen = !this.isLogsListOpen;
+        break;
+      case 'developer':
+        this.isDeveloperListOpen = !this.isDeveloperListOpen;
+        break;
+      default:
+        break;
+    }
+
+    let sidemenuLink = document.getElementById(menuLink + '-li') as HTMLDivElement;
+    let submenuWrapper = document.getElementById(menuLink + '-submenu') as HTMLDivElement;
+
+    // grab the menu item's position relative to its positioned parent
+    var menuItemPosition = sidemenuLink.getBoundingClientRect();
+
+    // place the submenu in the correct position relevant to the menu item
+    submenuWrapper.style.top = (menuItemPosition.top - 50).toString() + 'px';
+    submenuWrapper.style.left = this.isSidemenuCollapsed ? '102px' : '252px';
   }
 
   ngOnDestroy() {

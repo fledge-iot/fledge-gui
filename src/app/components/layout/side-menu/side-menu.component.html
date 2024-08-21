@@ -1,4 +1,4 @@
-<aside class="menu" id="sidemenu">
+<aside class="menu submenu-div is-relative" id="sidemenu">
   <ul class="menu-list">
     <section [ngClass]="{'disabled':  !isServiceRunning}" (click)="toggleSideMenu(); $event.preventDefault()">
       <li>
@@ -38,9 +38,9 @@
             <span class="sidemenu-text">Notifications</span>
           </a>
         </li>
-        <li>
+        <li id="control-li" (mouseleave)="isControlListOpen = !isControlListOpen;">
           <a class="sidemenu-link px-2" type="button" [ngClass]="{'has-background-light':  isControlListOpen }"
-            id="control" (click)="isControlListOpen = !isControlListOpen; ; $event.stopPropagation()">
+            (mouseenter)="openSubmenu('control')" id="control">
             <div class="is-align-items-center" [ngClass]="{'is-flex':  !isSidemenuCollapsed }">
               <span class="menu-text">
                 <svg id="control-dispatch">
@@ -55,8 +55,8 @@
               </span>
             </div>
           </a>
-          <div [hidden]="!isControlListOpen">
-            <ul [ngClass]="{'pl-0':  isSidemenuCollapsed }">
+          <div class="submenu-div" id="control-submenu">
+            <ul class="submenu-list">
               <li>
                 <a class="submenu-text" id="acl" routerLinkActive="is-active" routerLink='control-dispatcher/acl'>
                   ACLs
@@ -111,9 +111,9 @@
             <span class="sidemenu-text">{{isSidemenuCollapsed ? 'Backups' : 'Backup &amp; Restore'}}</span>
           </a>
         </li>
-        <li>
+        <li (mouseleave)="isLogsListOpen = !isLogsListOpen;" id="logs-li">
           <a class="sidemenu-link" type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
-            (click)="isLogsListOpen = !isLogsListOpen; $event.stopPropagation()">
+            (mouseenter)="openSubmenu('logs')">
             <span><i class="bi bi-file-earmark-text bi-sm mr-1"></i></span>
             <span class="sidemenu-text">Logs</span>
             <span class="icon is-small menu-toogle-icon" [ngClass]="{'is-pulled-right':  !isSidemenuCollapsed }"
@@ -122,8 +122,8 @@
                 class="toggle-submenu-dropdown" aria-hidden="true"></i>
             </span>
           </a>
-          <div [hidden]="!isLogsListOpen">
-            <ul [ngClass]="{'pl-0':  isSidemenuCollapsed }">
+          <div class="submenu-div" id="logs-submenu">
+            <ul class="submenu-list" [ngClass]="{'pl-0': isSidemenuCollapsed }">
               <li>
                 <a class="submenu-text" id="audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>
               </li>
@@ -156,16 +156,10 @@
             <span class="sidemenu-text">Support</span>
           </a>
         </li>
-        <!-- <li>
-          <a class="sidemenu-link" id="developer" routerLinkActive="is-active" routerLink='/developer/options'
-            *ngIf="developerFeaturesService.getDeveloperFeatureControl() &&  rolesService.hasEditPermissions()">
-            <span><i class="bi bi-code-slash bi-sm"></i></span>
-            <span class="sidemenu-text">Developer</span>
-          </a>
-        </li> -->
-        <li class="is-relative">
-          <a class="sidemenu-link" type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="developer"
-            (click)="isDeveloperListOpen = !isDeveloperListOpen; $event.stopPropagation()">
+        <li (mouseleave)="isDeveloperListOpen = !isDeveloperListOpen;" id="developer-li">
+          <a class="sidemenu-link" type="button" [ngClass]="{'has-background-light':  isDeveloperListOpen }"
+            id="developer" (mouseenter)="openSubmenu('developer')">
+            <!-- (click)="isDeveloperListOpen = !isDeveloperListOpen; $event.stopPropagation()"> -->
             <span><i class="bi bi-file-earmark-text bi-sm mr-1"></i></span>
             <span class="sidemenu-text">Developer</span>
             <span class="icon is-small menu-toogle-icon" [ngClass]="{'is-pulled-right':  !isSidemenuCollapsed }"
@@ -174,7 +168,7 @@
                 class="toggle-submenu-dropdown" aria-hidden="true"></i>
             </span>
           </a>
-          <div class="submenu-div" [hidden]="!isDeveloperListOpen">
+          <div class="submenu-div" id="developer-submenu">
             <ul class="submenu-list" [ngClass]="{'pl-0':  isSidemenuCollapsed }">
               <li>
                 <a class="submenu-text" id="python-packages" routerLinkActive="is-active"

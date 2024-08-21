@@ -4,7 +4,7 @@
   box-shadow: 0 0 0.1em rgba(85, 85, 85, 0.5);
   overflow-y: auto !important;
   max-height: 92vh;
-  height: 100vh; 
+  height: 100vh;
 }
 
 .menu-toogle-icon {
@@ -64,6 +64,26 @@ hr {
   margin: 0.5rem 0 !important;
 }
 
+ul {
+  max-height: 250px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+li {
+  position: static;
+}
+
+li .submenu-div {
+  position: absolute;
+  z-index: 99;
+  display: none;
+}
+
+li:hover .submenu-div {
+  display: block !important;
+}
+
 @media (min-width: 768px) {
   #sidemenu.collapsed {
     overflow: visible;
@@ -84,11 +104,11 @@ hr {
   #sidemenu.collapsed .submenu-text {
     font-size: 0.65rem;
     display: block;
-    text-align: center;
-    padding: 0.5rem 0.5rem;
+    padding: 0.5rem 1rem;
   }
 
-  #sidemenu.collapsed .sidemenu-link i, #sidemenu.collapsed .sidemenu-link #control-dispatch {
+  #sidemenu.collapsed .sidemenu-link i,
+  #sidemenu.collapsed .sidemenu-link #control-dispatch {
     margin-right: 0 !important;
     text-align: center;
   }
@@ -102,22 +122,21 @@ hr {
     font-size: 0.5rem;
   }
 
-  #sidemenu.collapsed .submenu-div {
+  .submenu-div {
     position: absolute;
-    left: calc(6.5rem + 1.5rem / 2);
     z-index: 1;
-    top: 2px;
     animation-name: growIn;
     animation-duration: .2s;
     margin: 0;
   }
 
-  #sidemenu.collapsed .submenu-list {
+  .submenu-list {
     padding: 0.5rem 0;
     min-width: 10rem;
     font-size: 0.85rem;
     margin: 0 0 1rem 0;
     box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
     border-radius: 0.35rem;
+    background-color: whitesmoke;
   }
 }
