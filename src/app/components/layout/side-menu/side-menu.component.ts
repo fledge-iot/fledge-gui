@@ -114,7 +114,7 @@ export class SideMenuComponent implements OnInit {
 
     // place the submenu in the correct position relevant to the menu item
     submenuWrapper.style.top = (menuItemPosition.top - 50).toString() + 'px';
-    submenuWrapper.style.left = this.isSidemenuCollapsed ? '102px' : '252px';
+    submenuWrapper.style.left = menuItemPosition.width.toString() + 'px';
   }
 
   ngOnDestroy() {

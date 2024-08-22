@@ -38,7 +38,7 @@
             <span class="sidemenu-text">Notifications</span>
           </a>
         </li>
-        <li id="control-li" (mouseleave)="isControlListOpen = !isControlListOpen;">
+        <li id="control-li" (mouseleave)="isControlListOpen = false">
           <a class="sidemenu-link px-2" type="button" [ngClass]="{'has-background-light':  isControlListOpen }"
             (mouseenter)="openSubmenu('control')" id="control">
             <div class="is-align-items-center" [ngClass]="{'is-flex':  !isSidemenuCollapsed }">
@@ -51,7 +51,7 @@
               <span class="icon is-small menu-toogle-icon" [ngClass]="{'is-pulled-right':  !isSidemenuCollapsed }"
                 [title]="isControlListOpen ? 'Collapse' : 'Expand'">
                 <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
-                  class="toggle-submenu-dropdown" aria-hidden="true"></i>
+                  class="toggle-submenu-dropdown mr-0" aria-hidden="true"></i>
               </span>
             </div>
           </a>
@@ -111,7 +111,7 @@
             <span class="sidemenu-text">{{isSidemenuCollapsed ? 'Backups' : 'Backup &amp; Restore'}}</span>
           </a>
         </li>
-        <li (mouseleave)="isLogsListOpen = !isLogsListOpen;" id="logs-li">
+        <li (mouseleave)="isLogsListOpen = false" id="logs-li">
           <a class="sidemenu-link" type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
             (mouseenter)="openSubmenu('logs')">
             <span><i class="bi bi-file-earmark-text bi-sm mr-1"></i></span>
@@ -119,7 +119,7 @@
             <span class="icon is-small menu-toogle-icon" [ngClass]="{'is-pulled-right':  !isSidemenuCollapsed }"
               [title]="isLogsListOpen ? 'Collapse' : 'Expand'">
               <i [ngClass]="isLogsListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
-                class="toggle-submenu-dropdown" aria-hidden="true"></i>
+                class="toggle-submenu-dropdown mr-0" aria-hidden="true"></i>
             </span>
           </a>
           <div class="submenu-div" id="logs-submenu">
@@ -156,16 +156,15 @@
             <span class="sidemenu-text">Support</span>
           </a>
         </li>
-        <li (mouseleave)="isDeveloperListOpen = !isDeveloperListOpen;" id="developer-li">
+        <li (mouseleave)="isDeveloperListOpen = false" id="developer-li">
           <a class="sidemenu-link" type="button" [ngClass]="{'has-background-light':  isDeveloperListOpen }"
             id="developer" (mouseenter)="openSubmenu('developer')">
-            <!-- (click)="isDeveloperListOpen = !isDeveloperListOpen; $event.stopPropagation()"> -->
             <span><i class="bi bi-file-earmark-text bi-sm mr-1"></i></span>
             <span class="sidemenu-text">Developer</span>
             <span class="icon is-small menu-toogle-icon" [ngClass]="{'is-pulled-right':  !isSidemenuCollapsed }"
               [title]="isDeveloperListOpen ? 'Collapse' : 'Expand'">
               <i [ngClass]="isDeveloperListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
-                class="toggle-submenu-dropdown" aria-hidden="true"></i>
+                class="toggle-submenu-dropdown mr-0" aria-hidden="true"></i>
             </span>
           </a>
           <div class="submenu-div" id="developer-submenu">
@@ -173,11 +172,18 @@
               <li>
                 <a class="submenu-text" id="python-packages" routerLinkActive="is-active"
                   routerLink='/developer/options/python/package/list'>Python
-                  Packages</a>
+                  Packages
+                  <span class="help">View or install Python Packages</span>
+                </a>
               </li>
               <li>
                 <a class="submenu-text" id="additional-services" routerLinkActive="is-active"
                   routerLink='/developer/options/additional-services'>Additional Services
+
+                  <span class="help">
+                    Add, remove, disable, enable or configure services <br /> that can extend the functionality of
+                    Fledge
+                  </span>
                 </a>
               </li>
               <!-- <li>

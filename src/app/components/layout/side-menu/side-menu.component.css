@@ -3,14 +3,14 @@
   margin-right: 1%;
   box-shadow: 0 0 0.1em rgba(85, 85, 85, 0.5);
   overflow-y: auto !important;
-  max-height: 92vh;
+  max-height: 93vh;
   height: 100vh;
 }
 
 .menu-toogle-icon {
   display: inline-flex;
-  height: 1.2em;
-  width: 1.2em;
+  height: 0.8em;
+  width: 0.8em;
   background-color: whitesmoke;
   border-radius: 50%;
 }
@@ -102,7 +102,7 @@ li:hover .submenu-div {
   }
 
   #sidemenu.collapsed .submenu-text {
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     display: block;
     padding: 0.5rem 1rem;
   }
@@ -118,7 +118,7 @@ li:hover .submenu-div {
     text-align: center;
   }
 
-  #sidemenu.collapsed .toggle-submenu-dropdown {
+  .toggle-submenu-dropdown {
     font-size: 0.5rem;
   }
 
@@ -139,4 +139,12 @@ li:hover .submenu-div {
     border-radius: 0.35rem;
     background-color: whitesmoke;
   }
+
+  #developer-submenu .submenu-list {
+    min-width: 15rem !important;
+  }
+
+  .submenu-list li a:not(.is-active):hover {
+    background-color: rgba(58, 59, 69, 0.15);
+  }    
 }
