@@ -48,7 +48,7 @@
                 </svg>
               </span>
               <span class="is-flex-grow-3 sidemenu-text">Control</span>
-              <span class="icon is-small menu-toogle-icon" [ngClass]="{'is-pulled-right':  !isSidemenuCollapsed }"
+              <span *ngIf="!isSidemenuCollapsed" class="icon is-small menu-toogle-icon is-pulled-right"
                 [title]="isControlListOpen ? 'Collapse' : 'Expand'">
                 <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
                   class="toggle-submenu-dropdown mr-0" aria-hidden="true"></i>
@@ -116,7 +116,7 @@
             (mouseenter)="openSubmenu('logs')">
             <span><i class="bi bi-file-earmark-text bi-sm mr-1"></i></span>
             <span class="sidemenu-text">Logs</span>
-            <span class="icon is-small menu-toogle-icon" [ngClass]="{'is-pulled-right':  !isSidemenuCollapsed }"
+            <span *ngIf="!isSidemenuCollapsed" class="icon is-small menu-toogle-icon is-pulled-right"
               [title]="isLogsListOpen ? 'Collapse' : 'Expand'">
               <i [ngClass]="isLogsListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
                 class="toggle-submenu-dropdown mr-0" aria-hidden="true"></i>
@@ -161,7 +161,7 @@
             id="developer" (mouseenter)="openSubmenu('developer')">
             <span><i class="bi bi-file-earmark-text bi-sm mr-1"></i></span>
             <span class="sidemenu-text">Developer</span>
-            <span class="icon is-small menu-toogle-icon" [ngClass]="{'is-pulled-right':  !isSidemenuCollapsed }"
+            <span *ngIf="!isSidemenuCollapsed" class="icon is-small menu-toogle-icon is-pulled-right"
               [title]="isDeveloperListOpen ? 'Collapse' : 'Expand'">
               <i [ngClass]="isDeveloperListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
                 class="toggle-submenu-dropdown mr-0" aria-hidden="true"></i>
@@ -171,17 +171,20 @@
             <ul class="submenu-list" [ngClass]="{'pl-0':  isSidemenuCollapsed }">
               <li>
                 <a class="submenu-text" id="python-packages" routerLinkActive="is-active"
-                  routerLink='/developer/options/python/package/list'>Python
-                  Packages
-                  <span class="help">View or install Python Packages</span>
+                  routerLink='/developer/options/python/package/list'>
+                  <span class="has-text-weight-medium">Python
+                    Packages</span>
+                  <span class="help has-text-weight-light">View or install Python Packages</span>
                 </a>
               </li>
               <li>
                 <a class="submenu-text" id="additional-services" routerLinkActive="is-active"
-                  routerLink='/developer/options/additional-services'>Additional Services
-
-                  <span class="help">
-                    Add, remove, disable, enable or configure services <br /> that can extend the functionality of
+                  routerLink='/developer/options/additional-services'>
+                  <span class="has-text-weight-medium">
+                    Additional Services
+                  </span>
+                  <span class="help has-text-weight-light">
+                    Manage &amp; configure services <br /> that can extend the functionality of
                     Fledge
                   </span>
                 </a>
