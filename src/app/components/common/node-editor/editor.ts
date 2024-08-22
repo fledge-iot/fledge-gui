@@ -34,6 +34,7 @@ import { Notification } from "./nodes/notification";
 import { South } from "./nodes/south";
 import { createSelector } from "./selector";
 import { Storage } from "./storage";
+import { DropNodePlugin } from "./drop-plugin";
 
 type Node = South | North | Filter | Notification;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
@@ -56,7 +57,7 @@ export class Connection<A extends Node, B extends Node> extends ClassicPreset.Co
 let editor = new NodeEditor<Schemes>();
 let area: AreaPlugin<Schemes, AreaExtra>;
 let history: HistoryPlugin<Schemes>;
-let dock: DockPlugin<Schemes>;
+let dock: DropNodePlugin;
 let newDockFilter;
 let arrange: AutoArrangePlugin<Schemes>;
 
@@ -75,7 +76,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   const render = new AngularPlugin<Schemes, AreaExtra>({ injector });
   arrange = new AutoArrangePlugin<Schemes>();
   history = new HistoryPlugin<Schemes>();
-  dock = new DockPlugin<Schemes>();
+  dock = new DropNodePlugin(editor, area);
   const minimap = new MinimapPlugin<Schemes>({
     boundViewport: true
   });
@@ -195,21 +196,23 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
       area.use(minimap);
       area.use(contextMenu);
       newDockFilter = () => {
-        setTimeout(() => {
-          let dropStrategy: any = dock.dropStrategy;
-          let dsEditorNodes = dropStrategy.editor.nodes;
-          let addedFiltersIdColl = [];
-          for (let i = 0; i < dsEditorNodes.length; i++) {
-            if (dsEditorNodes[i].label === 'Filter') {
-              addedFiltersIdColl.push(dsEditorNodes[i].id)
+        const index = editor.getNodes().findIndex(n => (n.label == 'Filter'));
+        if (index == -1) {
+          setTimeout(() => {
+            let dropStrategy: any = dock.dropStrategy;
+            let dsEditorNodes = dropStrategy.editor.nodes;
+            let addedFiltersIdColl = [];
+            for (let i = 0; i < dsEditorNodes.length; i++) {
+              if (dsEditorNodes[i].label === 'Filter') {
+                addedFiltersIdColl.push(dsEditorNodes[i].id)
+              }
             }
-          }
-          if (addedFiltersIdColl.length > 0) {
-            dock.remove(newDockFilter);
-            flowEditorService.showAddFilterIcon.next({ addedFiltersIdColl: addedFiltersIdColl });
-          }
-        }, 10);
-        return new Filter(socket, { pluginName: '', enabled: 'false', filterName: 'Filter', color: "#F9CB9C" })
+            if (addedFiltersIdColl.length > 0) {
+              flowEditorService.showAddFilterIcon.next({ addedFiltersIdColl: addedFiltersIdColl });
+            }
+          }, 10);
+          return new Filter(socket, { pluginName: '', enabled: 'false', filterName: 'Filter', color: "#F9CB9C" })
+        }
       }
       dock.add(newDockFilter);
     }
@@ -567,7 +570,6 @@ export async function removeNode(nodeId) {
     }
   }
   editor.removeNode(nodeId);
-  dock.add(newDockFilter);
   // pull back the removed connection when filter placeholder node removed
   if (source && target) {
     await editor.addConnection(new Connection(connectionEvents, source, target));
@@ -591,10 +593,10 @@ export function undoAction() {
   let lastActionName = getLastActionName();
   history.undo().then(() => {
     if (secondLastActionName == 'AddNodeAction') {
-      dock.add(newDockFilter);
+      // dock.add(newDockFilter);
     }
     if (lastActionName == 'RemoveNodeAction') {
-      dock.remove(newDockFilter);
+      //  dock.remove(newDockFilter);
     }
   })
 }
@@ -606,10 +608,10 @@ export function redoAction() {
     let afterRedoSecondLastActionName = getSecondLastActionName();
     let afterRedoLastActionName = getLastActionName();
     if (afterRedoSecondLastActionName == 'AddNodeAction' && beforeRedoSecondLastActionName != 'AddNodeAction') {
-      dock.remove(newDockFilter);
+      // dock.remove(newDockFilter);
     }
     if (afterRedoLastActionName == 'RemoveNodeAction' && beforeRedoLastActionName != 'RemoveNodeAction') {
-      dock.add(newDockFilter);
+      // dock.add(newDockFilter);
     }
   })
 }

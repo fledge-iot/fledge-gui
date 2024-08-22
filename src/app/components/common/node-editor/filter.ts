@@ -8,12 +8,13 @@ export class Filter extends ClassicPreset.Node {
   width = 198;
   parent?: string;
 
-  constructor(socket: ClassicPreset.Socket, filterConfig) {
+  constructor(socket: ClassicPreset.Socket, filter) {
     super("Filter");
-    const nameControl = new NameControl(filterConfig.filterName);
-    const pluginControl = new PluginControl(filterConfig.pluginName);
-    const enabledControl = new EnabledControl(filterConfig.enabled);
-    const filterColorControl = new FilterColorControl(filterConfig.color);
+    const nameControl = new NameControl(filter.filterName);
+    const pluginControl = new PluginControl(filter.pluginName);
+    const enabledControl = new EnabledControl(filter.enabled);
+    const filterColorControl = new FilterColorControl(filter.color);
+
 
     this.addControl('nameControl', nameControl);
     this.addControl('pluginControl', pluginControl);
@@ -21,5 +22,6 @@ export class Filter extends ClassicPreset.Node {
     this.addControl('enabledControl', enabledControl);
     this.addInput("port", new ClassicPreset.Input(socket));
     this.addOutput("port", new ClassicPreset.Output(socket));
+
   }
 }
