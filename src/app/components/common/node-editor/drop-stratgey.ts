@@ -1,7 +1,9 @@
-import { BaseSchemes, NodeEditor } from 'rete'
+import { BaseSchemes, ClassicPreset, NodeEditor } from 'rete'
 import { AreaPlugin } from 'rete-area-plugin'
 import { Position } from 'rete-area-plugin/_types/types'
 import { Strategy } from 'rete-dock-plugin/_types/strategy'
+import { Filter } from './filter'
+
 
 export class DropStrategy<K> implements Strategy {
   current?: () => BaseSchemes['Node']
@@ -22,7 +24,6 @@ export class DropStrategy<K> implements Strategy {
 
   add(element: HTMLElement, create: () => BaseSchemes['Node']) {
     element.draggable = true
-
     element.addEventListener('dragstart', () => {
       this.current = create
     })
@@ -30,6 +31,8 @@ export class DropStrategy<K> implements Strategy {
 
   private async drop(node: BaseSchemes['Node'], position: Position) {
     if (node) {
+      const socket = new ClassicPreset.Socket("socket");
+      node = new Filter(socket, { pluginName: '', enabled: 'false', filterName: 'Filter', color: "#F9CB9C" }, false)
       await this.editor.addNode(node)
 
       const view = this.area.nodeViews.get(node.id)

@@ -198,20 +198,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
       newDockFilter = () => {
         const index = editor.getNodes().findIndex(n => (n.label == 'Filter'));
         if (index == -1) {
-          setTimeout(() => {
-            let dropStrategy: any = dock.dropStrategy;
-            let dsEditorNodes = dropStrategy.editor.nodes;
-            let addedFiltersIdColl = [];
-            for (let i = 0; i < dsEditorNodes.length; i++) {
-              if (dsEditorNodes[i].label === 'Filter') {
-                addedFiltersIdColl.push(dsEditorNodes[i].id)
-              }
-            }
-            if (addedFiltersIdColl.length > 0) {
-              flowEditorService.showAddFilterIcon.next({ addedFiltersIdColl: addedFiltersIdColl });
-            }
-          }, 10);
-          return new Filter(socket, { pluginName: '', enabled: 'false', filterName: 'Filter', color: "#F9CB9C" })
+          return new Filter(socket, { pluginName: '', enabled: 'false', filterName: 'Filter', color: "#F9CB9C" }, true)
         }
       }
       dock.add(newDockFilter);
@@ -252,7 +239,7 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
       let pipelineItem = data.filterPipeline[i];
       if (typeof (pipelineItem) === "string") {
         let nextNodeConfig = data.filterConfigurations.find((f: any) => f.filterName === pipelineItem)
-        let nextNode = new Filter(socket, nextNodeConfig);
+        let nextNode = new Filter(socket, nextNodeConfig, false);
         await editor.addNode(nextNode);
         await editor.addConnection(
           new Connection(connectionEvents, previousNode, nextNode)
@@ -265,7 +252,7 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
         for (let j = 0; j < piLen; j++) {
           let nextNodeConfig = data.filterConfigurations.find((f: any) => f.filterName === pipelineItem[j])
           nextNodeConfig.color = colors[colorNumber];
-          let nextNode = new Filter(socket, nextNodeConfig);
+          let nextNode = new Filter(socket, nextNodeConfig, false);
           await editor.addNode(nextNode);
           await editor.addConnection(
             new Connection(connectionEvents, tempNode, nextNode));

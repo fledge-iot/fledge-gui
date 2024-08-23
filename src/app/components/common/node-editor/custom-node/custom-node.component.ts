@@ -68,14 +68,14 @@ export class CustomNodeComponent implements OnChanges {
   filter = { pluginName: '', enabled: 'false', name: '', color: '', pluginVersion: "" }
   isServiceNode: boolean = false;
   subscription: Subscription;
-  addFilterSubscription: Subscription;
+  // addFilterSubscription: Subscription;
   pluginName = '';
   isFilterNode: boolean = false;
   destroy$: Subject<boolean> = new Subject<boolean>();
   fetchedTask;
   fetchedService;
-  showPlusIcon = false;
-  showDeleteIcon = false;
+  // showPlusIcon = false;
+  // showDeleteIcon = false;
   nodeId = '';
   pluginVersion = '';
   timeoutId;
@@ -170,18 +170,10 @@ export class CustomNodeComponent implements OnChanges {
           this.isEnabled = true;
         }
       }
-      else {
-        this.addFilterSubscription = this.flowEditorService.showAddFilterIcon.subscribe((data) => {
-          if (data) {
-            if (data.addedFiltersIdColl.includes(this.nodeId)) {
-              this.elRef.nativeElement.style.outline = "#EA9999 dashed 2px";
-              this.elRef.nativeElement.style.borderWidth = "0px";
-              this.elRef.nativeElement.style.height = "auto";
-              this.showPlusIcon = true;
-              this.showDeleteIcon = true;
-            }
-          }
-        })
+      else if (!this.data['pseudoNode']) {
+        this.elRef.nativeElement.style.outline = "#EA9999 dashed 2px";
+        this.elRef.nativeElement.style.borderWidth = "0px";
+        this.elRef.nativeElement.style.height = "auto";
       }
     }
 
@@ -388,7 +380,7 @@ export class CustomNodeComponent implements OnChanges {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    this.addFilterSubscription?.unsubscribe();
+    // this.addFilterSubscription?.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }
