@@ -38,7 +38,7 @@
             <span class="sidemenu-text">Notifications</span>
           </a>
         </li>
-        <li id="control-li" (mouseleave)="isControlListOpen = false">
+        <li id="control-li" (mouseleave)="closeSubmenu('control')">
           <a class="sidemenu-link px-2" type="button" [ngClass]="{'has-background-light':  isControlListOpen }"
             (mouseenter)="openSubmenu('control')" id="control">
             <div class="is-align-items-center" [ngClass]="{'is-flex':  !isSidemenuCollapsed }">
@@ -48,8 +48,9 @@
                 </svg>
               </span>
               <span class="is-flex-grow-3 sidemenu-text">Control</span>
-              <span *ngIf="!isSidemenuCollapsed" class="icon is-small menu-toogle-icon is-pulled-right"
-                [title]="isControlListOpen ? 'Collapse' : 'Expand'">
+              <span *ngIf="!isSidemenuCollapsed"
+                class="icon is-small menu-toogle-icon is-pulled-right has-tooltip-left has-tooltip-arrow tooltip"
+                [attr.data-tooltip]="isControlListOpen ? 'Collapse' : 'Expand'">
                 <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
                   class="toggle-submenu-dropdown mr-0" aria-hidden="true"></i>
               </span>
@@ -111,13 +112,14 @@
             <span class="sidemenu-text">{{isSidemenuCollapsed ? 'Backups' : 'Backup &amp; Restore'}}</span>
           </a>
         </li>
-        <li (mouseleave)="isLogsListOpen = false" id="logs-li">
+        <li (mouseleave)="closeSubmenu('logs')" id="logs-li">
           <a class="sidemenu-link" type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
             (mouseenter)="openSubmenu('logs')">
             <span><i class="bi bi-file-earmark-text bi-sm mr-1"></i></span>
             <span class="sidemenu-text">Logs</span>
-            <span *ngIf="!isSidemenuCollapsed" class="icon is-small menu-toogle-icon is-pulled-right"
-              [title]="isLogsListOpen ? 'Collapse' : 'Expand'">
+            <span *ngIf="!isSidemenuCollapsed"
+              class="icon is-small menu-toogle-icon is-pulled-right has-tooltip-left has-tooltip-arrow tooltip"
+              [attr.data-tooltip]="isLogsListOpen ? 'Collapse' : 'Expand'">
               <i [ngClass]="isLogsListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
                 class="toggle-submenu-dropdown mr-0" aria-hidden="true"></i>
             </span>
@@ -156,13 +158,14 @@
             <span class="sidemenu-text">Support</span>
           </a>
         </li>
-        <li (mouseleave)="isDeveloperListOpen = false" id="developer-li">
-          <a class="sidemenu-link" type="button" [ngClass]="{'has-background-light':  isDeveloperListOpen }"
+        <li (mouseleave)="closeSubmenu('developer')" id="developer-li">
+          <a class="sidemenu-link" type="button" [ngClass]="{'has-background-light': isDeveloperListOpen }"
             id="developer" (mouseenter)="openSubmenu('developer')">
             <span><i class="bi bi-file-earmark-text bi-sm mr-1"></i></span>
             <span class="sidemenu-text">Developer</span>
-            <span *ngIf="!isSidemenuCollapsed" class="icon is-small menu-toogle-icon is-pulled-right"
-              [title]="isDeveloperListOpen ? 'Collapse' : 'Expand'">
+            <span *ngIf="!isSidemenuCollapsed"
+              class="icon is-small menu-toogle-icon is-pulled-right has-tooltip-left has-tooltip-arrow tooltip"
+              [attr.data-tooltip]="isDeveloperListOpen ? 'Collapse' : 'Expand'">
               <i [ngClass]="isDeveloperListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
                 class="toggle-submenu-dropdown mr-0" aria-hidden="true"></i>
             </span>

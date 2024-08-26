@@ -120,6 +120,16 @@ li:hover .submenu-div {
 
   .toggle-submenu-dropdown {
     font-size: 0.5rem;
+    opacity: 0.7;
+  }
+
+  .sidemenu-link:hover .toggle-submenu-dropdown {
+    color: #485fc7;
+  }
+
+  li:has(.submenu-text.is-active) .sidemenu-link {
+    background-color: #485fc7;
+    color: #fff;
   }
 
   .submenu-div {
@@ -146,5 +156,9 @@ li:hover .submenu-div {
 
   .submenu-list li a:not(.is-active):hover {
     background-color: whitesmoke;
-  }    
+  }
+
+  li:not(:has(.submenu-text.is-active)) .sidemenu-link:hover {
+    background-color: whitesmoke;
+  }
 }

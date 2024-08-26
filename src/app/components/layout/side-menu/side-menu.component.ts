@@ -92,20 +92,6 @@ export class SideMenuComponent implements OnInit {
   }
 
   openSubmenu(menuLink) {
-    switch (menuLink) {
-      case 'control':
-        this.isControlListOpen = !this.isControlListOpen;
-        break;
-      case 'logs':
-        this.isLogsListOpen = !this.isLogsListOpen;
-        break;
-      case 'developer':
-        this.isDeveloperListOpen = !this.isDeveloperListOpen;
-        break;
-      default:
-        break;
-    }
-
     let sidemenuLink = document.getElementById(menuLink + '-li') as HTMLDivElement;
     let submenuWrapper = document.getElementById(menuLink + '-submenu') as HTMLDivElement;
 
@@ -115,6 +101,33 @@ export class SideMenuComponent implements OnInit {
     // place the submenu in the correct position relevant to the menu item
     submenuWrapper.style.top = (menuItemPosition.top - 50).toString() + 'px';
     submenuWrapper.style.left = menuItemPosition.width.toString() + 'px';
+    this.toggleSubmenuState(menuLink, true);
+  }
+
+  closeSubmenu(menuLink) {
+    const menuOption = document.getElementById(menuLink + '-submenu') as HTMLDivElement;
+    // If mouse is over the menu or sub-menu then return and don't close the sub-menu   
+    if (menuOption.matches(':hover')) {
+      return;
+    }
+    this.toggleSubmenuState(menuLink, false);
+    menuOption.style.display = 'none';
+  }
+
+  toggleSubmenuState(menuLink, state) {
+    switch (menuLink) {
+      case 'control':
+        this.isControlListOpen = state;
+        break;
+      case 'logs':
+        this.isLogsListOpen = state;
+        break;
+      case 'developer':
+        this.isDeveloperListOpen = state;
+        break;
+      default:
+        break;
+    }
   }
 
   ngOnDestroy() {
