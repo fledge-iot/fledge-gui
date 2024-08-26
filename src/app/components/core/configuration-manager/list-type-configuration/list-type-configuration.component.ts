@@ -122,7 +122,12 @@ export class ListTypeConfigurationComponent implements OnInit {
     for (let val of value) {
       let valueObj = {};
       for (let property in val) {
-        valueObj[property] = val[property].value ? val[property].value : val[property].default;
+        if(val[property].hasOwnProperty('value')){
+          valueObj[property] = val[property].value;
+        }
+        else{
+          valueObj[property] = val[property].default;
+        }
         if (val[property].type == 'json') {
           valueObj[property] = JSON.parse(valueObj[property]);
         }
