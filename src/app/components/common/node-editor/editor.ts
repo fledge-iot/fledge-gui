@@ -614,6 +614,10 @@ export function redoAction() {
   })
 }
 
+export function resetNodes() {
+  AreaExtensions.zoomAt(area, editor.getNodes());
+}
+
 function getSecondLastActionName() {
   let historySnapshot = history.getHistorySnapshot();
   let historyLength = historySnapshot.length;

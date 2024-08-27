@@ -20,6 +20,7 @@ import { AddTaskWizardComponent } from '../../core/north/add-task-wizard/add-tas
 import { ReadingsCountComponent } from './south/asset-readings/readings-count.component';
 import { DirectivesModule } from '../../../directives/directives.module';
 import { AssetTrackerComponent } from './south/asset-tracker/asset-tracker.component';
+import { ToolbarComponent } from './toolbar/toolbar.component';
 
 const routes: Routes = [
   {
@@ -56,7 +57,8 @@ const routes: Routes = [
     CustomConnectionComponent,
     ReadingsCountComponent,
     RefDirective,
-    AssetTrackerComponent],
+    AssetTrackerComponent,
+    ToolbarComponent],
   imports: [
     RouterModule.forChild(routes),
     CommonModule,
