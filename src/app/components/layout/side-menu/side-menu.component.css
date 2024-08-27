@@ -57,7 +57,12 @@ svg#control-dispatch {
 }
 
 #sidebarToggle .icon {
-  color: #485FC7 !important;
+  font-size: 0.5rem;
+}
+
+#sidebarToggle:hover {
+  background-color: #485FC7;
+  color: white;
 }
 
 hr {
@@ -128,8 +133,7 @@ li:hover .submenu-div {
   }
 
   li:has(.submenu-text.is-active) .sidemenu-link {
-    background-color: #485fc7;
-    color: #fff;
+    background-color: whitesmoke;
   }
 
   .submenu-div {
@@ -152,13 +156,5 @@ li:hover .submenu-div {
 
   #developer-submenu .submenu-list {
     min-width: 15rem !important;
-  }
-
-  .submenu-list li a:not(.is-active):hover {
-    background-color: whitesmoke;
-  }
-
-  li:not(:has(.submenu-text.is-active)) .sidemenu-link:hover {
-    background-color: whitesmoke;
   }
 }
