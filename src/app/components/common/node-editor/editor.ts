@@ -200,7 +200,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
         if (index == -1) {
           return new Filter(socket, { pluginName: '', enabled: 'false', filterName: 'Filter', color: "#F9CB9C" }, true)
         } else {
-          alertService.warning('An unconfigured filter node already exists on canvas.')
+          alertService.message({ type: 'warning', message: 'An unconfigured filter node already exists on canvas.' }, true)
         }
       }
       dock.add(newDockFilter);
