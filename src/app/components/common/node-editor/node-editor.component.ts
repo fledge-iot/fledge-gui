@@ -13,6 +13,7 @@ import { ServiceWarningComponent } from '../../core/notifications/service-warnin
 import { Service } from '../../core/south/south-service';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import {
+  AlertService,
   AssetsService, ConfigurationControlService, ConfigurationService, FileUploaderService,
   FilterService, GenerateCsvService, NorthService,
   NotificationsService,
@@ -113,6 +114,7 @@ export class NodeEditorComponent implements OnInit {
     private configurationControlService: ConfigurationControlService,
     private fileUploaderService: FileUploaderService,
     private toastService: ToastService,
+    private alertService: AlertService,
     public rolesService: RolesService,
     private response: ResponseHandler,
     public ngProgress: ProgressBarService,
@@ -376,7 +378,7 @@ export class NodeEditorComponent implements OnInit {
                       })
 
                       data.isServiceEnabled = this.serviceInfo.isEnabled;
-                      createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
+                      createEditor(el, this.injector, this.flowEditorService, this.rolesService, this.alertService, data);
                     }
                   });
                 }
@@ -395,13 +397,13 @@ export class NodeEditorComponent implements OnInit {
                   let filterConfig = { pluginName: r.plugin.value, enabled: r.enable.value, filterName: r.filterName, color: "#F9CB9C" };
                   this.filterConfigurations.push(filterConfig);
                 })
-                createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
+                createEditor(el, this.injector, this.flowEditorService, this.rolesService, this.alertService, data);
                 this.filterConfigApiCallsStack = [];
               });
             }
             else {
               if (this.from !== 'notifications') {
-                createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
+                createEditor(el, this.injector, this.flowEditorService, this.rolesService, this.alertService, data);
               }
               // Navigate to the list page when service and task not exist
               if ((!data.task && !data.service)) {
