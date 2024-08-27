@@ -38,7 +38,7 @@
                 <span class="help">{{kvListItems?.controls[i]?.controls['value']?.value}}</span>
               </div>
             </ng-template>
-            <div class="column is-1 pl-2 pt-2 has-text-right"
+            <div class="column is-1 pl-2 pt-2 my-2 has-text-right"
               *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
               <span class="icon">
                 <button class="delete is-small" (click)="removeListItem(i)"></button>
