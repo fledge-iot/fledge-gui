@@ -50,8 +50,9 @@
                 <div class="column">
                   <div class="columns">
                     <div class="column has-text-right">
-                      <button [disabled]="!validConfigForm" class="button is-small is-link"
-                        (click)="save(category.name, category.description)" [appDisableUntilResponse]="reenableButton">Save</button>
+                      <button [disabled]="!validConfigForm" class="button is-small is-outlined is-link"
+                        (click)="save(category.name, category.description)"
+                        [appDisableUntilResponse]="reenableButton">Save</button>
                     </div>
                     <div class="column is-1">
                     </div>

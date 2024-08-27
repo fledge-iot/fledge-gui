@@ -316,26 +316,28 @@ export class NodeEditorComponent implements OnInit {
       let isServiceExist = true;
       if (this.initialApiCallsStack.length > 0) {
         this.ngProgress.start();
+        let retries = 4; // Retries
         forkJoin(this.initialApiCallsStack)
           .pipe(mergeMap(res => {
-            // Retry GET tasks call when task as a service created. Service takes time to populate in the GET tasks response
+            // Retry GET tasks call (retries + 1) time when task as a service created, It takes time to populate in the GET tasks response
             if (this.source && this.from == 'north') {
               const tasks = res[0]['tasks'];
               isServiceExist = tasks?.some(t => (t.name == this.source));
+              return !isServiceExist && retries > 0 ? EMPTY : of(res);
             }
-            return !isServiceExist ? EMPTY : of(res);
+            return of(res);
           }),
             repeatWhen(notifications => {
               return notifications.pipe(
-                delay(2000),
-                takeWhile(() => !isServiceExist)
+                delay(1500),
+                takeWhile(() => !isServiceExist && retries-- > 0)
               )
             }),
             take(1)
           )
           .subscribe((result) => {
             this.ngProgress.done();
-            result.forEach((r: any) => {
+            result?.forEach((r: any) => {
               if (r.status) {
                 if (r.status === 404) {
                   this.filterPipeline = [];
@@ -400,6 +402,11 @@ export class NodeEditorComponent implements OnInit {
             else {
               if (this.from !== 'notifications') {
                 createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
+              }
+              // Navigate to the list page when service and task not exist
+              if ((!data.task && !data.service)) {
+                this.router.navigate(['/flow/editor', data.from]);
+                return;
               }
             }
           });
@@ -978,11 +985,11 @@ export class NodeEditorComponent implements OnInit {
   }
 
   reload() {
-    if (!this.source) {
-      this.router.navigate(['/flow/editor', this.from]);
+    if (this.task || this.service) {
+      this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
       return;
     }
-    this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
+    this.router.navigate(['/flow/editor', this.from]);
   }
 
   selectAsset(event) {

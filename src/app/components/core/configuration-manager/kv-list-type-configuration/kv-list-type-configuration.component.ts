@@ -135,7 +135,12 @@ export class KvListTypeConfigurationComponent implements OnInit {
   extractKvListValues(value) {
     let valueObj = {};
     for (let property in value) {
-      valueObj[property] = value[property].value ? value[property].value : value[property].default;
+      if(value[property].hasOwnProperty('value')){
+        valueObj[property] = value[property].value;
+      }
+      else{
+        valueObj[property] = value[property].default;
+      }
       if (value[property].type == 'json') {
         valueObj[property] = JSON.parse(valueObj[property]);
       }

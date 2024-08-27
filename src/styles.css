@@ -334,7 +334,6 @@ table thead th {
 
 .icon-group {
   padding-left: 16px;
-  ;
 }
 
 .service-info {
@@ -460,7 +459,7 @@ span.tooltip {
 }
 
 .is-size-9 {
-  font-size: 0.9rem;
+  font-size: 0.9rem !important;
 }
 
 /*****************/
