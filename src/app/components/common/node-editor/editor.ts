@@ -615,6 +615,13 @@ export function redoAction() {
 }
 
 export function resetNodes() {
+  // reset canvas to its initial state
+  let historySnapshot = history.getHistorySnapshot();
+  let historyLength = historySnapshot.length;
+  for (let i = 0; i < historyLength; i++) {
+    history.undo();
+  }
+  // reset zoom in/out state
   AreaExtensions.zoomAt(area, editor.getNodes());
 }
 
