@@ -9,7 +9,7 @@ import { ArrangeAppliers, Presets as ArrangePresets, AutoArrangePlugin } from "r
 import { ConnectionPathPlugin } from 'rete-connection-path-plugin';
 import { ConnectionPlugin } from "rete-connection-plugin";
 import { ContextMenuExtra, ContextMenuPlugin } from "rete-context-menu-plugin";
-import { DockPlugin, DockPresets } from "rete-dock-plugin";
+import { DockPresets } from "rete-dock-plugin";
 import { HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
 import { MinimapExtra, MinimapPlugin } from "rete-minimap-plugin";
 import { NorthTask } from '../../core/north/north-task';
@@ -24,7 +24,7 @@ import { CustomConnectionComponent } from "./custom-connection/custom-connection
 import { CustomNodeComponent } from "./custom-node/custom-node.component";
 import { CustomNotificationNodeComponent } from "./custom-notification-node/custom-notification-node.component";
 import { CustomSocketComponent } from "./custom-socket/custom-socket.component";
-import { Filter } from "./filter";
+import { Filter, PseudoNodeControl } from "./filter";
 import { insertableNodes } from "./insert-node";
 import { AddNotification } from "./nodes/add-notification";
 import { AddService } from "./nodes/add-service";
@@ -578,51 +578,43 @@ export function applyContentReordering(nodeId: string) {
 }
 
 export function undoAction() {
-  let secondLastActionName = getSecondLastActionName();
-  let lastActionName = getLastActionName();
+  setTimeout(() => {
+    // To hide the (+) icon on filter node when no connecrtion with that node
+    const node = editor.getNodes().find(node => node.label == 'Filter')
+    const connections = editor.getConnections();
+    if (node) {
+      const nodeExistInConnection = connections.some(con => (con.source == node.id || con.target == node.id));
+      if (!nodeExistInConnection) {
+        const pseudoNodeControl = node.controls.pseudoNodeControl as PseudoNodeControl;
+        pseudoNodeControl.pseudoConnection = false;
+        area.update('control', pseudoNodeControl.id);
+        area.update('node', node.id);
+      }
+    }
+  }, 100);
+
   history.undo().then(() => {
-    if (secondLastActionName == 'AddNodeAction') {
-      // dock.add(newDockFilter);
-    }
-    if (lastActionName == 'RemoveNodeAction') {
-      //  dock.remove(newDockFilter);
-    }
-  })
+  });
 }
 
 export function redoAction() {
-  let beforeRedoSecondLastActionName = getSecondLastActionName();
-  let beforeRedoLastActionName = getLastActionName();
+  setTimeout(() => {
+    // To hide the (+) icon on filter node when no connecrtion with that node
+    const node = editor.getNodes().find(node => node.label == 'Filter')
+    const connections = editor.getConnections();
+    if (node) {
+      const nodeExistInConnection = connections.some(con => (con.source == node.id || con.target == node.id));
+      if (nodeExistInConnection) {
+        const pseudoNodeControl = node.controls.pseudoNodeControl as PseudoNodeControl;
+        pseudoNodeControl.pseudoConnection = true;
+        area.update('control', pseudoNodeControl.id);
+        area.update('node', node.id);
+      }
+    }
+  }, 100);
   history.redo().then(() => {
-    let afterRedoSecondLastActionName = getSecondLastActionName();
-    let afterRedoLastActionName = getLastActionName();
-    if (afterRedoSecondLastActionName == 'AddNodeAction' && beforeRedoSecondLastActionName != 'AddNodeAction') {
-      // dock.remove(newDockFilter);
-    }
-    if (afterRedoLastActionName == 'RemoveNodeAction' && beforeRedoLastActionName != 'RemoveNodeAction') {
-      // dock.add(newDockFilter);
-    }
-  })
+  });
 }
 
-function getSecondLastActionName() {
-  let historySnapshot = history.getHistorySnapshot();
-  let historyLength = historySnapshot.length;
-  let actionName;
-  if (historyLength >= 2) {
-    // FIXME: use different approach for retrieving actionName
-    // actionName = Object.getPrototypeOf(historySnapshot[historyLength - 2].action).constructor.name;
-  }
-  return actionName;
-}
 
-function getLastActionName() {
-  let historySnapshot = history.getHistorySnapshot();
-  let historyLength = historySnapshot.length;
-  let actionName;
-  if (historyLength >= 1) {
-    // FIXME: use different approach for retrieving actionName
-    // actionName = Object.getPrototypeOf(historySnapshot[historyLength - 1].action).constructor.name;
-  }
-  return actionName;
-}
+
