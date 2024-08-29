@@ -5,6 +5,7 @@
   overflow-y: auto !important;
   max-height: 93vh;
   height: 100vh;
+  padding-bottom: 4rem;
 }
 
 .menu-toogle-icon {
@@ -63,10 +64,6 @@ svg#control-dispatch {
 #sidebarToggle:hover {
   background-color: #485FC7;
   color: white;
-}
-
-hr {
-  margin: 0.5rem 0 !important;
 }
 
 ul {
@@ -136,6 +133,10 @@ li:hover .submenu-div {
     background-color: whitesmoke;
   }
 
+  li:has(.submenu-text.is-active) .sidemenu-link .dot {
+    background-color: #485fc7;
+  }
+
   .submenu-div {
     position: absolute;
     z-index: 1;
@@ -156,5 +157,25 @@ li:hover .submenu-div {
 
   #developer-submenu .submenu-list {
     min-width: 15rem !important;
+  }
+
+  .dot-div {
+    text-align: right;
+    line-height: 0.2;
+  }
+
+  .dot {
+    height: 5px;
+    width: 5px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .sidebar-footer {
+    bottom: 0;
+    width: 99%;
+    position: absolute;
+    background-color: white;
   }
 }

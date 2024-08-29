@@ -39,7 +39,7 @@
           </a>
         </li>
         <li id="control-li" (mouseleave)="closeSubmenu('control')">
-          <a class="sidemenu-link px-2" type="button" [ngClass]="{'has-background-light':  isControlListOpen }"
+          <a class="sidemenu-link px-2" type="button" [ngClass]="{'has-background-light': isControlListOpen }"
             (mouseenter)="openSubmenu('control')" id="control">
             <div class="is-align-items-center" [ngClass]="{'is-flex':  !isSidemenuCollapsed }">
               <span class="menu-text">
@@ -47,12 +47,12 @@
                   <use xlink:href="assets/icons/svg/control-dispatch.svg#control-dispatch" />
                 </svg>
               </span>
+              <div *ngIf="isSidemenuCollapsed" class="dot-div">
+                <span class="dot"></span>
+              </div>
               <span class="is-flex-grow-3 sidemenu-text">Control</span>
-              <span *ngIf="!isSidemenuCollapsed"
-                class="icon is-small menu-toogle-icon is-pulled-right has-tooltip-left has-tooltip-arrow tooltip"
-                [attr.data-tooltip]="isControlListOpen ? 'Collapse' : 'Expand'">
-                <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
-                  class="toggle-submenu-dropdown mr-0" aria-hidden="true"></i>
+              <span *ngIf="!isSidemenuCollapsed" class="icon is-small menu-toogle-icon is-pulled-right">
+                <i class="fas fa-xs fa-chevron-right toggle-submenu-dropdown mr-0" aria-hidden="true"></i>
               </span>
             </div>
           </a>
@@ -116,12 +116,12 @@
           <a class="sidemenu-link" type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
             (mouseenter)="openSubmenu('logs')">
             <span><i class="bi bi-file-earmark-text bi-sm mr-1"></i></span>
+            <div *ngIf="isSidemenuCollapsed" class="dot-div">
+              <span class="dot"></span>
+            </div>
             <span class="sidemenu-text">Logs</span>
-            <span *ngIf="!isSidemenuCollapsed"
-              class="icon is-small menu-toogle-icon is-pulled-right has-tooltip-left has-tooltip-arrow tooltip"
-              [attr.data-tooltip]="isLogsListOpen ? 'Collapse' : 'Expand'">
-              <i [ngClass]="isLogsListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
-                class="toggle-submenu-dropdown mr-0" aria-hidden="true"></i>
+            <span *ngIf="!isSidemenuCollapsed" class="icon is-small menu-toogle-icon is-pulled-right">
+              <i class="toggle-submenu-dropdown mr-0 fas fa-xs fa-chevron-right" aria-hidden="true"></i>
             </span>
           </a>
           <div class="submenu-div" id="logs-submenu">
@@ -162,12 +162,12 @@
           <a class="sidemenu-link" type="button" [ngClass]="{'has-background-light': isDeveloperListOpen }"
             id="developer" (mouseenter)="openSubmenu('developer')">
             <span><i class="bi bi-file-earmark-text bi-sm mr-1"></i></span>
+            <div *ngIf="isSidemenuCollapsed" class="dot-div">
+              <span class="dot"></span>
+            </div>
             <span class="sidemenu-text">Developer</span>
-            <span *ngIf="!isSidemenuCollapsed"
-              class="icon is-small menu-toogle-icon is-pulled-right has-tooltip-left has-tooltip-arrow tooltip"
-              [attr.data-tooltip]="isDeveloperListOpen ? 'Collapse' : 'Expand'">
-              <i [ngClass]="isDeveloperListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
-                class="toggle-submenu-dropdown mr-0" aria-hidden="true"></i>
+            <span *ngIf="!isSidemenuCollapsed" class="icon is-small menu-toogle-icon is-pulled-right">
+              <i class="toggle-submenu-dropdown mr-0 fas fa-xs fa-chevron-right" aria-hidden="true"></i>
             </span>
           </a>
           <div class="submenu-div" id="developer-submenu">
@@ -215,13 +215,15 @@
         <span class="sidemenu-text">Help</span>
       </a>
     </li>
-    <hr *ngIf="viewPort !== 'mobile'" class="sidebar-divider d-none d-md-block">
-    <div *ngIf="viewPort !== 'mobile'" class="has-text-centered">
+  </ul>
+  <div class="sidebar-footer">
+    <hr *ngIf="viewPort !== 'mobile'" class="sidebar-divider d-none d-md-block m-0">
+    <div *ngIf="viewPort !== 'mobile'" class="has-text-centered pt-3 pb-4">
       <a type="button" (click)="toggleSidemenuState()" id="sidebarToggle">
         <span class="icon">
           <i [ngClass]="isSidemenuCollapsed ? 'fas fa-chevron-right' : 'fas fa-chevron-left'" aria-hidden="true"></i>
         </span>
       </a>
     </div>
-  </ul>
+  </div>
 </aside>
