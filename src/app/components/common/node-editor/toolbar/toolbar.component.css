@@ -13,15 +13,11 @@ hr {
     vertical-align: middle;
 }
 
-/* button {
-    margin-right: 100px;
-} */
-
 hr {
     background: darkgrey;
     border: 0;
-    /* color: #000; */
     display: inline-block;
-    height: 0.6rem;
+    height: 0.8rem;
     width: 1px;
+    opacity: 0.4;
 }

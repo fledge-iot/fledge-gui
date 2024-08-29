@@ -166,7 +166,7 @@ export class NodeEditorComponent implements OnInit {
     if ((event.ctrlKey || event.metaKey) && event.keyCode == 89) {
       redoAction();
     }
-    if ((event.ctrlKey || event.metaKey) && event.keyCode == 32) {
+    if (event.keyCode == 32) {
       resetNodes();
     }
     if (event.key === 'Delete') {
