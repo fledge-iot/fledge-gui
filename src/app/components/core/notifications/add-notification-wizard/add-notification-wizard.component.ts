@@ -12,7 +12,7 @@ import {
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { delay, retryWhen, take } from 'rxjs/operators';
 import { DocService } from '../../../../services/doc.service';
-import {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
+import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 
 
 @Component({
@@ -83,12 +83,12 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     private configurationControlService: ConfigurationControlService,
     private fileUploaderService: FileUploaderService,
     private router: Router) {
-      this.route.queryParams.subscribe(params => {
-        if (params['source']) {
-          this.source = params['source'];
-        }
-      });
-    }
+    this.route.queryParams.subscribe(params => {
+      if (params['source']) {
+        this.source = params['source'];
+      }
+    });
+  }
 
   ngOnInit() {
     this.getNotificationPlugins();
@@ -316,7 +316,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         }
         this.payload.enabled = this.isNotificationEnabled;
         this.payload.retrigger_time = this.retriggerTime.nativeElement.value;
-        if (this.payload.retrigger_time < 1) {
+        if (this.payload.retrigger_time < 0) {
           return;
         }
         this.addNotificationInstance(this.payload);
