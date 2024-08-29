@@ -4,12 +4,8 @@ import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import {
-  ConfigurationService,
-  NorthService, PingService,
-  RolesService,
-  SchedulesService,
-  ServicesApiService,
-  ToastService
+  ConfigurationService, RolesService,
+  SchedulesService, ToastService
 } from "./../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
@@ -80,17 +76,14 @@ export class CustomNodeComponent implements OnChanges {
 
   constructor(private cdr: ChangeDetectorRef,
     private schedulesService: SchedulesService,
-    private northService: NorthService,
     private docService: DocService,
     private router: Router,
     private route: ActivatedRoute,
-    private servicesApiService: ServicesApiService,
     public flowEditorService: FlowEditorService,
     private configService: ConfigurationService,
     private toastService: ToastService,
     public rolesService: RolesService,
-    private elRef: ElementRef,
-    private ping: PingService) {
+    private elRef: ElementRef) {
     this.route.params.subscribe(params => {
       this.from = params.from;
       this.source = params.name;
