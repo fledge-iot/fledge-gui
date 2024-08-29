@@ -462,4 +462,12 @@ span.tooltip {
   font-size: 0.9rem !important;
 }
 
+.select select {
+  border-radius: 0px;
+}
+
+.CodeMirror {
+  height: auto;
+}
+
 /*****************/
