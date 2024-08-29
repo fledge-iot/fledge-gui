@@ -14,9 +14,6 @@ import {
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
 import { Subject, Subscription } from "rxjs";
-import { takeUntil } from "rxjs/operators";
-import { Service } from "./../../../core/south/south-service";
-import { NorthTask } from "../../../core/north/north-task";
 
 @Component({
   selector: 'app-custom-node',
@@ -68,14 +65,11 @@ export class CustomNodeComponent implements OnChanges {
   filter = { pluginName: '', enabled: 'false', name: '', color: '', pluginVersion: "" }
   isServiceNode: boolean = false;
   subscription: Subscription;
-  // addFilterSubscription: Subscription;
   pluginName = '';
   isFilterNode: boolean = false;
   destroy$: Subject<boolean> = new Subject<boolean>();
   fetchedTask;
   fetchedService;
-  // showPlusIcon = false;
-  // showDeleteIcon = false;
   nodeId = '';
   pluginVersion = '';
   timeoutId;
