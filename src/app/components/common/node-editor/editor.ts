@@ -1,19 +1,20 @@
 import { Injector } from "@angular/core";
-import { CurveFactory, curveBasis } from "d3-shape";
+import { curveBasis, CurveFactory } from "d3-shape";
 import { isEmpty } from 'lodash';
 import { easeInOut } from "popmotion";
 import { ClassicPreset, GetSchemes, NodeEditor } from "rete";
 import { AngularArea2D, AngularPlugin, Presets } from "rete-angular-plugin/16";
-import { Area2D, AreaExtensions, AreaPlugin } from "rete-area-plugin";
+import { AreaExtensions, AreaPlugin } from "rete-area-plugin";
 import { ArrangeAppliers, Presets as ArrangePresets, AutoArrangePlugin } from "rete-auto-arrange-plugin";
-import { ConnectionPathPlugin } from "rete-connection-path-plugin";
-import { BidirectFlow, ConnectionPlugin } from "rete-connection-plugin";
+import { ConnectionPathPlugin } from 'rete-connection-path-plugin';
+import { ConnectionPlugin } from "rete-connection-plugin";
 import { ContextMenuExtra, ContextMenuPlugin } from "rete-context-menu-plugin";
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
 import { HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
 import { MinimapExtra, MinimapPlugin } from "rete-minimap-plugin";
 import { NorthTask } from '../../core/north/north-task';
 import { colors } from "./color-palette";
+import { Connector } from "./connector";
 import { EnabledControl, StatusControl } from './controls/common-custom-control';
 import { SentReadingsControl } from './controls/north-custom-control';
 import { ChannelControl, NotificationTypeControl, RuleControl, ServiceStatusControl } from "./controls/notification-custom-control";
@@ -31,19 +32,40 @@ import { AddTask } from "./nodes/add-task";
 import { North } from "./nodes/north";
 import { Notification } from "./nodes/notification";
 import { South } from "./nodes/south";
+import { createSelector } from "./selector";
 import { Storage } from "./storage";
 
 type Node = South | North | Filter | Notification;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 type AreaExtra = AngularArea2D<Schemes> | MinimapExtra | ContextMenuExtra;
 
-class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> { curve?: CurveFactory; }
+export class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> {
+  selected?: boolean
+  click: (data: Connection<A, B>) => void
+  remove: (data: Connection<A, B>) => void
+  curve?: CurveFactory
+
+  constructor(events: { click: (data: Connection<A, B>) => void, remove: (data: Connection<A, B>) => void }, source: A, target: B, public isLoop?: boolean) {
+    super(source, 'port', target, 'port')
+    this.click = events.click;
+    this.remove = events.remove;
+    this.isLoop = false;
+  }
+}
 
 let editor = new NodeEditor<Schemes>();
 let area: AreaPlugin<Schemes, AreaExtra>;
 let history: HistoryPlugin<Schemes>;
 let dock: DockPlugin<Schemes>;
 let newDockFilter;
+let arrange: AutoArrangePlugin<Schemes>;
+
+export const animatedApplier = new ArrangeAppliers.TransitionApplier<Schemes, never>(
+  {
+    duration: 500,
+    timingFunction: easeInOut
+  }
+);
 
 export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, data) {
   const socket = new ClassicPreset.Socket("socket");
@@ -51,56 +73,46 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   area = new AreaPlugin<Schemes, AreaExtra>(container);
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   const render = new AngularPlugin<Schemes, AreaExtra>({ injector });
-  const arrange = new AutoArrangePlugin<Schemes>();
+  arrange = new AutoArrangePlugin<Schemes>();
   history = new HistoryPlugin<Schemes>();
-  const animatedApplier = new ArrangeAppliers.TransitionApplier<Schemes, never>(
-    {
-      duration: 500,
-      timingFunction: easeInOut
-    }
-  );
+  dock = new DockPlugin<Schemes>();
   const minimap = new MinimapPlugin<Schemes>({
     boundViewport: true
   });
-  const pathPlugin = new ConnectionPathPlugin<Schemes, Area2D<Schemes>>({
+
+  const pathPlugin = new ConnectionPathPlugin<Schemes, AreaExtra>({
     curve: (c) => c.curve || curveBasis,
-    // transformer: () => Transformers.classic({ vertical: false }),
-    arrow: () => { return { marker: 'M6,-6 L6,6 L20,0 z' } }
+    arrow: () => { return { marker: 'M4,-4 L4,4 L16,0 z' } }
   });
 
   // @ts-ignore
-  // render.use(pathPlugin);
+  render.use(pathPlugin);
 
   insertableNodes(area, {
     async createConnections(node, connection) {
-      removeOldConnection(node.id)
-      await editor.addConnection(
-        new Connection(
-          editor.getNode(connection.source),
-          connection.sourceOutput,
-          node,
-          "port"
+      if (!isEmpty(node.inputs)) {
+        await editor.addConnection(
+          new Connection(
+            connectionEvents,
+            editor.getNode(connection.source),
+            node
+          )
+        );
+      }
+      if (!isEmpty(node.outputs)) {
+        await editor.addConnection(
+          new Connection(
+            connectionEvents,
+            node,
+            editor.getNode(connection.target)
+          )
         )
-      );
-      await editor.addConnection(
-        new Connection(
-          node,
-          "port",
-          editor.getNode(connection.target),
-          connection.targetInput
-        )
-      );
+      }
       arrange.layout({
         applier: animatedApplier
       });
     }
   });
-
-  // const contextMenu = new ContextMenuPlugin<Schemes>({
-  //     items: ContextMenuPresets.classic.setup([
-  //         ["Filter", () => new Filter(socket, 'Filter')]
-  //     ])
-  // });
 
   const contextMenu = new ContextMenuPlugin<Schemes>({
     items(context) {
@@ -132,8 +144,6 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     }
   })
 
-  dock = new DockPlugin<Schemes>();
-
   render.addPreset(Presets.classic.setup(
     {
       customize: {
@@ -153,8 +163,17 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     }
   ));
 
-  // connection.addPreset(ConnectionPresets.classic.setup());
-  connection.addPreset(() => new BidirectFlow())
+  const connectionEvents = {
+    click: (data: Schemes['Connection']) => {
+      selector.selectConnection(data)
+    },
+    remove: (data: Schemes['Connection']) => {
+      editor.removeConnection(data.id)
+    }
+  }
+
+  const selector = createSelector(area, flowEditorService);
+  connection.addPreset(() => new Connector(connectionEvents));
   arrange.addPreset(ArrangePresets.classic.setup());
   render.addPreset(Presets.contextMenu.setup());
   dock.addPreset(DockPresets.classic.setup({ area, size: 70, scale: 0.6 }));
@@ -168,9 +187,12 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   area.use(arrange);
   area.use(dock);
   area.use(history);
+  // stop dock item click event
+  dock.clickStrategy = { add() { } }
+
   if (data.source) {
-    area.use(minimap);
     if (rolesService.hasEditPermissions()) {
+      area.use(minimap);
       area.use(contextMenu);
       newDockFilter = () => {
         setTimeout(() => {
@@ -195,7 +217,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   setCustomBackground(area) // Set custom background
 
   if (data.from !== 'notifications') {
-    createNodesAndConnections(socket, editor, arrange, area, data);
+    createNodesAndConnections(socket, editor, arrange, area, data, connectionEvents);
   } else {
     nodesGrid(area, data.notifications, socket, data.from, data.isServiceEnabled);
   }
@@ -205,11 +227,11 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
   editor: NodeEditor<Schemes>,
   arrange: AutoArrangePlugin<Schemes, never>,
   area: AreaPlugin<Schemes, AreaExtra>,
-  data: any) {
-
+  data: any,
+  connectionEvents) {
   if (data.source) {
     const db = new Storage(socket);
-    const plugin = data.from == 'south' ? new South(socket, data.service) : new North(socket, data.task);;
+    const plugin = data.from == 'south' ? new South(socket, data.service) : new North(socket, data.task);
     //  FIX ME: Array index based change
     if (data.from == 'south') {
       await editor.addNode(plugin);
@@ -230,7 +252,7 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
         let nextNode = new Filter(socket, nextNodeConfig);
         await editor.addNode(nextNode);
         await editor.addConnection(
-          new ClassicPreset.Connection(previousNode, "port", nextNode, "port")
+          new Connection(connectionEvents, previousNode, nextNode)
         );
         previousNode = nextNode;
       }
@@ -243,19 +265,18 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
           let nextNode = new Filter(socket, nextNodeConfig);
           await editor.addNode(nextNode);
           await editor.addConnection(
-            new ClassicPreset.Connection(tempNode, "port", nextNode, "port")
-          );
+            new Connection(connectionEvents, tempNode, nextNode));
           tempNode = nextNode;
         }
 
         await editor.addConnection(
-          new ClassicPreset.Connection(tempNode, "port", lastNode, "port")
-        );
+          new Connection(connectionEvents, tempNode, lastNode));
         colorNumber = (colorNumber + 1) % (colors.length);
       }
     }
+
     await editor.addConnection(
-      new ClassicPreset.Connection(previousNode, "port", lastNode, "port")
+      new Connection(connectionEvents, previousNode, lastNode)
     );
     await arrange.layout();
     AreaExtensions.zoomAt(area, editor.getNodes());
@@ -283,24 +304,25 @@ async function nodesGrid(area: AreaPlugin<Schemes,
   AreaExtra>, nodeItems: [],
   socket: ClassicPreset.Socket,
   from: string, isServiceAvailable = null) {
+  const service = from == 'south' ? new AddService() : from == 'north' ? new AddTask() : new AddNotification(isServiceAvailable);
+  await editor.addNode(service);
+  await area.translate(service.id, { x: 0, y: 0 });
+
   const canvasWidth = area.container.parentElement.clientWidth;
   const itemCount = Math.round(canvasWidth / 275);
-  let j = 0;
+  let j = 1;
   let k = 0;
   for (let i = 0; i < nodeItems.length; i++) {
     const plugin = from == 'south' ? new South(socket, nodeItems[i]) : from == 'north' ? new North(socket, nodeItems[i]) : new Notification(socket, nodeItems[i]);
     await editor.addNode(plugin);
     if (j < itemCount) {
-      await area.translate(plugin.id, { x: 250 * j, y: 150 * k });
+      await area.translate(plugin.id, { x: 250 * j, y: 130 * k });
       j++;
       if (j == itemCount) {
         j = 0; k++;
       }
     }
   }
-  const service = from == 'south' ? new AddService() : from == 'north' ? new AddTask() : new AddNotification(isServiceAvailable);
-  await editor.addNode(service);
-  await area.translate(service.id, { x: 250 * j, y: 150 * k });
   history.clear();
 }
 
@@ -513,59 +535,48 @@ function rgbToHex(r, g, b) {
 }
 
 function existsInPipeline(pipeline, filterName) {
-  for (let i = 0; i < pipeline.length; i++) {
-    if (typeof (pipeline[i]) === "string") {
-      if (pipeline[i] === filterName) {
+  for (const element of pipeline) {
+    if (typeof (element) === "string") {
+      if (element === filterName) {
         return true;
       }
     }
-    else {
-      if (pipeline[i].indexOf(filterName) !== -1) {
-        return true;
-      }
+    else if (element.indexOf(filterName) !== -1) {
+      return true;
     }
   }
   return false;
 }
 
 export async function removeNode(nodeId) {
-  for (const c of editor
-    .getConnections()
-    .filter((c) => c.source === nodeId || c.target === nodeId)) {
+  const connectionEvents = {
+    click: () => { },
+    remove: () => { }
+  }
+  let source: Node;
+  let target: Node;
+  const connections = editor.getConnections()
+    .filter(c => (c.source === nodeId || c.target === nodeId))
+  for (const c of connections) {
     await editor.removeConnection(c.id);
+    if (editor.getNode(c.source).label !== 'Filter') {
+      source = editor.getNode(c.source);
+    }
+    if (editor.getNode(c.target).label !== 'Filter') {
+      target = editor.getNode(c.target);
+    }
   }
   editor.removeNode(nodeId);
   dock.add(newDockFilter);
-}
-
-async function removeOldConnection(nodeId) {
-  let connections = editor.getConnections();
-  let source: Node;
-  let target: Node[] = [];
-  let inputConnId;
-  let outputConnections = [];
-  for (let i = 0; i < connections.length; i++) {
-    if (connections[i].source === nodeId) {
-      target.push(editor.getNode(connections[i].target));
-      outputConnections.push(connections[i].id);
-    }
-    if (connections[i].target === nodeId) {
-      source = editor.getNode(connections[i].source);
-      inputConnId = connections[i].id;
-    }
+  // pull back the removed connection when filter placeholder node removed
+  if (source && target) {
+    await editor.addConnection(new Connection(connectionEvents, source, target));
+    area.update('node', source.id)
+    area.update('node', source.id)
+    arrange.layout({
+      applier: animatedApplier
+    });
   }
-  for (let t of target) {
-    await editor.addConnection(
-      new ClassicPreset.Connection(source, "port", t, "port")
-    );
-  }
-  if (inputConnId) {
-    await editor.removeConnection(inputConnId);
-  }
-  for (let c of outputConnections) {
-    await editor.removeConnection(c);
-  }
-
 }
 
 export function applyContentReordering(nodeId: string) {
@@ -582,7 +593,7 @@ export function undoAction() {
     if (secondLastActionName == 'AddNodeAction') {
       dock.add(newDockFilter);
     }
-    if(lastActionName == 'RemoveNodeAction'){
+    if (lastActionName == 'RemoveNodeAction') {
       dock.remove(newDockFilter);
     }
   })
@@ -597,7 +608,7 @@ export function redoAction() {
     if (afterRedoSecondLastActionName == 'AddNodeAction' && beforeRedoSecondLastActionName != 'AddNodeAction') {
       dock.remove(newDockFilter);
     }
-    if(afterRedoLastActionName == 'RemoveNodeAction' && beforeRedoLastActionName != 'RemoveNodeAction'){
+    if (afterRedoLastActionName == 'RemoveNodeAction' && beforeRedoLastActionName != 'RemoveNodeAction') {
       dock.add(newDockFilter);
     }
   })

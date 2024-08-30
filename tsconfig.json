@@ -12,7 +12,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "noUnusedParameters": true,
+    "noUnusedParameters": false,
     "target": "ES2022",
     "types": [
       "node"

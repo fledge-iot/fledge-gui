@@ -1,14 +1,16 @@
-import { ClassicPreset, GetSchemes, NodeEditor } from "rete";
+import { BaseSchemes, ClassicPreset, GetSchemes, NodeEditor } from "rete";
 import { AreaPlugin } from "rete-area-plugin";
-import { Size } from "rete-area-plugin/_types/types";
-import { Position } from "./types";
+import { Position, Size } from "./types";
 import { checkElementIntersectPath } from "./utils";
-import { North } from "../nodes/north";
+import { Filter } from "../filter";
 import { South } from "../nodes/south";
+import { North } from "../nodes/north";
+import { Connection } from "../editor";
 
-type Node = South | North;
-type Schemes = GetSchemes<Node & Size, Connection<Node, Node>>;
-class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> { };
+type Schemes = GetSchemes<
+  BaseSchemes["Node"] & Size,
+  BaseSchemes["Connection"]
+>;
 
 export function checkIntersection(
   position: Position,
@@ -22,14 +24,12 @@ export function checkIntersection(
 
     return [id, element, path] as const;
   });
-
   let intersectedConnections = []
-  for (const [id, , path] of paths.reverse()) {
+  for (const [id, , path] of paths) {
     if (checkElementIntersectPath({ ...position, ...size }, path)) {
       intersectedConnections.push(id);
     }
   }
-
   return intersectedConnections;
 }
 
@@ -40,24 +40,32 @@ type Props<S extends Schemes> = {
   ) => Promise<void>;
 };
 
+
+export const connectionEvents = {
+  click: () => { },
+  remove: () => { }
+}
+
 export function insertableNodes<S extends Schemes>(
   area: AreaPlugin<S, any>,
   props: Props<S>
 ) {
   area.addPipe(async (context) => {
-    if (context.type === "nodedragged") {
+    if (!(context && typeof context === 'object' && 'type' in context)) return context;
+    if (context.type == 'nodedragged' || (context.type === 'rendered' && context.data?.payload?.label == 'Filter' && ['node', 'connection'].includes(context.data.type))) {
+      const id = context.type === 'rendered' ? context.data.payload.id : context.data.id;
       const editor = area.parentScope<NodeEditor<S>>(NodeEditor);
-      const node = editor.getNode(context.data.id);
-      const view = area.nodeViews.get(context.data.id);
+      const node = editor.getNode(id) as South | Filter | North;
+      const view = area.nodeViews.get(id);
       const cons = Array.from(area.connectionViews.entries()).map(
         ([id, view]) => [id, view.element] as const
       );
-
       if (view && node.label !== "South" && node.label !== "Storage" && node.label !== "North") {
         const intersectedConnections = checkIntersection(view.position, node, cons);
         for (let id of intersectedConnections) {
           const exist = editor.getConnection(id);
           if (exist && (exist.source !== node.id && exist.target !== node.id)) {
+            removeOldConnection(node, editor);
             await editor.removeConnection(id);
             await props.createConnections(node, exist);
           }
@@ -66,4 +74,31 @@ export function insertableNodes<S extends Schemes>(
     }
     return context;
   });
+}
+
+async function removeOldConnection(node, editor) {
+  let connections = await editor.getConnections();
+  let source;
+  let target = [];
+  let inputConnId;
+  let outputConnections = [];
+  for (const element of connections) {
+    if (element.source === node.id) {
+      target.push(await editor.getNode(element.target) as ClassicPreset.Node);
+      outputConnections.push(element.id);
+    }
+    if (element.target === node.id) {
+      source = await editor.getNode(element.source) as ClassicPreset.Node;
+      inputConnId = element.id;
+    }
+  }
+  for (let t of target) {
+    await editor.addConnection(new Connection(connectionEvents, source, t));
+  }
+  if (inputConnId) {
+    await editor.removeConnection(inputConnId);
+  }
+  for (let c of outputConnections) {
+    await editor.removeConnection(c);
+  }
 }

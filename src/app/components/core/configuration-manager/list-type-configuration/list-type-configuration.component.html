@@ -2,7 +2,7 @@
   <ng-container *ngFor="let item of listItems.controls; let i = index">
     <div formArrayName="listItems" class="field">
       <div [ngClass]="{'box': configuration.items == 'object'}">
-        <div class="columns">
+        <div class="columns is-flex is-vcentered">
           <div class="column is-11">
             <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticView">
               <input *ngIf="configuration.items == 'integer'" class="input is-small" type="text" formControlName="{{i}}"
@@ -15,8 +15,6 @@
             <ng-template #staticView>
               <span *ngIf="configuration.items !== 'object'" class="help">
                 {{listItems?.controls[i]?.value}}
-                <i *ngIf="rolesService?.hasEditPermissions()" class="bi bi-xs bi-info-circle info-icon"
-                  aria-hidden="true" title="Insufficient privileges to modify this"></i>
               </span>
             </ng-template>
             <ng-container *ngIf="configuration.items == 'object'">
@@ -25,10 +23,8 @@
                 (formStatusEvent)="formStatus($event)" [from]="from" [group]="group"></app-show-configuration>
             </ng-container>
           </div>
-          <div class="column pl-0 pt-2" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
-            <span class="icon">
-              <button class="delete is-small" (click)="removeListItem(i)"></button>
-            </span>
+          <div class="column is-flex" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
+            <button class="delete is-small" (click)="removeListItem(i)"></button>
           </div>
         </div>
       </div>

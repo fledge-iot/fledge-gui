@@ -120,3 +120,16 @@
 .custom-width {
   width: 94%;
 }
+
+.group-desc i {
+  visibility: hidden;
+}
+
+.group-desc:hover i {
+  visibility: visible;
+}
+
+.card-header-title,
+.card-content {
+  padding: 0.5rem 1rem !important;
+}
