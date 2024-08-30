@@ -80,6 +80,9 @@ export class KvListTypeConfigurationComponent implements OnInit {
     }
     this.kvListItems.push(this.initListItem({ key: '', value: '' }));
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
+    if(this.configuration.items == 'object'){
+      this.expandAddedListItem();
+    }
   }
 
   removeListItem(index: number) {
@@ -155,14 +158,27 @@ export class KvListTypeConfigurationComponent implements OnInit {
     if (cardBody.classList.contains('is-hidden')) {
       cardBody.classList.remove('is-hidden');
       cardSpan.title = 'Collapse';
-      cardIcon.classList.remove('fa-chevron-right');
-      cardIcon.classList.add('fa-chevron-down');
+      cardIcon.classList.remove('fa-angle-right');
+      cardIcon.classList.add('fa-angle-down');
     }
     else {
       cardBody.classList.add('is-hidden');
       cardSpan.title = 'Expand';
-      cardIcon.classList.remove('fa-chevron-down');
-      cardIcon.classList.add('fa-chevron-right');
+      cardIcon.classList.remove('fa-angle-down');
+      cardIcon.classList.add('fa-angle-right');
     }
+  }
+
+  expandAddedListItem() {
+    setTimeout(() => {
+      let index = this.kvListItems.length - 1;
+      let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
+      let cardSpan = document.getElementById('card-span-' + this.configuration.key + '-' + index);
+      let cardIcon = document.getElementById('card-icon-' + this.configuration.key + '-' + index);
+      cardSpan.title = 'Collapse';
+      cardIcon.classList.remove('fa-angle-right');
+      cardIcon.classList.add('fa-angle-down');
+      cardBody.classList.remove('is-hidden');
+    }, 1);
   }
 }
