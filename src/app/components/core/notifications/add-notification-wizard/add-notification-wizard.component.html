@@ -229,7 +229,7 @@
                 <div class="field-body last-step-field">
                   <div class="field">
                     <div class="control">
-                      <input class="input is-small retrigger-time" #retriggerTime type='number' appNumberOnly min="0"
+                      <input class="input is-small retrigger-time" #retriggerTime type='number' appFloatOnly min="0"
                         placeholder="Retrigger Time" formControlName="retriggerTime">
                       <span *ngIf="payload?.retrigger_time < 0" class="help is-danger">
                         <sup>*</sup>Invalid Retrigger time.
