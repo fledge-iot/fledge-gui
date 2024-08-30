@@ -91,7 +91,10 @@ export class SideMenuComponent implements OnInit {
     this.sidebarCollapsedEvent.emit(this.isSidemenuCollapsed);
   }
 
-  openSubmenu(menuLink) {
+  openSubmenuOnHover(menuLink) {
+    if (this.viewPort === 'mobile') {
+      return;
+    }
     let sidemenuLink = document.getElementById(menuLink + '-li') as HTMLDivElement;
     let submenuWrapper = document.getElementById(menuLink + '-submenu') as HTMLDivElement;
 
@@ -104,7 +107,18 @@ export class SideMenuComponent implements OnInit {
     this.toggleSubmenuState(menuLink, true);
   }
 
+  toggleSubmenuOnClick(menuLink, event = null) {
+    if (this.viewPort !== 'mobile') {
+      return;
+    }
+    this.toggleSubmenuState(menuLink);
+    event.stopPropagation()
+  }
+
   closeSubmenu(menuLink) {
+    if (this.viewPort === 'mobile') {
+      return;
+    }
     const menuOption = document.getElementById(menuLink + '-submenu') as HTMLDivElement;
     // If mouse is over the menu or sub-menu then return and don't close the sub-menu   
     if (menuOption.matches(':hover')) {
@@ -114,19 +128,28 @@ export class SideMenuComponent implements OnInit {
     menuOption.style.display = 'none';
   }
 
-  toggleSubmenuState(menuLink, state) {
+  toggleSubmenuState(menuLink, state = null) {
     switch (menuLink) {
       case 'control':
-        this.isControlListOpen = state;
+        this.isControlListOpen = state ? state : !this.isControlListOpen;
         break;
       case 'logs':
-        this.isLogsListOpen = state;
+        this.isLogsListOpen = state ? state : !this.isLogsListOpen;
         break;
       case 'developer':
-        this.isDeveloperListOpen = state;
+        this.isDeveloperListOpen = state ? state : !this.isDeveloperListOpen;
         break;
       default:
         break;
+    }
+  }
+
+  applyCssClass(menuState) {
+    if (this.viewPort !== 'mobile') {
+      return 'fa-chevron-right';
+    } else {
+      let cssClass = menuState ? 'fa-chevron-down' : 'fa-chevron-right';
+      return cssClass;
     }
   }
 

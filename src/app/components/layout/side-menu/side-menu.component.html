@@ -1,4 +1,5 @@
-<aside class="menu submenu-div is-relative" id="sidemenu">
+<aside class="menu" [ngClass]="{'submenu-div is-relative': viewPort !== 'mobile'}"
+  [id]="viewPort == 'mobile' ? 'mobile-sidemenu' : 'sidemenu'">
   <ul class="menu-list">
     <section [ngClass]="{'disabled':  !isServiceRunning}" (click)="toggleSideMenu(); $event.preventDefault()">
       <li>
@@ -40,7 +41,7 @@
         </li>
         <li id="control-li" (mouseleave)="closeSubmenu('control')">
           <a class="sidemenu-link px-2" type="button" [ngClass]="{'has-background-light': isControlListOpen }"
-            (mouseenter)="openSubmenu('control')" id="control">
+            (mouseenter)="openSubmenuOnHover('control')" id="control" (click)="toggleSubmenuOnClick('control', $event)">
             <div class="is-align-items-center" [ngClass]="{'is-flex':  !isSidemenuCollapsed }">
               <span class="menu-text">
                 <svg id="control-dispatch">
@@ -52,11 +53,13 @@
               </div>
               <span class="is-flex-grow-3 sidemenu-text">Control</span>
               <span *ngIf="!isSidemenuCollapsed" class="icon is-small menu-toogle-icon is-pulled-right">
-                <i class="fas fa-xs fa-chevron-right toggle-submenu-dropdown mr-0" aria-hidden="true"></i>
+                <i class="fas fa-xs toggle-submenu-dropdown mr-0" [ngClass]="applyCssClass(isControlListOpen)"
+                  aria-hidden="true"></i>
               </span>
             </div>
           </a>
-          <div class="submenu-div" id="control-submenu">
+          <div class="submenu-div" id="control-submenu" [hidden]="viewPort == 'mobile' && !isControlListOpen"
+            [ngClass]="{'show-on-mobile':  viewPort == 'mobile'  && isControlListOpen }">
             <ul class="submenu-list">
               <li>
                 <a class="submenu-text" id="acl" routerLinkActive="is-active" routerLink='control-dispatcher/acl'>
@@ -114,17 +117,19 @@
         </li>
         <li (mouseleave)="closeSubmenu('logs')" id="logs-li">
           <a class="sidemenu-link" type="button" [ngClass]="{'has-background-light':  isLogsListOpen }" id="logs"
-            (mouseenter)="openSubmenu('logs')">
+            (mouseenter)="openSubmenuOnHover('logs')" (click)="toggleSubmenuOnClick('logs', $event)">
             <span><i class="bi bi-file-earmark-text bi-sm mr-1"></i></span>
             <div *ngIf="isSidemenuCollapsed" class="dot-div">
               <span class="dot"></span>
             </div>
             <span class="sidemenu-text">Logs</span>
             <span *ngIf="!isSidemenuCollapsed" class="icon is-small menu-toogle-icon is-pulled-right">
-              <i class="toggle-submenu-dropdown mr-0 fas fa-xs fa-chevron-right" aria-hidden="true"></i>
+              <i class="toggle-submenu-dropdown mr-0 fas fa-xs" [ngClass]="applyCssClass(isLogsListOpen)"
+                aria-hidden="true"></i>
             </span>
           </a>
-          <div class="submenu-div" id="logs-submenu">
+          <div class="submenu-div" id="logs-submenu" [hidden]="viewPort == 'mobile' && !isLogsListOpen"
+            [ngClass]="{'show-on-mobile':  viewPort == 'mobile'  && isLogsListOpen }">
             <ul class="submenu-list" [ngClass]="{'pl-0': isSidemenuCollapsed }">
               <li>
                 <a class="submenu-text" id="audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>
@@ -160,17 +165,20 @@
         </li>
         <li (mouseleave)="closeSubmenu('developer')" id="developer-li">
           <a class="sidemenu-link" type="button" [ngClass]="{'has-background-light': isDeveloperListOpen }"
-            id="developer" (mouseenter)="openSubmenu('developer')">
+            id="developer" (mouseenter)="openSubmenuOnHover('developer')"
+            (click)="toggleSubmenuOnClick('developer', $event)">
             <span><i class="bi bi-file-earmark-text bi-sm mr-1"></i></span>
             <div *ngIf="isSidemenuCollapsed" class="dot-div">
               <span class="dot"></span>
             </div>
             <span class="sidemenu-text">Developer</span>
             <span *ngIf="!isSidemenuCollapsed" class="icon is-small menu-toogle-icon is-pulled-right">
-              <i class="toggle-submenu-dropdown mr-0 fas fa-xs fa-chevron-right" aria-hidden="true"></i>
+              <i class="toggle-submenu-dropdown mr-0 fas fa-xs" [ngClass]="applyCssClass(isDeveloperListOpen)"
+                aria-hidden="true"></i>
             </span>
           </a>
-          <div class="submenu-div" id="developer-submenu">
+          <div class="submenu-div" id="developer-submenu" [hidden]="viewPort == 'mobile' && !isDeveloperListOpen"
+            [ngClass]="{'show-on-mobile':  viewPort == 'mobile'  && isDeveloperListOpen }">
             <ul class="submenu-list" [ngClass]="{'pl-0':  isSidemenuCollapsed }">
               <li>
                 <a class="submenu-text" id="python-packages" routerLinkActive="is-active"

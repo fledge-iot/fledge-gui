@@ -53,7 +53,7 @@ svg#control-dispatch {
   border: 0;
 }
 
-#sidemenu .sidemenu-link i {
+#sidemenu .sidemenu-link i, #mobile-sidemenu .sidemenu-link i {
   margin-right: 0.25rem;
 }
 
@@ -66,23 +66,22 @@ svg#control-dispatch {
   color: white;
 }
 
-ul {
-  max-height: 250px;
+#mobile-sidemenu ul, #sidemenu ul {
   overflow-x: hidden;
   overflow-y: auto;
 }
 
-li {
+#sidemenu li {
   position: static;
 }
 
-li .submenu-div {
+#sidemenu li .submenu-div {
   position: absolute;
   z-index: 99;
   display: none;
 }
 
-li:hover .submenu-div {
+#sidemenu li:hover .submenu-div, .show-on-mobile {
   display: block !important;
 }
 
