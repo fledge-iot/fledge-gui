@@ -85,6 +85,9 @@ export class NodeEditorComponent implements OnInit {
   filterConfigApiCallsStack = [];
   validConfigurationForm = true;
   validFilterConfigForm = true;
+  validNotificationForm = true;
+  validDeliveryConfigForm = true;
+  validRuleConfigForm = true;
   quickviewFilterName = "";
   isAddFilterWizard: boolean = false;
   isAlive: boolean;
@@ -840,6 +843,12 @@ export class NodeEditorComponent implements OnInit {
   checkFilterFormState() {
     const noChange = !this.validFilterConfigForm || isEmpty(this.changedFilterConfig);
     return noChange;
+  }
+
+  checkNotificationFormState() {
+    return !(this.validNotificationForm && this.validDeliveryConfigForm && this.validRuleConfigForm)
+      || (isEmpty(this.notificationChangedConfig) && isEmpty(this.rulePluginChangedConfig)
+        && isEmpty(this.deliveryPluginChangedConfig))
   }
 
   getChangedConfig(changedConfiguration: any) {

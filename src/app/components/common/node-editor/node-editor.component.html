@@ -100,7 +100,7 @@
     <ng-container *ngIf="showNotificationConfiguration && from === 'notifications'">
       <app-configuration-group #notificationConfigView *ngIf="category" [sourceName]="serviceName" [category]="category"
         [from]="'notifications'" (changedConfigEvent)="getChangedNotificationConfig($event)"
-        (formStatusEvent)="validConfigurationForm = $event">
+        (formStatusEvent)="validNotificationForm = $event">
       </app-configuration-group>
       <hr *ngIf="notification != undefined" class="hr-text notification-hr"
         [attr.data-content]="'Rule - ' + notification.rule">
@@ -109,7 +109,7 @@
           <div class="field">
             <app-configuration-group #ruleConfigView *ngIf="ruleCategory" [sourceName]="serviceName"
               [category]="ruleCategory" [from]="'rule-modal'" (changedConfigEvent)="getChangedRuleConfig($event)"
-              (formStatusEvent)="validConfigurationForm = $event">
+              (formStatusEvent)="validRuleConfigForm = $event">
             </app-configuration-group>
           </div>
         </div>
@@ -122,7 +122,7 @@
             <app-configuration-group #deliveryConfigView *ngIf="deliveryCategory" [category]="deliveryCategory"
               [sourceName]="serviceName" [from]="'delivery-modal'"
               (changedConfigEvent)="getChangedDeliveryConfig($event)"
-              (formStatusEvent)="validConfigurationForm = $event">
+              (formStatusEvent)="validDeliveryConfigForm = $event">
             </app-configuration-group>
           </div>
         </div>
@@ -132,8 +132,8 @@
           <div class="column">
             <div class="field is-grouped is-pulled-left">
               <p class="control">
-                <button class="button is-small is-link ml-4" (click)="saveNotificationConfiguration()"
-                  [appDisableUntilResponse]="reenableButton">Save</button>
+                <button [disabled]="checkNotificationFormState()" class="button is-small is-link ml-4"
+                  (click)="saveNotificationConfiguration()" [appDisableUntilResponse]="reenableButton">Save</button>
               </p>
             </div>
           </div>
