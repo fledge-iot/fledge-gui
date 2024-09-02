@@ -91,6 +91,10 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
 
   insertableNodes(area, {
     async createConnections(node, connection) {
+      if (!isEmpty(node.inputs) && !isEmpty(node.outputs) && node?.label == 'Filter') {
+        const pseudoNodeControl = (node.controls.pseudoNodeControl) as PseudoNodeControl;
+        pseudoNodeControl.pseudoConnection = true;
+      }
       if (!isEmpty(node.inputs)) {
         await editor.addConnection(
           new Connection(
@@ -130,7 +134,16 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
           async handler() {
             // connection
             const connectionId = context.id
-            await editor.removeConnection(connectionId)
+
+            const connection = editor.getConnection(connectionId);
+            console.log('remove conn', connection);
+            const source = editor.getNode(connection.source);
+            const destination = editor.getNode(connection.target);
+            if (source.label == 'Filter' || destination.label == 'Filter') {
+              const pseudoNodeControl = (source.controls.pseudoNodeControl || destination.controls.pseudoNodeControl) as PseudoNodeControl;
+              pseudoNodeControl.pseudoConnection = false;
+            }
+            await editor.removeConnection(connectionId);
           }
         }
         return {

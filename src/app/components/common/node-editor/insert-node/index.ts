@@ -2,7 +2,7 @@ import { BaseSchemes, ClassicPreset, GetSchemes, NodeEditor } from "rete";
 import { AreaPlugin } from "rete-area-plugin";
 import { Position, Size } from "./types";
 import { checkElementIntersectPath } from "./utils";
-import { Filter, PseudoNodeControl } from "../filter";
+import { Filter } from "../filter";
 import { South } from "../nodes/south";
 import { North } from "../nodes/north";
 import { Connection } from "../editor";
@@ -67,13 +67,6 @@ export function insertableNodes<S extends Schemes>(
         for (let id of intersectedConnections) {
           const exist = editor.getConnection(id);
           if (exist && (exist.source !== node.id && exist.target !== node.id)) {
-            // Check required to show/hide (+) icon on the filter node
-            if (node.label == 'Filter') {
-              const pseudoNodeControl = node.controls.pseudoNodeControl as PseudoNodeControl;
-              pseudoNodeControl.pseudoConnection = true;
-              area.update('control', pseudoNodeControl.id)
-              area.update('node', node.id)
-            }
             removeOldConnection(node, editor);
             await editor.removeConnection(id);
             await props.createConnections(node, exist);

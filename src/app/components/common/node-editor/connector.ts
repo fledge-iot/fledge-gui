@@ -1,6 +1,7 @@
 import { ClassicPreset, GetSchemes, getUID } from 'rete';
 import { BidirectFlow, Context, SocketData } from 'rete-connection-plugin';
 import { getUpdatedFilterPipeline } from './editor';
+import { PseudoNodeControl } from './filter';
 
 type ClassicScheme = GetSchemes<ClassicPreset.Node, ClassicPreset.Connection<ClassicPreset.Node, ClassicPreset.Node> & { isLoop?: boolean }>
 
@@ -12,6 +13,8 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
         if (initial.nodeId === socket.nodeId) {
           return;
         }
+
+        const fromNode = context.editor.getNode(initial.nodeId);
         // Avoid connection loop in pipeline
         const toNode = context.editor.getNode(socket.nodeId);
         const pipeline = getUpdatedFilterPipeline();
@@ -21,6 +24,17 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
           if (exists) {
             return;
           }
+        }
+
+        // Check required to show/hide (+) icon on the filter node
+        if ((fromNode.label == 'Filter')) {
+          const pseudoNodeControl = fromNode.controls.pseudoNodeControl as PseudoNodeControl;
+          pseudoNodeControl.pseudoConnection = true;
+        }
+
+        if ((toNode.label == 'Filter')) {
+          const pseudoNodeControl = toNode.controls.pseudoNodeControl as PseudoNodeControl;
+          pseudoNodeControl.pseudoConnection = true;
         }
 
         context.editor.addConnection(
