@@ -334,7 +334,6 @@ table thead th {
 
 .icon-group {
   padding-left: 16px;
-  ;
 }
 
 .service-info {
@@ -377,7 +376,7 @@ span.tooltip {
   min-height: 22vh;
 }
 
-.plugin-info {
+.info-icon {
   color: gray;
 }
 
@@ -456,7 +455,11 @@ span.tooltip {
 }
 
 .message.is-warning .message-body {
-padding: 1em 0.75em !important
+  padding: 1em 0.75em !important
+}
+
+.is-size-9 {
+  font-size: 0.9rem !important;
 }
 
 /*****************/

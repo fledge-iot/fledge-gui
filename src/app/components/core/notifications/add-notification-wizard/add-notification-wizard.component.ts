@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy, EventEmitter } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, UntypedFormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { cloneDeep, sortBy } from 'lodash';
 
@@ -12,7 +12,7 @@ import {
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { delay, retryWhen, take } from 'rxjs/operators';
 import { DocService } from '../../../../services/doc.service';
-import {QUOTATION_VALIDATION_PATTERN} from '../../../../utils';
+import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 
 
 @Component({
@@ -48,6 +48,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   public notificationType: string;
   private subscription: Subscription;
 
+  public source = '';
+
   notificationForm = new UntypedFormGroup({
     name: new UntypedFormControl(),
     description: new UntypedFormControl(),
@@ -76,10 +78,17 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
     private sharedService: SharedService,
+    private route: ActivatedRoute,
     private docService: DocService,
     private configurationControlService: ConfigurationControlService,
     private fileUploaderService: FileUploaderService,
-    private router: Router) { }
+    private router: Router) {
+    this.route.queryParams.subscribe(params => {
+      if (params['source']) {
+        this.source = params['source'];
+      }
+    });
+  }
 
   ngOnInit() {
     this.getNotificationPlugins();
@@ -171,7 +180,11 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     const id = last.getAttribute('id');
 
     if (+id === 1) {
-      this.router.navigate(['/notification']);
+      if (this.source) {
+        this.router.navigate(['/flow/editor/notifications']);
+      } else {
+        this.router.navigate(['/notification']);
+      }
       return;
     }
     last.classList.remove('is-active');
@@ -303,7 +316,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         }
         this.payload.enabled = this.isNotificationEnabled;
         this.payload.retrigger_time = this.retriggerTime.nativeElement.value;
-        if (this.payload.retrigger_time < 1) {
+        if (this.payload.retrigger_time < 0) {
           return;
         }
         this.addNotificationInstance(this.payload);
@@ -469,7 +482,12 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
           if (deliveryScriptFiles.length > 0) {
             this.uploadScript(`delivery${name}`, deliveryScriptFiles);
           }
-          this.router.navigate(['/notification']);
+          if (this.source === 'flowEditor') {
+            this.router.navigate(['/flow/editor/notifications']);
+          }
+          else {
+            this.router.navigate(['/notification']);
+          }
         },
         (error) => {
           /** request done */

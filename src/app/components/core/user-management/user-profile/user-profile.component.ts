@@ -15,7 +15,7 @@ export class UserProfileComponent implements OnInit {
   public childData = {};
   isShow = false;
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
-
+  @ViewChild('profileForm', { static: true }) profileForm: NgForm;
 
   constructor(private authService: AuthService,
     private alertService: AlertService,
@@ -40,33 +40,16 @@ export class UserProfileComponent implements OnInit {
     this.userService.getUser(id)
       .subscribe(
         (userData) => {
-          this.userService.getRole()
-            .subscribe(
-              (roleRecord) => {
-                this.ngProgress.done();
-                roleRecord['roles'].filter(role => {
-                  if (role.id === userData['roleId']) {
-                    userData['roleName'] = this.roleService.getRoleName(role.id);
-                  }
-                });
-                this.userRecord = {
-                  userId: userData['userId'],
-                  userName: userData['userName'],
-                  real_name: userData['realName'],
-                  roleId: userData['roleId'],
-                  roleName: userData['roleName'],
-                  access_method: this.getAccessMethod(userData['accessMethod']),
-                  description: userData['description']
-                };
-              },
-              error => {
-                this.ngProgress.done();
-                if (error.status === 0) {
-                  console.log('service down ', error);
-                } else {
-                  this.alertService.error(error.statusText);
-                }
-              });
+            this.ngProgress.done();
+            this.userRecord = {
+              userId: userData['userId'],
+              userName: userData['userName'],
+              real_name: userData['realName'],
+              roleId: userData['roleId'],
+              roleName: this.roleService.getRoleName(userData['roleId']),
+              access_method: this.getAccessMethod(userData['accessMethod']),
+              description: userData['description']
+            }
         },
         error => {
           /** request completed */
@@ -80,17 +63,19 @@ export class UserProfileComponent implements OnInit {
   }
 
   getAccessMethod(accessMethod) {
+    let method;
     switch (accessMethod) {
       case 'cert':
-        return 'Certificate';
+        method = 'Certificate';
         break;
       case 'pwd':
-        return 'Password';
+        method = 'Password';
         break;
       default:
-        return 'Any';
+        method = 'Any';
         break;
     }
+    return method;
   }
 
   public resetUserForm(form: NgForm) {
@@ -100,7 +85,7 @@ export class UserProfileComponent implements OnInit {
     this.isShow = false;
   }
 
-  public toggleModal(isOpen: Boolean) {
+  public toggleModal(isOpen: boolean) {
     const userProfileModal = <HTMLDivElement>document.getElementById('user_profile_modal');
     if (isOpen) {
       userProfileModal.classList.add('is-active');
@@ -154,16 +139,17 @@ export class UserProfileComponent implements OnInit {
 
   /**
     *  Sign Out
-    *  @param id  user id
+    *  @param data
     */
-  clearAllSessions(id) {
+  clearAllSessions(data: any) {
+    const userId = data.id
     this.ngProgress.start();
-    this.authService.clearAllSessions(id).
+    this.authService.clearAllSessions(userId).
       subscribe(
         () => {
           sessionStorage.clear();
           this.ngProgress.done();
-          this.alertService.success('All active sessions cleared');
+          this.alertService.success('All active sessions cleared', true);
           this.router.navigate(['/login'], { replaceUrl: true });
         },
         error => {
@@ -185,6 +171,7 @@ export class UserProfileComponent implements OnInit {
         () => {
           this.ngProgress.done();
           this.alertService.success('User updated successfully');
+          this.profileForm.form.markAsPristine();
         },
         error => {
           this.ngProgress.done();

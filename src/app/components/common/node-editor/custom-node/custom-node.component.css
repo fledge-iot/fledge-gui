@@ -2,13 +2,18 @@
   display: block;
   background: white;
   border: 2px solid silver;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
   box-sizing: border-box;
   width: 198px;
   height: auto;
   position: relative;
   user-select: none;
+}
+
+:host:has(div.add-service),
+:host:has(div.add-task) {
+  border: 2px dotted silver !important;
 }
 
 :host:hover {
@@ -35,7 +40,7 @@
 
 :host .input {
   text-align: left;
-   display: inline-block;
+  display: inline-block;
   box-shadow: none !important;
   background-color: inherit !important;
   border: none !important;
@@ -138,14 +143,23 @@
 
 .health-icon {
   margin-left: -5px;
+  height: 1rem !important;
 }
 
-.add-service {
-  height: 92px;
+.add-service,
+.add-task {
   width: 198px;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.add-service {
+  height: 85px;
+}
+
+.add-task {
+  height: 89px;
 }
 
 .input-container {
@@ -183,12 +197,25 @@
   margin-left: 30px;
 }
 
-.south-storage-icon{
+.south-storage-icon {
   margin-top: 4px;
   margin-left: 10px;
 }
 
-
 .trash-icon {
   visibility: hidden !important;
+}
+
+.disabled-node .plus-icon {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.disabled {
+  pointer-events: none;
+}
+
+:host:has(div.disabled-node) {
+  background: whitesmoke;
+  cursor: not-allowed !important;
 }

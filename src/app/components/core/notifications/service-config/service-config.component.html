@@ -1,0 +1,5 @@
+<a *ngIf="rolesService.hasControlAccess()" class="button" (click)="openConfigureModal()" id="config-icon">
+    <span class="icon tooltip has-tooltip-arrow has-tooltip-left" [attr.data-tooltip]="(from === 'notification' || from === 'flow-editor' ? 'Notification ' : 'Dispatcher ') + 'Service Configuration'" [ngClass]="{'pb-3': from === 'flow-editor'}" >
+        <i class="bi bi-gear-wide-connected bi-sm" aria-hidden="true"></i>
+    </span>
+</a>

@@ -9,12 +9,18 @@
       <div id="edit_profile">
         <div class="columns">
           <div class="column is-6">
-            <label class="label is-small">Name</label>
-            <p class="control is-fullwidth">
-              <input type="text" class="input is-small" placeholder="Real Name" name='real_name'
-                [(ngModel)]="userRecord.real_name" />
-            </p>
+            <form #profileForm="ngForm">
+              <label class="label is-small">Name</label>
+              <p class="control is-fullwidth">
+                <input type="text" class="input is-small" placeholder="Real Name" name='real_name'
+                  [(ngModel)]="userRecord.real_name" required />
+                <small
+                  *ngIf="profileForm?.controls['real_name']?.hasError('required') && profileForm?.controls['real_name']?.touched"
+                  class="help is-danger">Name is required</small>
+              </p>
+            </form>
           </div>
+
         </div>
         <div class="columns">
           <div class="column is-6">
@@ -63,7 +69,8 @@
         <div class="columns">
           <div class="column is-3">
             <div class="control">
-              <span (click)="update()" class="button is-info is-small">Update</span>
+              <button [disabled]="profileForm.invalid || profileForm.pristine" (click)="update()"
+                class="button is-info is-small">Update</button>
             </div>
           </div>
         </div>
@@ -71,7 +78,7 @@
     </div>
   </div>
 </div>
-<app-alert-dialog (logoutAllUserSessionsService)='clearAllSessions($event)' [childData]='childData'></app-alert-dialog>
+<app-alert-dialog (userActionService)='clearAllSessions($event)' [childData]='childData'></app-alert-dialog>
 <div class="modal" id="user_profile_modal">
   <div class="modal-background"></div>
   <div class="modal-card">

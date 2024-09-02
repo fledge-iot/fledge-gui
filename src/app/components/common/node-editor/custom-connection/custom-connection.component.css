@@ -1,19 +1,30 @@
 svg {
-    overflow: visible !important;
-    position: absolute;
-    pointer-events: none;
-    width: 9999px;
-    height: 9999px;
+  overflow: visible;
+  position: absolute;
+  pointer-events: none;
 }
 
 svg path {
-    fill: none;
-    stroke-width: 1px;
-    stroke: steelblue;
-    pointer-events: auto;
+  fill: none;
+  stroke-width: 1px;
+  stroke: steelblue;
+  pointer-events: auto;
 }
 
-.hoverPath {
-    stroke-width: 12px !important;
-    stroke: transparent !important;
+svg path.selected {
+  stroke: rgb(255, 217, 44);
+}
+
+.hover-path {
+  stroke-width: 14px !important;
+  stroke: transparent !important;
+}
+
+.connection-status {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border: 0px;
+  width: auto;
+  height: auto;
+  cursor: pointer;
 }

@@ -1,7 +1,7 @@
-import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { AlertService, ConfigurationControlService, ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
-import { chain, cloneDeep, uniqWith } from 'lodash';
+import { chain, cloneDeep, uniqWith, isEmpty } from 'lodash';
 import { TabHeader } from './tab-header-slider';
 import { TabNavigationComponent } from '../tab-navigation/tab-navigation.component';
 
@@ -12,11 +12,11 @@ import { TabNavigationComponent } from '../tab-navigation/tab-navigation.compone
 })
 export class ConfigurationGroupComponent implements AfterViewInit {
 
-  selectedGroup = 'Basic';
-  @Input() category;
-  groups = [];
-
-  tabs: TabHeader;
+  @Input() category: any;
+  @Input() plugin: string;
+  @Input() serviceStatus = false;
+  @Input() from: string;
+  @Input() sourceName: string;
 
   @Output() changedConfigEvent = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<boolean>();
@@ -24,15 +24,14 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
   @ViewChild(TabNavigationComponent) tabNavigationComponent: TabNavigationComponent;
 
+  selectedGroup = { key: 'Basic', name: 'Basic' };
+  groups = [];
+  tabs: TabHeader;
+
   // To hold the changed configuration values of a plugin
   configFormValues = {};
-
-  pages = ['south', 'north', 'notification', 'additional-services'];
-  @Input() from;
-  @Input() sourceName;
-  @Input() categoryType;
+  pages = ['south', 'north', 'notifications', 'additional-services'];
   categoryKey = '';
-
   advanceConfiguration: any
   securityConfiguration: any;
   changedAdvanceConfiguration: any;
@@ -45,7 +44,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     public rolesService: RolesService,
     private configService: ConfigurationService,
     private configurationControlService: ConfigurationControlService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private cdrf: ChangeDetectorRef
   ) { }
 
   ngAfterViewInit() {
@@ -54,6 +54,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     window.addEventListener('resize', () => {
       this.tabs.setOverFlow();
     })
+    this.cdrf.detectChanges();
   }
 
   // left slider click
@@ -78,33 +79,51 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   }
 
   categeryConfiguration() {
-    let modelConfig = []
+    let modelConfig = [];
+    let listConfig = [];
+    let kvlistConfig = [];
     this.groups = [];
-    const configItems = Object.keys(this.category.config).map(k => {
-      if (this.category.config[k].type == 'bucket') {
+    const configItems = Object.keys(this.category.config)
+      // remove readonly true config items from the group
+      .filter((key: any) => (this.category.config[key].readonly !== 'true'))
+      .map(k => {
         this.category.config[k].key = k;
-        modelConfig.push(this.category.config[k]);
-      }
-      this.category.config[k].key = k;
-      return this.category.config[k];
-    }).filter(obj => !obj.readonly && obj.type != 'bucket'); // remove readonly & type=bucket items from config array
+        return this.category.config[k];
+      }).filter(obj => !['bucket', 'list', 'kvlist'].includes(obj.type)); // remove type=bucket, type=list and type=kvlist from config array
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
       const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic";
-      return { category: this.category.name, group: g, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })), type: g }
+      return { category: this.category.name, group: { key: g, name: g }, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })), type: g }
     }).value();
 
+    Object.keys(this.category.config).map(k => {
+      this.category.config[k].key = k;
+      if (this.category.config[k].type == 'bucket') {
+        modelConfig.push(this.category.config[k]);
+      }
+      else if (this.category.config[k].type == 'list') {
+        listConfig.push(this.category.config[k]);
+      }
+      else if (this.category.config[k].type == 'kvlist') {
+        kvlistConfig.push(this.category.config[k]);
+      }
+    })
+
     if (modelConfig.length > 0) {
-      modelConfig.forEach(mConfig => {
-        if (!mConfig.hasOwnProperty('value')) {
-          mConfig.value = mConfig.default;
-        }
-        this.groups.push({ category: this.category.name, group: (mConfig.displayName ? mConfig.displayName : mConfig.description), config: mConfig, type: mConfig.type, key: mConfig.key });
-      });
+      this.buildGroupOfItems(modelConfig);
     }
+
+    if (listConfig.length > 0) {
+      this.buildGroupOfItems(listConfig);
+    }
+
+    if (kvlistConfig.length > 0) {
+      this.buildGroupOfItems(kvlistConfig);
+    }
+
     // merge configuration of same group
     this.groups = uniqWith(this.groups, (pre, cur) => {
-      if (pre.group == cur.group) {
+      if (pre.group.key == cur.group.key) {
         cur.config = { ...cur.config, ...pre.config };
         return true;
       }
@@ -113,27 +132,46 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
     // sort group items having default configuration as first element
     this.groups = this.groups
-      .sort((a, b) => a.group.localeCompare(b.group))
-      .reduce((acc, e) => {
-        e.group === 'Basic' ? acc.unshift(e) : acc.push(e);
+      .sort((a, b) => {
+        return ((+a?.order) - (+b?.order)) || a.group.name.localeCompare(b.group.name)
+      }).reduce((acc, e) => {
+        e.group.key === 'Basic' ? acc.unshift(e) : acc.push(e);
         return acc;
       }, []);
+
 
     this.getGroups();
     // set initial group
     this.selectedGroup = this.groups[0]?.group;
   }
 
+  buildGroupOfItems(configItems) {
+    configItems?.forEach(config => {
+      if (!config.hasOwnProperty('value')) {
+        config.value = config.default;
+      }
+      let isGroupNameExist = this.groups.some(obj => Object.values(obj.group).includes(config.displayName ? config.displayName : config.key));
+      let group = { key: config.key, name: config.displayName ? config.displayName : config.key, description: config.description };
+      if (isGroupNameExist) {
+        // If same group exist, create new group with coonfig key and the description of the configuration
+        group = { key: config.key, name: config.key, description: config.description }
+      }
+
+      this.groups.push({ category: this.category.name, group, config: config, type: config.type, key: config.key, ...(config.order && { order: config.order }) });
+    });
+
+  }
+
   /**
    * Set tab in the group
    * @param tab tab index
    */
-  selectTab(tab: string) {
-    if (tab !== this.selectedGroup) {
+  selectTab(tab) {
+    if (tab.key !== this.selectedGroup.key) {
       this.selectedGroup = tab;
     }
     if (this.tabNavigationComponent) {
-      const tabIndex = this.groupTabs.findIndex(t => t === this.selectedGroup);
+      const tabIndex = this.groupTabs.findIndex(t => t.key === this.selectedGroup.key);
       this.tabNavigationComponent.setTab(tabIndex);
     }
   }
@@ -141,7 +179,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   getGroups() {
     this.groupTabs = [...this.groups.map(g => g.group), ...this.dynamicCategoriesGroup.map(g => g.group),];
     if (this.developerFeaturesService.getDeveloperFeatureControl() && this.pages.includes(this.from)) {
-      this.groupTabs.push('Developer');
+      this.groupTabs.push({ key: 'Developer', name: 'Developer' });
     }
   }
 
@@ -162,8 +200,11 @@ export class ConfigurationGroupComponent implements AfterViewInit {
           const categoryChildren = data.categories?.filter(cat => (cat.key == `${this.categoryKey}Advanced`) || (cat.key == `${this.categoryKey}Security`));
           categoryChildren.forEach(cat => {
             // Set group of advance/security configuration
-            cat.group = cat?.key.includes(`${this.categoryKey}Advanced`) ? 'Advanced Configuration' :
-              (cat?.key.includes(`${this.categoryKey}Security`) ? 'Security Configuration' : cat?.displayName);
+            cat.group = {
+              key: cat.key,
+              name: cat?.key.includes(`${this.categoryKey}Advanced`) ? 'Advanced' :
+                (cat?.key.includes(`${this.categoryKey}Security`) ? 'Security' : cat?.displayName)
+            };
             // Get child category configuration
             this.getConfig(cat);
           });
@@ -177,6 +218,10 @@ export class ConfigurationGroupComponent implements AfterViewInit {
           }
         }
       );
+  }
+
+  developerTabState(tabs: any) {
+    return !tabs.some(d => (d.key == 'Developer'))
   }
 
   /**
@@ -262,10 +307,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     else {
       dynamicGroups.push(config);
     }
-
-    dynamicGroups = dynamicGroups.sort((a, b) => a.group.localeCompare(b.group))
+    dynamicGroups = dynamicGroups.sort((a, b) => a.group.key.localeCompare(b.group.key))
       .reduce((acc, e) => {
-        e.group === 'Basic' ? acc.unshift(e) : acc.push(e);
+        e.group.key === 'Basic' ? acc.unshift(e) : acc.push(e);
         return acc;
       }, []);
 
@@ -278,9 +322,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
   formStatus(formState: any) {
     // find the object of changed form from groups array
-    let groupObject = this.groups.find((g: any) => g.group === formState.group);
+    let groupObject = this.groups.find((g: any) => g.group.key === formState.group);
     if (!groupObject) {
-      groupObject = this.dynamicCategoriesGroup.find((g: any) => g.group === formState.group)
+      groupObject = this.dynamicCategoriesGroup.find((g: any) => g.group.key === formState.group)
     }
     // Set the status of respected tab
     if (groupObject) {
@@ -291,5 +335,42 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     // check the condition for every element to see if all groups have valid status
     const formStatus = groupTabFormsStatus.every(g => (g.status === true || g.status === undefined));
     this.formStatusEvent.emit(formStatus);
+  }
+
+  toggleCard(index) {
+    let cardBody = document.getElementById('card-content-' + index);
+    let cardSpan = document.getElementById('card-span-' + index);
+    let cardIcon = document.getElementById('card-icon-' + index);
+    if (cardBody.classList.contains('is-hidden')) {
+      cardBody.classList.remove('is-hidden');
+      cardSpan.title = 'Collapse';
+      cardIcon.classList.remove('fa-chevron-right');
+      cardIcon.classList.add('fa-chevron-down');
+    }
+    else {
+      cardBody.classList.add('is-hidden');
+      cardSpan.title = 'Expand';
+      cardIcon.classList.remove('fa-chevron-down');
+      cardIcon.classList.add('fa-chevron-right');
+    }
+  }
+
+  isCollapsed(itemIndex: number) {
+    let cardBody = document.getElementById('card-content-' + itemIndex);
+    if (cardBody) {
+      return cardBody.classList.contains('is-hidden');
+    }
+    return false;
+  }
+
+  isEmpty(value: any) {
+    try {
+      value = JSON.parse(value);
+      return isEmpty(value);
+    } catch (error) {
+      console.log('error', error);
+      // if any error don't show No items label
+      return false;
+    }
   }
 }

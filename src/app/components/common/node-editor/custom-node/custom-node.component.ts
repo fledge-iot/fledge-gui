@@ -62,7 +62,8 @@ export class CustomNodeComponent implements OnChanges {
     repeat: "",
     sent: "",
     taskStatus: {},
-    pluginVersion: ""
+    pluginVersion: "",
+    status: ""
   }
   filter = { pluginName: '', enabled: 'false', name: '', color: '', pluginVersion: "" }
   isServiceNode: boolean = false;
@@ -77,6 +78,7 @@ export class CustomNodeComponent implements OnChanges {
   showDeleteIcon = false;
   nodeId = '';
   pluginVersion = '';
+  timeoutId;
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -125,6 +127,7 @@ export class CustomNodeComponent implements OnChanges {
             this.task.sent = this.service.readingCount = this.data.controls.sentReadingControl['sent'];
             this.task.execution = this.data.controls.executionControl['execution'];
             this.task.enabled = this.data.controls.enabledControl['enabled'];
+            this.task.status = this.data.controls.statusControl['status'];
             this.task.pluginVersion = this.service.pluginVersion = this.data.controls.pluginVersionControl['pluginVersion'];
             this.isEnabled = this.task.enabled;
             this.helpText = this.task.plugin;
@@ -192,12 +195,12 @@ export class CustomNodeComponent implements OnChanges {
         }
       }
     }
-    if (this.data.label === 'AddService') {
+
+    const labels = ['AddService', 'AddTask'];
+    if (labels.includes(this.data.label)) {
       this.data.label = "";
     }
-    if (this.data.label === 'AddTask') {
-      this.data.label = "";
-    }
+
     if (this.data.label === 'Storage') {
       this.elRef.nativeElement.style.borderColor = "#999999";
     }
@@ -230,7 +233,7 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   showLogsInQuickview() {
-    this.flowEditorService.showItemsInQuickview.next({ showLogs: true, serviceName: this.service.name });
+    this.flowEditorService.showLogsInQuickview.next({ showLogs: true, serviceName: this.service.name });
   }
 
   navToSyslogs() {
@@ -355,66 +358,6 @@ export class CustomNodeComponent implements OnChanges {
         });
   }
 
-  getNorthboundTasks() {
-    this.northService.getNorthTasks(true)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data: any) => {
-        const tasks = data as NorthTask[];
-        this.fetchedTask = tasks.find(task => (task.name == this.service.name));
-        if (this.fetchedTask) {
-          this.service.status = this.fetchedTask?.status;
-          let readingCount = this.fetchedTask.sent;
-          this.service.readingCount = readingCount;
-          this.service.schedule_enabled = this.fetchedTask.enabled;
-          if (this.service.schedule_enabled === true) {
-            this.isEnabled = true;
-          }
-          else {
-            this.isEnabled = false;
-          }
-        }
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.toastService.error(error.statusText);
-          }
-        });
-  }
-
-  getSouthboundServices() {
-    this.servicesApiService.getSouthServices(true)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data: any) => {
-        const services = data.services as Service[];
-        this.fetchedService = services.find(service => (service.name == this.service.name));
-        if (this.fetchedService) {
-          this.service.status = this.fetchedService.status;
-          let assetCount = this.fetchedService.assets.length;
-          let readingCount = this.fetchedService.assets.reduce((total, asset) => {
-            return total + asset.count;
-          }, 0)
-          this.service.assetCount = assetCount;
-          this.service.readingCount = readingCount;
-          this.service.schedule_enabled = this.fetchedService.schedule_enabled;
-          if (this.service.schedule_enabled === true) {
-            this.isEnabled = true;
-          }
-          else {
-            this.isEnabled = false;
-          }
-        }
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.toastService.error(error.statusText);
-          }
-        });
-  }
-
   removeFilter() {
     this.flowEditorService.removeFilter.next({ id: this.nodeId });
   }
@@ -424,7 +367,23 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   getAssetReadings() {
-    this.flowEditorService.exportReading.next({serviceName: this.service.name});
+    this.flowEditorService.exportReading.next({ serviceName: this.service.name });
+  }
+
+  openDropdown() {
+    this.timeoutId = setTimeout(() => {
+      this.flowEditorService.nodeClick.next({ nodeId: this.nodeId });
+      const dropDown = document.querySelector('#nodeDropdown-' + this.nodeId);
+      dropDown.classList.add('is-active');
+    }, 250);
+  }
+
+  closeDropdown() {
+    clearTimeout(this.timeoutId);
+    const dropDown = document.querySelector('#nodeDropdown-' + this.nodeId);
+    if (dropDown.classList.contains('is-active')) {
+      dropDown.classList.remove('is-active');
+    }
   }
 
   ngOnDestroy() {

@@ -12,6 +12,7 @@ export class ConfigurationBase<T> {
   readonly: string;
   editable: boolean;
   mandatory: string;
+  permissions?: string[];
   maximum: string;
   minimum: string;
   order: number;
@@ -41,6 +42,7 @@ export class ConfigurationBase<T> {
     controlType?: string;
     type?: string;
     options?: [];
+    permissions?: string[];
     length?: string;
     editorOptions?: {};
     file?: string;
@@ -53,12 +55,13 @@ export class ConfigurationBase<T> {
     this.key = options.key || '';
     this.label = options.label || '';
     this.description = options.description;
-    this.readonly = options.readonly === undefined ? 'false' : options.readonly;
-    this.mandatory = options.mandatory === undefined ? 'false' : options.mandatory;
+    this.readonly = options.readonly ?? 'false';
+    this.mandatory = options.mandatory ?? 'false';
+    this.permissions = options.permissions;
     this.required = options.mandatory === undefined ? false : (options.mandatory == 'true');
-    this.editable = options.editable === undefined ? true : options.editable;
+    this.editable = options.editable ?? true;
     // assign a big number to the property which doesn't have 'order' key to show the property at last
-    this.order = options.order === undefined ? 999 : options.order;
+    this.order = options.order ?? 999;
     this.length = options.length;
     this.minimum = options.minimum;
     this.maximum = options.maximum;
@@ -127,12 +130,14 @@ export class ListConfig extends ConfigurationBase<string> {
   override controlType = 'LIST';
   public listSize = '';
   public items: '';
+  public properties: '';
 }
 
 export class KVListConfig extends ConfigurationBase<string> {
   override controlType = 'KVLIST';
   public listSize = '';
   public items: '';
+  public properties: '';
 }
 
 
@@ -180,6 +185,7 @@ export class ConfigurationControlService {
             maximum: element.maximum,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             validity: element.validity
           }));
@@ -195,6 +201,7 @@ export class ConfigurationControlService {
             maximum: element.maximum,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             validity: element.validity
           }));
@@ -208,6 +215,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             validity: element.validity
           }));
@@ -221,6 +229,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             options: element.options,
             order: element.order,
             validity: element.validity
@@ -236,6 +245,7 @@ export class ConfigurationControlService {
             value: JSON.stringify(JSON.parse(element.value), null, ' '),
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             editorOptions: this.setEditorConfig(element.type),
             validity: element.validity
@@ -250,6 +260,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             editorOptions: this.setEditorConfig(element.type),
             validity: element.validity
@@ -264,6 +275,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             validity: element.validity,
           }));
@@ -277,6 +289,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             validity: element.validity
           }));
@@ -290,6 +303,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             length: element.length,
             order: element.order,
             validity: element.validity
@@ -304,6 +318,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             file: element.file,
             editorOptions: this.setEditorConfig(element.type),
@@ -319,6 +334,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             editorOptions: this.setEditorConfig(element.type),
             validity: element.validity
@@ -333,6 +349,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             validity: element.validity,
           });
@@ -341,6 +358,7 @@ export class ConfigurationControlService {
           listItem.maximum = element?.maximum;
           listItem.length = element?.length;
           listItem.listSize = element?.listSize;
+          listItem.properties = element?.properties
           configurations.push(listItem);
           break;
 
@@ -353,6 +371,7 @@ export class ConfigurationControlService {
             value: element.value,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             validity: element.validity,
           });
@@ -361,6 +380,8 @@ export class ConfigurationControlService {
           kvListItem.maximum = element?.maximum;
           kvListItem.length = element?.length;
           kvListItem.listSize = element?.listSize;
+          kvListItem.properties = element?.properties;
+          kvListItem.options = element?.options;
           configurations.push(kvListItem);
           break;
 
@@ -373,8 +394,10 @@ export class ConfigurationControlService {
             label: this.setDisplayName(element),
             description: element.description,
             value: element.value,
+            length: element.length,
             readonly: element.readonly,
             mandatory: element.mandatory,
+            permissions: element.permissions,
             order: element.order,
             validity: element.validity
           }));
@@ -576,15 +599,19 @@ export class ConfigurationControlService {
     const defaultConfig = map(defaultConfiguration.config, (v, key) => ({ key, ...v }));
 
     // make a copy of matched config items having changed values
-    const matchedConfig = defaultConfig.filter(e1 => {
-      if (changedConfiguration.hasOwnProperty(e1.key)) {
-        if (e1.type == 'JSON') {
+    const matchedConfig = defaultConfig.filter(conf => {
+      if (changedConfiguration.hasOwnProperty(conf.key)) {
+        if (conf.type == 'JSON') {
           // compare JSON value for changed config
-          const oldJsonValue = JSON.stringify(JSON.parse(e1.value ? e1.value : e1.default), null, ' ');
-          const changedJsonValue = JSON.stringify(JSON.parse(changedConfiguration[e1?.key]), null, ' ');
-          return oldJsonValue != changedJsonValue;
+          try {
+            const oldJsonValue = JSON.stringify(JSON.parse(conf.value ? conf.value : conf.default), null, ' ');
+            const changedJsonValue = JSON.stringify(JSON.parse(changedConfiguration[conf?.key]), null, ' ');
+            return oldJsonValue != changedJsonValue;
+          } catch (error) {
+            console.log('Invalid JSON, ', error);
+          }
         }
-        return (e1.value ? e1.value : e1.default) !== changedConfiguration[e1.key];
+        return (conf.value ? conf.value : conf.default) !== changedConfiguration[conf.key];
       }
     });
 
@@ -620,7 +647,7 @@ export class ConfigurationControlService {
   getValidConfig(config: any) {
     // remove readonly property form the local configuration copy
     Object.keys(config).forEach(key => {
-      if (config[key]?.readonly) {
+      if (config[key]?.readonly == 'true') {
         delete config[key];
       }
     })

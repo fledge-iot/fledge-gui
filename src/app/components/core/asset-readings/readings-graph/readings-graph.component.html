@@ -11,7 +11,8 @@
             <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
           </button>
         </div>
-        <ng-container *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5) && infoTextTimestamps.start">
+        <ng-container
+          *ngIf="!isLatestReadings && !(selectedTab == 4) && !(selectedTab == 5) && infoTextTimestamps.start">
           <span class="help" *ngIf="isAlive">
             *Showing data from {{infoTextTimestamps.start}} to current time
           </span>
@@ -24,22 +25,38 @@
         <ng-container *ngIf="!isReadingsFetched">
           <button class="button small-btn is-loading spin-button"></button>
         </ng-container>
-        <button [disabled]="isAlive" (click)="showBackwardReadingsGraphOrSummary()" class="button small-btn playback-button">
+        <ng-container *ngIf="!fromMostRecent && !(selectedTab == 4)">
+          <button (click)="showGraphFromMostRecentReading()" class="button small-btn playback-button btn-enabled"
+            title="Show graph from most recent reading">
+            <i class="fa fa-sm fa-bolt" aria-hidden="true"></i>
+          </button>
+        </ng-container>
+        <ng-container *ngIf="fromMostRecent && !(selectedTab == 4)">
+          <button (click)="showGraphFromCurrentTime()" class="button small-btn playback-button btn-enabled"
+            title="Show graph from current time">
+            <i class="far fa-clock" aria-hidden="true"></i>
+          </button>
+        </ng-container>
+        <button [disabled]="isAlive" (click)="moveInReadingsGraph('back')" class="button small-btn playback-button"
+          [ngClass]="{'btn-enabled': !isAlive}" title="Move backward">
           <i class="fa fa-sm fa-backward" aria-hidden="true"></i>
         </button>
         <ng-container *ngIf="isAlive">
-          <button (click)="toggleAutoRefresh(false)" class="button small-btn playback-button">
+          <button (click)="toggleAutoRefresh(false)" class="button small-btn playback-button btn-enabled"
+            title="Pause graph">
             <i class="fa fa-sm fa-pause" aria-hidden="true"></i>
           </button>
         </ng-container>
         <ng-container *ngIf="!isAlive">
           <button [disabled]="graphRefreshInterval === -1" (click)="toggleAutoRefresh(true)"
-            class="button small-btn playback-button">
+            class="button small-btn playback-button" [ngClass]="{'btn-enabled': !(graphRefreshInterval === -1)}"
+            title="Play graph">
             <i class="fa fa-sm fa-play" aria-hidden="true"></i>
           </button>
         </ng-container>
-        <button [disabled]="isAlive || backwardReadingCounter === 0" (click)="showForwardReadingsGraphOrSummary()"
-          class="button small-btn playback-button">
+        <button [disabled]="isAlive || backwardReadingCounter === 0" (click)="moveInReadingsGraph('forward')"
+          class="button small-btn playback-button"
+          [ngClass]="{'btn-enabled': !(isAlive || backwardReadingCounter === 0)}" title="Move forward">
           <i class="fa fa-sm fa-forward" aria-hidden="true"></i>
         </button>
       </ng-container>
@@ -66,9 +83,10 @@
           <div class="column"
             [ngClass]="{'is-7': rangeSliderService.getAlphControlStatus() && selectedTab === 1, 'is-9': !rangeSliderService.getAlphControlStatus() || selectedTab !== 1}"
             *ngIf="!isLatestReadings && !(selectedTab == 4) && availableAssets.length > 0">
-            <ng-select groupBy="name" placeholder="Select assets" bindLabel="name" [items]="availableAssets" [multiple]="true"
-              [(ngModel)]="additionalAssets" (add)="addOrRemoveAsset($event)" [clearable]="additionalAssets.length > 1"
-              (remove)="addOrRemoveAsset($event.label)" [ngModelOptions]="{standalone: true}" (clear)="clearAdditionalAssets()">
+            <ng-select groupBy="name" placeholder="Select assets" bindLabel="name" [items]="availableAssets"
+              [multiple]="true" [(ngModel)]="additionalAssets" (add)="addOrRemoveAsset($event)"
+              [clearable]="additionalAssets.length > 1" (remove)="addOrRemoveAsset($event.label)"
+              [ngModelOptions]="{standalone: true}" (clear)="clearAdditionalAssets()">
             </ng-select>
           </div>
           <div class="column is-2" *ngIf="rangeSliderService.getAlphControlStatus() && selectedTab === 1">
@@ -77,7 +95,8 @@
             </div>
           </div>
           <div class="column">
-            <button *ngIf="zoomConfig.isZoomed && selectedTab == 1" (click)="resetZoom()" title="Reset Zoom" class="button small-btn zoom-button">
+            <button *ngIf="zoomConfig.isZoomed && selectedTab == 1" (click)="resetZoom()" title="Reset zoom"
+              class="button small-btn zoom-button">
               <i class="fa fa-sm fa-search-minus" aria-hidden="true"></i>
             </button>
           </div>
@@ -131,7 +150,8 @@
               </ng-container>
               <ng-template #DataDiv>
                 <div *ngIf="numberTypeReadingsList?.length == 0 && arrayTypeReadingsList?.length == 0
-                  && isEmptyObject(stringTypeReadingsList) && imageReadings?.length == 0" class="custom-height no-reading">
+                  && isEmptyObject(stringTypeReadingsList) && imageReadings?.length == 0"
+                  class="custom-height no-reading">
                   <div class="has-text-centered no-data"><small class="text-secondary has-text-grey-light">
                       No readings available.</small>
                   </div>

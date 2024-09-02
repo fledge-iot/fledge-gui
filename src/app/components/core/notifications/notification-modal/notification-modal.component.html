@@ -3,14 +3,14 @@
   <div class="modal-card">
     <header class="modal-card-head">
       <span *ngIf="notification" class="modal-card-title title-name">{{notification.name}}
-        <span><i class="bi bi-info-circle plugin-info" aria-hidden="true" [title]="'Rule Plugin: ' + notification.rule + '&#013;Action Plugin: ' + notification.channel"></i></span>
+        <span><i class="bi bi-info-circle info-icon" aria-hidden="true" [title]="'Rule Plugin: ' + notification.rule + '&#013;Action Plugin: ' + notification.channel"></i></span>
         <p class="help has-text-grey modal-subtitle">Notification Instance</p>
       </span>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
       <div class="box">
-        <app-configuration-group #notificationConfigView *ngIf="category" [category]="category" [from]="'notification'"
+        <app-configuration-group #notificationConfigView *ngIf="category" [category]="category" [from]="'notifications'"
           (changedConfigEvent)="getChangedNotificationConfig($event)"
           (formStatusEvent)="validConfigurationForm = $event">
         </app-configuration-group>

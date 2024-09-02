@@ -9,7 +9,7 @@
       </li>
       <li>
         <a id="asset" routerLinkActive="is-active" routerLink='/asset'>
-          <span><i class="bi bi-graph-up bi-xs"></i></span>
+          <span class="menu-text"><i class="bi bi-graph-up bi-xs"></i></span>
           Assets &amp; Readings
         </a>
       </li>
@@ -17,7 +17,7 @@
         <li>
           <a id=" south" routerLinkActive="is-active"
             [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/south']: ['/south']">
-            <span><i class="bi bi-pc-display-horizontal bi-xs sidebar-icon"></i></span>
+            <span class="menu-text"><i class="bi bi-pc-display-horizontal bi-xs sidebar-icon"></i></span>
             South
           </a>
         </li>
@@ -29,23 +29,28 @@
           </a>
         </li>
         <li>
-          <a id="notification" routerLinkActive="is-active" routerLink='/notification'>
+          <a id="notification" routerLinkActive="is-active"
+            [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/notifications']: ['/notification']">
             <span><i class="bi bi-lightning-charge bi-sm"></i></span>
             Notifications
           </a>
         </li>
         <li>
           <a type="button" [ngClass]="{'has-background-light':  isControlListOpen }" id="control"
-            (click)="isControlListOpen = !isControlListOpen; ; $event.stopPropagation()">
-            <span>
-              <i class="bi bi-controller bi-sm"></i>
-              Control
-            </span>
-            <span class="icon is-small menu-toogle-icon is-pulled-right"
-              [title]="isControlListOpen ? 'Collapse' : 'Expand'">
-              <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
-                aria-hidden="true"></i>
-            </span>
+            (click)="isControlListOpen = !isControlListOpen; ; $event.stopPropagation()" class="px-2">
+            <div class="is-flex is-align-items-center">
+              <span class="menu-text">
+                <svg id="control-dispatch">
+                  <use xlink:href="assets/icons/svg/control-dispatch.svg#control-dispatch" />
+                </svg>
+              </span>
+              <span class="is-flex-grow-3">Control</span>
+              <span class="icon is-small menu-toogle-icon is-pulled-right"
+                [title]="isControlListOpen ? 'Collapse' : 'Expand'">
+                <i [ngClass]="isControlListOpen ? 'fas fa-xs fa-chevron-down' : 'fas fa-xs fa-chevron-right'"
+                  aria-hidden="true"></i>
+              </span>
+            </div>
           </a>
           <div [hidden]="!isControlListOpen">
             <ul>
@@ -78,7 +83,7 @@
         </li>
         <li>
           <a id="schedules" routerLinkActive="is-active" routerLink='/schedules'>
-            <span><i class="bi bi-calendar2-week bi-xs sidebar-icon"></i></span>
+            <span class="menu-text"><i class="bi bi-calendar2-week bi-xs sidebar-icon"></i></span>
             Schedules
           </a>
         </li>
@@ -90,15 +95,13 @@
         </li>
         <li>
           <ng-container *ngFor="let mfe of microfrontends">
-
             <a *ngIf="mfe?.displayName" routerLinkActive="is-active" [routerLink]="mfe.routePath">
               <span *ngIf="mfe.displayName === 'ML Models'"><i class="bi bi-bucket bi-sm"></i></span>
               {{mfe.displayName}}</a>
           </ng-container>
         </li>
-        <li>
-          <a *ngIf="rolesService.hasEditPermissions()" id="backup-restore" routerLinkActive="is-active"
-            routerLink='/backup-restore'>
+        <li *ngIf="rolesService.hasAdminPermissionsOrAnonymousAllowed()">
+          <a id="backup-restore" routerLinkActive="is-active" routerLink='/backup-restore'>
             <span><i class="bi bi-database-gear bi-sm"></i></span>
             Backup &amp; Restore
           </a>
@@ -134,14 +137,13 @@
             </ul>
           </div>
         </li>
-        <li>
-          <a id="user-management" *ngIf="isAdmin" routerLinkActive="is-active" routerLink='/user-management'>
+        <li *ngIf="isAdmin">
+          <a id="user-management" routerLinkActive="is-active" routerLink='/user-management'>
             <span><i class="bi bi-people bi-sm"></i></span>
             User Management
           </a>
         </li>
-
-        <li>
+        <li *ngIf="rolesService.hasAdminPermissionsOrAnonymousAllowed()">
           <a id="support" routerLinkActive="is-active" routerLink='/support'>
             <span><i class="bi bi-file-medical bi-sm"></i></span>
             Support

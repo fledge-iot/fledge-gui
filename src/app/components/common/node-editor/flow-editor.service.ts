@@ -7,14 +7,15 @@ import { BehaviorSubject } from 'rxjs';
 export class FlowEditorService {
 
   public showItemsInQuickview: BehaviorSubject<any> = new BehaviorSubject<any>(false);
+  public showLogsInQuickview: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public filterInfo: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public pipelineInfo: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public connectionInfo: BehaviorSubject<any> = new BehaviorSubject<any>(false);
-  public canvasClick: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public showAddFilterIcon: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public serviceInfo: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public removeFilter: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public exportReading: BehaviorSubject<any> = new BehaviorSubject<any>(false);
+  public nodeClick: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   constructor() { }
 
   public flowEditorControl(visible: boolean) {

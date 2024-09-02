@@ -31,7 +31,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   offset = 0;
   searchTerm = '';
   keyword = "";
-  showConfigButton:boolean = false;
+  showConfigButton: boolean = false;
   routePath: string = '';
 
   @Input() sourceName: string;
@@ -77,11 +77,10 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         this.keyword = this.search.nativeElement.value;
         this.getSysLogs();
       })
-      
   }
 
-  ngOnChanges(){
-    if(this.sourceName){
+  ngOnChanges() {
+    if (this.sourceName) {
       this.source = this.sourceName;
     }
   }
@@ -103,7 +102,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
           this.scheduleData = new Set(sortBy(serviceNorthTaskSchedules, (s: any) => {
             return s.name.toLowerCase();
           }));
-          if(this.source){
+          if (this.source) {
             this.setRoutePath();
           }
         },
@@ -182,10 +181,10 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     }
     if (filter === 'source') {
       this.source = value.trim().toLowerCase() === 'all' ? '' : value.trim();
-      if(this.source === '' || this.source === 'storage'){
+      if (this.source === '' || this.source === 'storage') {
         this.showConfigButton = false;
       }
-      else{
+      else {
         this.setRoutePath();
       }
     } else {
@@ -261,11 +260,11 @@ export class SystemLogComponent implements OnInit, OnDestroy {
 
   setRoutePath() {
     let sourceSchedule: any = [...this.scheduleData].find((sch: any) => sch.name === this.source)
-    if (sourceSchedule.processName.toLowerCase() === 'south_c') {
+    if (sourceSchedule?.processName.toLowerCase() === 'south_c') {
       this.routePath = '/south';
       this.showConfigButton = true;
     }
-    else if (sourceSchedule.processName.toLowerCase() === 'north_c') {
+    else if (sourceSchedule?.processName.toLowerCase() === 'north_c') {
       this.routePath = '/north';
       this.showConfigButton = true;
     }
@@ -274,15 +273,17 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     }
   }
 
-  navToInstanceConfiguration(){
+  navToInstanceConfiguration() {
     this.router.navigate([this.routePath, this.source, 'details'])
   }
 
   public ngOnDestroy(): void {
-    this.isAlive = false;
-    this.destroy$.next(true);
-    this.destroy$.unsubscribe();
-    this.subscription.unsubscribe();
-    this.fromEventSub.unsubscribe();
+    if (this.isAlive) {
+      this.isAlive = false;
+      this.destroy$.next(true);
+      this.destroy$.unsubscribe();
+      this.subscription.unsubscribe();
+      this.fromEventSub.unsubscribe();
+    }
   }
 }

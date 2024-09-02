@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { AlertService, AuditService, PingService, ProgressBarService } from '../../../../services';
@@ -10,6 +10,9 @@ import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
   styleUrls: ['./notification-log.component.css']
 })
 export class NotificationLogComponent implements OnInit, OnDestroy {
+  @Input() sourceName: string;
+  @Input() notificationService: string;
+
   public logSourceList = [];
   public logSeverityList = [];
   public notificationLogs: any;
@@ -27,7 +30,7 @@ export class NotificationLogComponent implements OnInit, OnDestroy {
   totalPagesCount = 0;
 
   isInvalidLimit = false;
-  searchTerm = '';
+  searchTerm: any;
 
   public refreshInterval = POLLING_INTERVAL;
   destroy$: Subject<boolean> = new Subject<boolean>();
@@ -56,6 +59,15 @@ export class NotificationLogComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.getNotificationLogs(true);
       });
+  }
+
+  ngOnChanges(){
+    if(this.sourceName){
+      this.searchTerm = [];
+      this.searchTerm.push(this.sourceName, this.notificationService);
+    } else {
+      this.searchTerm = '';
+    }
   }
 
   /**
@@ -260,9 +272,11 @@ export class NotificationLogComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.isAlive = false;
-    this.destroy$.next(true);
-    this.destroy$.unsubscribe();
-    this.subscription.unsubscribe();
+    if (this.isAlive) {
+      this.isAlive = false;
+      this.destroy$.next(true);
+      this.destroy$.unsubscribe();
+      this.subscription.unsubscribe();
+    }
   }
 }

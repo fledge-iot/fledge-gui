@@ -1,128 +1,156 @@
-import { isEmpty } from 'lodash';
 import { Injector } from "@angular/core";
-import { NodeEditor, GetSchemes, ClassicPreset } from "rete";
-import { AreaPlugin, AreaExtensions, Area2D } from "rete-area-plugin";
-import { AngularPlugin, Presets, AngularArea2D } from "rete-angular-plugin/16";
-import { ConnectionPlugin, Presets as ConnectionPresets, ClassicFlow, BidirectFlow } from "rete-connection-plugin";
-import { AutoArrangePlugin, Presets as ArrangePresets, ArrangeAppliers } from "rete-auto-arrange-plugin";
-import { ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets } from "rete-context-menu-plugin";
-import { DockPlugin, DockPresets } from "rete-dock-plugin";
-import { CustomNodeComponent } from "./custom-node/custom-node.component";
-import { HistoryExtensions, HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
-import { addCustomBackground } from "./custom-background";
+import { curveBasis, CurveFactory } from "d3-shape";
+import { isEmpty } from 'lodash';
 import { easeInOut } from "popmotion";
-import { insertableNodes } from "./insert-node";
-import { CustomConnectionComponent } from "./custom-connection/custom-connection.component";
-import { CustomSocketComponent } from "./custom-socket/custom-socket.component";
-import { South } from "./nodes/south";
-import { Storage } from "./storage";
-import { Filter } from "./filter";
-import { AddService } from "./nodes/add-service";
+import { ClassicPreset, GetSchemes, NodeEditor } from "rete";
+import { AngularArea2D, AngularPlugin, Presets } from "rete-angular-plugin/16";
+import { AreaExtensions, AreaPlugin } from "rete-area-plugin";
+import { ArrangeAppliers, Presets as ArrangePresets, AutoArrangePlugin } from "rete-auto-arrange-plugin";
+import { ConnectionPathPlugin } from 'rete-connection-path-plugin';
+import { ConnectionPlugin } from "rete-connection-plugin";
+import { ContextMenuExtra, ContextMenuPlugin } from "rete-context-menu-plugin";
+import { DockPlugin, DockPresets } from "rete-dock-plugin";
+import { HistoryPlugin, Presets as HistoryPresets } from "rete-history-plugin";
 import { MinimapExtra, MinimapPlugin } from "rete-minimap-plugin";
-import { CurveFactory, curveBasis } from "d3-shape";
-import { ConnectionPathPlugin } from "rete-connection-path-plugin";
-import { colors } from "./color-palette";
-import { North } from "./nodes/north";
-import { AddTask } from "./nodes/add-task";
-import { RolesService } from "../../../services/roles.service"
-import { Service } from "../../core/south/south-service";
-import { AssetControl, ReadingControl } from "./controls/south-custom-control";
-import { SentReadingsControl } from './controls/north-custom-control';
-import { EnabledControl, NameControl, PluginControl, StatusControl } from './controls/common-custom-control';
 import { NorthTask } from '../../core/north/north-task';
+import { colors } from "./color-palette";
+import { Connector } from "./connector";
+import { EnabledControl, StatusControl } from './controls/common-custom-control';
+import { SentReadingsControl } from './controls/north-custom-control';
+import { ChannelControl, NotificationTypeControl, RuleControl, ServiceStatusControl } from "./controls/notification-custom-control";
+import { AssetControl, ReadingControl } from "./controls/south-custom-control";
+import { addCustomBackground } from "./custom-background";
+import { CustomConnectionComponent } from "./custom-connection/custom-connection.component";
+import { CustomNodeComponent } from "./custom-node/custom-node.component";
+import { CustomNotificationNodeComponent } from "./custom-notification-node/custom-notification-node.component";
+import { CustomSocketComponent } from "./custom-socket/custom-socket.component";
+import { Filter } from "./filter";
+import { insertableNodes } from "./insert-node";
+import { AddNotification } from "./nodes/add-notification";
+import { AddService } from "./nodes/add-service";
+import { AddTask } from "./nodes/add-task";
+import { North } from "./nodes/north";
+import { Notification } from "./nodes/notification";
+import { South } from "./nodes/south";
+import { createSelector } from "./selector";
+import { Storage } from "./storage";
 
-
-type Node = South | North | Filter;
+type Node = South | North | Filter | Notification;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 type AreaExtra = AngularArea2D<Schemes> | MinimapExtra | ContextMenuExtra;
 
-class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> { curve?: CurveFactory; }
+export class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> {
+  selected?: boolean
+  click: (data: Connection<A, B>) => void
+  remove: (data: Connection<A, B>) => void
+  curve?: CurveFactory
+
+  constructor(events: { click: (data: Connection<A, B>) => void, remove: (data: Connection<A, B>) => void }, source: A, target: B, public isLoop?: boolean) {
+    super(source, 'port', target, 'port')
+    this.click = events.click;
+    this.remove = events.remove;
+    this.isLoop = false;
+  }
+}
 
 let editor = new NodeEditor<Schemes>();
 let area: AreaPlugin<Schemes, AreaExtra>;
-export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, data) {
+let history: HistoryPlugin<Schemes>;
+let dock: DockPlugin<Schemes>;
+let newDockFilter;
+let arrange: AutoArrangePlugin<Schemes>;
 
+export const animatedApplier = new ArrangeAppliers.TransitionApplier<Schemes, never>(
+  {
+    duration: 500,
+    timingFunction: easeInOut
+  }
+);
+
+export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, data) {
   const socket = new ClassicPreset.Socket("socket");
   editor = new NodeEditor<Schemes>();
   area = new AreaPlugin<Schemes, AreaExtra>(container);
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   const render = new AngularPlugin<Schemes, AreaExtra>({ injector });
-  const arrange = new AutoArrangePlugin<Schemes>();
-  const history = new HistoryPlugin<Schemes>();
-  const animatedApplier = new ArrangeAppliers.TransitionApplier<Schemes, never>(
-    {
-      duration: 500,
-      timingFunction: easeInOut
-    }
-  );
+  arrange = new AutoArrangePlugin<Schemes>();
+  history = new HistoryPlugin<Schemes>();
+  dock = new DockPlugin<Schemes>();
   const minimap = new MinimapPlugin<Schemes>({
     boundViewport: true
   });
-  const pathPlugin = new ConnectionPathPlugin<Schemes, Area2D<Schemes>>({
+
+  const pathPlugin = new ConnectionPathPlugin<Schemes, AreaExtra>({
     curve: (c) => c.curve || curveBasis,
-    // transformer: () => Transformers.classic({ vertical: false }),
-    arrow: () => { return { marker: 'M6,-6 L6,6 L20,0 z' } }
+    arrow: () => { return { marker: 'M4,-4 L4,4 L16,0 z' } }
   });
 
   // @ts-ignore
-  // render.use(pathPlugin);
+  render.use(pathPlugin);
 
   insertableNodes(area, {
     async createConnections(node, connection) {
-      removeOldConnection(node.id)
-      await editor.addConnection(
-        new Connection(
-          editor.getNode(connection.source),
-          connection.sourceOutput,
-          node,
-          "port"
+      if (!isEmpty(node.inputs)) {
+        await editor.addConnection(
+          new Connection(
+            connectionEvents,
+            editor.getNode(connection.source),
+            node
+          )
+        );
+      }
+      if (!isEmpty(node.outputs)) {
+        await editor.addConnection(
+          new Connection(
+            connectionEvents,
+            node,
+            editor.getNode(connection.target)
+          )
         )
-      );
-      await editor.addConnection(
-        new Connection(
-          node,
-          "port",
-          editor.getNode(connection.target),
-          connection.targetInput
-        )
-      );
+      }
       arrange.layout({
         applier: animatedApplier
       });
     }
   });
 
-  // const contextMenu = new ContextMenuPlugin<Schemes>({
-  //     items: ContextMenuPresets.classic.setup([
-  //         ["Filter", () => new Filter(socket, 'Filter')]
-  //     ])
-  // });
-
   const contextMenu = new ContextMenuPlugin<Schemes>({
     items(context) {
       if (context === 'root') {
         return {
           searchBar: false,
-          list: [
-            {
-              label: 'Filter', key: '1', handler: () => {
-                let filter = new Filter(socket, { pluginName: '', enabled: 'false', filterName: 'Filter' });
-                editor.addNode(filter);
-              }
-            }
-          ]
+          list: []
         }
+      }
+      if ('source' in context && 'target' in context) {
+        const deleteItem = {
+          label: 'Delete',
+          key: 'delete',
+          async handler() {
+            // connection
+            const connectionId = context.id
+            await editor.removeConnection(connectionId)
+          }
+        }
+        return {
+          searchBar: false,
+          list: [deleteItem]
+        }
+      }
+      return {
+        searchBar: false,
+        list: []
       }
     }
   })
 
-  const dock = new DockPlugin<Schemes>();
-
   render.addPreset(Presets.classic.setup(
     {
       customize: {
-
         node() {
+          if (data.from == 'notifications') {
+            return CustomNotificationNodeComponent;
+          }
           return CustomNodeComponent;
         },
         connection() {
@@ -135,13 +163,21 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     }
   ));
 
-  // connection.addPreset(ConnectionPresets.classic.setup());
-  connection.addPreset(() => new BidirectFlow())
+  const connectionEvents = {
+    click: (data: Schemes['Connection']) => {
+      selector.selectConnection(data)
+    },
+    remove: (data: Schemes['Connection']) => {
+      editor.removeConnection(data.id)
+    }
+  }
+
+  const selector = createSelector(area, flowEditorService);
+  connection.addPreset(() => new Connector(connectionEvents));
   arrange.addPreset(ArrangePresets.classic.setup());
   render.addPreset(Presets.contextMenu.setup());
   dock.addPreset(DockPresets.classic.setup({ area, size: 70, scale: 0.6 }));
   // scopes.addPreset(ScopesPresets.classic.setup());
-  HistoryExtensions.keyboard(history);
   history.addPreset(HistoryPresets.classic.setup());
   render.addPreset(Presets.minimap.setup({ size: 150 }));
 
@@ -151,11 +187,14 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   area.use(arrange);
   area.use(dock);
   area.use(history);
+  // stop dock item click event
+  dock.clickStrategy = { add() { } }
+
   if (data.source) {
-    area.use(minimap);
     if (rolesService.hasEditPermissions()) {
-      // area.use(contextMenu);
-      let newDockFilter = () => {
+      area.use(minimap);
+      area.use(contextMenu);
+      newDockFilter = () => {
         setTimeout(() => {
           let dropStrategy: any = dock.dropStrategy;
           let dsEditorNodes = dropStrategy.editor.nodes;
@@ -176,69 +215,35 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     }
   }
   setCustomBackground(area) // Set custom background
-  if (data.from == 'south') {
-    createNodesAndConnections(socket, editor, arrange, area, rolesService, data);
-    return;
+
+  if (data.from !== 'notifications') {
+    createNodesAndConnections(socket, editor, arrange, area, data, connectionEvents);
+  } else {
+    nodesGrid(area, data.notifications, socket, data.from, data.isServiceEnabled);
   }
-  createNorthNodesAndConnections(socket, editor, arrange, area, rolesService, data);
 }
 
-async function createNorthNodesAndConnections(socket: ClassicPreset.Socket,
-  editor: NodeEditor<Schemes>,
-  arrange: AutoArrangePlugin<Schemes, never>,
-  area: AreaPlugin<Schemes, AreaExtra>,
-  rolesService: RolesService,
-  data: any) {
-  if (data.source) {
-    // Storage Node
-    const db = new Storage(socket);
-    await editor.addNode(db);
-    // North Node
-    const plugin = new North(socket, data.task);
-    await editor.addNode(plugin);
-
-    let fpLen = data.filterPipeline.length;
-    let previousNode = db;
-    for (let i = 0; i < fpLen; i++) {
-      let pipelineItem = data.filterPipeline[i];
-      if (typeof (pipelineItem) === "string") {
-        let nextNodeConfig = data.filterConfigurations.find((f: any) => f.filterName === pipelineItem)
-        let nextFilterNode = new Filter(socket, nextNodeConfig);
-        await editor.addNode(nextFilterNode);
-        await editor.addConnection(
-          new ClassicPreset.Connection(previousNode, "port", nextFilterNode, "port")
-        );
-        previousNode = nextFilterNode;
-      }
-    }
-    await editor.addConnection(
-      new ClassicPreset.Connection(previousNode, "port", plugin, "port")
-    );
-    await arrange.layout();
-    AreaExtensions.zoomAt(area, editor.getNodes());
-  }
-  else {
-    nodesGrid(area, data.tasks, socket, rolesService, data.from);
-  }
-}
 async function createNodesAndConnections(socket: ClassicPreset.Socket,
   editor: NodeEditor<Schemes>,
   arrange: AutoArrangePlugin<Schemes, never>,
   area: AreaPlugin<Schemes, AreaExtra>,
-  rolesService: RolesService,
-  data: any) {
-
+  data: any,
+  connectionEvents) {
   if (data.source) {
-    // South node
-    const plugin = new South(socket, data.service);
-    await editor.addNode(plugin);
-
-    // Storage node
     const db = new Storage(socket);
-    await editor.addNode(db);
+    const plugin = data.from == 'south' ? new South(socket, data.service) : new North(socket, data.task);
+    //  FIX ME: Array index based change
+    if (data.from == 'south') {
+      await editor.addNode(plugin);
+      await editor.addNode(db);
+    } else {
+      await editor.addNode(db);
+      await editor.addNode(plugin);
+    }
 
     let fpLen = data.filterPipeline.length;
-    let previousNode = plugin;
+    const lastNode = data.from == 'south' ? db : plugin;
+    let previousNode = data.from == 'south' ? plugin : db;
     let colorNumber = 0;
     for (let i = 0; i < fpLen; i++) {
       let pipelineItem = data.filterPipeline[i];
@@ -247,7 +252,7 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
         let nextNode = new Filter(socket, nextNodeConfig);
         await editor.addNode(nextNode);
         await editor.addConnection(
-          new ClassicPreset.Connection(previousNode, "port", nextNode, "port")
+          new Connection(connectionEvents, previousNode, nextNode)
         );
         previousNode = nextNode;
       }
@@ -260,24 +265,26 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
           let nextNode = new Filter(socket, nextNodeConfig);
           await editor.addNode(nextNode);
           await editor.addConnection(
-            new ClassicPreset.Connection(tempNode, "port", nextNode, "port")
-          );
+            new Connection(connectionEvents, tempNode, nextNode));
           tempNode = nextNode;
         }
+
         await editor.addConnection(
-          new ClassicPreset.Connection(tempNode, "port", db, "port")
-        );
+          new Connection(connectionEvents, tempNode, lastNode));
         colorNumber = (colorNumber + 1) % (colors.length);
       }
     }
+
     await editor.addConnection(
-      new ClassicPreset.Connection(previousNode, "port", db, "port")
+      new Connection(connectionEvents, previousNode, lastNode)
     );
     await arrange.layout();
     AreaExtensions.zoomAt(area, editor.getNodes());
+    history.clear();
   }
   else {
-    nodesGrid(area, data.services, socket, rolesService, data.from);
+    const nodes = data.from == 'south' ? data.services : data.tasks;
+    nodesGrid(area, nodes, socket, data.from);
   }
 }
 
@@ -296,28 +303,27 @@ function setCustomBackground(area: AreaPlugin<Schemes, AreaExtra>,) {
 async function nodesGrid(area: AreaPlugin<Schemes,
   AreaExtra>, nodeItems: [],
   socket: ClassicPreset.Socket,
-  rolesService: RolesService,
-  from: string) {
+  from: string, isServiceAvailable = null) {
+  const service = from == 'south' ? new AddService() : from == 'north' ? new AddTask() : new AddNotification(isServiceAvailable);
+  await editor.addNode(service);
+  await area.translate(service.id, { x: 0, y: 0 });
+
   const canvasWidth = area.container.parentElement.clientWidth;
   const itemCount = Math.round(canvasWidth / 275);
-  let j = 0;
+  let j = 1;
   let k = 0;
   for (let i = 0; i < nodeItems.length; i++) {
-    const plugin = from == 'south' ? new South(socket, nodeItems[i]) : new North(socket, nodeItems[i]);
+    const plugin = from == 'south' ? new South(socket, nodeItems[i]) : from == 'north' ? new North(socket, nodeItems[i]) : new Notification(socket, nodeItems[i]);
     await editor.addNode(plugin);
     if (j < itemCount) {
-      await area.translate(plugin.id, { x: 250 * j, y: 150 * k });
+      await area.translate(plugin.id, { x: 250 * j, y: 130 * k });
       j++;
       if (j == itemCount) {
         j = 0; k++;
       }
     }
   }
-  if (rolesService.hasEditPermissions()) {
-    const service = from == 'south' ? new AddService() : new AddTask();
-    await editor.addNode(service);
-    await area.translate(service.id, { x: 250 * j, y: 150 * k });
-  }
+  history.clear();
 }
 
 export function getUpdatedFilterPipeline() {
@@ -344,7 +350,6 @@ export function getUpdatedFilterPipeline() {
       }
     }
   }
-
 
   for (let i = 0; i < connections.length; i++) {
     if (connections[i].source === connections[i].target) {
@@ -463,33 +468,59 @@ export function updateNode(data) {
     const enabledControl = node.controls.enabledControl as EnabledControl;
     const statusControl = node.controls.statusControl as StatusControl;
     if (!isEmpty(node.controls)) {
-      if (node.label == 'South') {
+      if (node.label == 'South' && data.from == 'south') {
         const service = data.services.find(s => s.name === node.controls.nameControl['name'])
-        let assetCount = service.assets.length;
-        let readingCount = service.assets.reduce((total, asset) => {
-          return total + asset.count;
-        }, 0)
+        if (service) {
+          let assetCount = service.assets.length;
+          let readingCount = service.assets.reduce((total, asset) => {
+            return total + asset.count;
+          }, 0)
 
-        assetControls.count = assetCount;
-        readingControl.count = readingCount;
-        enabledControl.enabled = service.schedule_enabled;
-        statusControl.status = service.status;
+          assetControls.count = assetCount;
+          readingControl.count = readingCount;
+          enabledControl.enabled = service.schedule_enabled;
+          statusControl.status = service.status;
 
-        area.update("control", assetControls.id);
-        area.update("control", readingControl.id);
-        area.update("control", enabledControl.id);
-        area.update("control", statusControl.id);
-        area.update('node', node.id)
+          area.update("control", assetControls.id);
+          area.update("control", readingControl.id);
+          area.update("control", enabledControl.id);
+          area.update("control", statusControl.id);
+          area.update('node', node.id);
+        }
+
       }
-      if (node.label == 'North') {
+      if (node.label == 'North' && data.from == 'north') {
         const sentReadingControl = node.controls.sentReadingControl as SentReadingsControl;
         const task = data.tasks.find(t => t.name === node.controls.nameControl['name']) as NorthTask;
-        sentReadingControl.sent = task.sent;
-        enabledControl.enabled = task.enabled;
+        if (task) {
+          sentReadingControl.sent = task.sent;
+          enabledControl.enabled = task.enabled;
+          statusControl.status = task.status;
+          area.update("control", sentReadingControl.id);
+          area.update("control", enabledControl.id);
+          area.update('node', node.id);
+        }
+      }
+      if (node.label == 'Notification' && data.from == 'notifications') {
+        const serviceStatusControl = node.controls.serviceStatusControl as ServiceStatusControl;
+        const channelControl = node.controls.channelControl as ChannelControl;
+        const ruleControl = node.controls.ruleControl as RuleControl;
+        const notificationTypeControl = node.controls.notificationTypeControl as NotificationTypeControl;
+        const notification = data.notifications.find(n => n.name === node.controls.nameControl['name']);
+        if (notification) {
+          channelControl.pluginName = notification.channel;
+          ruleControl.pluginName = notification.rule;
+          enabledControl.enabled = notification.enable;
+          notificationTypeControl.type = notification.notificationType;
+          serviceStatusControl.enabled = data.isServiceEnabled;
 
-        area.update("control", sentReadingControl.id);
-        area.update("control", enabledControl.id);
-        area.update('node', node.id)
+          area.update("control", channelControl.id);
+          area.update("control", ruleControl.id);
+          area.update("control", enabledControl.id);
+          area.update("control", notificationTypeControl.id);
+          area.update("control", serviceStatusControl.id);
+          area.update('node', node.id);
+        }
       }
     }
   });
@@ -504,55 +535,103 @@ function rgbToHex(r, g, b) {
 }
 
 function existsInPipeline(pipeline, filterName) {
-  for (let i = 0; i < pipeline.length; i++) {
-    if (typeof (pipeline[i]) === "string") {
-      if (pipeline[i] === filterName) {
+  for (const element of pipeline) {
+    if (typeof (element) === "string") {
+      if (element === filterName) {
         return true;
       }
     }
-    else {
-      if (pipeline[i].indexOf(filterName) !== -1) {
-        return true;
-      }
+    else if (element.indexOf(filterName) !== -1) {
+      return true;
     }
   }
   return false;
 }
 
-export function removeNode(nodeId) {
-  for (const c of editor
-    .getConnections()
-    .filter((c) => c.source === nodeId || c.target === nodeId)) {
-    editor.removeConnection(c.id);
+export async function removeNode(nodeId) {
+  const connectionEvents = {
+    click: () => { },
+    remove: () => { }
+  }
+  let source: Node;
+  let target: Node;
+  const connections = editor.getConnections()
+    .filter(c => (c.source === nodeId || c.target === nodeId))
+  for (const c of connections) {
+    await editor.removeConnection(c.id);
+    if (editor.getNode(c.source).label !== 'Filter') {
+      source = editor.getNode(c.source);
+    }
+    if (editor.getNode(c.target).label !== 'Filter') {
+      target = editor.getNode(c.target);
+    }
   }
   editor.removeNode(nodeId);
+  dock.add(newDockFilter);
+  // pull back the removed connection when filter placeholder node removed
+  if (source && target) {
+    await editor.addConnection(new Connection(connectionEvents, source, target));
+    area.update('node', source.id)
+    area.update('node', source.id)
+    arrange.layout({
+      applier: animatedApplier
+    });
+  }
 }
 
-async function removeOldConnection(nodeId) {
-  let connections = editor.getConnections();
-  let source: Node;
-  let target: Node[] = [];
-  let inputConnId;
-  let outputConnections = [];
-  for (let i = 0; i < connections.length; i++) {
-    if (connections[i].source === nodeId) {
-      target.push(editor.getNode(connections[i].target));
-      outputConnections.push(connections[i].id);
+export function applyContentReordering(nodeId: string) {
+  let view = area.nodeViews.get(nodeId);
+  let { content } = area.area;
+  // Bring selected node in front of other nodes for better visual clarity
+  content.reorder(view.element, null);
+}
+
+export function undoAction() {
+  let secondLastActionName = getSecondLastActionName();
+  let lastActionName = getLastActionName();
+  history.undo().then(() => {
+    if (secondLastActionName == 'AddNodeAction') {
+      dock.add(newDockFilter);
     }
-    if (connections[i].target === nodeId) {
-      source = editor.getNode(connections[i].source);
-      inputConnId = connections[i].id;
+    if (lastActionName == 'RemoveNodeAction') {
+      dock.remove(newDockFilter);
     }
+  })
+}
+
+export function redoAction() {
+  let beforeRedoSecondLastActionName = getSecondLastActionName();
+  let beforeRedoLastActionName = getLastActionName();
+  history.redo().then(() => {
+    let afterRedoSecondLastActionName = getSecondLastActionName();
+    let afterRedoLastActionName = getLastActionName();
+    if (afterRedoSecondLastActionName == 'AddNodeAction' && beforeRedoSecondLastActionName != 'AddNodeAction') {
+      dock.remove(newDockFilter);
+    }
+    if (afterRedoLastActionName == 'RemoveNodeAction' && beforeRedoLastActionName != 'RemoveNodeAction') {
+      dock.add(newDockFilter);
+    }
+  })
+}
+
+function getSecondLastActionName() {
+  let historySnapshot = history.getHistorySnapshot();
+  let historyLength = historySnapshot.length;
+  let actionName;
+  if (historyLength >= 2) {
+    // FIXME: use different approach for retrieving actionName
+    // actionName = Object.getPrototypeOf(historySnapshot[historyLength - 2].action).constructor.name;
   }
-  for (let t of target) {
-    await editor.addConnection(
-      new ClassicPreset.Connection(source, "port", t, "port")
-    );
+  return actionName;
+}
+
+function getLastActionName() {
+  let historySnapshot = history.getHistorySnapshot();
+  let historyLength = historySnapshot.length;
+  let actionName;
+  if (historyLength >= 1) {
+    // FIXME: use different approach for retrieving actionName
+    // actionName = Object.getPrototypeOf(historySnapshot[historyLength - 1].action).constructor.name;
   }
-  if (inputConnId) {
-    await editor.removeConnection(inputConnId);
-  }
-  for (let c of outputConnections) {
-    await editor.removeConnection(c);
-  }
+  return actionName;
 }

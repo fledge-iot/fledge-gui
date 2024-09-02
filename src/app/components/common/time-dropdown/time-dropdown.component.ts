@@ -59,7 +59,7 @@ export class TimeDropdownComponent implements OnInit, OnDestroy {
     this.selectedUnit = unit;
     this.optedTime = this.calculateOptedTime();
     // emit changed graph time
-    let timeObject = {optedTime : this.optedTime, displayDuration : this.timeInput.nativeElement.value, selectedUnit: this.selectedUnit}
+    let timeObject = {optedTime : this.optedTime};
     this.updateGraphEvent.emit(timeObject);
     this.toggleDropdown();
   }

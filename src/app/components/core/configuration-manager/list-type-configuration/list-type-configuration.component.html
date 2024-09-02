@@ -1,19 +1,31 @@
 <div [formGroup]="listItemsForm">
   <ng-container *ngFor="let item of listItems.controls; let i = index">
     <div formArrayName="listItems" class="field">
-      <div class="columns">
-        <div class="column is-11">
-          <input *ngIf="configuration.items == 'integer'" class="input is-small" type="text" formControlName="{{i}}"
-            [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appIntegerOnly>
-          <input *ngIf="configuration.items == 'float'" class="input is-small" type="text" formControlName="{{i}}"
-            [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appFloatOnly>
-          <input *ngIf="configuration.items == 'string'" class="input is-small" type="text" formControlName="{{i}}"
-            [attr.maxLength]="configuration?.length">
-        </div>
-        <div class="column pl-0 pt-2">
-          <span class="icon">
+      <div [ngClass]="{'box': configuration.items == 'object'}">
+        <div class="columns is-flex is-vcentered">
+          <div class="column is-11">
+            <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticView">
+              <input *ngIf="configuration.items == 'integer'" class="input is-small" type="text" formControlName="{{i}}"
+                [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appIntegerOnly>
+              <input *ngIf="configuration.items == 'float'" class="input is-small" type="text" formControlName="{{i}}"
+                [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appFloatOnly>
+              <input *ngIf="configuration.items == 'string'" class="input is-small" type="text" formControlName="{{i}}"
+                [attr.maxLength]="configuration?.length">
+            </ng-container>
+            <ng-template #staticView>
+              <span *ngIf="configuration.items !== 'object'" class="help">
+                {{listItems?.controls[i]?.value}}
+              </span>
+            </ng-template>
+            <ng-container *ngIf="configuration.items == 'object'">
+              <app-show-configuration [groupConfiguration]="initialProperties[i]"
+                [fullConfiguration]="initialProperties[i]" (event)="getChangedConfiguration(i, $event)"
+                (formStatusEvent)="formStatus($event)" [from]="from" [group]="group"></app-show-configuration>
+            </ng-container>
+          </div>
+          <div class="column is-flex" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
             <button class="delete is-small" (click)="removeListItem(i)"></button>
-          </span>
+          </div>
         </div>
       </div>
     </div>
@@ -26,9 +38,10 @@
       </span>
     </div>
   </ng-container>
-  <div class="field">
+  <div class="field" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
     <p class="control" *ngIf="!configuration.listSize || configuration.listSize != listItems.controls.length ">
-      <button class="button px-0 pt-1 is-small is-ghost" (click)="addListItem()">
+      <button class="button is-small" (click)="addListItem()"
+        [ngClass]="{'px-0 pt-1 is-ghost': configuration.items != 'object'}">
         <span class="icon is-small mr-0">
           <i class="bi bi-plus bi-sm"></i>
         </span>

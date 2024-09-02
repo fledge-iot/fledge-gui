@@ -57,7 +57,7 @@ EXAMPLE
 #########################
 
 remove_unwanted_files () {
-    find dist/assets/* | grep -v "fledge.png" | grep -v "favicon.ico" | grep -v '/routes' | xargs rm -rf
+    find dist/assets/* | grep -R --exclude-dir=icons | grep -v "fledge.png" | grep -v "favicon.ico"   | grep -v '/routes' | xargs rm -rf
     # rm dist/*.eot
     # rm dist/*.svg
     # rm dist/*.ttf

@@ -14,15 +14,14 @@ import { ServicesApiService, NotificationsService } from '../../../services';
 import { AddNotificationWizardComponent } from './add-notification-wizard/add-notification-wizard.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
 import { DeveloperModule } from '../developer/developer.module';
-import { ServiceResolver } from '../../../resolver/service.resolver';
 import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
 import { PaginationModule } from '../../common/pagination/pagination.module';
+import { FlowEditorModule } from '../../common/node-editor/flow-editor.module';
 
 const routes: Routes = [
   {
     path: '',
-    component: NotificationsComponent,
-    resolve: { service: ServiceResolver }
+    component: NotificationsComponent
   },
   {
     path: 'add',
@@ -49,8 +48,9 @@ const routes: Routes = [
     SharedModule,
     NumberInputDebounceModule,
     PaginationModule,
-    DeveloperModule
+    DeveloperModule,
+    FlowEditorModule
   ],
-  providers: [RolesGuard, ServicesApiService, NotificationsService],
+  providers: [RolesGuard, ServicesApiService, NotificationsService]
 })
 export class NotificationsModule { }

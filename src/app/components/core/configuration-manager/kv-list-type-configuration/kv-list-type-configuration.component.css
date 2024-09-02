@@ -2,3 +2,21 @@
   margin-top: 0px !important;
   margin-bottom: 0px !important;
 }
+
+@media screen and (min-width: 769px) {
+  .field-body {
+    flex-grow: 2 !important;
+  }
+}
+
+.kvlist-divider {
+  background-color: white;
+  border: 1px dashed whitesmoke;
+  display: block;
+  margin: 0.5rem 0 0 0;
+}
+
+.box {
+  border-radius: 2px !important;
+  box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.07), 0 0px 0 1px rgba(10, 10, 10, 0.02) !important;
+}

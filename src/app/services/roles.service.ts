@@ -10,6 +10,15 @@ export class RolesService {
   private roleNames = [{ roleId: 1, name: "Administrator" }, { roleId: 2, name: "Editor" }, { roleId: 3, name: "Viewer" }, { roleId: 4, name: "Data Viewer" }, { roleId: 5, name: "Control" }];
 
   constructor() { }
+
+  /**
+   * To check if user is admin or anonymous
+   */
+  public hasAdminPermissionsOrAnonymousAllowed(): boolean {
+    const roleId = Number(sessionStorage.getItem('roleId'));
+    return [appRoles.admin, appRoles.anonymous].includes(roleId);
+  }
+
   /**
    * To check if user, who has the add/edit permission
    * @returns true|false based on user role
@@ -24,12 +33,27 @@ export class RolesService {
     return [appRoles.admin, appRoles.control, appRoles.anonymous].includes(roleId);
   }
 
+  public hadEditPermissionsOnConfigItem(allowedRoles: string[] = []) {
+    try {
+      const roleId = Number(sessionStorage.getItem('roleId'));
+      const roleName = appRoles[roleId];
+      const loginSkipped = JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'));
+      return loginSkipped || roleName == 'admin' || allowedRoles.length == 0 || allowedRoles.includes(roleName);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   hasEditPermissionsOnPage(page: string) {
     if (page == 'control-pipeline') {
       return this.hasControlAccess();
     } else {
       return this.hasEditPermissions()
     }
+  }
+
+  hasAccessPermission(allowedRoles: string[] = []) {
+    return this.hasEditPermissions() && this?.hadEditPermissionsOnConfigItem(allowedRoles);
   }
 
   /**
