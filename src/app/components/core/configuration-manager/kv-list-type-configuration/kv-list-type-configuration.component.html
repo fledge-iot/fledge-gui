@@ -127,7 +127,7 @@
     <div class="field" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
       <p class="control" *ngIf="!configuration.listSize || configuration.listSize != kvListItems.controls.length ">
         <button class="button is-small mb-1" (click)="addListItem()"
-          [ngClass]="{'px-0 pt-1 is-ghost': configuration.items != 'object', 'mt-2': configuration.items == 'object'}">
+          [ngClass]="{'px-0 pt-1 is-ghost': configuration.items != 'object', 'mt-1': configuration.items == 'object'}">
           <span class="icon is-small mr-0">
             <i class="bi bi-plus bi-sm"></i>
           </span>
