@@ -81,9 +81,13 @@ svg#control-dispatch {
   display: none;
 }
 
-#sidemenu li:hover .submenu-div, .show-on-mobile {
+.show {
   display: block !important;
 }
+
+/* #sidemenu li:hover .submenu-div, .show-on-mobile {
+  display: block !important;
+} */
 
 @media (min-width: 768px) {
   #sidemenu.collapsed {
@@ -176,5 +180,9 @@ svg#control-dispatch {
     width: 99%;
     position: absolute;
     background-color: white;
+  }
+
+  ::-webkit-scrollbar {
+    width: 2px;
   }
 }

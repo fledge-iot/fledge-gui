@@ -13,7 +13,8 @@
         </button>
       </ul>
     </nav>
-    <a *ngIf="rolesService?.hasEditPermissions()" class="button is-light" routerLink="/developer/options/python/package/add">
+    <a *ngIf="rolesService?.hasEditPermissions()" class="button is-light"
+      routerLink="/developer/options/python/package/add">
       <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
       <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
     </a>

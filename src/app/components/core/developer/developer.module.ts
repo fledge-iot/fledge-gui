@@ -22,7 +22,7 @@ const routes: Routes = [
     component: DeveloperComponent
   },
   {
-    path: 'options/python/package/list',
+    path: 'options/python/package',
     canActivate: [DeveloperGuard],
     component: ListPythonPackagesComponent
   },

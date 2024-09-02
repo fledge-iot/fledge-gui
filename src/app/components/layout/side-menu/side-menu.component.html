@@ -163,7 +163,8 @@
             <span class="sidemenu-text">Support</span>
           </a>
         </li>
-        <li (mouseleave)="closeSubmenu('developer')" id="developer-li">
+        <li *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()"
+          (mouseleave)="closeSubmenu('developer')" id="developer-li">
           <a class="sidemenu-link" type="button" [ngClass]="{'has-background-light': isDeveloperListOpen }"
             id="developer" (mouseenter)="openSubmenuOnHover('developer')"
             (click)="toggleSubmenuOnClick('developer', $event)">
@@ -182,7 +183,7 @@
             <ul class="submenu-list" [ngClass]="{'pl-0':  isSidemenuCollapsed }">
               <li>
                 <a class="submenu-text" id="python-packages" routerLinkActive="is-active"
-                  routerLink='/developer/options/python/package/list'>
+                  routerLink='/developer/options/python/package'>
                   <span class="has-text-weight-medium">Python
                     Packages</span>
                   <span class="help has-text-weight-light">View or install Python Packages</span>

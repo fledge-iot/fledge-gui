@@ -3,7 +3,7 @@
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
         <li><a [routerLink]="['/developer']">Developer</a></li>
-        <li><a [routerLink]="['/developer/options/python/package/list']">Python Packages</a></li>
+        <li><a [routerLink]="['/developer/options/python/package']">Python Packages</a></li>
         <li class="is-active">
           <a href="#" aria-current="page">Install</a>
         </li>
@@ -51,7 +51,7 @@
             <div class="field-body">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
-                  <button [routerLink]="['/developer/options/python/package/list']" class="button is-small">Cancel</button>
+                  <button [routerLink]="['/developer/options/python/package']" class="button is-small">Cancel</button>
                 </p>
                 <p class="control">
                   <button [disabled]="!installationForm.valid" type="button" class="button is-small is-link"

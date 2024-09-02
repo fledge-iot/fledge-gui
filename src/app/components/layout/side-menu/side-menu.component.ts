@@ -102,16 +102,22 @@ export class SideMenuComponent implements OnInit {
     var menuItemPosition = sidemenuLink.getBoundingClientRect();
 
     // place the submenu in the correct position relevant to the menu item
-    submenuWrapper.style.top = (menuItemPosition.top - 50).toString() + 'px';
-    submenuWrapper.style.left = menuItemPosition.width.toString() + 'px';
-    this.toggleSubmenuState(menuLink, true);
+    submenuWrapper.style.top = (menuItemPosition.top - 55).toString() + 'px';
+    submenuWrapper.style.left = (menuItemPosition.width + 4).toString() + 'px';
+    setTimeout(function () {
+      submenuWrapper.classList.add('show');
+      this.toggleSubmenuState(menuLink);
+    }.bind(this), 200);
   }
 
   toggleSubmenuOnClick(menuLink, event = null) {
+    const menuOption = document.getElementById(menuLink + '-submenu') as HTMLDivElement;
     if (this.viewPort !== 'mobile') {
       return;
     }
-    this.toggleSubmenuState(menuLink);
+    this.toggleSubmenuState(menuLink, !menuOption.classList.contains('show'));
+    menuOption.classList.toggle('show');
+
     event.stopPropagation()
   }
 
@@ -120,24 +126,62 @@ export class SideMenuComponent implements OnInit {
       return;
     }
     const menuOption = document.getElementById(menuLink + '-submenu') as HTMLDivElement;
-    // If mouse is over the menu or sub-menu then return and don't close the sub-menu   
-    if (menuOption.matches(':hover')) {
-      return;
-    }
-    this.toggleSubmenuState(menuLink, false);
-    menuOption.style.display = 'none';
+    setTimeout(function () {
+      // If mouse is over the menu or child sub-menu then return and don't close the sub-menu   
+      if (menuOption.matches(':hover')) {
+        return;
+      }
+      menuOption.classList.remove('show');
+
+      this.toggleSubmenuState(menuLink, false);
+    }.bind(this), 200);
   }
 
   toggleSubmenuState(menuLink, state = null) {
+    let controlSubmenu = document.getElementById('control-submenu') as HTMLDivElement;
+    let logsSubmenu = document.getElementById('logs-submenu') as HTMLDivElement;
+
     switch (menuLink) {
       case 'control':
         this.isControlListOpen = state ? state : !this.isControlListOpen;
+
+        // On mobile view, close other submenu/s if open
+        if (this.viewPort == 'mobile' && state) {
+          this.isLogsListOpen = this.isLogsListOpen ? false : this.isLogsListOpen;
+          logsSubmenu.classList.remove('show');
+
+          if (this.developerFeaturesService.getDeveloperFeatureControl()) {
+            let developerSubmenu = document.getElementById('developer-submenu') as HTMLDivElement;
+            this.isDeveloperListOpen = this.isDeveloperListOpen ? false : this.isLogsListOpen;
+            developerSubmenu.classList.remove('show');
+          }
+        }
         break;
       case 'logs':
         this.isLogsListOpen = state ? state : !this.isLogsListOpen;
+
+        // On mobile view, close other submenu/s if open
+        if (this.viewPort == 'mobile' && state) {
+          this.isControlListOpen = this.isControlListOpen ? false : this.isControlListOpen;
+          controlSubmenu.classList.remove('show');
+
+          if (this.developerFeaturesService.getDeveloperFeatureControl()) {
+            let developerSubmenu = document.getElementById('developer-submenu') as HTMLDivElement;
+            this.isDeveloperListOpen = this.isDeveloperListOpen ? false : this.isDeveloperListOpen;
+            developerSubmenu.classList.remove('show');
+          }
+        }
         break;
       case 'developer':
         this.isDeveloperListOpen = state ? state : !this.isDeveloperListOpen;
+
+        // On mobile view, close other submenu/s if open
+        if (this.viewPort == 'mobile' && state) {
+          this.isControlListOpen = this.isControlListOpen ? false : this.isControlListOpen;
+          controlSubmenu.classList.remove('show');
+          this.isLogsListOpen = this.isLogsListOpen ? false : this.isLogsListOpen;
+          logsSubmenu.classList.remove('show');
+        }
         break;
       default:
         break;
