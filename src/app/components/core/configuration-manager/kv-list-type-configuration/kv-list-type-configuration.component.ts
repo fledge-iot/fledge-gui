@@ -35,6 +35,9 @@ export class KvListTypeConfigurationComponent implements OnInit {
       this.kvListItems.push(this.initListItem({ key, value }));
     }
     this.onControlValueChanges();
+    if(this.configuration.items == 'object' && this.kvListItems.length == 1){
+      this.expandListItem(); // Expand the list if only one item is present
+    }
   }
 
   get kvListItems() {
@@ -81,7 +84,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
     this.kvListItems.push(this.initListItem({ key: '', value: '' }));
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
     if(this.configuration.items == 'object'){
-      this.expandAddedListItem();
+      this.expandListItem(); // Expand newly added item
     }
   }
 
@@ -169,7 +172,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
     }
   }
 
-  expandAddedListItem() {
+  expandListItem() {
     setTimeout(() => {
       let index = this.kvListItems.length - 1;
       let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);

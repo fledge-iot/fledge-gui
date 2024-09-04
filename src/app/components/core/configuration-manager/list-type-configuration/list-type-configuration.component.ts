@@ -35,6 +35,9 @@ export class ListTypeConfigurationComponent implements OnInit {
       this.initListItem(element);
     });
     this.onControlValueChanges();
+    if(this.configuration.items == 'object' && this.listItems.length == 1){
+      this.expandListItem(); // Expand the list if only one item is present
+    }
   }
 
   get listItems() {
@@ -74,7 +77,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.initListItem();
     this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
     if(this.configuration.items == 'object'){
-      this.expandAddedListItem();
+      this.expandListItem(); // Expand newly added item
     }
   }
 
@@ -158,7 +161,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     }
   }
 
-  expandAddedListItem() {
+  expandListItem() {
     setTimeout(() => {
       let index = this.listItems.length - 1;
       let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
