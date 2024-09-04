@@ -18,6 +18,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   @Output() formStatusEvent = new EventEmitter<any>();
   listItemsForm: FormGroup;
   initialProperties = [];
+  listLabel: string;
 
   constructor(
     public cdRef: ChangeDetectorRef,
@@ -35,6 +36,9 @@ export class ListTypeConfigurationComponent implements OnInit {
       this.initListItem(element);
     });
     this.onControlValueChanges();
+    if(this.configuration.items == 'object'){
+      this.listLabel = Object.keys(this.configuration.properties)[0];  // Show first property label as list card header
+    }
     if(this.configuration.items == 'object' && this.listItems.length == 1){
       this.expandListItem(); // Expand the list if only one item is present
     }
