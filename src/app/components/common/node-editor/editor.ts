@@ -134,9 +134,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
           async handler() {
             // connection
             const connectionId = context.id
-
             const connection = editor.getConnection(connectionId);
-            console.log('remove conn', connection);
             const source = editor.getNode(connection.source);
             const destination = editor.getNode(connection.target);
             if (source.label == 'Filter' || destination.label == 'Filter') {
