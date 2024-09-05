@@ -468,6 +468,9 @@ span.tooltip {
 
 .CodeMirror {
   height: auto;
+}
+
+.CodeMirror-scroll {
   max-height: 300px;
 }
 /*****************/
