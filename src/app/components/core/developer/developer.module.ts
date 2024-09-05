@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { DeveloperComponent } from './developer.component';
 import { ListPythonPackagesComponent } from './packages/list-python-packages/list-python-packages.component';
 import { InstallPythonPackageComponent } from './packages/install-python-package/install-python-package.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -16,11 +15,6 @@ import { PerfMonComponent } from './perfmon/list/table.component'
 import { SharedModule } from '../../../shared.module';
 
 const routes: Routes = [
-  {
-    path: 'options',
-    canActivate: [DeveloperGuard],
-    component: DeveloperComponent
-  },
   {
     path: 'options/python/package',
     canActivate: [DeveloperGuard],
@@ -49,7 +43,6 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    DeveloperComponent,
     ListPythonPackagesComponent,
     InstallPythonPackageComponent,
     ListAdditionalServicesComponent,

@@ -40,3 +40,9 @@
   right: 0;
 }
 
+.is-sidebar-menu {
+  flex-basis: auto;
+  flex-grow: unset;
+  flex-shrink: unset;
+  width: 14.66667%;
+}

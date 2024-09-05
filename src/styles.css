@@ -456,4 +456,8 @@ span.tooltip {
   font-size: 0.9rem !important;
 }
 
+.breadcrumb-padding {
+  padding: 0 0.75em;
+}
+
 /*****************/
