@@ -13,6 +13,7 @@
 
 .card-header-title {
     padding: 0.5rem 1rem;
+    flex-grow: unset;
 }
 
 .card-content {

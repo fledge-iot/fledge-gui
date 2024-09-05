@@ -38,7 +38,8 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.onControlValueChanges();
     if(this.configuration.items == 'object'){
       let firstKey = Object.keys(this.configuration.properties)[0];
-      this.listLabel = this.configuration.properties[firstKey].displayName;  // Show first property label as list card header
+      // Show first property label as list card header
+      this.listLabel = this.configuration.properties[firstKey].displayName ? this.configuration.properties[firstKey].displayName : firstKey;
     }
     if(this.configuration.items == 'object' && this.listItems.length == 1){
       this.expandListItem(); // Expand the list if only one item is present
@@ -153,12 +154,14 @@ export class ListTypeConfigurationComponent implements OnInit {
     let cardSpan = document.getElementById('card-span-' + this.configuration.key + '-' + index);
     let cardIcon = document.getElementById('card-icon-' + this.configuration.key + '-' + index);
     let cardTitle = document.getElementById('card-title-' + this.configuration.key + '-' + index);
+    let dotsButton = document.getElementById('dots-btn-' + this.configuration.key + '-' + index);
     if (cardBody.classList.contains('is-hidden')) {
       cardBody.classList.remove('is-hidden');
       cardSpan.title = 'Collapse';
       cardIcon.classList.remove('fa-angle-right');
       cardIcon.classList.add('fa-angle-down');
       cardTitle.classList.add('is-hidden');
+      dotsButton.classList.add('is-hidden');
     }
     else {
       cardBody.classList.add('is-hidden');
@@ -166,6 +169,7 @@ export class ListTypeConfigurationComponent implements OnInit {
       cardIcon.classList.remove('fa-angle-down');
       cardIcon.classList.add('fa-angle-right');
       cardTitle.classList.remove('is-hidden');
+      dotsButton.classList.remove('is-hidden');
     }
   }
 
@@ -176,11 +180,13 @@ export class ListTypeConfigurationComponent implements OnInit {
       let cardSpan = document.getElementById('card-span-' + this.configuration.key + '-' + index);
       let cardIcon = document.getElementById('card-icon-' + this.configuration.key + '-' + index);
       let cardTitle = document.getElementById('card-title-' + this.configuration.key + '-' + index);
+      let dotsButton = document.getElementById('dots-btn-' + this.configuration.key + '-' + index);
       cardSpan.title = 'Collapse';
       cardIcon.classList.remove('fa-angle-right');
       cardIcon.classList.add('fa-angle-down');
       cardBody.classList.remove('is-hidden');
       cardTitle.classList.add('is-hidden');
+      dotsButton.classList.add('is-hidden');
     }, 1);
   }
 }

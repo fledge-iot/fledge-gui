@@ -36,10 +36,15 @@
     </ng-container>
     <ng-template #objectTemplate>
       <div class="card mt-0 mb-1 card-shadow">
-        <header class="card-header has-background-white card-header-shadow">
+        <header class="card-header has-background-white card-header-shadow is-justify-content-space-between">
           <div class="card-header-title">
             <p class="subtitle is-size-9" id="card-title-{{configuration.key}}-{{i}}">{{listLabel}}</p>
           </div>
+          <button class="card-header-icon" (click)="toggleCard(i)" id="dots-btn-{{configuration.key}}-{{i}}">
+            <span class="icon is-small">
+              <i class="bi bi-three-dots bi-sm" aria-hidden="true"></i>
+            </span>
+          </button>
           <button class="card-header-icon" (click)="toggleCard(i)">
             <span class="icon is-small toogle-icon" id="card-span-{{configuration.key}}-{{i}}" title="Expand">
               <i id="card-icon-{{configuration.key}}-{{i}}" class="fas fa-2xs fa-angle-right" aria-hidden="true"></i>
