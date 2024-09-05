@@ -38,7 +38,7 @@
       <div class="card mt-0 mb-1 card-shadow">
         <header class="card-header has-background-white card-header-shadow">
           <div class="card-header-title">
-            <p class="subtitle is-size-9">{{listLabel}}</p>
+            <p class="subtitle is-size-9" id="card-title-{{configuration.key}}-{{i}}">{{listLabel}}</p>
           </div>
           <button class="card-header-icon" (click)="toggleCard(i)">
             <span class="icon is-small toogle-icon" id="card-span-{{configuration.key}}-{{i}}" title="Expand">
@@ -49,7 +49,7 @@
         <div class="card-content is-hidden" id="card-content-{{configuration.key}}-{{i}}">
           <div formArrayName="listItems">
             <div class="columns mb-0">
-              <div class="column is-11">
+              <div class="column is-11 px-3 py-1">
                 <app-show-configuration [groupConfiguration]="initialProperties[i]"
                   [fullConfiguration]="initialProperties[i]" (event)="getChangedConfiguration(i, $event)"
                   (formStatusEvent)="formStatus($event)" [from]="from" [group]="group"></app-show-configuration>
