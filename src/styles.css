@@ -462,4 +462,15 @@ span.tooltip {
   font-size: 0.9rem !important;
 }
 
+.input, .textarea, .select select, .CodeMirror-wrap {
+  border-radius: 2px !important;
+}
+
+.CodeMirror {
+  height: auto;
+}
+
+.CodeMirror-scroll {
+  max-height: 300px;
+}
 /*****************/
