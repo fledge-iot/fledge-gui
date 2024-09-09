@@ -35,7 +35,7 @@
 }
 
 .card-content {
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.5rem;
 }
 
 .card-shadow {
@@ -54,4 +54,8 @@
   width: 50% !important;
   display: flex;
   justify-content: space-between;
+}
+
+.card {
+  border-bottom: 1px solid rgba(211, 211, 211, 0.5);
 }

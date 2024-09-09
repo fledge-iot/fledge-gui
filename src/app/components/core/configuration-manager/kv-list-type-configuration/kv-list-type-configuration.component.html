@@ -56,7 +56,7 @@
         </div>
       </ng-container>
       <ng-template #objectTemplate>
-        <div class="card mt-0 mb-1 card-shadow">
+        <div class="card mt-0 card-shadow">
           <header class="card-header has-background-white card-header-shadow is-justify-content-space-between"
             id="card-header-{{configuration.key}}-{{i}}">
             <div class="card-header-title">
@@ -77,7 +77,7 @@
           </header>
           <div class="card-content is-hidden" id="card-content-{{configuration.key}}-{{i}}">
             <div class="columns mb-0 is-variable is-1" [formGroupName]="i">
-              <div class="column pt-5 is-10">
+              <div class="column mt-2 pt-2 is-10">
                 <div class="field is-horizontal">
                   <div class="field-label has-text-left">
                     <label class="label tooltip has-tooltip-multiline config-label has-tooltip-right has-tooltip-arrow"
