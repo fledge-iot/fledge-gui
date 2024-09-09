@@ -132,21 +132,26 @@ export class ListTypeConfigurationComponent implements OnInit {
   extractListValues(value) {
     let listValues = [];
     for (let val of value) {
-      let valueObj = {};
-      for (let property in val) {
-        if(val[property].hasOwnProperty('value')){
-          valueObj[property] = val[property].value;
-        }
-        else{
-          valueObj[property] = val[property].default;
-        }
-        if (val[property].type == 'json') {
-          valueObj[property] = JSON.parse(valueObj[property]);
-        }
-      }
+      let valueObj = this.extractSingleListValue(val);
       listValues.push(valueObj);
     }
     return listValues;
+  }
+
+  extractSingleListValue(val) {
+    let valueObj = {};
+    for (let property in val) {
+      if (val[property].hasOwnProperty('value')) {
+        valueObj[property] = val[property].value;
+      }
+      else {
+        valueObj[property] = val[property].default;
+      }
+      if (val[property].type == 'json') {
+        valueObj[property] = JSON.parse(valueObj[property]);
+      }
+    }
+    return valueObj;
   }
 
   toggleCard(index) {

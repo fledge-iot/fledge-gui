@@ -40,7 +40,7 @@
           <div class="card-header-title">
             <p class="subtitle is-size-9" id="card-title-{{configuration.key}}-{{i}}">{{listLabel}}</p>
           </div>
-          <button class="card-header-icon" (click)="toggleCard(i)" id="dots-btn-{{configuration.key}}-{{i}}">
+          <button class="card-header-icon tooltip has-tooltip-multiline has-tooltip-right has-tooltip-arrow" [attr.data-tooltip]="extractSingleListValue(item.value) | json" (click)="toggleCard(i)" id="dots-btn-{{configuration.key}}-{{i}}">
             <span class="icon is-small">
               <i class="bi bi-three-dots bi-sm" aria-hidden="true"></i>
             </span>
