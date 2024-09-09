@@ -27,3 +27,7 @@
 .card-header-shadow {
     box-shadow: 0 0.125em 0.25em rgba(10, 10, 10, 0.01);
 }
+
+.collapse-btn {
+    border: none;
+}

@@ -155,32 +155,24 @@ export class KvListTypeConfigurationComponent implements OnInit {
   }
 
   toggleCard(index) {
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
     let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
-    let cardSpan = document.getElementById('card-span-' + this.configuration.key + '-' + index);
-    let cardIcon = document.getElementById('card-icon-' + this.configuration.key + '-' + index);
-    if (cardBody.classList.contains('is-hidden')) {
+    if(cardBody.classList.contains('is-hidden')){
       cardBody.classList.remove('is-hidden');
-      cardSpan.title = 'Collapse';
-      cardIcon.classList.remove('fa-angle-right');
-      cardIcon.classList.add('fa-angle-down');
+      cardHeader.classList.add('is-hidden');
     }
-    else {
+    else{
       cardBody.classList.add('is-hidden');
-      cardSpan.title = 'Expand';
-      cardIcon.classList.remove('fa-angle-down');
-      cardIcon.classList.add('fa-angle-right');
+      cardHeader.classList.remove('is-hidden');
     }
   }
 
   expandListItem() {
     setTimeout(() => {
       let index = this.kvListItems.length - 1;
+      let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
       let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
-      let cardSpan = document.getElementById('card-span-' + this.configuration.key + '-' + index);
-      let cardIcon = document.getElementById('card-icon-' + this.configuration.key + '-' + index);
-      cardSpan.title = 'Collapse';
-      cardIcon.classList.remove('fa-angle-right');
-      cardIcon.classList.add('fa-angle-down');
+      cardHeader.classList.add('is-hidden');
       cardBody.classList.remove('is-hidden');
     }, 1);
   }
