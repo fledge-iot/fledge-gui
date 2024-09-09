@@ -31,6 +31,7 @@
 
 .card-header-title {
   padding: 0.5rem 1rem;
+  flex-grow: unset;
 }
 
 .card-content {
@@ -47,4 +48,10 @@
 
 .collapse-btn {
   border: none;
+}
+
+.btn-container {
+  width: 50% !important;
+  display: flex;
+  justify-content: space-between;
 }
