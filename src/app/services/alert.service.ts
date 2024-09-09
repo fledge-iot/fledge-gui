@@ -78,6 +78,17 @@ export class AlertService {
     }.bind(this), 10000);
   }
 
+  message(data: any, keepAfterNavigationChange = false) {
+    if (!data.message) {
+      return;
+    }
+    this.keepAfterNavigationChange = keepAfterNavigationChange;
+    this.subject.next({ type: data.type, text: data.message, autonomous: true });
+    setTimeout(function () {
+      this.closeMessage();
+    }.bind(this), 10000);
+  }
+
   getMessage(): Observable<any> {
     return this.subject.asObservable();
   }

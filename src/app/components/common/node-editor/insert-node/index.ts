@@ -60,6 +60,8 @@ export function insertableNodes<S extends Schemes>(
       const cons = Array.from(area.connectionViews.entries()).map(
         ([id, view]) => [id, view.element] as const
       );
+
+
       if (view && node.label !== "South" && node.label !== "Storage" && node.label !== "North") {
         const intersectedConnections = checkIntersection(view.position, node, cons);
         for (let id of intersectedConnections) {
