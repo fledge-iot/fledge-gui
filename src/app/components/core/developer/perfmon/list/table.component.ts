@@ -44,10 +44,12 @@ export class PerfMonComponent implements OnInit {
           console.log(data.monitors);
           // for table show (sorted by ts) latest record for each service per counter
           this.perfMonitors = data.monitors;
-          
-          var x = data.monitors.map( m => m.monitor);
-          this.counters = x;
-          console.log(x);
+
+          if (Array.isArray(data.monitors)) {
+            var x = data.monitors.map(m => m.monitor);
+            this.counters = x;
+            console.log(x);
+          }
 
           // Should list services and counters
           // then should be able to multiselect services and counters
@@ -55,7 +57,7 @@ export class PerfMonComponent implements OnInit {
           // - We can check if a service does not have pefmon checked then don;t list that
           // we should show chart per counter (and also have a grid/tabular view to allow sort/export)
           // should be able to filter for a time range, t1 to t2, last x units from now
-          
+
           /// group by services in get all
           // - counter: x, values {"s": [] } or
           // - counter: x, data: [{"service": "s", values":[], {"service": "s2", values":[]}]
