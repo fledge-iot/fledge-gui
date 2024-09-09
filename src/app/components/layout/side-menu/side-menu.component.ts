@@ -101,8 +101,19 @@ export class SideMenuComponent implements OnInit {
     // grab the menu item's position relative to its positioned parent
     var menuItemPosition = sidemenuLink.getBoundingClientRect();
 
+    // To adjust the submenu position properly according to the available space at top/bottom
+    const spaceBelow = window.innerHeight - menuItemPosition.bottom;
+    const spaceAbove = menuItemPosition.top;
+    let addedMargin = 55;
+    if (spaceBelow < 100) {
+      addedMargin = 170;
+    }
+    if (spaceAbove < 55) {
+      addedMargin = 0;
+    }
+
     // place the submenu in the correct position relevant to the menu item
-    submenuWrapper.style.top = (menuItemPosition.top - 55).toString() + 'px';
+    submenuWrapper.style.top = (menuItemPosition.top - addedMargin).toString() + 'px';
     submenuWrapper.style.left = (menuItemPosition.width + 4).toString() + 'px';
     setTimeout(function () {
       submenuWrapper.classList.add('show');
@@ -117,7 +128,6 @@ export class SideMenuComponent implements OnInit {
     }
     this.toggleSubmenuState(menuLink, !menuOption.classList.contains('show'));
     menuOption.classList.toggle('show');
-
     event.stopPropagation()
   }
 
