@@ -20,6 +20,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   initialProperties = [];
   listLabel: string;
   firstKey: string;
+  validConfigurationForm = true;
 
   constructor(
     public cdRef: ChangeDetectorRef,
@@ -127,6 +128,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   formStatus(formState: any) {
+    this.validConfigurationForm = formState.status;
     this.formStatusEvent.emit(formState);
   }
 

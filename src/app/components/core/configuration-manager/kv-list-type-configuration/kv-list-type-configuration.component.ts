@@ -18,6 +18,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
   @Output() formStatusEvent = new EventEmitter<any>();
   kvListItemsForm: FormGroup;
   initialProperties = [];
+  validConfigurationForm = true;
 
   constructor(
     public cdRef: ChangeDetectorRef,
@@ -135,6 +136,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
   }
 
   formStatus(formState: any) {
+    this.validConfigurationForm = formState.status;
     this.formStatusEvent.emit(formState);
   }
 

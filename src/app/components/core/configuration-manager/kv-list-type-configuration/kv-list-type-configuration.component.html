@@ -118,7 +118,8 @@
                 <button class="delete my-3 is-small" (click)="removeListItem(i)"></button>
               </div>
               <div class="column is-1 has-text-right">
-                <button class="button is-small my-1 collapse-btn" (click)="toggleCard(i)">
+                <button class="button is-small my-1 collapse-btn" (click)="toggleCard(i)"
+                [ngClass]="{'is-hidden':item.invalid || !validConfigurationForm}">
                   <span class="icon is-small toogle-icon" title="Collapse">
                     <i class="fas fa-xs fa-angle-up" aria-hidden="true"></i>
                   </span>
