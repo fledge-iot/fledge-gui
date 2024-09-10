@@ -18,6 +18,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
   @Output() formStatusEvent = new EventEmitter<any>();
   kvListItemsForm: FormGroup;
   initialProperties = [];
+  validConfigurationForm = true;
 
   constructor(
     public cdRef: ChangeDetectorRef,
@@ -35,6 +36,9 @@ export class KvListTypeConfigurationComponent implements OnInit {
       this.kvListItems.push(this.initListItem({ key, value }));
     }
     this.onControlValueChanges();
+    if(this.configuration.items == 'object' && this.kvListItems.length == 1){
+      this.expandListItem(); // Expand the list if only one item is present
+    }
   }
 
   get kvListItems() {
@@ -80,6 +84,9 @@ export class KvListTypeConfigurationComponent implements OnInit {
     }
     this.kvListItems.push(this.initListItem({ key: '', value: '' }));
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
+    if(this.configuration.items == 'object'){
+      this.expandListItem(); // Expand newly added item
+    }
   }
 
   removeListItem(index: number) {
@@ -129,6 +136,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
   }
 
   formStatus(formState: any) {
+    this.validConfigurationForm = formState.status;
     this.formStatusEvent.emit(formState);
   }
 
@@ -146,5 +154,28 @@ export class KvListTypeConfigurationComponent implements OnInit {
       }
     }
     return valueObj;
+  }
+
+  toggleCard(index) {
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
+    if(cardBody.classList.contains('is-hidden')){
+      cardBody.classList.remove('is-hidden');
+      cardHeader.classList.add('is-hidden');
+    }
+    else{
+      cardBody.classList.add('is-hidden');
+      cardHeader.classList.remove('is-hidden');
+    }
+  }
+
+  expandListItem() {
+    setTimeout(() => {
+      let index = this.kvListItems.length - 1;
+      let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
+      let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
+      cardHeader.classList.add('is-hidden');
+      cardBody.classList.remove('is-hidden');
+    }, 1);
   }
 }

@@ -18,6 +18,9 @@ export class ListTypeConfigurationComponent implements OnInit {
   @Output() formStatusEvent = new EventEmitter<any>();
   listItemsForm: FormGroup;
   initialProperties = [];
+  listLabel: string;
+  firstKey: string;
+  validConfigurationForm = true;
 
   constructor(
     public cdRef: ChangeDetectorRef,
@@ -29,12 +32,20 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   ngOnInit() {
+    if(this.configuration.items == 'object'){
+      this.firstKey = Object.keys(this.configuration.properties)[0];
+      // Show first property label as list card header
+      this.listLabel = this.configuration.properties[this.firstKey].displayName ? this.configuration.properties[this.firstKey].displayName : this.firstKey;
+    }
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
     values = JSON.parse(values) as [];
     values.forEach(element => {
       this.initListItem(element);
     });
     this.onControlValueChanges();
+    if(this.configuration.items == 'object' && this.listItems.length == 1){
+      this.expandListItem(); // Expand the list if only one item is present
+    }
   }
 
   get listItems() {
@@ -73,6 +84,9 @@ export class ListTypeConfigurationComponent implements OnInit {
     }
     this.initListItem();
     this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
+    if(this.configuration.items == 'object'){
+      this.expandListItem(); // Expand newly added item
+    }
   }
 
   removeListItem(index: number) {
@@ -114,26 +128,55 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   formStatus(formState: any) {
+    this.validConfigurationForm = formState.status;
     this.formStatusEvent.emit(formState);
   }
 
   extractListValues(value) {
     let listValues = [];
     for (let val of value) {
-      let valueObj = {};
-      for (let property in val) {
-        if(val[property].hasOwnProperty('value')){
-          valueObj[property] = val[property].value;
-        }
-        else{
-          valueObj[property] = val[property].default;
-        }
-        if (val[property].type == 'json') {
-          valueObj[property] = JSON.parse(valueObj[property]);
-        }
-      }
+      let valueObj = this.extractSingleListValue(val);
       listValues.push(valueObj);
     }
     return listValues;
+  }
+
+  extractSingleListValue(val) {
+    let valueObj = {};
+    for (let property in val) {
+      if (val[property].hasOwnProperty('value')) {
+        valueObj[property] = val[property].value;
+      }
+      else {
+        valueObj[property] = val[property].default;
+      }
+      if (val[property].type == 'json') {
+        valueObj[property] = JSON.parse(valueObj[property]);
+      }
+    }
+    return valueObj;
+  }
+
+  toggleCard(index) {
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
+    if(cardBody.classList.contains('is-hidden')){
+      cardBody.classList.remove('is-hidden');
+      cardHeader.classList.add('is-hidden');
+    }
+    else{
+      cardBody.classList.add('is-hidden');
+      cardHeader.classList.remove('is-hidden');
+    }
+  }
+
+  expandListItem() {
+    setTimeout(() => {
+      let index = this.listItems.length - 1;
+      let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
+      let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
+      cardHeader.classList.add('is-hidden');
+      cardBody.classList.remove('is-hidden');
+    }, 1);
   }
 }
