@@ -19,6 +19,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   listItemsForm: FormGroup;
   initialProperties = [];
   listLabel: string;
+  firstKey: string;
 
   constructor(
     public cdRef: ChangeDetectorRef,
@@ -30,17 +31,17 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   ngOnInit() {
+    if(this.configuration.items == 'object'){
+      this.firstKey = Object.keys(this.configuration.properties)[0];
+      // Show first property label as list card header
+      this.listLabel = this.configuration.properties[this.firstKey].displayName ? this.configuration.properties[this.firstKey].displayName : this.firstKey;
+    }
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
     values = JSON.parse(values) as [];
     values.forEach(element => {
       this.initListItem(element);
     });
     this.onControlValueChanges();
-    if(this.configuration.items == 'object'){
-      let firstKey = Object.keys(this.configuration.properties)[0];
-      // Show first property label as list card header
-      this.listLabel = this.configuration.properties[firstKey].displayName ? this.configuration.properties[firstKey].displayName : firstKey;
-    }
     if(this.configuration.items == 'object' && this.listItems.length == 1){
       this.expandListItem(); // Expand the list if only one item is present
     }

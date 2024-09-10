@@ -39,7 +39,10 @@
         <header class="card-header has-background-white card-header-shadow is-justify-content-space-between" 
           id="card-header-{{configuration.key}}-{{i}}">
           <div class="card-header-title">
-            <p class="subtitle is-size-9">{{listLabel}}</p>
+            <p class="subtitle is-size-9 mb-0">{{listLabel}}</p>
+          </div>
+          <div class="is-flex is-justify-content-center is-align-items-center">
+            <p class="help has-text-grey">{{item.value[firstKey].value}}</p>
           </div>
           <div class="btn-container">
             <button class="card-header-icon tooltip has-tooltip-multiline has-tooltip-right has-tooltip-arrow" [attr.data-tooltip]="extractSingleListValue(item.value) | json" (click)="toggleCard(i)">

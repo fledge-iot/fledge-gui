@@ -37,3 +37,12 @@
     display: flex;
     justify-content: space-between;
 }
+
+.help {
+    font-weight: 400;
+    margin-top: 0;
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
