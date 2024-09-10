@@ -44,5 +44,8 @@
   flex-basis: auto;
   flex-grow: unset;
   flex-shrink: unset;
+}
+
+.is-sidebar-menu.is-2 {
   width: 14.66667%;
 }
