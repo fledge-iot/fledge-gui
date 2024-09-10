@@ -24,6 +24,7 @@
 :host:hover .asset,
 :host:hover .trash-icon {
   visibility: visible !important;
+  cursor: pointer !important;
 }
 
 :host .title {

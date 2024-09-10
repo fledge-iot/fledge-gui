@@ -4,19 +4,12 @@ import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import {
-  ConfigurationService,
-  NorthService, PingService,
-  RolesService,
-  SchedulesService,
-  ServicesApiService,
-  ToastService
+  ConfigurationService, RolesService,
+  SchedulesService, ToastService
 } from "./../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
 import { Subject, Subscription } from "rxjs";
-import { takeUntil } from "rxjs/operators";
-import { Service } from "./../../../core/south/south-service";
-import { NorthTask } from "../../../core/north/north-task";
 
 @Component({
   selector: 'app-custom-node',
@@ -68,14 +61,11 @@ export class CustomNodeComponent implements OnChanges {
   filter = { pluginName: '', enabled: 'false', name: '', color: '', pluginVersion: "" }
   isServiceNode: boolean = false;
   subscription: Subscription;
-  addFilterSubscription: Subscription;
   pluginName = '';
   isFilterNode: boolean = false;
   destroy$: Subject<boolean> = new Subject<boolean>();
   fetchedTask;
   fetchedService;
-  showPlusIcon = false;
-  showDeleteIcon = false;
   nodeId = '';
   pluginVersion = '';
   timeoutId;
@@ -86,17 +76,14 @@ export class CustomNodeComponent implements OnChanges {
 
   constructor(private cdr: ChangeDetectorRef,
     private schedulesService: SchedulesService,
-    private northService: NorthService,
     private docService: DocService,
     private router: Router,
     private route: ActivatedRoute,
-    private servicesApiService: ServicesApiService,
     public flowEditorService: FlowEditorService,
     private configService: ConfigurationService,
     private toastService: ToastService,
     public rolesService: RolesService,
-    private elRef: ElementRef,
-    private ping: PingService) {
+    private elRef: ElementRef) {
     this.route.params.subscribe(params => {
       this.from = params.from;
       this.source = params.name;
@@ -170,18 +157,10 @@ export class CustomNodeComponent implements OnChanges {
           this.isEnabled = true;
         }
       }
-      else {
-        this.addFilterSubscription = this.flowEditorService.showAddFilterIcon.subscribe((data) => {
-          if (data) {
-            if (data.addedFiltersIdColl.includes(this.nodeId)) {
-              this.elRef.nativeElement.style.outline = "#EA9999 dashed 2px";
-              this.elRef.nativeElement.style.borderWidth = "0px";
-              this.elRef.nativeElement.style.height = "auto";
-              this.showPlusIcon = true;
-              this.showDeleteIcon = true;
-            }
-          }
-        })
+      else if (!this.data['pseudoNode']) {
+        this.elRef.nativeElement.style.outline = "#EA9999 dashed 2px";
+        this.elRef.nativeElement.style.borderWidth = "0px";
+        this.elRef.nativeElement.style.height = "auto";
       }
     }
 
@@ -388,7 +367,7 @@ export class CustomNodeComponent implements OnChanges {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    this.addFilterSubscription?.unsubscribe();
+    // this.addFilterSubscription?.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }

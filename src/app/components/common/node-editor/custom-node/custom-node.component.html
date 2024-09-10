@@ -10,7 +10,7 @@
           <span *ngIf="!source; else serviceNameTemplate" class="service-name"
             (click)="openServiceDetails()">{{data.controls?.nameControl?.name}}</span>
           <ng-template #serviceNameTemplate>
-            <span>{{data.controls?.nameControl?.name}}</span>
+            <span [ngClass]="{'is-size-5': data?.pseudoNode}">{{data.controls?.nameControl?.name}}</span>
           </ng-template>
           <span *ngIf="task.execution === 'task'" class="help has-text-grey-light">&nbsp;Task</span>
         </div>
@@ -46,7 +46,8 @@
                 </span>
               </button>
             </ng-container>
-            <ng-container *ngIf="data.label==='Filter' && showPlusIcon">
+            <ng-container
+              *ngIf="data.label==='Filter' && !data.pseudoNode && data.controls?.pseudoNodeControl?.pseudoConnection">
               <button class="btn small-btn add-btn is-pulled-right" (click)="addFilter()">
                 <span class="ml-2 has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Choose plugin">
                   <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
@@ -57,12 +58,14 @@
         </div>
       </div>
       <span *ngIf="isFilterNode && data.label!=='Filter'" class="help-text">{{helpText}}</span>
-      <span *ngIf="isServiceNode" class="help-text has-tooltip-bottom custom-tooltip has-tooltip-arrow tooltip is-hovered" [attr.data-tooltip]="pluginVersion">{{helpText}}</span>
+      <span *ngIf="isServiceNode"
+        class="help-text has-tooltip-bottom custom-tooltip has-tooltip-arrow tooltip is-hovered"
+        [attr.data-tooltip]="pluginVersion">{{helpText}}</span>
     </div>
     <div>
       <ng-container *ngIf="isServiceNode && from != 'north'">
-        <readings-count *ngIf="service" [readingCount]="service.readingCount"
-          [assetCount]="service.assetCount" [serviceName]="service.name"></readings-count>
+        <readings-count *ngIf="service" [readingCount]="service.readingCount" [assetCount]="service.assetCount"
+          [serviceName]="service.name"></readings-count>
       </ng-container>
       <ng-container *ngIf="isServiceNode && from == 'north'">
         <div class="reading-details">
@@ -128,9 +131,9 @@
         </div>
       </ng-container>
       <div class="is-pulled-right">
-        <ng-container *ngIf="data.label==='Filter'">
+        <ng-container *ngIf="data.label==='Filter' && !data.pseudoNode">
           <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered is-invisible
-              mr-2 mt-2" [ngClass]="{'trash-icon': showDeleteIcon}" data-tooltip="Delete" (click)="removeFilter()">
+              mr-2 mt-2 trash-icon" data-tooltip="Delete" (click)="removeFilter()">
             <i class="far fa-xs fa-trash-alt"></i>
           </span>
         </ng-container>
@@ -153,7 +156,8 @@
                   </a>
                 </ng-container>
                 <ng-container *ngIf="isServiceNode && from=='south'">
-                  <a class="dropdown-item" [attr.data-show]="'quickview'" [attr.data-target]="'quickviewDefault'" [hidden]="service.readingCount==0" (click)="showReadingsPerAsset()">
+                  <a class="dropdown-item" [attr.data-show]="'quickview'" [attr.data-target]="'quickviewDefault'"
+                    [hidden]="service.readingCount==0" (click)="showReadingsPerAsset()">
                     <span>Readings</span>
                   </a>
                 </ng-container>
@@ -173,8 +177,10 @@
     </div>
   </ng-container>
   <ng-template #addServiceTemplate>
-    <div [ngClass]="{'disabled-node': !rolesService.hasEditPermissions(), 'add-task': from == 'north', 'add-service': from == 'south'}">
-      <span class="has-tooltip-bottom has-tooltip-arrow tooltip" [ngClass]="rolesService.hasEditPermissions() ? 'is-hovered': 'disabled'"
+    <div
+      [ngClass]="{'disabled-node': !rolesService.hasEditPermissions(), 'add-task': from == 'north', 'add-service': from == 'south'}">
+      <span class="has-tooltip-bottom has-tooltip-arrow tooltip"
+        [ngClass]="rolesService.hasEditPermissions() ? 'is-hovered': 'disabled'"
         [attr.data-tooltip]="from == 'north'? 'Add Instance': 'Add Service'" (click)="navToAddServicePage()">
         <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
       </span>
