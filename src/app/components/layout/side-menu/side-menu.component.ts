@@ -92,7 +92,7 @@ export class SideMenuComponent implements OnInit {
   }
 
   openSubmenuOnHover(menuLink) {
-    if (this.viewPort === 'mobile') {
+    if (this.viewPort !== 'desktop') {
       return;
     }
     let sidemenuLink = document.getElementById(menuLink + '-li') as HTMLDivElement;
@@ -123,7 +123,7 @@ export class SideMenuComponent implements OnInit {
 
   toggleSubmenuOnClick(menuLink, event = null) {
     const menuOption = document.getElementById(menuLink + '-submenu') as HTMLDivElement;
-    if (this.viewPort !== 'mobile') {
+    if (this.viewPort == 'desktop') {
       return;
     }
     this.toggleSubmenuState(menuLink, !menuOption.classList.contains('show'));
@@ -132,7 +132,7 @@ export class SideMenuComponent implements OnInit {
   }
 
   closeSubmenu(menuLink) {
-    if (this.viewPort === 'mobile') {
+    if (this.viewPort !== 'desktop') {
       return;
     }
     const menuOption = document.getElementById(menuLink + '-submenu') as HTMLDivElement;
@@ -155,8 +155,8 @@ export class SideMenuComponent implements OnInit {
       case 'control':
         this.isControlListOpen = state ? state : !this.isControlListOpen;
 
-        // On mobile view, close other submenu/s if open
-        if (this.viewPort == 'mobile' && state) {
+        // On mobile/tablet view, close other submenu/s if open
+        if (this.viewPort !== 'desktop' && state) {
           this.isLogsListOpen = this.isLogsListOpen ? false : this.isLogsListOpen;
           logsSubmenu.classList.remove('show');
 
@@ -170,8 +170,8 @@ export class SideMenuComponent implements OnInit {
       case 'logs':
         this.isLogsListOpen = state ? state : !this.isLogsListOpen;
 
-        // On mobile view, close other submenu/s if open
-        if (this.viewPort == 'mobile' && state) {
+        // On mobile/tablet view, close other submenu/s if open
+        if (this.viewPort !== 'desktop' && state) {
           this.isControlListOpen = this.isControlListOpen ? false : this.isControlListOpen;
           controlSubmenu.classList.remove('show');
 
@@ -185,8 +185,8 @@ export class SideMenuComponent implements OnInit {
       case 'developer':
         this.isDeveloperListOpen = state ? state : !this.isDeveloperListOpen;
 
-        // On mobile view, close other submenu/s if open
-        if (this.viewPort == 'mobile' && state) {
+        // On mobile/tablet view, close other submenu/s if open
+        if (this.viewPort !== 'desktop' && state) {
           this.isControlListOpen = this.isControlListOpen ? false : this.isControlListOpen;
           controlSubmenu.classList.remove('show');
           this.isLogsListOpen = this.isLogsListOpen ? false : this.isLogsListOpen;
@@ -199,7 +199,7 @@ export class SideMenuComponent implements OnInit {
   }
 
   applyCssClass(menuState) {
-    if (this.viewPort !== 'mobile') {
+    if (this.viewPort == 'desktop') {
       return 'fa-chevron-right';
     } else {
       let cssClass = menuState ? 'fa-chevron-down' : 'fa-chevron-right';

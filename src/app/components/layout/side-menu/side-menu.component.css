@@ -85,11 +85,7 @@ svg#control-dispatch {
   display: block !important;
 }
 
-/* #sidemenu li:hover .submenu-div, .show-on-mobile {
-  display: block !important;
-} */
-
-@media (min-width: 768px) {
+@media (min-width: 1025px) {
   #sidemenu.collapsed {
     overflow: visible;
     width: 6.5rem !important;
@@ -121,15 +117,6 @@ svg#control-dispatch {
   #sidemenu.collapsed .sidemenu-link .fa-chevron-down {
     margin-right: 0;
     text-align: center;
-  }
-
-  .toggle-submenu-dropdown {
-    font-size: 0.5rem;
-    opacity: 0.7;
-  }
-
-  .sidemenu-link:hover .toggle-submenu-dropdown {
-    color: #485fc7;
   }
 
   li:has(.submenu-text.is-active) .sidemenu-link {
@@ -181,8 +168,13 @@ svg#control-dispatch {
     position: absolute;
     background-color: white;
   }
+}
 
-  ::-webkit-scrollbar {
-    width: 2px;
-  }
+.toggle-submenu-dropdown {
+  font-size: 0.5rem;
+  opacity: 0.7;
+}
+
+.sidemenu-link:hover .toggle-submenu-dropdown {
+  color: #485fc7;
 }

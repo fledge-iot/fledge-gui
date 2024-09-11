@@ -28,6 +28,22 @@
   }
 }
 
+@media screen and (min-width: 1025px) {
+  .is-sidebar-menu {
+    flex-basis: auto;
+    flex-grow: unset;
+    flex-shrink: unset;
+  }
+
+  .is-sidebar-menu.is-2 {
+    width: 14.66667%;
+  }
+
+  .layout-custom-width {
+    width: 85%;
+  }
+}
+
 .is-fullheight {
   position: relative;
   min-height: calc(100vh - (3.25rem - .75rem));
@@ -38,14 +54,4 @@
   bottom: 0;
   left: 0;
   right: 0;
-}
-
-.is-sidebar-menu {
-  flex-basis: auto;
-  flex-grow: unset;
-  flex-shrink: unset;
-}
-
-.is-sidebar-menu.is-2 {
-  width: 14.66667%;
 }

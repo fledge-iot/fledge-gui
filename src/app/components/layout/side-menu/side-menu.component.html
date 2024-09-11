@@ -1,5 +1,5 @@
-<aside class="menu" [ngClass]="{'submenu-div is-relative': viewPort !== 'mobile'}"
-  [id]="viewPort == 'mobile' ? 'mobile-sidemenu' : 'sidemenu'">
+<aside class="menu" [ngClass]="{'submenu-div is-relative': viewPort == 'desktop'}"
+  [id]="viewPort !== 'desktop' ? 'mobile-sidemenu' : 'sidemenu'">
   <ul class="menu-list">
     <section [ngClass]="{'disabled':  !isServiceRunning}" (click)="toggleSideMenu(); $event.preventDefault()">
       <li>
@@ -58,8 +58,7 @@
               </span>
             </div>
           </a>
-          <div class="submenu-div" id="control-submenu" [hidden]="viewPort == 'mobile' && !isControlListOpen"
-            [ngClass]="{'show-on-mobile':  viewPort == 'mobile'  && isControlListOpen }">
+          <div class="submenu-div" id="control-submenu" [hidden]="viewPort !== 'desktop' && !isControlListOpen">
             <ul class="submenu-list">
               <li>
                 <a class="submenu-text" id="acl" routerLinkActive="is-active" routerLink='control-dispatcher/acl'>
@@ -128,8 +127,7 @@
                 aria-hidden="true"></i>
             </span>
           </a>
-          <div class="submenu-div" id="logs-submenu" [hidden]="viewPort == 'mobile' && !isLogsListOpen"
-            [ngClass]="{'show-on-mobile':  viewPort == 'mobile'  && isLogsListOpen }">
+          <div class="submenu-div" id="logs-submenu" [hidden]="viewPort !== 'desktop' && !isLogsListOpen">
             <ul class="submenu-list" [ngClass]="{'pl-0': isSidemenuCollapsed }">
               <li>
                 <a class="submenu-text" id="audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>
@@ -178,8 +176,7 @@
                 aria-hidden="true"></i>
             </span>
           </a>
-          <div class="submenu-div" id="developer-submenu" [hidden]="viewPort == 'mobile' && !isDeveloperListOpen"
-            [ngClass]="{'show-on-mobile':  viewPort == 'mobile'  && isDeveloperListOpen }">
+          <div class="submenu-div" id="developer-submenu" [hidden]="viewPort !== 'desktop' && !isDeveloperListOpen">
             <ul class="submenu-list" [ngClass]="{'pl-0':  isSidemenuCollapsed }">
               <li>
                 <a class="submenu-text" id="python-packages" routerLinkActive="is-active"
@@ -226,8 +223,8 @@
     </li>
   </ul>
   <div class="sidebar-footer">
-    <hr *ngIf="viewPort !== 'mobile'" class="sidebar-divider d-none d-md-block m-0">
-    <div *ngIf="viewPort !== 'mobile'" class="has-text-centered py-3">
+    <hr *ngIf="viewPort == 'desktop'" class="sidebar-divider d-none d-md-block m-0">
+    <div *ngIf="viewPort == 'desktop'" class="has-text-centered py-3">
       <a type="button" (click)="toggleSidemenuState()" id="sidebarToggle">
         <span class="icon">
           <i [ngClass]="isSidemenuCollapsed ? 'fas fa-chevron-right' : 'fas fa-chevron-left'" aria-hidden="true"></i>
