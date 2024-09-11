@@ -42,6 +42,10 @@
   .layout-custom-width {
     width: 85%;
   }
+
+  .expanded-custom-width {
+    width: 93%;
+  }
 }
 
 .is-fullheight {

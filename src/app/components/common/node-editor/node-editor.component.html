@@ -51,7 +51,8 @@
     </app-service-warning>
   </ng-container>
   <ng-container *ngIf="!isAddFilterWizard">
-    <div class="rete" #rete></div>
+    <div class="rete" [ngClass]="{'expanded-width': isSidebarCollapsed, 'collapsed-width': !isSidebarCollapsed}" #rete>
+    </div>
     <div class="dock"></div>
   </ng-container>
   <ng-contafiner *ngIf="source && isAddFilterWizard">

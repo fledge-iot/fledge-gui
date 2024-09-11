@@ -178,3 +178,7 @@ svg#control-dispatch {
 .sidemenu-link:hover .toggle-submenu-dropdown {
   color: #485fc7;
 }
+
+::-webkit-scrollbar {
+  width: 2px;
+}

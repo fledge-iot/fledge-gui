@@ -8,7 +8,7 @@
     <app-side-menu (toggle)="toggleSidebar()" (sidebarCollapsedEvent)="setSidebarState($event)"></app-side-menu>
   </div>
   <div class="column is-fullheight is-mobile pt-3"
-    [ngClass]="(!isLoginView && !isSidemenuCollapsed) ? 'is-10 layout-custom-width' : (isSidemenuCollapsed ? 'is-11' : 'is-12')">
+    [ngClass]="(!isLoginView && !isSidemenuCollapsed) ? 'is-10 layout-custom-width' : (isSidemenuCollapsed ? 'is-11 expanded-custom-width' : 'is-12')">
     <div [ngClass]="{'overlay': !isServiceRunning
                     && !url?.includes('setting')
                     && !url?.includes('login') && !modalWindow}">

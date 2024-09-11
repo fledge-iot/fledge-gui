@@ -106,6 +106,7 @@ export class NodeEditorComponent implements OnInit {
   taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };
   selectedAsset = '';
   MAX_RANGE = MAX_INT_SIZE / 2;
+  isSidebarCollapsed: boolean;
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -130,6 +131,12 @@ export class NodeEditorComponent implements OnInit {
     private additionalServicesUtils: AdditionalServicesUtils,
     public sharedService: SharedService,
     private router: Router) {
+    this.sharedService.isSidebarCollapsed
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((isCollapsed: boolean) => {
+        this.isSidebarCollapsed = isCollapsed;
+      });
+
     this.route.params.subscribe(params => {
       this.from = params.from;
       this.source = params.name;

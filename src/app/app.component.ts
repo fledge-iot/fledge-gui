@@ -134,6 +134,7 @@ export class AppComponent implements OnInit {
 
   setSidebarState(state) {
     this.isSidemenuCollapsed = state;
+    this.sharedService.isSidebarCollapsed.next(state);
   }
 
   ngOnDestroy() {
