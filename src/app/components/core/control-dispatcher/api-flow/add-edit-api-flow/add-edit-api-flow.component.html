@@ -193,12 +193,19 @@
                                                     <label class="label lbl-child has-text-left">Variables</label>
                                                 </div>
                                                 <div class="field-body">
-                                                    <button class="button px-0 pt-1 is-small is-link is-light has-background-white" (click)="addValueControl('variables')">
-                                                        <span class="icon is-small pt-1 mr-0">
-                                                            <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
-                                                        </span>
-                                                        <span>Add variable</span>
-                                                    </button>
+                                                    <ng-container *ngIf="rolesService.hasControlAccess(); else NoVariable">
+                                                        <button class="button px-0 pt-1 is-small is-link is-light has-background-white" (click)="addValueControl('variables')">
+                                                            <span class="icon is-small pt-1 mr-0">
+                                                                <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+                                                            </span>
+                                                            <span>Add variable</span>
+                                                        </button>
+                                                    </ng-container>
+                                                    <ng-template #NoVariable>
+                                                        <div class="field">
+                                                            <input type="text" class="input is-static has-text-grey-light is-size-7" value="None" readonly>
+                                                        </div>
+                                                    </ng-template>
                                                 </div>
                                             </div>
                                         </div>
@@ -253,12 +260,19 @@
                                                     <label class="label lbl-child has-text-left">Constants</label>
                                                 </div>
                                                 <div class="field-body">
-                                                    <button class="button px-0 pt-1 is-small is-link is-light has-background-white" (click)="addValueControl('constants')">
-                                                        <span class="icon is-small pt-1 mr-0">
-                                                            <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
-                                                        </span>
-                                                        <span>Add constant</span>
-                                                    </button>
+                                                    <ng-container *ngIf="rolesService.hasControlAccess(); else NoConstant">
+                                                        <button class="button px-0 pt-1 is-small is-link is-light has-background-white" (click)="addValueControl('constants')">
+                                                            <span class="icon is-small pt-1 mr-0">
+                                                                <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+                                                            </span>
+                                                            <span>Add constant</span>
+                                                        </button>
+                                                    </ng-container>
+                                                    <ng-template #NoConstant>
+                                                        <div class="field">
+                                                            <input type="text" class="input is-static has-text-grey-light is-size-7" value="None" readonly>
+                                                        </div>
+                                                    </ng-template>
                                                 </div>
                                             </div>
                                         </div>
