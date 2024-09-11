@@ -88,7 +88,7 @@
                 <ng-template #staticTypeDiv>
                     <div class="field">
                         <div class="control">
-                            <input name="type" class="input is-static static-field pb-4" type="text" [value]="selectedType | titlecase" readonly>
+                            <input name="type" class="input is-static pt-0 static-field pb-4" type="text" [value]="selectedType | titlecase" readonly>
                         </div>
                     </div>
                     <ngContainer *ngIf="selectedType === 'operation'">
@@ -221,8 +221,8 @@
                                                     <div class="field" style="max-width: 50%;">
                                                         <div class="control">
                                                             <!-- Show variable name highlighted with red color if variable value exists but variable name is blank -->
-                                                            <input formControlName="vName" placeholder="Variable name" class="input is-small" name="type" type="text" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-4':!rolesService.hasControlAccess()}"
-                                                            [readonly]="!rolesService.hasControlAccess()" [ngClass]="{'input-error': (apiFlowForm.controls['variables'].controls[i].controls.vValue.value !== '' && apiFlowForm.controls['variables'].controls[i].controls.vName.value === '')}">
+                                                            <input formControlName="vName" placeholder="Variable name" class="input is-small" name="type" type="text"
+                                                            [readonly]="!rolesService.hasControlAccess()" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-4':!rolesService.hasControlAccess(), 'input-error': (apiFlowForm.controls['variables'].controls[i].controls.vValue.value !== '' && apiFlowForm.controls['variables'].controls[i].controls.vName.value === '')}">
                                                         </div>
                                                     </div>
                                                     <div class="field" style="max-width: 50%;">
@@ -288,8 +288,8 @@
                                                     <div class="field" style="max-width: 50%;">
                                                         <div class="control">
                                                             <!-- Show constant name highlighted with red color if constant value exists but constant name is blank -->
-                                                            <input formControlName="cName" placeholder="Constant name" class="input is-small" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-4':!rolesService.hasControlAccess()}"
-                                                            [readonly]="!rolesService.hasControlAccess()" [ngClass]="{'input-error': (apiFlowForm.controls['constants'].controls[i].controls.cValue.value !== '' && apiFlowForm.controls['constants'].controls[i].controls.cName.value === '')}"
+                                                            <input formControlName="cName" placeholder="Constant name" class="input is-small"
+                                                            [readonly]="!rolesService.hasControlAccess()" [ngClass]="{'is-small':rolesService.hasControlAccess(), 'is-static static-field pb-4':!rolesService.hasControlAccess(), 'input-error': (apiFlowForm.controls['constants'].controls[i].controls.cValue.value !== '' && apiFlowForm.controls['constants'].controls[i].controls.cName.value === '')}"
                                                             name="type" type="text">
                                                         </div>
                                                     </div>
@@ -415,7 +415,7 @@
                         </div>
                     </ng-container>
                     <ng-template #staticDescription>
-                        <input name="description" class="input is-static pb-4" type="text"
+                        <input name="description" class="input is-static pt-0 pb-4" type="text"
                         [value]="af.description" readonly>
                     </ng-template>
                 </div>
