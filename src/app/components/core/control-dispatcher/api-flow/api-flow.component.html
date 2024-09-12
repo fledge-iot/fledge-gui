@@ -35,11 +35,11 @@
                     <ng-container *ngFor="let ep of apiFlows; let i = index">
                         <tr id="select{{i}}">
                             <td class="align-content">
-                                <a *ngIf="ep.permitted" class="button is-ghost ep-name mx-0 px-0"
+                                <a *ngIf="ep.permitted && rolesService.hasEditPermissions()" class="button is-ghost ep-name mx-0 px-0"
                                     (click)="getAndExecuteAPIFlow(ep.name);">
                                     {{ep.name}}
                                 </a>
-                                <span *ngIf="!ep.permitted">{{ep.name}} </span>
+                                <span *ngIf="!ep.permitted || !rolesService.hasEditPermissions()">{{ep.name}} </span>
                             </td>
                             <td class="description">
                                 <ng-container *ngIf="rolesService.hasControlAccess(); else noEditDescription">

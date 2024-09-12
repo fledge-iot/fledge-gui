@@ -442,7 +442,7 @@
                 <div class="field">
                   <div class="columns">
                     <div class="column is-2">
-                      <div *ngIf="editMode && af.permitted" class="field has-addons is-fullwidth">
+                      <div *ngIf="editMode && af.permitted && rolesService.hasEditPermissions()" class="field has-addons is-fullwidth">
                         <p class="control is-expanded">
                           <a class="button is-small is-fullwidth" (click)="checkAndRequestAPIFlow()">Execute</a>
                         </p>
