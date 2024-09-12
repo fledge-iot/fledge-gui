@@ -187,45 +187,18 @@
             </div>
             <div class="field-body">
               <div class="field">
-                <div class="field-body">
-                  <div class="field">
-                    <div class="control box">
-                      <div class="columns">
-                        <div class="column">
-                          <div class="field">
-                            <ng-container formArrayName="variables">
-                              <div *ngIf="getFormControls('variables').length === 0" class="field-label is-small">
-                                <div class="field is-horizontal">
-                                  <div class="field-label is-small">
-                                    <label class="label lbl-child has-text-left">Variables</label>
-                                  </div>
-                                  <div class="field-body">
-                                    <ng-container *ngIf="rolesService.hasControlAccess(); else NoVariable">
-                                      <button class="button px-0 pt-1 is-small is-link is-light has-background-white"
-                                        (click)="addValueControl('variables')">
-                                        <span class="icon is-small pt-1 mr-0">
-                                          <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
-                                        </span>
-                                        <span>Add variable</span>
-                                      </button>
-                                    </ng-container>
-                                    <ng-template #NoVariable>
-                                      <div class="field">
-                                        <input type="text" class="input is-static has-text-grey-light is-size-7"
-                                          value="None" readonly>
-                                      </div>
-                                    </ng-template>
-                                  </div>
-                                </div>
-                              </div>
-                              <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
-                                <div class="field is-horizontal">
-                                  <div *ngIf="i === 0" class="field-label is-small">
-                                    <label class="label lbl-child has-text-left">Variables</label>
-                                  </div>
-                                  <div *ngIf="i > 0" class="field-label">
-                                    <label class="label"></label>
-                                  </div>
+                <div class="control box">
+                  <div class="columns">
+                    <div class="column">
+                      <div class="field">
+                        <ng-container formArrayName="variables">
+                          <div class="field is-horizontal">
+                            <div class="field-label is-small">
+                              <label class="label lbl-child has-text-left">Variables</label>
+                            </div>
+                            <div class="field-body" *ngIf="getFormControls('variables').length >0; else NoVariable">
+                              <div class="field">
+                                <ng-container *ngFor="let v of getFormControls('variables'); let i = index">
                                   <div class="field-body" [formGroupName]="i">
                                     <div class="field" style="max-width: 50%;">
                                       <div class="control">
@@ -249,59 +222,52 @@
                                         (click)="removeParameter(i, 'variables')"></button>
                                     </div>
                                   </div>
+                                </ng-container>
+                              </div>
+                            </div>
+                            <ng-template #NoVariable>
+                              <div class="field-body" *ngIf="!rolesService.hasControlAccess()">
+                                <div class="field">
+                                  <input type="text" class="input is-static has-text-grey-light is-size-7"
+                                    value="None" readonly>
                                 </div>
-                              </ng-container>
-                            </ng-container>
-                          </div>
-                          <div *ngIf="rolesService.hasControlAccess() && getFormControls('variables').length > 0"
-                            class="field">
-                            <div class="columns">
-                              <div class="column is-one-fifth"></div>
-                              <div class="btn-column pt-1 pb-0 pl-2">
-                                <button class="button px-0 is-small is-link is-light has-background-white"
-                                  (click)="addValueControl('variables')">
-                                  <span class="icon is-small pt-1 mr-0">
-                                    <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
-                                  </span>
-                                  <span>Add new variable</span>
-                                </button>
+                              </div>
+                            </ng-template>
+                            <div class="field-body" 
+                              *ngIf="rolesService.hasControlAccess() && getFormControls('variables').length ==0">
+                              <div class="field">
+                                <template [ngTemplateOutlet]="addVariableTemplate"></template>
                               </div>
                             </div>
                           </div>
-                          <div class="field pt-2">
-                            <ng-container formArrayName="constants">
-                              <div *ngIf="getFormControls('constants').length === 0" class="field-label is-small">
-                                <div class="field is-horizontal">
-                                  <div class="field-label is-small">
-                                    <label class="label lbl-child has-text-left">Constants</label>
-                                  </div>
-                                  <div class="field-body">
-                                    <ng-container *ngIf="rolesService.hasControlAccess(); else NoConstant">
-                                      <button class="button px-0 pt-1 is-small is-link is-light has-background-white"
-                                        (click)="addValueControl('constants')">
-                                        <span class="icon is-small pt-1 mr-0">
-                                          <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
-                                        </span>
-                                        <span>Add constant</span>
-                                      </button>
-                                    </ng-container>
-                                    <ng-template #NoConstant>
-                                      <div class="field">
-                                        <input type="text" class="input is-static has-text-grey-light is-size-7"
-                                          value="None" readonly>
-                                      </div>
-                                    </ng-template>
-                                  </div>
-                                </div>
-                              </div>
-                              <ng-container *ngFor="let c of getFormControls('constants'); let i = index">
-                                <div class="field is-horizontal">
-                                  <div *ngIf="i === 0" class="field-label is-small">
-                                    <label class="label lbl-child has-text-left">Constants</label>
-                                  </div>
-                                  <div *ngIf="i > 0" class="field-label">
-                                    <label class="label"></label>
-                                  </div>
+                        </ng-container>
+                      </div>
+                      <div *ngIf="rolesService.hasControlAccess() && getFormControls('variables').length >0"
+                        class="field">
+                        <div class="columns">
+                          <div class="column is-one-fifth"></div>
+                          <div class="btn-column pt-1 pb-0">
+                            <template [ngTemplateOutlet]="addVariableTemplate"></template>
+                          </div>
+                        </div>
+                      </div>
+                      <ng-template #addVariableTemplate>
+                        <button class="button px-0 is-small is-link is-light has-background-white" (click)="addValueControl('variables')">
+                          <span class="icon is-small pt-1 mr-0">
+                            <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+                          </span>
+                          <span>{{getFormControls('variables').length > 0 ? "Add new variable": "Add variable"}}</span>
+                        </button>
+                      </ng-template>
+                      <div class="field pt-2">
+                        <ng-container formArrayName="constants">
+                          <div class="field is-horizontal">
+                            <div class="field-label is-small">
+                              <label class="label lbl-child has-text-left">Constants</label>
+                            </div>
+                            <div class="field-body" *ngIf="getFormControls('constants').length >0; else NoConstant">
+                              <div class="field">
+                                <ng-container *ngFor="let c of getFormControls('constants'); let i = index">
                                   <div class="field-body" [formGroupName]="i">
                                     <div class="field" style="max-width: 50%;">
                                       <div class="control">
@@ -325,29 +291,45 @@
                                         (click)="removeParameter(i, 'constants')"></button>
                                     </div>
                                   </div>
+                                </ng-container>
+                              </div>
+                            </div>
+                            <ng-template #NoConstant>
+                              <div class="field-body" *ngIf="!rolesService.hasControlAccess()">
+                                <div class="field">
+                                  <input type="text" class="input is-static has-text-grey-light is-size-7"
+                                    value="None" readonly>
                                 </div>
-                              </ng-container>
-                            </ng-container>
-                          </div>
-                          <div *ngIf="rolesService.hasControlAccess() && getFormControls('constants').length > 0"
-                            class="field">
-                            <div class="columns">
-                              <div class="column is-one-fifth"></div>
-                              <div class="btn-column pt-1 pb-0 pl-2">
-                                <button class="button px-0 is-small is-link is-light has-background-white"
-                                  (click)="addValueControl('constants')">
-                                  <span class="icon is-small pt-1 mr-0">
-                                    <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
-                                  </span>
-                                  <span>Add new constant</span>
-                                </button>
+                              </div>
+                            </ng-template>
+                            <div class="field-body" 
+                              *ngIf="rolesService.hasControlAccess() && getFormControls('constants').length ==0">
+                              <div class="field">
+                                <template [ngTemplateOutlet]="addConstantTemplate"></template>
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div class="column is-1">
+                        </ng-container>
+                      </div>
+                      <div *ngIf="rolesService.hasControlAccess() && getFormControls('constants').length >0"
+                        class="field">
+                        <div class="columns">
+                          <div class="column is-one-fifth"></div>
+                          <div class="btn-column pt-1 pb-0">
+                            <template [ngTemplateOutlet]="addConstantTemplate"></template>
+                          </div>
                         </div>
                       </div>
+                      <ng-template #addConstantTemplate>
+                        <button class="button px-0 is-small is-link is-light has-background-white" (click)="addValueControl('constants')">
+                          <span class="icon is-small pt-1 mr-0">
+                            <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
+                          </span>
+                          <span>{{getFormControls('constants').length > 0 ? "Add new constant": "Add constant"}}</span>
+                        </button>
+                      </ng-template>
+                    </div>
+                    <div class="column is-1">
                     </div>
                   </div>
                 </div>
