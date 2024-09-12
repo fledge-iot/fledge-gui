@@ -182,3 +182,7 @@ svg#control-dispatch {
 ::-webkit-scrollbar {
   width: 2px;
 }
+
+.menu:not(.collapsed) {
+  font-size: 0.9rem !important;
+}
