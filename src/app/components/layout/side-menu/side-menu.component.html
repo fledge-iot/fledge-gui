@@ -12,7 +12,7 @@
       <li>
         <a class="sidemenu-link" id="asset" routerLinkActive="is-active" routerLink='/asset'>
           <span class="menu-text"><i class="bi bi-graph-up bi-xs"></i></span>
-          <span class="sidemenu-text">
+          <span class="sidemenu-text" [attr.title]="isSidemenuCollapsed ? 'Assets &amp; Readings' : null">
             {{isSidemenuCollapsed ? 'Readings' : 'Assets &amp; Readings'}}
           </span>
         </a>
@@ -98,7 +98,9 @@
         <li>
           <a class="sidemenu-link" id="certificate" routerLinkActive="is-active" routerLink='/certificate'>
             <span><i class="bi bi-filetype-key bi-sm"></i></span>
-            <span class="sidemenu-text">{{isSidemenuCollapsed ? 'Certificates' : 'Certificate Store'}}</span>
+            <span class="sidemenu-text"
+              [attr.title]="isSidemenuCollapsed ? 'Certificates Store' : null">{{isSidemenuCollapsed ? 'Certificates' :
+              'Certificates Store'}}</span>
           </a>
         </li>
         <li>
@@ -111,7 +113,9 @@
         <li *ngIf="rolesService.hasAdminPermissionsOrAnonymousAllowed()">
           <a class="sidemenu-link" id="backup-restore" routerLinkActive="is-active" routerLink='/backup-restore'>
             <span><i class="bi bi-database-gear bi-sm"></i></span>
-            <span class="sidemenu-text">{{isSidemenuCollapsed ? 'Backups' : 'Backup &amp; Restore'}}</span>
+            <span class="sidemenu-text"
+              [attr.title]="isSidemenuCollapsed ? 'Backup &amp; Restore' : null">{{isSidemenuCollapsed ? 'Backups' :
+              'Backup &amp; Restore'}}</span>
           </a>
         </li>
         <li (mouseleave)="closeSubmenu('logs')" id="logs-li">
