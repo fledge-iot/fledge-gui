@@ -23,6 +23,8 @@ export class AppComponent implements OnInit {
   isServiceRunning = true;
   modalWindow: HTMLElement | null;
 
+  isSidemenuCollapsed = false;
+
   private destroySubject: Subject<void> = new Subject();
 
   constructor(private router: Router,
@@ -128,6 +130,11 @@ export class AppComponent implements OnInit {
     this.ping.setDefaultRefreshGraphTime();
     const refreshInterval = JSON.parse(localStorage.getItem('DASHBOARD_GRAPH_REFRESH_INTERVAL'));
     this.ping.refreshIntervalChanged.next(refreshInterval);
+  }
+
+  setSidebarState(state) {
+    this.isSidemenuCollapsed = state;
+    this.sharedService.isSidebarCollapsed.next(state);
   }
 
   ngOnDestroy() {
