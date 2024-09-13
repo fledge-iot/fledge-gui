@@ -163,22 +163,8 @@ export class AddConfigureComponent implements OnInit {
       } else {
         // set category name
         setTimeout(() => {
-          const category = this.tree.treeModel.nodes.find(r => {
-            if (r.key === this.config.category) {
-              return r;
-            } else {
-              r = r.children.find(child => (child.key === this.config.category))
-              return r;
-            }
-          });
-
-          if (this.config.category === category.key) {
-            this.config.category = category.displayName ? category.displayName : category.description;
-          } else {
-
-            const cat = category.children.find(child => (child.key === this.config.category));
-            this.config.category = cat.displayName ? cat.displayName : cat.description;
-          }
+          const category = this.setCategoryName(this.tree.treeModel.nodes);
+          this.config.category = category.displayName ? category.displayName : category.description;
         }, 1000);
         item = this.configItems.find(c => {
           if (this.config && this.config.item === c.key) {
@@ -198,6 +184,21 @@ export class AddConfigureComponent implements OnInit {
     this.configureControlGroup()?.controls['item'].setValue('');
     this.configureControlGroup()?.controls['value'].setValue('');
 
+  }
+
+  setCategoryName(nodes) {
+    let category = nodes.find(r => r.key == this.config.category);
+    if(!category) {
+      for(let node of nodes){
+        if(node.children.length > 0) {
+          category = this.setCategoryName(node.children);
+          if(category){
+            return category;
+          }
+        }
+      }
+    }
+    return category;
   }
 
   setItem(config: any) {
