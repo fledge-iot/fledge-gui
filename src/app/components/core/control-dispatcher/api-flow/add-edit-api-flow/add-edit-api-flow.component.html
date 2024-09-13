@@ -384,7 +384,7 @@
                                     <ng-select class="select-input" [clearable]="false" placeholder="Select Users"
                                       [items]="allUsers" [multiple]="true" bindLabel="userName"
                                       (change)="selectAllowedUsers($event)" [ngModel]="af.allow"
-                                      [ngModelOptions]="{standalone: true}">
+                                      [ngModelOptions]="{standalone: true}" [disabled]="(af?.anonymous === 't' || af?.anonymous === true)">
                                     </ng-select>
                                   </div>
                                   <ng-template #staticUsers>
