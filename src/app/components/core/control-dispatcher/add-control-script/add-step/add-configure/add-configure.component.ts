@@ -92,21 +92,12 @@ export class AddConfigureComponent implements OnInit {
         )
       ).subscribe(
         (category: any) => {
-          this.configurationService.getChildren(category.key)
-            .subscribe((data: any) => {
-              category.id = category.key;
-              category.name = category.displayName;
-              category.children = data.categories.map(c => {
-                c.id = c.key;
-                c.name = c.displayName;
-                return c;
-              });
-              this.nodes.push(category);
-              this.nodes = sortBy(this.nodes, (ca: any) => {
-                return ca.name;
-              });
-              this.tree.treeModel.update();
-            });
+          this.updateIdAndNameInTreeObject(category);
+          this.nodes.push(category);
+          this.nodes = sortBy(this.nodes, (ca: any) => {
+            return ca.name;
+          });
+          this.tree.treeModel.update();
         },
         error => {
           if (error.status === 0) {
@@ -115,6 +106,15 @@ export class AddConfigureComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  updateIdAndNameInTreeObject(category) {
+    category.id = category.key;
+    category.name = (category.hasOwnProperty('displayName')) ? category.displayName : category.description;
+    // If the object has 'children' property recurse 
+    if (Array.isArray(category.children) && category.children.length > 0) {
+      category.children.forEach(c => this.updateIdAndNameInTreeObject(c));
+    }
   }
 
   public onNodeActive(event: any) {
