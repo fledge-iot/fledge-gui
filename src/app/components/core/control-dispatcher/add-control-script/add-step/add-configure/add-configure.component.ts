@@ -94,8 +94,8 @@ export class AddConfigureComponent implements OnInit {
         (category: any) => {
           this.updateIdAndNameInTreeObject(category);
           this.nodes.push(category);
-          this.nodes = sortBy(this.nodes, (ca: any) => {
-            return ca.name;
+          this.nodes = sortBy(this.nodes, (c: any) => {
+            return c.name;
           });
           this.tree.treeModel.update();
         },
