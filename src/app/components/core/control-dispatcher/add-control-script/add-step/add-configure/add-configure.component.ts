@@ -110,7 +110,7 @@ export class AddConfigureComponent implements OnInit {
 
   updateIdAndNameInTreeObject(category) {
     category.id = category.key;
-    category.name = (category.hasOwnProperty('displayName')) ? category.displayName : category.description;
+    category.name = (category.hasOwnProperty('displayName')) ? category.displayName : category.key;
     // If the object has 'children' property recurse 
     if (Array.isArray(category.children) && category.children.length > 0) {
       category.children.forEach(c => this.updateIdAndNameInTreeObject(c));
@@ -164,7 +164,7 @@ export class AddConfigureComponent implements OnInit {
         // set category name
         setTimeout(() => {
           const category = this.setCategoryName(this.tree.treeModel.nodes);
-          this.config.category = category.displayName ? category.displayName : category.description;
+          this.config.category = category.displayName ? category.displayName : category.key;
         }, 1000);
         item = this.configItems.find(c => {
           if (this.config && this.config.item === c.key) {
@@ -173,7 +173,7 @@ export class AddConfigureComponent implements OnInit {
           }
         })
       }
-      this.selectedConfigItem = item.data.displayName ? item.data.displayName : item.data.description;
+      this.selectedConfigItem = item.data.displayName ? item.data.displayName : item.key;
       this.configValue = item.data.value;
       this.configureControlGroup().controls['item'].setValue(item.key);
       this.configureControlGroup().controls['value'].setValue(item.data.value);
@@ -202,8 +202,7 @@ export class AddConfigureComponent implements OnInit {
   }
 
   setItem(config: any) {
-    this.selectedConfigItem = config.data.displayName ? config.data.displayName : (config.data.description.length <= 30 ?
-      config.data.description : `${config.data.description.slice(0, 30)}...`);
+    this.selectedConfigItem = config.data.displayName ? config.data.displayName : config.key;
     this.configValue = config.data.value;
     this.configureControlGroup().controls['item'].setValue(config.key);
     this.configureControlGroup().controls['value'].setValue(config.data.value);
