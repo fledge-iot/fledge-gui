@@ -79,14 +79,6 @@
             </div>
           </div>
         </div>
-        <div>
-          <span *ngIf="listItems?.controls[i]?.hasError('minValue')" class="help is-danger">
-            <sup>*</sup>Value should not be less than {{configuration?.minimum}}.
-          </span>
-          <span *ngIf="listItems?.controls[i]?.hasError('maxValue')" class="help is-danger">
-            <sup>*</sup>Value should not be greater than {{configuration?.maximum}}.
-          </span>
-        </div>
       </div>
     </ng-template>
   </ng-container>
