@@ -5,7 +5,7 @@
         <div>
           <div class="columns is-flex is-vcentered">
             <div class="column is-11">
-              <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && !(configuration?.readonly && configuration?.readonly=='true'); else staticView">
+              <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticView">
                 <input *ngIf="configuration.items == 'integer'" class="input is-small" type="text" formControlName="{{i}}"
                   [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appIntegerOnly>
                 <input *ngIf="configuration.items == 'float'" class="input is-small" type="text" formControlName="{{i}}"
@@ -19,7 +19,7 @@
                 </span>
               </ng-template>
             </div>
-            <div class="column is-1 has-text-right" *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && !(configuration?.readonly && configuration?.readonly=='true')">
+            <div class="column is-1 has-text-right" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
               <button class="delete my-1 is-small" (click)="removeListItem(i)"></button>
             </div>
           </div>
@@ -65,7 +65,7 @@
                   [fullConfiguration]="initialProperties[i]" (event)="getChangedConfiguration(i, $event)"
                   (formStatusEvent)="formStatus($event)" [from]="from" [group]="group"></app-show-configuration>
               </div>
-              <div class="column is-1 has-text-right" *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && !(configuration?.readonly && configuration?.readonly=='true')">
+              <div class="column is-1 has-text-right" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
                 <button class="delete my-4 is-small" (click)="removeListItem(i)"></button>
               </div>
               <div class="column is-1 has-text-right">
