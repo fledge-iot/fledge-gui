@@ -147,17 +147,19 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
   buildGroupOfItems(configItems) {
     configItems?.forEach(config => {
-      if (!config.hasOwnProperty('value')) {
-        config.value = config.default;
+      if(config.readonly != 'true'){
+        if (!config.hasOwnProperty('value')) {
+          config.value = config.default;
+        }
+        let isGroupNameExist = this.groups.some(obj => Object.values(obj.group).includes(config.displayName ? config.displayName : config.key));
+        let group = { key: config.key, name: config.displayName ? config.displayName : config.key, description: config.description };
+        if (isGroupNameExist) {
+          // If same group exist, create new group with coonfig key and the description of the configuration
+          group = { key: config.key, name: config.key, description: config.description }
+        }
+  
+        this.groups.push({ category: this.category.name, group, config: config, type: config.type, key: config.key, ...(config.order && { order: config.order }) });
       }
-      let isGroupNameExist = this.groups.some(obj => Object.values(obj.group).includes(config.displayName ? config.displayName : config.key));
-      let group = { key: config.key, name: config.displayName ? config.displayName : config.key, description: config.description };
-      if (isGroupNameExist) {
-        // If same group exist, create new group with coonfig key and the description of the configuration
-        group = { key: config.key, name: config.key, description: config.description }
-      }
-
-      this.groups.push({ category: this.category.name, group, config: config, type: config.type, key: config.key, ...(config.order && { order: config.order }) });
     });
 
   }
