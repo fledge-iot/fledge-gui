@@ -83,3 +83,7 @@ a {
 hr {
   margin: 0.75rem 0;
 }
+
+.btn-container {
+  min-height: 36px;
+}
