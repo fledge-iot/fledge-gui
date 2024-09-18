@@ -106,3 +106,15 @@ a {
 .modal-subtitle {
   margin-top: 0.35rem !important;
 }
+
+.service-info-text{
+  flex-grow: 1.6;
+}
+
+.service-info {
+  max-width: 974px;
+}
+
+hr {
+  margin: 0.75rem 0;
+}

@@ -52,8 +52,24 @@
           <app-filter-list #filtersListComponent [service]="service?.name" [filterPipeline]="filterPipeline"
             (formStatus)="filterFormStatus($event)"></app-filter-list>
           <hr>
-          <div class="columns margin-bottom" *ngIf="rolesService.hasEditPermissions()">
-            <div class="column">
+          <div class="columns margin-bottom">
+            <ng-container *ngIf="service != undefined">
+              <div class="column is-9">
+                <div *ngIf="service.schedule_enabled" class="field is-horizontal service-info">
+                  <div class="field-label has-text-left service-info-text">
+                    <label class="label">Service Info</label>
+                  </div>
+                  <div class="field-body">
+                    <div class="field">
+                      <ng-container *ngIf="service.protocol && service.address && service.management_port">
+                        <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <div class="column" *ngIf="rolesService.hasEditPermissions()">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
                   <button class="button is-small" (click)="navToSouth()">Cancel</button>
@@ -68,20 +84,6 @@
           </div>
           <hr *ngIf="rolesService.hasEditPermissions()">
           <ng-container *ngIf="service != undefined">
-            <div>
-              <div *ngIf="service.schedule_enabled" class="field is-horizontal service-info">
-                <div class="field-label has-text-left service-info-text">
-                  <label class="label">Service Info</label>
-                </div>
-                <div class="field-body">
-                  <div class="field">
-                    <ng-container *ngIf="service.protocol && service.address && service.management_port">
-                      <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
-                    </ng-container>
-                  </div>
-                </div>
-              </div>
-            </div>
             <div class="field is-grouped is-pulled-left icon-group">
               <p class="control">
                 <span
