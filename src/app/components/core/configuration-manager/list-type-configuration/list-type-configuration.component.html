@@ -90,15 +90,24 @@
       </div>
     </ng-template>
   </ng-container>
-  <div class="field" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
-    <p class="control" *ngIf="!configuration.listSize || configuration.listSize != listItems.controls.length ">
-      <button class="button is-small" (click)="addListItem()"
-        [ngClass]="{'px-0 pt-1 is-ghost': configuration.items != 'object', 'mt-1': configuration.items == 'object'}">
-        <span class="icon is-small mr-0">
-          <i class="bi bi-plus bi-sm"></i>
-        </span>
-        <span>Add new item</span>
-      </button>
-    </p>
-  </div>
+  <ng-container *ngIf="configuration.items != 'object'; else objectButtonPanel">
+    <div class="field" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
+      <p class="control" *ngIf="!configuration.listSize || configuration.listSize != listItems.controls.length ">
+        <button class="button is-small" (click)="addListItem()"
+          [ngClass]="{'px-0 pt-1 is-ghost': configuration.items != 'object', 'mt-1': configuration.items == 'object'}">
+          <span class="icon is-small mr-0">
+            <i class="bi bi-plus bi-sm"></i>
+          </span>
+          <span>Add new item</span>
+        </button>
+      </p>
+    </div>
+  </ng-container>
+  <ng-template #objectButtonPanel>
+    <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)">
+      <div class="btn-panel">
+        <app-button-panel (addnewItem)="addListItem()" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"/>
+      </div>
+    </ng-container>
+  </ng-template>
 </div>

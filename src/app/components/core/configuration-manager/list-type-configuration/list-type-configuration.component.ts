@@ -173,10 +173,32 @@ export class ListTypeConfigurationComponent implements OnInit {
   expandListItem() {
     setTimeout(() => {
       let index = this.listItems.length - 1;
-      let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
-      let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
+      this.expandCollapseSingleItem(index, true);
+    }, 1);
+  }
+
+  expandCollapseSingleItem(index: number, isExpand: boolean) {
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
+    if(isExpand) {
       cardHeader.classList.add('is-hidden');
       cardBody.classList.remove('is-hidden');
-    }, 1);
+    }
+    else{
+      cardHeader.classList.remove('is-hidden');
+      cardBody.classList.add('is-hidden');
+    }
+  }
+
+  expandAllItems() {
+    for(let i=0; i<this.listItems.length; i++){
+      this.expandCollapseSingleItem(i, true);
+    }
+  }
+  
+  collapseAllItems() {
+    for(let i=0; i<this.listItems.length; i++){
+      this.expandCollapseSingleItem(i, false);
+    }
   }
 }
