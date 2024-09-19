@@ -34,7 +34,7 @@
               </div>
             </div>
           </div>
-          <hr>
+          <hr class="hr-text">
           <div class="columns">
             <div class="column has-text-centered">
               <span class="label is-size-6 add-application" *ngIf="rolesService.hasEditPermissions(); else staticLabel">
@@ -51,7 +51,7 @@
           </div>
           <app-filter-list #filtersListComponent [service]="service?.name" [filterPipeline]="filterPipeline"
             (formStatus)="filterFormStatus($event)"></app-filter-list>
-          <hr>
+          <hr class="hr-text">
           <div class="columns margin-bottom">
             <ng-container *ngIf="service != undefined">
               <div class="column is-9">
@@ -82,7 +82,7 @@
               </div>
             </div>
           </div>
-          <hr *ngIf="rolesService.hasEditPermissions()">
+          <hr *ngIf="rolesService.hasEditPermissions()" class="hr-text">
           <ng-container *ngIf="service != undefined">
             <div class="field is-grouped is-pulled-left icon-group">
               <p class="control">

@@ -80,7 +80,7 @@
               </form>
             </div>
           </div>
-          <hr>
+          <hr class="hr-text">
           <div class="columns">
             <div class="column has-text-centered">
               <span class="label is-size-6 add-application" *ngIf="rolesService.hasEditPermissions(); else staticLabel">
@@ -97,7 +97,7 @@
           </div>
           <app-filter-list #filtersListComponent [service]="task?.name" [filterPipeline]="filterPipeline"
             (formStatus)="filterFormStatus($event)"></app-filter-list>
-          <hr *ngIf="rolesService.hasEditPermissions()">
+          <hr *ngIf="rolesService.hasEditPermissions()" class="hr-text">
           <div class="columns margin-bottom">
             <div class="column is-9">
               <!-- Note: task here is old variable name retained; if processName is north_C task represents a Northbound service -->
@@ -125,7 +125,7 @@
               </div>
             </div>
           </div>
-          <hr>
+          <hr class="hr-text">
           <div class="field">
             <div class="field is-grouped is-pulled-left icon-group">
               <div class="control">
