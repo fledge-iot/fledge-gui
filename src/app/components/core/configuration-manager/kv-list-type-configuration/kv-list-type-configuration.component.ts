@@ -33,11 +33,11 @@ export class KvListTypeConfigurationComponent implements OnInit {
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
     values = JSON.parse(values) as [];
     for (const [key, value] of Object.entries(values)) {
-      this.kvListItems.push(this.initListItem({ key, value }));
+      this.kvListItems.push(this.initListItem(false, { key, value }));
     }
     this.onControlValueChanges();
     if(this.configuration.items == 'object' && this.kvListItems.length == 1){
-      this.expandListItem(); // Expand the list if only one item is present
+      this.expandListItem(this.kvListItems.length-1); // Expand the list if only one item is present
     }
   }
 
@@ -45,7 +45,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
     return this.kvListItemsForm.get('kvListItems') as FormArray;
   }
 
-  initListItem(param) {
+  initListItem(isPrepend, param) {
     if (this.configuration.items == 'enumeration') {
       return this.fb.group({
         key: [param?.key, [Validators.required, CustomValidator.nospaceValidator]],
@@ -64,7 +64,12 @@ export class KvListTypeConfigurationComponent implements OnInit {
           objectConfig[key].permissions = this.configuration.permissions;
         }
       }
-      this.initialProperties.push(objectConfig);
+      if(isPrepend) {
+        this.initialProperties.unshift(objectConfig);
+      }
+      else{
+        this.initialProperties.push(objectConfig);
+      }
       return this.fb.group({
         key: [param?.key, [Validators.required, CustomValidator.nospaceValidator]],
         value: [objectConfig]
@@ -76,16 +81,27 @@ export class KvListTypeConfigurationComponent implements OnInit {
     });
   }
 
-  addListItem() {
+  addListItem(isPrepend) {
     const controlsLength = this.kvListItems.length;
     const listSize = this.configuration?.listSize > 0 ? +this.configuration.listSize : 999; // max threshold limit for new item creation
     if (controlsLength > listSize) {
       return;
     }
-    this.kvListItems.push(this.initListItem({ key: '', value: '' }));
+    if(isPrepend){
+      this.kvListItems.insert(0, this.initListItem(isPrepend, { key: '', value: '' }));
+    }
+    else{
+      this.kvListItems.push(this.initListItem(isPrepend, { key: '', value: '' }));
+    }
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
     if(this.configuration.items == 'object'){
-      this.expandListItem(); // Expand newly added item
+      // Expand newly added item
+      if(isPrepend){
+        this.expandListItem(0);
+      }
+      else{
+        this.expandListItem(this.kvListItems.length-1);
+      }
     }
   }
 
@@ -169,13 +185,34 @@ export class KvListTypeConfigurationComponent implements OnInit {
     }
   }
 
-  expandListItem() {
+  expandListItem(index) {
     setTimeout(() => {
-      let index = this.kvListItems.length - 1;
-      let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
-      let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
+      this.expandCollapseSingleItem(index, true);
+    }, 1);
+  }
+
+  expandCollapseSingleItem(index: number, isExpand: boolean) {
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
+    if(isExpand) {
       cardHeader.classList.add('is-hidden');
       cardBody.classList.remove('is-hidden');
-    }, 1);
+    }
+    else{
+      cardHeader.classList.remove('is-hidden');
+      cardBody.classList.add('is-hidden');
+    }
+  }
+
+  expandAllItems() {
+    for(let i=0; i<this.kvListItems.length; i++){
+      this.expandCollapseSingleItem(i, true);
+    }
+  }
+
+  collapseAllItems() {
+    for(let i=0; i<this.kvListItems.length; i++){
+      this.expandCollapseSingleItem(i, false);
+    }
   }
 }

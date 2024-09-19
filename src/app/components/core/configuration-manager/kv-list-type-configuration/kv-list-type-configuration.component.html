@@ -1,5 +1,12 @@
 <div [formGroup]="kvListItemsForm">
   <div formArrayName="kvListItems">
+    <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length) && configuration.items == 'object' && kvListItems.controls.length>0">
+      <div class="btn-panel-container">
+        <div class="btn-panel upper-btn-panel">
+          <app-button-panel (addnewItem)="addListItem(true)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"/>
+        </div>
+      </div>
+    </ng-container>
     <ng-container *ngFor="let item of kvListItems.controls; let i=index">
       <ng-container *ngIf="configuration.items != 'object'; else objectTemplate">
         <div>
@@ -130,17 +137,25 @@
         </div>
       </ng-template>
     </ng-container>
-    <div class="field" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
-      <p class="control" *ngIf="!configuration.listSize || configuration.listSize != kvListItems.controls.length ">
-        <button class="button is-small mb-1" (click)="addListItem()"
-          [ngClass]="{'px-0 pt-1 is-ghost': configuration.items != 'object', 'mt-1': configuration.items == 'object'}">
-          <span class="icon is-small mr-0">
-            <i class="bi bi-plus bi-sm"></i>
-          </span>
-          <span>Add new item</span>
-        </button>
-      </p>
-    </div>
+    <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
+      <ng-container *ngIf="configuration.items != 'object' || kvListItems.controls.length==0; else objectButtonPanel">
+        <div class="field">
+          <p class="control">
+            <button class="button is-small mb-1" (click)="addListItem(false)"
+              [ngClass]="{'px-0 pt-1 is-ghost': configuration.items != 'object', 'mt-1': configuration.items == 'object'}">
+              <span class="icon is-small mr-0">
+                <i class="bi bi-plus bi-sm"></i>
+              </span>
+              <span>Add new item</span>
+            </button>
+          </p>
+        </div>
+      </ng-container>
+      <ng-template #objectButtonPanel>
+        <div class="btn-panel lower-btn-panel">
+          <app-button-panel (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"/>
+        </div>
+      </ng-template>
+    </ng-container>
   </div>
-
 </div>
