@@ -1,6 +1,6 @@
 <div class="view-content columns">
   <ng-container *ngIf="rolesService?.hasEditPermissionsOnPage(from); else staticView">
-    <div class="column">
+    <div class="column p-2">
       <ng-container *ngFor="let configuration of configurations$ | async">
         <ng-container *ngIf="configuration?.permissions && !rolesService?.hadEditPermissionsOnConfigItem(configuration?.permissions);
           else permissionsView">
@@ -128,14 +128,6 @@
                         <sup>*</sup>*Value should not be more than {{configuration.length}} characters.
                       </span>
                     </div>
-                    <ng-container *ngSwitchCase="'LIST'">
-                      <app-list-type-configuration [configuration]="configuration" [formGroup]="form"
-                        (formState)="listTypeFormState($event, configuration?.key)"></app-list-type-configuration>
-                    </ng-container>
-                    <ng-container *ngSwitchCase="'KVLIST'">
-                      <app-kv-list-type-configuration [configuration]="configuration" [formGroup]="form"
-                        (formState)="listTypeFormState($event, configuration?.key)"></app-kv-list-type-configuration>
-                    </ng-container>
                   </div>
                 </div>
               </div>
@@ -147,7 +139,7 @@
   </ng-container>
   <!-- Read only form for View user -->
   <ng-template #staticView>
-    <div class="column">
+    <div class="column p-2">
       <ng-container *ngFor="let configuration of configurations$ | async">
         <app-static-configuration [configuration]="configuration" />
       </ng-container>

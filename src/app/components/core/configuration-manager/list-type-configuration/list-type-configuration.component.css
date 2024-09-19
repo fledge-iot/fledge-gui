@@ -12,7 +12,7 @@
 }
 
 .card-header-title {
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.75rem;
     flex-grow: unset;
 }
 
@@ -50,6 +50,12 @@
 
 .card:hover {
     background-color: rgb(250, 250, 255);
+}
+
+.key-container {
+  width: 71% !important;
+  display: flex;
+  justify-content: space-between;
 }
 
 .btn-panel {
