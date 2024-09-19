@@ -71,7 +71,7 @@
 }
 
 .lower-btn-panel {
-  margin-top: -5px;
+  margin-top: -10px;
 }
 
 .upper-btn-panel {
@@ -83,7 +83,6 @@
   position: relative;
   z-index: 99;
   display: flex;
-  flex-direction: row-reverse;
 }
 
 :host:hover .btn-panel {

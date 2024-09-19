@@ -1,7 +1,7 @@
 <div [formGroup]="kvListItemsForm">
   <div formArrayName="kvListItems">
     <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length) && configuration.items == 'object' && kvListItems.controls.length>0">
-      <div class="btn-panel-container">
+      <div class="btn-panel-container is-flex-direction-row-reverse">
         <div class="btn-panel upper-btn-panel">
           <app-button-panel (addnewItem)="addListItem(true)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"/>
         </div>
@@ -152,8 +152,10 @@
         </div>
       </ng-container>
       <ng-template #objectButtonPanel>
-        <div class="btn-panel lower-btn-panel">
-          <app-button-panel (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"/>
+        <div class="btn-panel-container is-flex-direction-row">
+          <div class="btn-panel lower-btn-panel">
+            <app-button-panel (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"/>
+          </div>
         </div>
       </ng-template>
     </ng-container>

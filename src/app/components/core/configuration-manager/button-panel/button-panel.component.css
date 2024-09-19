@@ -1,0 +1,12 @@
+.button-container {
+  border: 1px solid #dbdbdb;
+  border-radius: 2px;
+}
+
+.button {
+  border: none;
+}
+
+.icon:hover {
+  background-color: whitesmoke;
+}
