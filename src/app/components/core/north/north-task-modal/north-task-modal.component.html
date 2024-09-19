@@ -80,7 +80,7 @@
               </form>
             </div>
           </div>
-          <hr>
+          <hr class="hr-text">
           <div class="columns">
             <div class="column has-text-centered">
               <span class="label is-size-6 add-application" *ngIf="rolesService.hasEditPermissions(); else staticLabel">
@@ -97,9 +97,24 @@
           </div>
           <app-filter-list #filtersListComponent [service]="task?.name" [filterPipeline]="filterPipeline"
             (formStatus)="filterFormStatus($event)"></app-filter-list>
-          <hr *ngIf="rolesService.hasEditPermissions()">
-          <div class="columns margin-bottom" *ngIf="rolesService.hasEditPermissions()">
-            <div class="column">
+          <hr *ngIf="rolesService.hasEditPermissions()" class="hr-text">
+          <div class="columns margin-bottom">
+            <div class="column is-9">
+              <!-- Note: task here is old variable name retained; if processName is north_C task represents a Northbound service -->
+              <div *ngIf="task?.processName === 'north_C' && task?.enabled" class="field is-horizontal service-info">
+                <div class="field-label has-text-left service-info-text">
+                  <label class="label">Service Info</label>
+                </div>
+                <div class="field-body">
+                  <div class="field">
+                    <ng-container *ngIf="task.protocol && task.address && task.managementPort">
+                      <small>{{task.protocol}}://{{task.address}}:{{task.managementPort}}</small>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="column btn-container" *ngIf="rolesService.hasEditPermissions()">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
                   <button class="button is-small" [routerLink]="['/north']">Cancel</button>
@@ -110,22 +125,7 @@
               </div>
             </div>
           </div>
-          <hr>
-          <!-- Note: task here is old variable name retained; if processName is north_C task represents a Northbound service -->
-          <div>
-            <div *ngIf="task?.processName === 'north_C' && task?.enabled" class="field is-horizontal service-info">
-              <div class="field-label has-text-left service-info-text">
-                <label class="label">Service Info</label>
-              </div>
-              <div class="field-body">
-                <div class="field">
-                  <ng-container *ngIf="task.protocol && task.address && task.managementPort">
-                    <small>{{task.protocol}}://{{task.address}}:{{task.managementPort}}</small>
-                  </ng-container>
-                </div>
-              </div>
-            </div>
-          </div>
+          <hr class="hr-text">
           <div class="field">
             <div class="field is-grouped is-pulled-left icon-group">
               <div class="control">
