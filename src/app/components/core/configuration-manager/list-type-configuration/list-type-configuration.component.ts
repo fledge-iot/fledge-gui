@@ -40,11 +40,11 @@ export class ListTypeConfigurationComponent implements OnInit {
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
     values = JSON.parse(values) as [];
     values.forEach(element => {
-      this.initListItem(element);
+      this.initListItem(false, element);
     });
     this.onControlValueChanges();
     if(this.configuration.items == 'object' && this.listItems.length == 1){
-      this.expandListItem(); // Expand the list if only one item is present
+      this.expandListItem(this.listItems.length-1); // Expand the list if only one item is present
     }
   }
 
@@ -52,7 +52,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     return this.listItemsForm.get('listItems') as FormArray;
   }
 
-  initListItem(v: any = '') {
+  initListItem(isPrepend, v: any = '') {
     let listItem;
     if (this.configuration.items == 'object') {
       let objectConfig = cloneDeep(this.configuration.properties);
@@ -66,26 +66,42 @@ export class ListTypeConfigurationComponent implements OnInit {
           objectConfig[key].permissions = this.configuration.permissions;
         }
       }
-      this.initialProperties.push(objectConfig);
+      if(isPrepend) {
+        this.initialProperties.unshift(objectConfig);
+      }
+      else{
+        this.initialProperties.push(objectConfig);
+      }
       listItem = new FormControl(objectConfig);
     }
     else {
       listItem = new FormControl(v, [CustomValidator.nospaceValidator]);
     }
-    this.listItems.push(listItem);
+    if(isPrepend) {
+      this.listItems.insert(0, listItem);
+    }
+    else{
+      this.listItems.push(listItem);
+    }
     this.cdRef.detectChanges();
   }
 
-  addListItem() {
+  addListItem(isPrepend) {
     const controlsLength = this.listItems.length;
     const listSize = this.configuration?.listSize > 0 ? +this.configuration.listSize : 999; // max threshold limit for new item creation
     if (controlsLength > listSize) {
       return;
     }
-    this.initListItem();
+    this.initListItem(isPrepend);
     this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
     if(this.configuration.items == 'object'){
-      this.expandListItem(); // Expand newly added item
+      // Expand newly added item
+      if(isPrepend){
+        this.expandListItem(0);
+      }
+      else{
+        this.expandListItem(this.listItems.length-1);
+      }
     }
   }
 
@@ -170,9 +186,8 @@ export class ListTypeConfigurationComponent implements OnInit {
     }
   }
 
-  expandListItem() {
+  expandListItem(index) {
     setTimeout(() => {
-      let index = this.listItems.length - 1;
       this.expandCollapseSingleItem(index, true);
     }, 1);
   }

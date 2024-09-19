@@ -54,7 +54,22 @@
 
 .btn-panel {
   visibility: hidden;
+}
+
+.lower-btn-panel {
   margin-top: -5px;
+}
+
+.upper-btn-panel {
+  margin-top: -15px;
+}
+
+.btn-panel-container {
+  height: 5px;
+  position: relative;
+  z-index: 99;
+  display: flex;
+  flex-direction: row-reverse;
 }
 
 :host:hover .btn-panel {

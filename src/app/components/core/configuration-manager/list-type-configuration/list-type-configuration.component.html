@@ -1,4 +1,11 @@
 <div [formGroup]="listItemsForm">
+  <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length) && configuration.items == 'object' && listItems.controls.length>0">
+    <div class="btn-panel-container">
+      <div class="btn-panel upper-btn-panel">
+        <app-button-panel (addnewItem)="addListItem(true)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"/>
+      </div>
+    </div>
+  </ng-container>
   <ng-container *ngFor="let item of listItems.controls; let i = index">
     <ng-container *ngIf="configuration.items != 'object'; else objectTemplate">
       <div formArrayName="listItems" class="field">
@@ -105,8 +112,8 @@
       </div>
     </ng-container>
     <ng-template #objectButtonPanel>
-      <div class="btn-panel">
-        <app-button-panel (addnewItem)="addListItem()" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"/>
+      <div class="btn-panel lower-btn-panel">
+        <app-button-panel (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"/>
       </div>
     </ng-template>
   </ng-container>
