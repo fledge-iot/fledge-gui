@@ -69,7 +69,7 @@
         <div class="card-content is-hidden" id="card-content-{{configuration.key}}-{{i}}">
           <div formArrayName="listItems">
             <div class="columns mb-0">
-              <div class="column is-10 px-3 pb-1 pt-0">
+              <div class="column is-10 px-3 py-0">
                 <app-show-configuration [groupConfiguration]="initialProperties[i]"
                   [fullConfiguration]="initialProperties[i]" (event)="getChangedConfiguration(i, $event)"
                   (formStatusEvent)="formStatus($event)" [from]="from" [group]="group"></app-show-configuration>
