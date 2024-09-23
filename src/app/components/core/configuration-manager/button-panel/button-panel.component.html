@@ -1,6 +1,7 @@
 <div class="field has-addons button-container">
   <p class="control">
-    <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Add new item" (click)="addItem()">
+    <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Add new item" (click)="addItem()"
+    [disabled]="!isFormValid">
       <span class="icon is-small">
         <i class="fas fa-xs fa-plus"></i>
       </span>

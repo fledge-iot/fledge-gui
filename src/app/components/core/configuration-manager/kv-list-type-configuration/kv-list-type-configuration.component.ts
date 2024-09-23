@@ -151,8 +151,9 @@ export class KvListTypeConfigurationComponent implements OnInit {
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
   }
 
-  formStatus(formState: any) {
+  formStatus(formState: any, index) {
     this.validConfigurationForm = formState.status;
+    this.initialProperties[index]['status'] = formState.status;
     this.formStatusEvent.emit(formState);
   }
 

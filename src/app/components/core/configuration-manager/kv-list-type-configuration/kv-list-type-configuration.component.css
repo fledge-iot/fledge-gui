@@ -90,3 +90,7 @@
 :host:hover .btn-panel {
   visibility: visible;
 }
+
+.error {
+  border: 1px solid #f14668;
+}

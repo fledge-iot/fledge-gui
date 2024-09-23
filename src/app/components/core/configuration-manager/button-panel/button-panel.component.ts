@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-button-panel',
@@ -7,6 +7,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 })
 export class ButtonPanelComponent {
 
+  @Input() isFormValid = true;
   @Output() addnewItem = new EventEmitter<any>();
   @Output() expandAll = new EventEmitter<any>();
   @Output() collapseAll = new EventEmitter<any>();

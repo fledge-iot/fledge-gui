@@ -143,8 +143,9 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(listValues) });
   }
 
-  formStatus(formState: any) {
+  formStatus(formState: any, index) {
     this.validConfigurationForm = formState.status;
+    this.initialProperties[index]['status'] = formState.status;
     this.formStatusEvent.emit(formState);
   }
 
