@@ -1,8 +1,10 @@
 <div [formGroup]="listItemsForm">
-  <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length) && configuration.items == 'object' && listItems.controls.length>1">
+  <ng-container *ngIf="configuration.items == 'object' && listItems.controls.length>1">
     <div class="btn-panel-container is-flex-direction-row-reverse">
       <div class="btn-panel upper-btn-panel">
-        <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" (addnewItem)="addListItem(true)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"/>
+        <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" (addnewItem)="addListItem(true)"
+         (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+         [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)"/>
       </div>
     </div>
   </ng-container>
@@ -74,7 +76,7 @@
                   [fullConfiguration]="initialProperties[i]" (event)="getChangedConfiguration(i, $event)"
                   (formStatusEvent)="formStatus($event, i)" [from]="from" [group]="group"></app-show-configuration>
               </div>
-              <div class="column is-1 has-text-right" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
+              <div class="column is-1 has-text-right" [ngClass]="{'is-invisible': !rolesService.hasAccessPermission(configuration?.permissions)}">
                 <button class="delete my-3 is-small" (click)="removeListItem(i)"></button>
               </div>
               <div class="column is-1 has-text-right">
@@ -91,8 +93,8 @@
       </div>
     </ng-template>
   </ng-container>
-  <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)">
-    <ng-container *ngIf="(configuration.items != 'object' || listItems.controls.length<=1); else objectButtonPanel">
+  <ng-container *ngIf="(configuration.items != 'object' || listItems.controls.length<=1); else objectButtonPanel">
+    <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)">
       <div class="field">
         <p class="control">
           <button class="button is-small" (click)="addListItem(false)" [disabled]="listItems.invalid || !validConfigurationForm"
@@ -105,12 +107,14 @@
         </p>
       </div>
     </ng-container>
-    <ng-template #objectButtonPanel>
-      <div class="btn-panel-container is-flex-direction-row">
-        <div class="btn-panel lower-btn-panel">
-          <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"/>
-        </div>
-      </div>
-    </ng-template>
   </ng-container>
+  <ng-template #objectButtonPanel>
+    <div class="btn-panel-container is-flex-direction-row">
+      <div class="btn-panel lower-btn-panel">
+        <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" (addnewItem)="addListItem(false)" 
+        (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+        [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)"/>
+      </div>
+    </div>
+  </ng-template>
 </div>

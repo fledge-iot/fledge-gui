@@ -1,5 +1,5 @@
 <div class="field has-addons button-container">
-  <p class="control">
+  <p class="control" *ngIf="isAddButtonVisible">
     <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Add new item" (click)="addItem()"
     [disabled]="!isFormValid">
       <span class="icon is-small">
