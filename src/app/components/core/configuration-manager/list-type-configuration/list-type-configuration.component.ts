@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective } from '@angular/forms';
-import { filter } from 'lodash';
+import { filter, uniqWith, isEqual } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
 import { RolesService } from '../../../../services';
@@ -18,6 +18,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   @Output() formStatusEvent = new EventEmitter<any>();
   listItemsForm: FormGroup;
   initialProperties = [];
+  itemStatus = [];
   listLabel: string;
   firstKey: string;
   validConfigurationForm = true;
@@ -68,9 +69,11 @@ export class ListTypeConfigurationComponent implements OnInit {
       }
       if(isPrepend) {
         this.initialProperties.unshift(objectConfig);
+        this.itemStatus.unshift(true);
       }
       else{
         this.initialProperties.push(objectConfig);
+        this.itemStatus.push(true);
       }
       listItem = new FormControl(objectConfig);
     }
@@ -108,6 +111,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   removeListItem(index: number) {
     this.listItems.removeAt(index);
     this.initialProperties.splice(index, 1);
+    this.itemStatus.splice(index, 1);
   }
 
   onControlValueChanges(): void {
@@ -125,6 +129,7 @@ export class ListTypeConfigurationComponent implements OnInit {
       if (this.configuration.items == 'object') {
         value = this.extractListValues(value);
       }
+      value = uniqWith(value, isEqual);
       this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(value) });
       this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
     })
@@ -140,12 +145,14 @@ export class ListTypeConfigurationComponent implements OnInit {
       this.listItems.value[ind] = val;
     }
     let listValues = this.extractListValues(this.listItems.value);
+    listValues = uniqWith(listValues, isEqual);
     this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(listValues) });
+    this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
   }
 
   formStatus(formState: any, index) {
     this.validConfigurationForm = formState.status;
-    this.initialProperties[index]['status'] = formState.status;
+    this.itemStatus[index] = formState.status;
     this.formStatusEvent.emit(formState);
   }
 
