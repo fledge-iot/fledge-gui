@@ -10,3 +10,9 @@
 .button:hover {
   background-color: whitesmoke;
 }
+
+.button:disabled {
+  opacity: 1 !important;
+  background-color: lightgray;
+  pointer-events: none;
+}
