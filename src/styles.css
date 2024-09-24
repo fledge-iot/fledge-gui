@@ -158,7 +158,7 @@ table.scroll tbody {
 .node-content-wrapper.node-content-wrapper-active:hover,
 .node-content-wrapper-active.node-content-wrapper-focused {
   background: transparent;
-  font-weight: bold;
+  font-weight: 500;
   box-shadow: inset 0 0 0px;
   color: #707070;
 }
@@ -502,5 +502,9 @@ span.tooltip {
   line-height: 1.5em;
   color: #818078;
   background-color: #fff;
+}
+
+.content table td {
+  padding: 0.25em 0.5em;
 }
 /*****************/
