@@ -18,7 +18,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
   @Output() formStatusEvent = new EventEmitter<any>();
   kvListItemsForm: FormGroup;
   initialProperties = [];
-  itemsStatus = [];
+  items = [];
   validConfigurationForm = true;
 
   constructor(
@@ -67,11 +67,11 @@ export class KvListTypeConfigurationComponent implements OnInit {
       }
       if(isPrepend) {
         this.initialProperties.unshift(objectConfig);
-        this.itemsStatus.unshift({status : true});
+        this.items.unshift({status : true});
       }
       else{
         this.initialProperties.push(objectConfig);
-        this.itemsStatus.push({status : true});
+        this.items.push({status : true});
       }
       return this.fb.group({
         key: [param?.key, [Validators.required, CustomValidator.nospaceValidator]],
@@ -111,7 +111,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
   removeListItem(index: number) {
     this.kvListItems.removeAt(index);
     this.initialProperties.splice(index, 1);
-    this.itemsStatus.splice(index, 1);
+    this.items.splice(index, 1);
     this.setChildConfigFormValidity();
   }
 
@@ -157,13 +157,13 @@ export class KvListTypeConfigurationComponent implements OnInit {
   }
 
   formStatus(formState: any, index) {
-    this.itemsStatus[index].status = formState.status;
+    this.items[index].status = formState.status;
     this.setChildConfigFormValidity();
     this.formStatusEvent.emit(formState);
   }
 
   setChildConfigFormValidity() {
-    if (this.itemsStatus.find(value => value.status == false)) {
+    if (this.items.find(value => value.status == false)) {
       this.validConfigurationForm = false;
       return;
     }
