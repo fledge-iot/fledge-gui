@@ -94,8 +94,10 @@ async function removeOldConnection(node, editor) {
       inputConnId = element.id;
     }
   }
-  for (let t of target) {
-    await editor.addConnection(new Connection(connectionEvents, source, t));
+  if(source) {
+    for (let t of target) {
+      await editor.addConnection(new Connection(connectionEvents, source, t));
+    }
   }
   if (inputConnId) {
     await editor.removeConnection(inputConnId);
