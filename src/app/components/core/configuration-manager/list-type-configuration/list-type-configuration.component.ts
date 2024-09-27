@@ -18,7 +18,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   @Output() formStatusEvent = new EventEmitter<any>();
   listItemsForm: FormGroup;
   initialProperties = [];
-  itemStatus = [];
+  itemsStatus = [];
   listLabel: string;
   firstKey: string;
   validConfigurationForm = true;
@@ -69,11 +69,11 @@ export class ListTypeConfigurationComponent implements OnInit {
       }
       if(isPrepend) {
         this.initialProperties.unshift(objectConfig);
-        this.itemStatus.unshift({status : true});
+        this.itemsStatus.unshift({status : true});
       }
       else{
         this.initialProperties.push(objectConfig);
-        this.itemStatus.push({status : true});
+        this.itemsStatus.push({status : true});
       }
       listItem = new FormControl(objectConfig);
     }
@@ -111,7 +111,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   removeListItem(index: number) {
     this.listItems.removeAt(index);
     this.initialProperties.splice(index, 1);
-    this.itemStatus.splice(index, 1);
+    this.itemsStatus.splice(index, 1);
     this.setChildConfigFormValidity();
   }
 
@@ -152,18 +152,17 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   formStatus(formState: any, index) {
-    this.itemStatus[index].status = formState.status;
+    this.itemsStatus[index].status = formState.status;
     this.setChildConfigFormValidity();
     this.formStatusEvent.emit(formState);
   }
 
   setChildConfigFormValidity() {
-    if (this.itemStatus.find(value => value.status == false)) {
+    if (this.itemsStatus.find(value => value.status == false)) {
       this.validConfigurationForm = false;
+      return;
     }
-    else {
-      this.validConfigurationForm = true;
-    }
+    this.validConfigurationForm = true;
   }
 
   extractListValues(value) {

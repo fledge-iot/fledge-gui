@@ -44,7 +44,7 @@
       </div>
     </ng-container>
     <ng-template #objectTemplate>
-      <div class="card mt-0 card-shadow" [ngClass]="{'error': item.invalid || itemStatus[i].status == false}">
+      <div class="card mt-0 card-shadow" [ngClass]="{'error': item.invalid || itemsStatus[i].status == false}">
         <header class="card-header has-background-white card-header-shadow is-justify-content-space-between" 
           id="card-header-{{configuration.key}}-{{i}}">
           <div class="card-header-title">
@@ -81,7 +81,7 @@
               </div>
               <div class="column is-1 has-text-right">
                 <button class="button is-small my-1 collapse-btn" (click)="toggleCard(i)"
-                [ngClass]="{'is-hidden':item.invalid || itemStatus[i].status == false}">
+                [ngClass]="{'is-hidden':item.invalid || itemsStatus[i].status == false}">
                   <span class="icon is-small toogle-icon" title="Collapse">
                     <i class="fas fa-xs fa-angle-up" aria-hidden="true"></i>
                   </span>
