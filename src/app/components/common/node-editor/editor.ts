@@ -357,7 +357,7 @@ export function getUpdatedFilterPipeline() {
     }
   }
 
-  // check for self loop
+  // check if node loop to self
   for (let i = 0; i < connections.length; i++) {
     if (connections[i].source === connections[i].target) {
       console.log("self loop exist in pipeline")
