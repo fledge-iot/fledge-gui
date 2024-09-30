@@ -335,18 +335,21 @@ export function getUpdatedFilterPipeline() {
 
   for (let i = 0; i < nodes.length; i++) {
     if (i == 0) {
+      // check if starting node of pipeline i.e. south/storage is connected
       if (!connections.find(c => c.source === nodes[i].id)) {
-        console.log("Dangling connection");
+        console.log("Dangling connection at output socket");
         return false;
       }
     }
     else if (i == 1) {
+      // check if last node of pipeline i.e. storage/north is connected
       if (!connections.find(c => c.target === nodes[i].id)) {
-        console.log("Dangling connection");
+        console.log("Dangling connection at input socket");
         return false;
       }
     }
     else {
+      // check if all the filters are connected from both sides
       if (!connections.find(c => c.source === nodes[i].id) || !connections.find(c => c.target === nodes[i].id)) {
         console.log("Dangling connection");
         return false;
@@ -354,6 +357,7 @@ export function getUpdatedFilterPipeline() {
     }
   }
 
+  // check if node loop to self
   for (let i = 0; i < connections.length; i++) {
     if (connections[i].source === connections[i].target) {
       console.log("self loop exist in pipeline")
@@ -373,6 +377,7 @@ export function getUpdatedFilterPipeline() {
     let connlist = connections.filter(c => c.source === sourceNode.id);
     if (connlist.length === 1) {
       let filterNode = editor.getNode(connlist[0].target);
+      // do not push storage or north node in the filter pipeline
       if (filterNode.label !== "Storage" && filterNode.label != 'North') {
         if (existsInPipeline(updatedFilterPipeline, filterNode.label)) {
           console.log("invalid pipeline");
@@ -383,11 +388,12 @@ export function getUpdatedFilterPipeline() {
       sourceNode = filterNode;
     }
     else {
-      let mainBranchStartIndex = [];
+      let masterBranchStartIndex = [];
       let i;
       for (i = 0; i < connlist.length; i++) {
         let node = editor.getNode(connlist[i].target);
         let branch = getBranchNodes(updatedFilterPipeline, connections, node);
+        // check if it is a slave branch
         if (branch) {
           if (branch.length === 0) {
             console.log("invalid pipeline");
@@ -396,15 +402,16 @@ export function getUpdatedFilterPipeline() {
           updatedFilterPipeline.push(branch);
         }
         else {
-          mainBranchStartIndex.push(i);
+          masterBranchStartIndex.push(i);
         }
       }
-      if (mainBranchStartIndex.length > 1) {
+      // check if more than one master branch
+      if (masterBranchStartIndex.length > 1) {
         console.log("Multi level deep pipeline not supported.")
         return false;
       }
-      if (mainBranchStartIndex.length === 1) {
-        let node = editor.getNode(connlist[mainBranchStartIndex[0]].target);
+      if (masterBranchStartIndex.length === 1) {
+        let node = editor.getNode(connlist[masterBranchStartIndex[0]].target);
         if (node.label !== "Storage" && node.label != 'North') {
           updatedFilterPipeline.push(node.label);
         }
@@ -425,7 +432,7 @@ export function getUpdatedFilterPipeline() {
 }
 
 function getBranchNodes(pipeline, connections, node) {
-  if (node.label === "Storage") {
+  if (node.label === "Storage" || node.label === "North") {
     return;
   }
   if (existsInPipeline(pipeline, node.label)) {
@@ -437,7 +444,7 @@ function getBranchNodes(pipeline, connections, node) {
     let connlist = connections.filter(c => c.source === node.id);
     if (connlist.length === 1) {
       let filterNode = editor.getNode(connlist[0].target);
-      if (filterNode.label !== "Storage" && (existsInPipeline(pipeline, filterNode.label) || existsInPipeline(branchNodes, filterNode.label))) {
+      if (filterNode.label !== "Storage" && filterNode.label !== "North" && (existsInPipeline(pipeline, filterNode.label) || existsInPipeline(branchNodes, filterNode.label))) {
         return [];
       }
       branchNodes.push(filterNode.label);
