@@ -337,14 +337,14 @@ export function getUpdatedFilterPipeline() {
     if (i == 0) {
       // check if starting node of pipeline i.e. south/storage is connected
       if (!connections.find(c => c.source === nodes[i].id)) {
-        console.log("Dangling connection");
+        console.log("Dangling connection at output socket");
         return false;
       }
     }
     else if (i == 1) {
       // check if last node of pipeline i.e. storage/north is connected
       if (!connections.find(c => c.target === nodes[i].id)) {
-        console.log("Dangling connection");
+        console.log("Dangling connection at input socket");
         return false;
       }
     }
