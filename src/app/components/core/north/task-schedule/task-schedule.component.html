@@ -23,8 +23,8 @@
                 <div class="columns">
                   <div class="column is-one-quarter">
                     <input #repeatDays="ngModel" name="repeatDays" class="input is-small"
-                      [ngClass]="{'is-static': !rolesService.hasEditPermissions()}" type='number' appNumberOnly min="0"
-                      max="365" placeholder="days" [(ngModel)]="taskSchedule.repeatDays"
+                      [ngClass]="{'is-static': !rolesService.hasEditPermissions()}" appIntegerOnly min="0" max="365"
+                      placeholder="days" [(ngModel)]="taskSchedule.repeatDays"
                       [readOnly]="!rolesService.hasEditPermissions()">
 
                   </div>

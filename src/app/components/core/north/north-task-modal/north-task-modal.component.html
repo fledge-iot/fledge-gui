@@ -4,7 +4,8 @@
     <header class="modal-card-head">
       <span *ngIf="task" class="modal-card-title title-name">{{task.name}} <span *ngIf="isAddFilterWizard">- Add
           Filter</span>
-          <span *ngIf="!isAddFilterWizard"><i class="bi bi-info-circle info-icon" aria-hidden="true" [title]="task?.plugin.name"></i></span>
+        <span *ngIf="!isAddFilterWizard"><i class="bi bi-info-circle info-icon" aria-hidden="true"
+            [title]="task?.plugin.name"></i></span>
         <ng-container *ngIf="task?.processName === 'north_C'; else nTask">
           <p class="help has-text-grey modal-subtitle">North Service</p>
         </ng-container>
@@ -59,8 +60,8 @@
                         <div class="field-body">
                           <div class="field">
                             <input name="repeatDays" class="input is-small"
-                              [ngClass]="{'is-static': !rolesService.hasEditPermissions()}" type='number' appNumberOnly
-                              min="0" max="365" placeholder="days" [(ngModel)]="repeatDays"
+                              [ngClass]="{'is-static': !rolesService.hasEditPermissions()}" appIntegerOnly min="0"
+                              max="365" placeholder="days" [(ngModel)]="repeatDays"
                               [readOnly]="!rolesService.hasEditPermissions()">
                           </div>
                           <div class="field">
@@ -120,7 +121,8 @@
                   <button class="button is-small" [routerLink]="['/north']">Cancel</button>
                 </p>
                 <p class="control">
-                  <button [disabled]="checkFormState()" class="button is-small is-link" (click)="save()" [appDisableUntilResponse]="reenableButton">Save</button>
+                  <button [disabled]="checkFormState()" class="button is-small is-link" (click)="save()"
+                    [appDisableUntilResponse]="reenableButton">Save</button>
                 </p>
               </div>
             </div>
@@ -176,6 +178,7 @@
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('delete-task-dialog')">Cancel</button>
-    <button class="button is-small is-danger" (click)="onDelete(task)" [appDisableUntilResponse]="reenableButton">Delete</button>
+    <button class="button is-small is-danger" (click)="onDelete(task)"
+      [appDisableUntilResponse]="reenableButton">Delete</button>
   </footer>
 </app-confirmation-dialog>
