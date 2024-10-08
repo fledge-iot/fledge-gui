@@ -7,7 +7,7 @@ import { SharedService } from '../../../services/shared.service';
 import { buildRoutes } from '../../../../menu-utils';
 import { DeveloperFeaturesService } from '../../../services/developer-features.service';
 import { RolesService } from '../../../services';
-import { Subject, Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FlowEditorService } from '../../common/node-editor/flow-editor.service';
 
@@ -30,7 +30,6 @@ export class SideMenuComponent implements OnInit {
   isAdmin = false;
   isServiceRunning = true;
   private destroySubject: Subject<void> = new Subject();
-  private viewPortSubscription: Subscription;
   viewPort: any = '';
 
   isSidemenuCollapsed = false;
@@ -75,9 +74,12 @@ export class SideMenuComponent implements OnInit {
       .subscribe(connectionInfo => {
         this.isServiceRunning = connectionInfo?.isServiceUp;
       });
-    this.viewPortSubscription = this.sharedService.viewport.subscribe(viewport => {
-      this.viewPort = viewport;
-    });
+
+    this.sharedService.viewport
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(viewport => {
+        this.viewPort = viewport;
+      });
   }
 
   goToLink() {
@@ -211,6 +213,5 @@ export class SideMenuComponent implements OnInit {
     // Unsubscribe from all observables
     this.destroySubject.next();
     this.destroySubject.unsubscribe();
-    this.viewPortSubscription.unsubscribe();
   }
 }
