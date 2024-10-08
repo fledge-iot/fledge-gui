@@ -6,12 +6,12 @@
     <div class="field is-narrow">
       <div class="control" *ngIf="rolesService.hasControlAccess(); else staticDuration">
         <input class="input is-small name-control" name="duration" placeholder="duration" [ngModel]="config?.duration"
-          appIntegerOnly (ngModelChange)="setDuration($event)"
+          autocomplete="off" appIntegerOnly (ngModelChange)="setDuration($event)"
           [ngClass]="{'is-static':!rolesService.hasControlAccess()}" [readonly]="!rolesService.hasControlAccess()">
       </div>
       <ng-template #staticDuration>
         <div class="control" *ngIf="config.duration; else noDuration">
-          <input class="input is-small name-control" name="duration" [ngModel]="config?.duration"
+          <input class="input is-small name-control" name="duration" [ngModel]="config?.duration" autocomplete="off"
             (ngModelChange)="config.duration" appIntegerOnly [ngClass]="{'is-static':!rolesService.hasControlAccess()}"
             [readonly]="!rolesService.hasControlAccess()">
         </div>

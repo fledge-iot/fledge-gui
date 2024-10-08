@@ -125,7 +125,7 @@
                 <div class="columns">
                   <div class="column">
                     <input id="repeat_day" class="input is-small" appIntegerOnly min="0" max="365" placeholder="days"
-                      formControlName="repeatDay" required>
+                      autocomplete="off" formControlName="repeatDay" required>
                     <input id="repeat_time" class="input is-small" type='text' placeholder="HH:mm:ss"
                       formControlName="repeat" mask='00:00:00' (input)="matchTimeTypeField($event, 'repeat')" required>
                   </div>

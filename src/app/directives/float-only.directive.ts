@@ -12,17 +12,27 @@ export class FloatOnlyDirective {
     const inputChar = String.fromCharCode(event.charCode);
     const isScientificNotation = event.key === 'e' || event.key === 'E';
     const isNegativeSign = event.key === '-';
+    const isPositiveSign = event.key === '+';
     const inputValue = this.el.nativeElement.value;
     const cursorPosition = this.el.nativeElement.selectionStart;
 
-    // Check if the pressed key is '-' and if the cursor is at the start
-    // Or any character is being entered before '-'
-    if (isNegativeSign && cursorPosition !== 0 || inputValue[cursorPosition] === '-') {
+    // Check if pressed key is '+' and if the cursor is after 'e'/'E'
+    if (event.key === '+' && (inputValue[cursorPosition - 1] !== 'e' && inputValue[cursorPosition - 1] !== 'E')) {
+      event.preventDefault();
+    }
+
+    // Check if pressed key is '-' and if the cursor is at the start or after 'e'/'E'
+    if (isNegativeSign && cursorPosition !== 0 && inputValue[cursorPosition - 1] !== 'e' && inputValue[cursorPosition - 1] !== 'E') {
       // Prevent the default action if the cursor is not at the start
       event.preventDefault();
     }
 
-    if (!allowedChars.test(inputChar) && !isScientificNotation && !isNegativeSign) {
+    // Check if any character is being entered before '-' or '+'
+    if (inputValue[cursorPosition] === '-' || inputValue[cursorPosition] === '+') {
+      event.preventDefault();
+    }
+
+    if (!allowedChars.test(inputChar) && !isScientificNotation && !isNegativeSign && !isPositiveSign) {
       event.preventDefault();
     }
 

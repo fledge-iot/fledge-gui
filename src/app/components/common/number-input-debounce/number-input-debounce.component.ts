@@ -4,7 +4,7 @@ import { debounceTime, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-number-input-debounce',
-  template: '<input class="input is-small" appIntegerOnly min="0" [value]="val" [max]="max"' +
+  template: '<input class="input is-small" autocomplete="off" min="0" appIntegerOnly [value]="val" [max]="max"' +
     '[placeholder]="placeholder" name="limit" [(ngModel)]="inputValue">',
   styleUrls: ['./number-input-debounce.component.css']
 })

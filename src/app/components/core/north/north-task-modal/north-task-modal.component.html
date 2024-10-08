@@ -61,7 +61,7 @@
                           <div class="field">
                             <input name="repeatDays" class="input is-small"
                               [ngClass]="{'is-static': !rolesService.hasEditPermissions()}" appIntegerOnly min="0"
-                              max="365" placeholder="days" [(ngModel)]="repeatDays"
+                              autocomplete="off" max="365" placeholder="days" [(ngModel)]="repeatDays"
                               [readOnly]="!rolesService.hasEditPermissions()">
                           </div>
                           <div class="field">
