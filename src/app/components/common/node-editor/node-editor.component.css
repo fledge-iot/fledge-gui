@@ -1,7 +1,14 @@
 .rete {
-  width: 82vw;
   height: 85vh;
   padding: 0.5rem;
+}
+
+.expanded-width {
+  width: 91vw;
+}
+
+.collapsed-width {
+  width: 84vw;
 }
 
 .navbar-item {
@@ -13,41 +20,8 @@
   display: inline-block;
 }
 
-hr {
-  background-color: #fff !important;
-}
-
 .hr-text {
-  line-height: 1em;
-  position: relative;
-  outline: 0;
-  border: 0;
-  color: black;
-  text-align: center;
   height: 1.5em;
-  opacity: .5;
-}
-
-.hr-text:before {
-  content: '';
-  background: linear-gradient(to right, transparent, #818078, transparent);
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 100%;
-  height: 1px;
-}
-
-.hr-text:after {
-  content: attr(data-content);
-  position: relative;
-  display: inline-block;
-  color: black;
-
-  padding: 0 .5em;
-  line-height: 1.5em;
-  color: #818078;
-  background-color: #fff;
 }
 
 .help-icon {

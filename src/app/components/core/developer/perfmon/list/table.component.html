@@ -2,7 +2,7 @@
   <div class="navbar-item">
     <nav class="breadcrumb mb-0" aria-label="breadcrumbs">
       <ul>
-        <li><a [routerLink]="['/developer/options']">Developer</a></li>
+        <li class="breadcrumb-padding">Developer</li>
         <li class="is-active">
           <a href="#" aria-current="page">
             Performance Monitors
@@ -29,7 +29,7 @@
                   <small>{{pm?.monitor}}</small>
                 </td>
                 <td class="align-content content-pad">
-                  <div *ngFor="let pmv of pm?.values"> 
+                  <div *ngFor="let pmv of pm?.values">
                     <pre>{{ pmv | json }}</pre>
                   </div>
                 </td>

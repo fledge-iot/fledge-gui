@@ -60,6 +60,8 @@ export function insertableNodes<S extends Schemes>(
       const cons = Array.from(area.connectionViews.entries()).map(
         ([id, view]) => [id, view.element] as const
       );
+
+
       if (view && node.label !== "South" && node.label !== "Storage" && node.label !== "North") {
         const intersectedConnections = checkIntersection(view.position, node, cons);
         for (let id of intersectedConnections) {
@@ -79,12 +81,12 @@ export function insertableNodes<S extends Schemes>(
 async function removeOldConnection(node, editor) {
   let connections = await editor.getConnections();
   let source;
-  let target = [];
+  let targets = [];
   let inputConnId;
   let outputConnections = [];
   for (const element of connections) {
     if (element.source === node.id) {
-      target.push(await editor.getNode(element.target) as ClassicPreset.Node);
+      targets.push(await editor.getNode(element.target) as ClassicPreset.Node);
       outputConnections.push(element.id);
     }
     if (element.target === node.id) {
@@ -92,8 +94,10 @@ async function removeOldConnection(node, editor) {
       inputConnId = element.id;
     }
   }
-  for (let t of target) {
-    await editor.addConnection(new Connection(connectionEvents, source, t));
+  if(source) {
+    for (let target of targets) {
+      await editor.addConnection(new Connection(connectionEvents, source, target));
+    }
   }
   if (inputConnId) {
     await editor.removeConnection(inputConnId);

@@ -18,6 +18,8 @@ export class KvListTypeConfigurationComponent implements OnInit {
   @Output() formStatusEvent = new EventEmitter<any>();
   kvListItemsForm: FormGroup;
   initialProperties = [];
+  items = [];
+  validConfigurationForm = true;
 
   constructor(
     public cdRef: ChangeDetectorRef,
@@ -32,16 +34,19 @@ export class KvListTypeConfigurationComponent implements OnInit {
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
     values = JSON.parse(values) as [];
     for (const [key, value] of Object.entries(values)) {
-      this.kvListItems.push(this.initListItem({ key, value }));
+      this.kvListItems.push(this.initListItem(false, { key, value }));
     }
     this.onControlValueChanges();
+    if(this.configuration.items == 'object' && this.kvListItems.length == 1){
+      this.expandListItem(this.kvListItems.length-1); // Expand the list if only one item is present
+    }
   }
 
   get kvListItems() {
     return this.kvListItemsForm.get('kvListItems') as FormArray;
   }
 
-  initListItem(param) {
+  initListItem(isPrepend, param) {
     if (this.configuration.items == 'enumeration') {
       return this.fb.group({
         key: [param?.key, [Validators.required, CustomValidator.nospaceValidator]],
@@ -60,7 +65,14 @@ export class KvListTypeConfigurationComponent implements OnInit {
           objectConfig[key].permissions = this.configuration.permissions;
         }
       }
-      this.initialProperties.push(objectConfig);
+      if(isPrepend) {
+        this.initialProperties.unshift(objectConfig);
+        this.items.unshift({status : true});
+      }
+      else{
+        this.initialProperties.push(objectConfig);
+        this.items.push({status : true});
+      }
       return this.fb.group({
         key: [param?.key, [Validators.required, CustomValidator.nospaceValidator]],
         value: [objectConfig]
@@ -72,19 +84,35 @@ export class KvListTypeConfigurationComponent implements OnInit {
     });
   }
 
-  addListItem() {
+  addListItem(isPrepend) {
     const controlsLength = this.kvListItems.length;
     const listSize = this.configuration?.listSize > 0 ? +this.configuration.listSize : 999; // max threshold limit for new item creation
     if (controlsLength > listSize) {
       return;
     }
-    this.kvListItems.push(this.initListItem({ key: '', value: '' }));
+    if(isPrepend){
+      this.kvListItems.insert(0, this.initListItem(isPrepend, { key: '', value: '' }));
+    }
+    else{
+      this.kvListItems.push(this.initListItem(isPrepend, { key: '', value: '' }));
+    }
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
+    if(this.configuration.items == 'object'){
+      // Expand newly added item
+      if(isPrepend){
+        this.expandListItem(0);
+      }
+      else{
+        this.expandListItem(this.kvListItems.length-1);
+      }
+    }
   }
 
   removeListItem(index: number) {
     this.kvListItems.removeAt(index);
     this.initialProperties.splice(index, 1);
+    this.items.splice(index, 1);
+    this.setChildConfigFormValidity();
   }
 
   onControlValueChanges(): void {
@@ -128,18 +156,77 @@ export class KvListTypeConfigurationComponent implements OnInit {
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
   }
 
-  formStatus(formState: any) {
+  formStatus(formState: any, index) {
+    this.items[index].status = formState.status;
+    this.setChildConfigFormValidity();
     this.formStatusEvent.emit(formState);
+  }
+
+  setChildConfigFormValidity() {
+    if (this.items.find(value => value.status == false)) {
+      this.validConfigurationForm = false;
+      return;
+    }
+    this.validConfigurationForm = true;
   }
 
   extractKvListValues(value) {
     let valueObj = {};
     for (let property in value) {
-      valueObj[property] = value[property].value ? value[property].value : value[property].default;
+      if(value[property].hasOwnProperty('value')){
+        valueObj[property] = value[property].value;
+      }
+      else{
+        valueObj[property] = value[property].default;
+      }
       if (value[property].type == 'json') {
         valueObj[property] = JSON.parse(valueObj[property]);
       }
     }
     return valueObj;
+  }
+
+  toggleCard(index) {
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
+    if(cardBody.classList.contains('is-hidden')){
+      cardBody.classList.remove('is-hidden');
+      cardHeader.classList.add('is-hidden');
+    }
+    else{
+      cardBody.classList.add('is-hidden');
+      cardHeader.classList.remove('is-hidden');
+    }
+  }
+
+  expandListItem(index) {
+    setTimeout(() => {
+      this.expandCollapseSingleItem(index, true);
+    }, 1);
+  }
+
+  expandCollapseSingleItem(index: number, isExpand: boolean) {
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
+    if(isExpand) {
+      cardHeader.classList.add('is-hidden');
+      cardBody.classList.remove('is-hidden');
+    }
+    else{
+      cardHeader.classList.remove('is-hidden');
+      cardBody.classList.add('is-hidden');
+    }
+  }
+
+  expandAllItems() {
+    for(let i=0; i<this.kvListItems.length; i++){
+      this.expandCollapseSingleItem(i, true);
+    }
+  }
+
+  collapseAllItems() {
+    for(let i=0; i<this.kvListItems.length; i++){
+      this.expandCollapseSingleItem(i, false);
+    }
   }
 }

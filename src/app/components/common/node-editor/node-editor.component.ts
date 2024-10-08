@@ -13,6 +13,7 @@ import { ServiceWarningComponent } from '../../core/notifications/service-warnin
 import { Service } from '../../core/south/south-service';
 import { DialogService } from '../confirmation-dialog/dialog.service';
 import {
+  AlertService,
   AssetsService, ConfigurationControlService, ConfigurationService, FileUploaderService,
   FilterService, GenerateCsvService, NorthService,
   NotificationsService,
@@ -85,6 +86,9 @@ export class NodeEditorComponent implements OnInit {
   filterConfigApiCallsStack = [];
   validConfigurationForm = true;
   validFilterConfigForm = true;
+  validNotificationForm = true;
+  validDeliveryConfigForm = true;
+  validRuleConfigForm = true;
   quickviewFilterName = "";
   isAddFilterWizard: boolean = false;
   isAlive: boolean;
@@ -102,6 +106,7 @@ export class NodeEditorComponent implements OnInit {
   taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };
   selectedAsset = '';
   MAX_RANGE = MAX_INT_SIZE / 2;
+  isSidebarCollapsed: boolean;
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -113,6 +118,7 @@ export class NodeEditorComponent implements OnInit {
     private configurationControlService: ConfigurationControlService,
     private fileUploaderService: FileUploaderService,
     private toastService: ToastService,
+    private alertService: AlertService,
     public rolesService: RolesService,
     private response: ResponseHandler,
     public ngProgress: ProgressBarService,
@@ -125,6 +131,12 @@ export class NodeEditorComponent implements OnInit {
     private additionalServicesUtils: AdditionalServicesUtils,
     public sharedService: SharedService,
     private router: Router) {
+    this.sharedService.isSidebarCollapsed
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((isCollapsed: boolean) => {
+        this.isSidebarCollapsed = isCollapsed;
+      });
+
     this.route.params.subscribe(params => {
       this.from = params.from;
       this.source = params.name;
@@ -379,7 +391,7 @@ export class NodeEditorComponent implements OnInit {
                       })
 
                       data.isServiceEnabled = this.serviceInfo.isEnabled;
-                      createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
+                      createEditor(el, this.injector, this.flowEditorService, this.rolesService, this.alertService, data);
                     }
                   });
                 }
@@ -398,13 +410,13 @@ export class NodeEditorComponent implements OnInit {
                   let filterConfig = { pluginName: r.plugin.value, enabled: r.enable.value, filterName: r.filterName, color: "#F9CB9C" };
                   this.filterConfigurations.push(filterConfig);
                 })
-                createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
+                createEditor(el, this.injector, this.flowEditorService, this.rolesService, this.alertService, data);
                 this.filterConfigApiCallsStack = [];
               });
             }
             else {
               if (this.from !== 'notifications') {
-                createEditor(el, this.injector, this.flowEditorService, this.rolesService, data);
+                createEditor(el, this.injector, this.flowEditorService, this.rolesService, this.alertService, data);
               }
               // Navigate to the list page when service and task not exist
               if ((!data.task && !data.service)) {
@@ -843,6 +855,12 @@ export class NodeEditorComponent implements OnInit {
   checkFilterFormState() {
     const noChange = !this.validFilterConfigForm || isEmpty(this.changedFilterConfig);
     return noChange;
+  }
+
+  checkNotificationFormState() {
+    return !(this.validNotificationForm && this.validDeliveryConfigForm && this.validRuleConfigForm)
+      || (isEmpty(this.notificationChangedConfig) && isEmpty(this.rulePluginChangedConfig)
+        && isEmpty(this.deliveryPluginChangedConfig))
   }
 
   getChangedConfig(changedConfiguration: any) {

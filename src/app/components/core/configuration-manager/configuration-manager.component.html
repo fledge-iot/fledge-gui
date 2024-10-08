@@ -24,10 +24,10 @@
       <ng-container *ngIf="categoryData.length>0; else emptyCategoryTemplate">
         <div class="card" *ngFor="let category of categoryData">
           <header *ngIf="category?.config" class="card-header">
-            <div class="card-header-title">
-              <div class="media">
+            <div class="card-header-title pl-4">
+              <div class="media pl-1">
                 <div class="media-content">
-                  <p class="subtitle is-6">{{ category.description }}
+                  <p class="subtitle is-size-9">{{ category.description }}
                     <button class="button is-small" id="refresh-check"
                       (click)="refreshCategory(category.name, category.description)">
                       <span class="icon is-small">

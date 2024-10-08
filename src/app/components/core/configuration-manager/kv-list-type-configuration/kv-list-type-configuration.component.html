@@ -1,9 +1,18 @@
 <div [formGroup]="kvListItemsForm">
   <div formArrayName="kvListItems">
+    <ng-container *ngIf="configuration.items == 'object' && kvListItems.controls.length>1">
+      <div class="btn-panel-container is-flex-direction-row-reverse">
+        <div class="btn-panel upper-btn-panel">
+          <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm" (addnewItem)="addListItem(true)"
+           (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+           [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)"/>
+        </div>
+      </div>
+    </ng-container>
     <ng-container *ngFor="let item of kvListItems.controls; let i=index">
-      <div [ngClass]="{'box pt-2 pb-0 mb-2': configuration.items == 'object'}">
-        <div class="columns mb-0 is-variable is-1" [formGroupName]="i">
-          <ng-container *ngIf="configuration.items != 'object'; else objectTemplate">
+      <ng-container *ngIf="configuration.items != 'object'; else objectTemplate">
+        <div>
+          <div class="columns mb-0 is-variable is-1" [formGroupName]="i">
             <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticView">
               <div class="column is-5">
                 <input formControlName="key" placeholder="key" class="input is-small" name="type" type="text">
@@ -38,66 +47,123 @@
                 <span class="help">{{kvListItems?.controls[i]?.controls['value']?.value}}</span>
               </div>
             </ng-template>
-          </ng-container>
-          <ng-template #objectTemplate>
-            <div class="column pt-5 is-11">
-              <div class="field is-horizontal">
-                <div class="field-label has-text-left">
-                  <label class="label tooltip has-tooltip-multiline config-label has-tooltip-right has-tooltip-arrow"
-                    [attr.data-tooltip]="configuration.description"
-                    [ngClass]="{'is-inline-block': !rolesService.hasAccessPermission(configuration?.permissions)}">Key</label>
-                </div>
-                <div class="field-body">
-                  <div class="field">
-                    <div class="column is-11 p-0">
-                      <ng-container
-                        *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticKey">
-                        <input formControlName="key" placeholder="key" class="input is-small is-fullwidth" name="type"
-                          type="text">
-                        <span *ngIf="kvListItems?.controls[i]?.controls['key']?.invalid" class="help is-danger">
-                          <sup>*</sup>required
-                        </span>
-                      </ng-container>
-                      <ng-template #staticKey>
-                        <span class="help">
-                          {{kvListItems?.controls[i]?.controls['key']?.value}}
-                        </span>
-                      </ng-template>
+            <div class="column is-1 pl-2 pt-2 my-2 has-text-right"
+              *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
+              <span class="icon">
+                <button class="delete is-small" (click)="removeListItem(i)"></button>
+              </span>
+            </div>
+          </div>
+          <div>
+            <span *ngIf="kvListItems?.controls[i]?.controls['value']?.hasError('minValue')" class="help is-danger">
+              <sup>*</sup>Value should not be less than {{configuration?.minimum}}.
+            </span>
+            <span *ngIf="kvListItems?.controls[i]?.controls['value']?.hasError('maxValue')" class="help is-danger">
+              <sup>*</sup>Value should not be greater than {{configuration?.maximum}}.
+            </span>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #objectTemplate>
+        <div class="card mt-0 card-shadow" [ngClass]="{'error': item.invalid || items[i].status == false}">
+          <header class="card-header has-background-white card-header-shadow is-justify-content-space-between"
+            id="card-header-{{configuration.key}}-{{i}}">
+            <div class="card-header-title">
+              <p class="subtitle is-size-9">{{kvListItems?.controls[i]?.controls['key'].value}}</p>
+            </div>
+            <div class="btn-container">
+              <button class="card-header-icon tooltip has-tooltip-multiline has-tooltip-right has-tooltip-arrow" [attr.data-tooltip]="extractKvListValues(item.value.value) | json" (click)="toggleCard(i)">
+                <span class="icon is-small">
+                  <i class="bi bi-three-dots bi-sm" aria-hidden="true"></i>
+                </span>
+              </button>
+              <button class="card-header-icon" (click)="toggleCard(i)">
+                <span class="icon is-small toogle-icon" title="Expand">
+                  <i class="fas fa-2xs fa-angle-right" aria-hidden="true"></i>
+                </span>
+              </button>
+            </div>
+          </header>
+          <div class="card-content is-hidden" id="card-content-{{configuration.key}}-{{i}}">
+            <div class="columns mb-0 is-variable is-1" [formGroupName]="i">
+              <div class="column mt-2 px-2 pt-2 pb-0 is-10">
+                <div class="field is-horizontal mb-0">
+                  <div class="field-label has-text-left">
+                    <label class="label tooltip has-tooltip-multiline config-label has-tooltip-right has-tooltip-arrow"
+                      [attr.data-tooltip]="configuration.description"
+                      [ngClass]="{'is-inline-block': !rolesService.hasAccessPermission(configuration?.permissions)}">Key</label>
+                    <span class="ml-1" *ngIf="!rolesService.hasAccessPermission(configuration?.permissions)">
+                      <i class="bi bi-xs bi-info-circle info-icon" aria-hidden="true"
+                        title="Insufficient privileges to modify this"></i>
+                    </span>
+                  </div>
+                  <div class="field-body">
+                    <div class="field">
+                      <div class="column is-11 p-0">
+                        <ng-container
+                          *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticKey">
+                          <input formControlName="key" placeholder="key" class="input is-small is-fullwidth" name="type"
+                            type="text">
+                          <span *ngIf="kvListItems?.controls[i]?.controls['key']?.invalid" class="help is-danger">
+                            <sup>*</sup>required
+                          </span>
+                        </ng-container>
+                        <ng-template #staticKey>
+                          <span class="help">
+                            {{kvListItems?.controls[i]?.controls['key']?.value}}
+                          </span>
+                        </ng-template>
+                      </div>
                     </div>
                   </div>
                 </div>
+                <hr class="kvlist-divider">
+                <app-show-configuration [groupConfiguration]="initialProperties[i]"
+                  [fullConfiguration]="initialProperties[i]" (event)="getChangedConfiguration(i, $event)"
+                  (formStatusEvent)="formStatus($event, i)" [from]="from" [group]="group"></app-show-configuration>
               </div>
-              <hr class="kvlist-divider">
-              <app-show-configuration [groupConfiguration]="initialProperties[i]"
-                [fullConfiguration]="initialProperties[i]" (event)="getChangedConfiguration(i, $event)"
-                (formStatusEvent)="formStatus($event)" [from]="from" [group]="group"></app-show-configuration>
+              <div class="column is-1 has-text-right"
+              [ngClass]="{'is-invisible': !rolesService.hasAccessPermission(configuration?.permissions)}">
+                <button class="delete my-3 is-small" (click)="removeListItem(i)"></button>
+              </div>
+              <div class="column is-1 has-text-right">
+                <button class="button is-small my-1 collapse-btn" (click)="toggleCard(i)"
+                [ngClass]="{'is-hidden':item.invalid || items[i].status == false}">
+                  <span class="icon is-small toogle-icon" title="Collapse">
+                    <i class="fas fa-xs fa-angle-up" aria-hidden="true"></i>
+                  </span>
+                </button>
+              </div>
             </div>
-          </ng-template>
-          <div class="column is-1 my-2" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
-            <button class="delete is-small" (click)="removeListItem(i)"></button>
           </div>
         </div>
-        <div>
-          <span *ngIf="kvListItems?.controls[i]?.controls['value']?.hasError('minValue')" class="help is-danger">
-            <sup>*</sup>Value should not be less than {{configuration?.minimum}}.
-          </span>
-          <span *ngIf="kvListItems?.controls[i]?.controls['value']?.hasError('maxValue')" class="help is-danger">
-            <sup>*</sup>Value should not be greater than {{configuration?.maximum}}.
-          </span>
+      </ng-template>
+    </ng-container>
+    <ng-container *ngIf="(configuration.items != 'object' || kvListItems.controls.length<=1); else objectButtonPanel">
+      <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
+        <div class="field">
+          <p class="control">
+            <button class="button is-small mb-1" (click)="addListItem(false)" [disabled]="kvListItems.invalid || !validConfigurationForm"
+              [ngClass]="{'px-0 pt-1 is-ghost': configuration.items != 'object', 'mt-1': configuration.items == 'object'}">
+              <span class="icon is-small mr-0">
+                <i class="bi bi-plus bi-sm"></i>
+              </span>
+              <span>{{kvListItems.controls.length==0 ? 'Add item' : 'Add new item'}}</span>
+            </button>
+          </p>
+        </div>
+      </ng-container>
+    </ng-container>
+    <ng-template #objectButtonPanel>
+      <div class="btn-panel-container is-flex-direction-row">
+        <div class="btn-panel lower-btn-panel">
+          <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm" (addnewItem)="addListItem(false)"
+           (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+           [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)"/>
         </div>
       </div>
+    </ng-template>
+    <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
     </ng-container>
-    <div class="field" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
-      <p class="control" *ngIf="!configuration.listSize || configuration.listSize != kvListItems.controls.length ">
-        <button class="button is-small mb-1" (click)="addListItem()"
-          [ngClass]="{'px-0 pt-1 is-ghost': configuration.items != 'object'}">
-          <span class="icon is-small mr-0">
-            <i class="bi bi-plus bi-sm"></i>
-          </span>
-          <span>Add new item</span>
-        </button>
-      </p>
-    </div>
   </div>
-
 </div>
