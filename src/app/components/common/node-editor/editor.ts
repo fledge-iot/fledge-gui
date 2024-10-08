@@ -634,5 +634,24 @@ export function redoAction() {
   });
 }
 
+export function resetNodes() {
+  // reset canvas to its initial state
+  let historySnapshot = history.getHistorySnapshot();
+  let historyLength = historySnapshot.length;
+  for (let i = 0; i < historyLength; i++) {
+    history.undo();
+  }
+  // reset zoom in/out state
+  AreaExtensions.zoomAt(area, editor.getNodes());
+}
 
-
+function getSecondLastActionName() {
+  let historySnapshot = history.getHistorySnapshot();
+  let historyLength = historySnapshot.length;
+  let actionName;
+  if (historyLength >= 2) {
+    // FIXME: use different approach for retrieving actionName
+    // actionName = Object.getPrototypeOf(historySnapshot[historyLength - 2].action).constructor.name;
+  }
+  return actionName;
+}

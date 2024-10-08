@@ -26,11 +26,6 @@
           </li>
         </ul>
       </nav>
-      <ng-container *ngIf="!isAddFilterWizard">
-        <button type="button" (click)="reload()" class="button is-small" title="Reload" id="refresh-check">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
-        </button>
-      </ng-container>
     </div>
     <div *ngIf="serviceInfo.isEnabled && serviceInfo.isInstalled && from === 'notifications'">
       <app-service-config (serviceConfigureModal)="openServiceConfigureModal()" [from]="'flow-editor'">
@@ -42,7 +37,10 @@
       </span>
     </div>
     <ng-container *ngIf="source && rolesService.hasEditPermissions() && !isAddFilterWizard">
-      <button class="button is-small is-link mb-1" (click)="save()">Save</button>
+      <div>
+        <app-toolbar class="is-inline-block pr-2" (reloadData)="reload()" (resetNodes)="reset()"></app-toolbar>
+        <button class="button is-outlined is-small is-link mb-1" (click)="save()">Save</button>
+      </div>
     </ng-container>
   </div>
   <ng-container *ngIf="from === 'notifications'">

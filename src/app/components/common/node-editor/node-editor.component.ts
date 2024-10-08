@@ -23,7 +23,7 @@ import {
   SharedService,
   ToastService
 } from './../../../services';
-import { createEditor, deleteConnection, getUpdatedFilterPipeline, removeNode, updateFilterNode, updateNode, applyContentReordering, undoAction, redoAction } from './editor';
+import { createEditor, deleteConnection, getUpdatedFilterPipeline, removeNode, updateFilterNode, updateNode, applyContentReordering, undoAction, redoAction, resetNodes } from './editor';
 import { FlowEditorService } from './flow-editor.service';
 
 @Component({
@@ -177,6 +177,9 @@ export class NodeEditorComponent implements OnInit {
     }
     if ((event.ctrlKey || event.metaKey) && event.keyCode == 89) {
       redoAction();
+    }
+    if (event.keyCode == 32) {
+      resetNodes();
     }
     if (event.key === 'Delete') {
       this.deleteSelectedConnection();
@@ -1126,6 +1129,9 @@ export class NodeEditorComponent implements OnInit {
     }
   }
 
+  reset() {
+    resetNodes();
+  }
   /**
      * Open Configure Service modal
      */
