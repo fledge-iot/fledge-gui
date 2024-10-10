@@ -1,11 +1,21 @@
 <div class="box is-radiusless p-0">
     <button type="button" (click)="reload()" class="button is-small tooltip has-tooltip-arrow has-tooltip-bottom"
         data-tooltip="Reload">
-        <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+        <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
     </button>
     <hr class="m-0">
     <button type="button" (click)="reset()" class="button is-small tooltip has-tooltip-arrow has-tooltip-bottom"
         data-tooltip="Reset">
         <i class="bi bi-aspect-ratio"></i>
+    </button>
+    <hr class="m-0">
+    <button type="button" (click)="redo()" class="button is-small tooltip has-tooltip-arrow has-tooltip-bottom"
+        data-tooltip="Redo">
+        <i class="bi bi-arrow-counterclockwise"></i>
+    </button>
+    <hr class="m-0">
+    <button type="button" (click)="undo()" class="button is-small tooltip has-tooltip-arrow has-tooltip-bottom"
+        data-tooltip="Undo">
+        <i class="bi bi-arrow-clockwise"></i>
     </button>
 </div>

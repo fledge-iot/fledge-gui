@@ -16,4 +16,12 @@ export class ToolbarComponent {
   reset() {
     this.resetNodes.emit(true);
   }
+
+  undo() {
+    console.log('undo');
+  }
+
+  redo() {
+    console.log('redo');
+  }
 }

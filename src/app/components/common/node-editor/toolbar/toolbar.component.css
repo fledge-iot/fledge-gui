@@ -2,6 +2,7 @@
     vertical-align: middle;
     background: none;
     border: none;
+    font-size: 1rem;
 }
 
 .box button:hover {
@@ -20,4 +21,8 @@ hr {
     height: 0.8rem;
     width: 1px;
     opacity: 0.4;
+}
+
+.box {
+    border: 1px solid lightgray;
 }
