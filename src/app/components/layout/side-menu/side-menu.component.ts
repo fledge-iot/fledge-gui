@@ -54,6 +54,11 @@ export class SideMenuComponent implements OnInit {
         this.isControlListOpen = event.url.includes('control-dispatcher');
       }
     });
+    this.sharedService.viewport
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(viewport => {
+        this.viewPort = viewport;
+      });
   }
 
   async ngOnInit() {
@@ -73,12 +78,6 @@ export class SideMenuComponent implements OnInit {
       .pipe(takeUntil(this.destroySubject))
       .subscribe(connectionInfo => {
         this.isServiceRunning = connectionInfo?.isServiceUp;
-      });
-
-    this.sharedService.viewport
-      .pipe(takeUntil(this.destroySubject))
-      .subscribe(viewport => {
-        this.viewPort = viewport;
       });
   }
 
