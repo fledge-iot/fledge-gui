@@ -54,18 +54,6 @@ export class SideMenuComponent implements OnInit {
         this.isControlListOpen = event.url.includes('control-dispatcher');
       }
     });
-    this.sharedService.viewport
-      .pipe(takeUntil(this.destroySubject))
-      .subscribe(viewport => {
-        this.viewPort = viewport;
-      });
-  }
-
-  async ngOnInit() {
-    this.microfrontends = await this.lookupService.lookup();
-    const routes = buildRoutes(this.microfrontends);
-    // reconfigure routes after dyanmic route load
-    this.router.resetConfig(routes);
 
     this.sharedService.isAdmin
       .pipe(takeUntil(this.destroySubject))
@@ -79,6 +67,19 @@ export class SideMenuComponent implements OnInit {
       .subscribe(connectionInfo => {
         this.isServiceRunning = connectionInfo?.isServiceUp;
       });
+
+    this.sharedService.viewport
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(viewport => {
+        this.viewPort = viewport;
+      });
+  }
+
+  async ngOnInit() {
+    this.microfrontends = await this.lookupService.lookup();
+    const routes = buildRoutes(this.microfrontends);
+    // reconfigure routes after dyanmic route load
+    this.router.resetConfig(routes);
   }
 
   goToLink() {
