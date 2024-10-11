@@ -1132,6 +1132,15 @@ export class NodeEditorComponent implements OnInit {
   reset() {
     resetNodes();
   }
+
+  callUndoAction() {
+    undoAction();
+  }
+
+  callRedoAction() {
+    resetNodes();
+  }
+
   /**
      * Open Configure Service modal
      */

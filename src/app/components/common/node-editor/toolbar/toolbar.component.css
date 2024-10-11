@@ -1,3 +1,11 @@
+.canvas-toolbar {
+    margin-top: 1em;
+    position: absolute;
+    right: 42%;
+    transition: transform .3s ease-in-out;
+    z-index: 30;
+}
+
 .box button {
     vertical-align: middle;
     background: none;

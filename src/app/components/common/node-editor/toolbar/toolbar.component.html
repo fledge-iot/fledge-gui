@@ -1,4 +1,4 @@
-<div class="box is-radiusless p-0">
+<div class="box is-radiusless canvas-toolbar p-0">
     <button type="button" (click)="reload()" class="button is-small tooltip has-tooltip-arrow has-tooltip-bottom"
         data-tooltip="Reload">
         <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
@@ -9,13 +9,18 @@
         <i class="bi bi-aspect-ratio"></i>
     </button>
     <hr class="m-0">
-    <button type="button" (click)="redo()" class="button is-small tooltip has-tooltip-arrow has-tooltip-bottom"
-        data-tooltip="Redo">
+    <button type="button" (click)="undoAction()" class="button is-small tooltip has-tooltip-arrow has-tooltip-bottom"
+        data-tooltip="Undo">
         <i class="bi bi-arrow-counterclockwise"></i>
     </button>
     <hr class="m-0">
-    <button type="button" (click)="undo()" class="button is-small tooltip has-tooltip-arrow has-tooltip-bottom"
-        data-tooltip="Undo">
+    <button type="button" (click)="redoAction()" class="button is-small tooltip has-tooltip-arrow has-tooltip-bottom"
+        data-tooltip="Redo">
         <i class="bi bi-arrow-clockwise"></i>
+    </button>
+    <hr class="m-0">
+    <button type="button" (click)="deleteAction()" class="button is-small tooltip has-tooltip-arrow has-tooltip-bottom"
+        data-tooltip="Delete">
+        <i class="bi bi-trash"></i>
     </button>
 </div>

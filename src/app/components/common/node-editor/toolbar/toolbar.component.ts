@@ -8,6 +8,9 @@ import { Component, Output, EventEmitter } from '@angular/core';
 export class ToolbarComponent {
   @Output() reloadData = new EventEmitter<Object>();
   @Output() resetNodes = new EventEmitter<Object>();
+  @Output() undo = new EventEmitter<Object>();
+  @Output() redo = new EventEmitter<Object>();
+  @Output() delete = new EventEmitter<Object>();
 
   reload() {
     this.reloadData.emit(true);
@@ -17,11 +20,15 @@ export class ToolbarComponent {
     this.resetNodes.emit(true);
   }
 
-  undo() {
-    console.log('undo');
+  undoAction() {
+    this.undo.emit(true);
   }
 
-  redo() {
-    console.log('redo');
+  redoAction() {
+    this.redo.emit(true);
+  }
+
+  deleteAction() {
+    this.delete.emit(true);
   }
 }

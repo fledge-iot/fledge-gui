@@ -51,11 +51,3 @@
     color: white;
   }
 }
-
-.canvas-toolbar {
-  margin-top: 1em;
-  position: absolute;
-  right: 50%;
-  transition: transform .3s ease-in-out;
-  z-index: 100;
-}
