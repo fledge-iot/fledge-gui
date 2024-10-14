@@ -25,7 +25,7 @@ export class CustomNotificationNodeComponent implements OnChanges {
   seed = 0;
   helpText = '';
   showPluginName = false;
-  
+
   notification = {
     name: "",
     channel: "",
@@ -42,7 +42,7 @@ export class CustomNotificationNodeComponent implements OnChanges {
   subscription: Subscription;
   pluginName = '';
   destroy$: Subject<boolean> = new Subject<boolean>();
-  
+
   showPlusIcon = false;
   showDeleteIcon = false;
   nodeId = '';
@@ -52,7 +52,7 @@ export class CustomNotificationNodeComponent implements OnChanges {
     return this.data.selected;
   }
 
-  constructor(private cdr: ChangeDetectorRef,   
+  constructor(private cdr: ChangeDetectorRef,
     private docService: DocService,
     private router: Router,
     public flowEditorService: FlowEditorService,
@@ -85,9 +85,9 @@ export class CustomNotificationNodeComponent implements OnChanges {
         // TODO (OPTIMIZE): API call for bolt (delivery/notify plugin enable state) icon highlighting
         this.isDeliveryEnabled();
       }
-        this.notification.isServiceEnabled = this.data.controls.serviceStatusControl['enabled'];
+      this.notification.isServiceEnabled = this.data.controls.serviceStatusControl['enabled'];
     }
-    
+
     this.cdr.detectChanges();
     requestAnimationFrame(() => this.rendered());
     this.seed++; // force render sockets
@@ -149,7 +149,7 @@ export class CustomNotificationNodeComponent implements OnChanges {
       event.preventDefault();
     }
     const btnText = this.notification.enable ? 'Disable' : 'Enable';
-    this.flowEditorService.serviceInfo.next({ name: this.notification.name,  buttonText: btnText});
+    this.flowEditorService.serviceInfo.next({ name: this.notification.name, buttonText: btnText });
   }
 
   navToAddNotificationPage() {
@@ -158,16 +158,16 @@ export class CustomNotificationNodeComponent implements OnChanges {
 
   openDropdown() {
     this.timeoutId = setTimeout(() => {
-      this.flowEditorService.nodeClick.next({nodeId: this.nodeId});
-      const dropDown = document.querySelector('#nodeDropdown-'+this.nodeId);
+      this.flowEditorService.nodeClick.next(this.data);
+      const dropDown = document.querySelector('#nodeDropdown-' + this.nodeId);
       dropDown.classList.add('is-active');
     }, 250);
   }
 
-  closeDropdown(){
+  closeDropdown() {
     clearTimeout(this.timeoutId);
-    const dropDown = document.querySelector('#nodeDropdown-'+this.nodeId);
-    if(dropDown.classList.contains('is-active')){
+    const dropDown = document.querySelector('#nodeDropdown-' + this.nodeId);
+    if (dropDown.classList.contains('is-active')) {
       dropDown.classList.remove('is-active');
     }
   }

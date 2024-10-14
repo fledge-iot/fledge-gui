@@ -19,8 +19,8 @@
         <i class="bi bi-arrow-clockwise"></i>
     </button>
     <hr class="m-0">
-    <button type="button" (click)="deleteAction()" class="button is-small tooltip has-tooltip-arrow has-tooltip-bottom"
-        data-tooltip="Delete">
+    <button type="button" (click)="deleteAction()" [disabled]="isDisabled"
+        class="button is-small tooltip has-tooltip-arrow has-tooltip-bottom" data-tooltip="Delete">
         <i class="bi bi-trash"></i>
     </button>
 </div>

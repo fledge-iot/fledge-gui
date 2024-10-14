@@ -220,3 +220,8 @@
   background: whitesmoke;
   cursor: not-allowed !important;
 }
+
+.selected-node {
+  border: 2px dashed #ADBCE6;
+  background-color: #F4F6F8;
+}

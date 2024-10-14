@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef } from "@angular/core";
+import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef, SimpleChanges } from "@angular/core";
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
@@ -100,7 +100,7 @@ export class CustomNodeComponent implements OnChanges {
     });
   }
 
-  ngOnChanges(): void {
+  ngOnChanges(changes: SimpleChanges): void {
     this.nodeId = this.data.id;
     if (this.data.label === 'South' || this.data.label === 'North') {
       if (this.source !== '') {
@@ -182,6 +182,9 @@ export class CustomNodeComponent implements OnChanges {
 
     if (this.data.label === 'Storage') {
       this.elRef.nativeElement.style.borderColor = "#999999";
+    }
+    if (!changes['data'] && this.source) {
+      this.flowEditorService.nodeClick.next(this.data);
     }
     this.cdr.detectChanges();
     requestAnimationFrame(() => this.rendered());
@@ -351,7 +354,7 @@ export class CustomNodeComponent implements OnChanges {
 
   openDropdown() {
     this.timeoutId = setTimeout(() => {
-      this.flowEditorService.nodeClick.next({ nodeId: this.nodeId });
+      this.flowEditorService.nodeClick.next(this.data);
       const dropDown = document.querySelector('#nodeDropdown-' + this.nodeId);
       dropDown.classList.add('is-active');
     }, 250);
