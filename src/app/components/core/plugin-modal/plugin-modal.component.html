@@ -2,7 +2,7 @@
   <div class="modal-background"></div>
   <div class="modal-card" [ngClass]="{'loading':!plugins.length && !stopLoading}">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-5">{{data.type}} Plugins</p>
+      <p class="modal-card-title is-size-5">{{data.type === 'Notify' ? 'Delivery' : data.type}} Plugins</p>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
@@ -10,8 +10,9 @@
         <form [formGroup]="pluginForm" validate>
           <div class="columns">
             <div class="column">
-              <ng-select #pluginName [items]="plugins" [searchable]="plugins.length" [placeholder]="placeholderText" notFoundText="No plugin available to install"
-                [loading]="!plugins.length && !stopLoading" bindLabel="pluginName" formControlName="pluginName">
+              <ng-select #pluginName [items]="plugins" [searchable]="plugins.length" [placeholder]="placeholderText"
+                notFoundText="No plugin available to install" [loading]="!plugins.length && !stopLoading"
+                bindLabel="pluginName" formControlName="pluginName">
               </ng-select>
             </div>
           </div>
@@ -19,10 +20,12 @@
             <div class="column">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
-                  <button class="button is-small" [ngClass]="{'loading':!plugins.length && !stopLoading}" (click)="toggleModal(false)">Cancel</button>
+                  <button class="button is-small" [ngClass]="{'loading':!plugins.length && !stopLoading}"
+                    (click)="toggleModal(false)">Cancel</button>
                 </p>
                 <p class="control">
-                  <button class="button is-small is-link" [ngClass]="{'loading':!plugins.length && !stopLoading}" (click)="installPlugin(pluginForm.value.pluginName)"
+                  <button class="button is-small is-link" [ngClass]="{'loading':!plugins.length && !stopLoading}"
+                    (click)="installPlugin(pluginForm.value.pluginName)"
                     [disabled]="!installButtonEnabled">Install</button>
                 </p>
               </div>
