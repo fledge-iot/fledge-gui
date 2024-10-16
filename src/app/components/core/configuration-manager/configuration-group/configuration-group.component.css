@@ -51,7 +51,7 @@
   position: relative;
 }
 
-.groupNav_contents {
+.nav {
   display: flex;
   float: left;
   padding-right: 20px;

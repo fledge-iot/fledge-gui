@@ -10,7 +10,9 @@
               <i class="fa fa-xs fa-bars"></i>&nbsp;
             </ng-container>
             {{filter}}
-            <p class="plugin-name help has-text-grey my-0" [ngClass]="{'ml-4': filterPipeline.length > 1 && rolesService.hasEditPermissionsOnPage(from)}">{{getFilter(filter)?.plugin}}</p>
+            <p class="plugin-name help has-text-grey my-0"
+              [ngClass]="{'ml-4': filterPipeline.length > 1 && rolesService.hasEditPermissionsOnPage(from)}">
+              {{getFilter(filter)?.plugin}}</p>
           </span>
           <a (click)="activeAccordion('list-item-'+ i)" class="card-header-icon">
             <span class="icon">
@@ -21,7 +23,7 @@
         <div class="card-content" hidden>
           <ng-container *ngIf="hasFilter(filter)">
             <div class="field">
-              <app-configuration-group #filterConfigComponent [category]="getFilter(filter)" [from]="from"
+              <app-configuration-group #filterConfigComponent [category]="getFilter(filter)" [from]="filter+'_'+from"
                 (changedConfigEvent)="getChangedFilterConfig($event, filter)"
                 (formStatusEvent)="validFilterConfigForm = $event">
               </app-configuration-group>

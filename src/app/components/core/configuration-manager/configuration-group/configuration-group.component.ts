@@ -48,9 +48,13 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     private cdrf: ChangeDetectorRef
   ) { }
 
+
   ngAfterViewInit() {
-    const groupNavContents = document.getElementById("groupNavContents");
-    this.tabs = new TabHeader(groupNavContents);
+    const idSuffix = this.from + '_' + this.sourceName;
+    const groupNavContents = document.getElementById("groupNavContents_" + idSuffix);
+    const groupNavigation = document.getElementById("group_navigation_" + idSuffix);
+    this.tabs = new TabHeader(groupNavContents, groupNavigation);
+
     window.addEventListener('resize', () => {
       this.tabs.setOverFlow();
     })
@@ -147,7 +151,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
   buildGroupOfItems(configItems) {
     configItems?.forEach(config => {
-      if(config.readonly != 'true'){
+      if (config.readonly != 'true') {
         if (!config.hasOwnProperty('value')) {
           config.value = config.default;
         }
@@ -157,7 +161,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
           // If same group exist, create new group with coonfig key and the description of the configuration
           group = { key: config.key, name: config.key, description: config.description }
         }
-  
+
         this.groups.push({ category: this.category.name, group, config: config, type: config.type, key: config.key, ...(config.order && { order: config.order }) });
       }
     });
