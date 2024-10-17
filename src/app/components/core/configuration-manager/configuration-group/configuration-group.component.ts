@@ -134,12 +134,22 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     this.groups = this.groups
       .sort((a, b) => {
         let groupOrderA = 1000000;
-        for(let item in a.config){
-          groupOrderA = a.config[item].order ? Math.min(+a.config[item].order, groupOrderA): groupOrderA;
+        if (['bucket', 'list', 'kvlist'].includes(a.type)) {
+          groupOrderA = a.order ? Math.min(+a.order, groupOrderA) : groupOrderA;
+        }
+        else {
+          for (let item in a.config) {
+            groupOrderA = a.config[item].order ? Math.min(+a.config[item].order, groupOrderA) : groupOrderA;
+          }
         }
         let groupOrderB = 1000000;
-        for(let item in b.config){
-          groupOrderB = b.config[item].order ? Math.min(+b.config[item].order, groupOrderB): groupOrderB;
+        if (['bucket', 'list', 'kvlist'].includes(b.type)) {
+          groupOrderB = b.order ? Math.min(+b.order, groupOrderB) : groupOrderB;
+        }
+        else {
+          for (let item in b.config) {
+            groupOrderB = b.config[item].order ? Math.min(+b.config[item].order, groupOrderB) : groupOrderB;
+          }
         }
         return ((groupOrderA - groupOrderB) || a.group.name.localeCompare(b.group.name));
       }).reduce((acc, e) => {
