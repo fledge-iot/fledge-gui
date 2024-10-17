@@ -183,7 +183,7 @@ export class NodeEditorComponent implements OnInit {
       resetNodes();
     }
     if (event.key === 'Delete') {
-      this.deleteSelectedConnection();
+      this.deleteSelected();
     }
   }
 
@@ -284,7 +284,7 @@ export class NodeEditorComponent implements OnInit {
     });
 
     this.nodeClickSubscription = this.flowEditorService.nodeClick.pipe(skip(1)).subscribe(data => {
-      this.isNodeSelect = data.selected;
+      this.isNodeSelect = data.label !== 'Storage' ? data.selected : !data.selected;
       if (this.isNodeSelect && !this.nodesToDelete?.some(node => (node.id == data.id)) && data.label !== 'Storage') {
         this.nodesToDelete.push({ id: data.id, 'label': data.label, 'name': data.controls.nameControl['name'] });
       }
@@ -734,9 +734,12 @@ export class NodeEditorComponent implements OnInit {
     return false;
   }
 
-  deleteSelectedConnection() {
+  deleteSelected() {
     if (this.selectedConnectionId) {
       deleteConnection(this.selectedConnectionId);
+    }
+    if (this.nodesToDelete.length !== 0) {
+      this.callDeleteAction();
     }
   }
 
@@ -1148,11 +1151,10 @@ export class NodeEditorComponent implements OnInit {
   }
 
   callRedoAction() {
-    resetNodes();
+    redoAction();
   }
 
   callDeleteAction() {
-    console.log('this.nodesToDelete', this.nodesToDelete);
     this.nodesToDelete.forEach(node => {
       if (node.label === 'South' || node.label === 'North') {
         this.dialogServiceName = node.name;

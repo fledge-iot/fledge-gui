@@ -1,26 +1,27 @@
 <div class="box is-radiusless canvas-toolbar p-0">
-    <button type="button" (click)="reload()" class="button is-small tooltip has-tooltip-arrow has-tooltip-bottom"
-        data-tooltip="Reload">
+    <button type="button" (click)="reload()" class="button is-small custom-tooltip">
+        <span class="tooltiptext"><strong>Reload</strong><br />Press Cmd R</span>
         <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
     </button>
     <hr class="m-0">
-    <button type="button" (click)="reset()" class="button is-small tooltip has-tooltip-arrow has-tooltip-bottom"
-        data-tooltip="Reset">
+    <button type="button" (click)="reset()" class="button is-small custom-tooltip">
+        <span class="tooltiptext"><strong>Reset</strong><br />Press space</span>
         <i class="bi bi-aspect-ratio"></i>
     </button>
     <hr class="m-0">
-    <button type="button" (click)="undoAction()" class="button is-small tooltip has-tooltip-arrow has-tooltip-bottom"
-        data-tooltip="Undo">
+    <button type="button" (click)="undoAction()" class="button is-small custom-tooltip">
+        <span class="tooltiptext"><strong>Undo</strong><br />Press Ctrl Z</span>
         <i class="bi bi-arrow-counterclockwise"></i>
     </button>
     <hr class="m-0">
-    <button type="button" (click)="redoAction()" class="button is-small tooltip has-tooltip-arrow has-tooltip-bottom"
-        data-tooltip="Redo">
+    <button type="button" (click)="redoAction()" class="button is-small custom-tooltip">
+        <span class="tooltiptext"><strong>Redo</strong><br />Press Ctrl Y</span>
         <i class="bi bi-arrow-clockwise"></i>
     </button>
     <hr class="m-0">
-    <button type="button" (click)="deleteAction()" [disabled]="isDisabled"
-        class="button is-small tooltip has-tooltip-arrow has-tooltip-bottom" data-tooltip="Delete">
+    <button type="button" (click)="deleteAction()" [disabled]="isDisabled" class="button is-small"
+        [ngClass]="{'custom-tooltip': !isDisabled}">
+        <span *ngIf="!isDisabled" class="tooltiptext"><strong>Delete</strong><br />Press delete</span>
         <i class="bi bi-trash"></i>
     </button>
 </div>

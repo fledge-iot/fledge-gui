@@ -34,3 +34,29 @@ hr {
 .box {
     border: 1px solid lightgray;
 }
+
+.custom-tooltip {
+    position: relative;
+}
+
+.custom-tooltip .tooltiptext {
+    visibility: hidden;
+    background: rgba(74, 74, 74, .9);
+    border-color: transparent transparent rgba(74, 74, 74, .9);
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 5px 8px;
+    position: absolute;
+    z-index: 1000;
+    top: auto;
+    bottom: -52px;
+    right: auto;
+    left: -50%;
+    margin: auto auto -5px -5px;
+    font-size: 0.9rem;
+}
+
+.custom-tooltip:hover .tooltiptext {
+    visibility: visible;
+}
