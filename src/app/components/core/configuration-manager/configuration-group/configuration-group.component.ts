@@ -17,6 +17,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   @Input() serviceStatus = false;
   @Input() from: string;
   @Input() sourceName: string;
+  @Input() isFilterConfigOpen: boolean;
 
   @Output() changedConfigEvent = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<boolean>();
@@ -74,6 +75,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   ngOnChanges() {
     this.categeryConfiguration();
     this.getChildConfigData();
+    if (this.isFilterConfigOpen) {
+      this.tabs.setOverFlow();
+    }
   }
 
   public updateCategroyConfig(config) {
