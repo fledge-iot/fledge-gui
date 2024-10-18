@@ -4,8 +4,8 @@
       <div class="btn-panel-container is-flex-direction-row-reverse">
         <div class="btn-panel upper-btn-panel">
           <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm" (addnewItem)="addListItem(true)"
-           (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
-           [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)"/>
+            (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+            [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)" />
         </div>
       </div>
     </ng-container>
@@ -23,9 +23,10 @@
               <div class="column is-6">
                 <input *ngIf="configuration.items == 'integer'" class="input is-small" type="text"
                   formControlName="value" [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum"
-                  appIntegerOnly>
+                  autocomplete="off" appIntegerOnly>
                 <input *ngIf="configuration.items == 'float'" class="input is-small" type="text" formControlName="value"
-                  [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appFloatOnly>
+                  [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" autocomplete="off"
+                  appFloatOnly>
                 <input *ngIf="configuration.items == 'string'" class="input is-small" type="text"
                   formControlName="value" [attr.maxLength]="configuration?.length">
                 <div *ngIf="configuration.items == 'enumeration'" class="select is-small">
@@ -72,7 +73,8 @@
               <p class="subtitle is-size-9">{{kvListItems?.controls[i]?.controls['key'].value}}</p>
             </div>
             <div class="btn-container">
-              <button class="card-header-icon tooltip has-tooltip-multiline has-tooltip-right has-tooltip-arrow" [attr.data-tooltip]="extractKvListValues(item.value.value) | json" (click)="toggleCard(i)">
+              <button class="card-header-icon tooltip has-tooltip-multiline has-tooltip-right has-tooltip-arrow"
+                [attr.data-tooltip]="extractKvListValues(item.value.value) | json" (click)="toggleCard(i)">
                 <span class="icon is-small">
                   <i class="bi bi-three-dots bi-sm" aria-hidden="true"></i>
                 </span>
@@ -123,12 +125,12 @@
                   (formStatusEvent)="formStatus($event, i)" [from]="from" [group]="group"></app-show-configuration>
               </div>
               <div class="column is-1 has-text-right"
-              [ngClass]="{'is-invisible': !rolesService.hasAccessPermission(configuration?.permissions)}">
+                [ngClass]="{'is-invisible': !rolesService.hasAccessPermission(configuration?.permissions)}">
                 <button class="delete my-3 is-small" (click)="removeListItem(i)"></button>
               </div>
               <div class="column is-1 has-text-right">
                 <button class="button is-small my-1 collapse-btn" (click)="toggleCard(i)"
-                [ngClass]="{'is-hidden':item.invalid || items[i].status == false}">
+                  [ngClass]="{'is-hidden':item.invalid || items[i].status == false}">
                   <span class="icon is-small toogle-icon" title="Collapse">
                     <i class="fas fa-xs fa-angle-up" aria-hidden="true"></i>
                   </span>
@@ -140,10 +142,12 @@
       </ng-template>
     </ng-container>
     <ng-container *ngIf="(configuration.items != 'object' || kvListItems.controls.length<=1); else objectButtonPanel">
-      <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
+      <ng-container
+        *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
         <div class="field">
           <p class="control">
-            <button class="button is-small mb-1" (click)="addListItem(false)" [disabled]="kvListItems.invalid || !validConfigurationForm"
+            <button class="button is-small mb-1" (click)="addListItem(false)"
+              [disabled]="kvListItems.invalid || !validConfigurationForm"
               [ngClass]="{'px-0 pt-1 is-ghost': configuration.items != 'object', 'mt-1': configuration.items == 'object'}">
               <span class="icon is-small mr-0">
                 <i class="bi bi-plus bi-sm"></i>
@@ -157,13 +161,14 @@
     <ng-template #objectButtonPanel>
       <div class="btn-panel-container is-flex-direction-row">
         <div class="btn-panel lower-btn-panel">
-          <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm" (addnewItem)="addListItem(false)"
-           (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
-           [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)"/>
+          <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm"
+            (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+            [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)" />
         </div>
       </div>
     </ng-template>
-    <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
+    <ng-container
+      *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
     </ng-container>
   </div>
 </div>

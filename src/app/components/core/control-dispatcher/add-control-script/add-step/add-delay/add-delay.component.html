@@ -5,14 +5,14 @@
   <div class="field-body">
     <div class="field is-narrow">
       <div class="control" *ngIf="rolesService.hasControlAccess(); else staticDuration">
-        <input class="input is-small name-control" type="number" name="duration" placeholder="duration"
-          [ngModel]="config?.duration" appNumberOnly (ngModelChange)="setDuration($event)"
+        <input class="input is-small name-control" name="duration" placeholder="duration" [ngModel]="config?.duration"
+          autocomplete="off" appIntegerOnly (ngModelChange)="setDuration($event)"
           [ngClass]="{'is-static':!rolesService.hasControlAccess()}" [readonly]="!rolesService.hasControlAccess()">
       </div>
       <ng-template #staticDuration>
         <div class="control" *ngIf="config.duration; else noDuration">
-          <input class="input is-small name-control" type="number" name="duration" [ngModel]="config?.duration"
-            (ngModelChange)="config.duration" appNumberOnly [ngClass]="{'is-static':!rolesService.hasControlAccess()}"
+          <input class="input is-small name-control" name="duration" [ngModel]="config?.duration" autocomplete="off"
+            (ngModelChange)="config.duration" appIntegerOnly [ngClass]="{'is-static':!rolesService.hasControlAccess()}"
             [readonly]="!rolesService.hasControlAccess()">
         </div>
         <ng-template #noDuration>
