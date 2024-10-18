@@ -222,5 +222,6 @@
 }
 
 :host:has(div.selected-node) {
-  border: 2px dashed #ADBCE6;
+  background-color: #fdf5e2;
+  outline: 0 none;
 }

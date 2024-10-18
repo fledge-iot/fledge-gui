@@ -284,15 +284,17 @@ export class NodeEditorComponent implements OnInit {
     });
 
     this.nodeClickSubscription = this.flowEditorService.nodeClick.pipe(skip(1)).subscribe(data => {
-      this.isNodeSelect = data.label !== 'Storage' ? data.selected : !data.selected;
-      if (this.isNodeSelect && !this.nodesToDelete?.some(node => (node.id == data.id)) && data.label !== 'Storage') {
-        this.nodesToDelete.push({ id: data.id, 'label': data.label, 'name': data.controls.nameControl['name'] });
+      if (data.label !== 'Storage' && data.label !== 'Filter') {
+        this.isNodeSelect = data.selected;
+        if (this.isNodeSelect && !this.nodesToDelete?.some(node => (node.id == data.id)) && data.label !== 'Storage') {
+          this.nodesToDelete.push({ id: data.id, 'label': data.label, 'name': data.controls.nameControl['name'] });
+        }
+        else if (!this.isNodeSelect && data.label !== 'Storage') {
+          const nodesToDelete = this.nodesToDelete.filter(node => node.id !== data.id);
+          this.nodesToDelete = nodesToDelete;
+        }
+        this.moveNodeToFront(data.id);
       }
-      else if (!this.isNodeSelect && data.label !== 'Storage') {
-        const nodesToDelete = this.nodesToDelete.filter(node => node.id !== data.id);
-        this.nodesToDelete = nodesToDelete;
-      }
-      this.moveNodeToFront(data.id);
     })
 
     this.isAlive = true;

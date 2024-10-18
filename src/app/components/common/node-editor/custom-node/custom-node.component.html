@@ -1,4 +1,4 @@
-<div [ngClass]="{'selected-node': data.selected && this.source}" class="node-container"
+<div [ngClass]="{'selected-node': data.selected && this.source && data.label !=='Filter'}" class="node-container"
   *ngIf="data.label!=='Storage'; else storageTemplate">
   <ng-container *ngIf="data.label!==''; else addServiceTemplate">
     <div class="title" data-testid="title">
