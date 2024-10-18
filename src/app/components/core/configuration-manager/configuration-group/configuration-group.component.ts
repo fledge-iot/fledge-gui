@@ -17,7 +17,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   @Input() serviceStatus = false;
   @Input() from: string;
   @Input() sourceName: string;
-  @Input() isFilterConfigOpen: boolean;
+  @Input() isFilterConfigExpanded: boolean;
 
   @Output() changedConfigEvent = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<boolean>();
@@ -52,7 +52,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     const idSuffix = this.from + '_' + this.sourceName;
-    const groupNavContents = document.getElementById("groupNavContents_" + idSuffix);
+    const groupNavContents = document.getElementById("nav_contents_" + idSuffix);
     const groupNavigation = document.getElementById("group_navigation_" + idSuffix);
     this.tabs = new TabHeader(groupNavContents, groupNavigation);
 
@@ -75,7 +75,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   ngOnChanges() {
     this.categeryConfiguration();
     this.getChildConfigData();
-    if (this.isFilterConfigOpen) {
+    if (this.isFilterConfigExpanded) {
       this.tabs.setOverFlow();
     }
   }
