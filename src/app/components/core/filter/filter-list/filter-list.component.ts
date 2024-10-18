@@ -23,7 +23,6 @@ import { DocService } from '../../../../services/doc.service';
 export class FilterListComponent {
 
   @ViewChild('filterConfigComponent') filterConfigComponent: ConfigurationGroupComponent;
-
   @Input() filterPipeline: string[] = [];
   @Input() service: string = '';
   @Input() from: string = '';
@@ -41,6 +40,8 @@ export class FilterListComponent {
   changedFilterConfig = new Map();
   filterAPICallsStack = []; // hold all filter API calls to pass in forkJoin
   deletedFilterPipeline: string[] = [];
+
+  isConfigExpanded = false;
 
   constructor(
     public rolesService: RolesService,
@@ -81,12 +82,14 @@ export class FilterListComponent {
       } else {
         last.classList.remove('is-active');
         lastActiveContentBody.hidden = true;
+        this.isConfigExpanded = false;
       }
     } else {
       const element = <HTMLElement>document.getElementById(id);
       const body = <HTMLElement>element.getElementsByClassName('card-content')[0];
       body.hidden = false;
       element.setAttribute('class', 'accordion card is-active');
+      this.isConfigExpanded = true;
     }
   }
 

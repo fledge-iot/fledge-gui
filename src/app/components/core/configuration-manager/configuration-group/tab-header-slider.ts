@@ -7,11 +7,12 @@ const SETTINGS = {
 
 export class TabHeader {
 
-  groupNavigation = document.getElementById("group_navigation");
+  groupNavigation: any;
   groupNavContents: any;
 
-  constructor(domElement) {
+  constructor(domElement, groupNavigation) {
     this.groupNavContents = domElement;
+    this.groupNavigation = groupNavigation;
     this.setOverFlow();
 
     let ticking = false;
