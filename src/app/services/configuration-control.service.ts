@@ -611,7 +611,8 @@ export class ConfigurationControlService {
             console.log('Invalid JSON, ', error);
           }
         }
-        return (conf.value ? conf.value : conf.default) !== changedConfiguration[conf.key];
+        // "" (empty) value is a valid value; use default value only when value is not available
+        return (conf.hasOwnProperty('value') ? conf.value : conf.default) !== changedConfiguration[conf.key];
       }
     });
 
