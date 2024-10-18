@@ -32,7 +32,6 @@ import { FlowEditorService } from './flow-editor.service';
   styleUrls: ['./node-editor.component.css']
 })
 export class NodeEditorComponent implements OnInit {
-
   @ViewChild(ServiceWarningComponent, { static: true }) notificationServiceWarningComponent: ServiceWarningComponent;
   @ViewChild(ServiceConfigComponent, { static: true }) notificationServiceConfigComponent: ServiceConfigComponent;
   @ViewChild("rete") container!: ElementRef;
@@ -107,6 +106,8 @@ export class NodeEditorComponent implements OnInit {
   selectedAsset = '';
   MAX_RANGE = MAX_INT_SIZE / 2;
   isSidebarCollapsed: boolean;
+  isNodeSelect = false;
+  nodesToDelete = [];
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -182,7 +183,7 @@ export class NodeEditorComponent implements OnInit {
       resetNodes();
     }
     if (event.key === 'Delete') {
-      this.deleteSelectedConnection();
+      this.deleteSelectedEntity();
     }
   }
 
@@ -283,7 +284,17 @@ export class NodeEditorComponent implements OnInit {
     });
 
     this.nodeClickSubscription = this.flowEditorService.nodeClick.pipe(skip(1)).subscribe(data => {
-      this.moveNodeToFront(data.nodeId);
+      if (data.label !== 'Storage' && data.label !== 'Filter') {
+        this.isNodeSelect = data.selected;
+        if (this.isNodeSelect && !this.nodesToDelete?.some(node => (node.id == data.id))) {
+          this.nodesToDelete.push({ id: data.id, 'label': data.label, 'name': data.controls.nameControl['name'] });
+        }
+        else if (!this.isNodeSelect) {
+          const nodesToDelete = this.nodesToDelete.filter(node => node.id !== data.id);
+          this.nodesToDelete = nodesToDelete;
+        }
+        this.moveNodeToFront(data.id);
+      }
     })
 
     this.isAlive = true;
@@ -725,9 +736,12 @@ export class NodeEditorComponent implements OnInit {
     return false;
   }
 
-  deleteSelectedConnection() {
+  deleteSelectedEntity() {
     if (this.selectedConnectionId) {
       deleteConnection(this.selectedConnectionId);
+    }
+    if (this.nodesToDelete.length !== 0) {
+      this.callDeleteAction();
     }
   }
 
@@ -957,6 +971,7 @@ export class NodeEditorComponent implements OnInit {
     }
   }
 
+
   deleteService() {
     if (this.from === 'notifications') {
       this.deleteNotification();
@@ -1129,9 +1144,30 @@ export class NodeEditorComponent implements OnInit {
     }
   }
 
-  reset() {
-    resetNodes();
+  // reset() {
+  //   resetNodes();
+  // }
+
+  // callUndoAction() {
+  //   undoAction();
+  // }
+
+  // callRedoAction() {
+  //   redoAction();
+  // }
+
+  callDeleteAction() {
+    this.nodesToDelete.forEach(node => {
+      if (node.label === 'South' || node.label === 'North') {
+        this.dialogServiceName = node.name;
+        this.deleteService();
+      } else {
+        this.filterName = node.name;
+        this.deleteFilterFromPipeline();
+      }
+    });
   }
+
   /**
      * Open Configure Service modal
      */

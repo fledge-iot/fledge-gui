@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef } from "@angular/core";
+import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef, SimpleChanges } from "@angular/core";
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
@@ -100,9 +100,15 @@ export class CustomNodeComponent implements OnChanges {
     });
   }
 
-  ngOnChanges(): void {
+  ngOnChanges(changes: SimpleChanges): void {
     this.nodeId = this.data.id;
     if (this.data.label === 'South' || this.data.label === 'North') {
+      if (this.elRef.nativeElement.children.length !== 0 && this.elRef.nativeElement.children[0].classList.contains('selected-node')) {
+        let boxShadowValue = this.data.label === "South" ? "0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px #B6D7A8" : "0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px #C781BB";
+        this.elRef.nativeElement.style.boxShadow = boxShadowValue;
+      } else {
+        this.elRef.nativeElement.style.removeProperty('box-shadow');
+      }
       if (this.source !== '') {
         this.isServiceNode = true;
         this.elRef.nativeElement.style.borderColor = this.data.label === 'South' ? "#B6D7A8" : '#C781BB'
@@ -165,6 +171,12 @@ export class CustomNodeComponent implements OnChanges {
     }
 
     if (!this.nodeTypes.includes(this.data?.label) && !isEmpty(this.data.controls)) {
+      if (this.elRef.nativeElement.children.length !== 0 && this.elRef.nativeElement.children[0].classList.contains('selected-node')) {
+        let boxShadowValue = this.data.label === "South" ? "0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px #B6D7A8" : "0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgb(249, 203, 156)";
+        this.elRef.nativeElement.style.boxShadow = boxShadowValue;
+      } else {
+        this.elRef.nativeElement.style.removeProperty('box-shadow');
+      }
       if (this.filter.name == this.data.label) {
         this.filter.enabled = this.data?.controls?.enabledControl['enabled'];
         if (this.filter.enabled === 'true') {
@@ -182,6 +194,9 @@ export class CustomNodeComponent implements OnChanges {
 
     if (this.data.label === 'Storage') {
       this.elRef.nativeElement.style.borderColor = "#999999";
+    }
+    if (!changes['data'] && this.source) {
+      this.flowEditorService.nodeClick.next(this.data);
     }
     this.cdr.detectChanges();
     requestAnimationFrame(() => this.rendered());
@@ -351,7 +366,7 @@ export class CustomNodeComponent implements OnChanges {
 
   openDropdown() {
     this.timeoutId = setTimeout(() => {
-      this.flowEditorService.nodeClick.next({ nodeId: this.nodeId });
+      this.flowEditorService.nodeClick.next(this.data);
       const dropDown = document.querySelector('#nodeDropdown-' + this.nodeId);
       dropDown.classList.add('is-active');
     }, 250);
@@ -367,7 +382,6 @@ export class CustomNodeComponent implements OnChanges {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    // this.addFilterSubscription?.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }

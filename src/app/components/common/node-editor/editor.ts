@@ -218,7 +218,6 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     }
   }
   setCustomBackground(area) // Set custom background
-
   if (data.from !== 'notifications') {
     createNodesAndConnections(socket, editor, arrange, area, data, connectionEvents);
   } else {
