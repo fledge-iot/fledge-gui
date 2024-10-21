@@ -124,8 +124,8 @@
                 </label>
                 <div class="columns">
                   <div class="column">
-                    <input id="repeat_day" class="input is-small" type='number' appNumberOnly min="0" max="365"
-                      placeholder="days" formControlName="repeatDay" required>
+                    <input id="repeat_day" class="input is-small" appIntegerOnly min="0" max="365" placeholder="days"
+                      autocomplete="off" formControlName="repeatDay" required>
                     <input id="repeat_time" class="input is-small" type='text' placeholder="HH:mm:ss"
                       formControlName="repeat" mask='00:00:00' (input)="matchTimeTypeField($event, 'repeat')" required>
                   </div>
@@ -241,8 +241,8 @@
     <footer class="modal-card-foot">
       <button type="button" id="cancel" class="button is-small" (click)="navToSchedulesPage()">Cancel</button>
       <button *ngIf="rolesService.hasEditPermissions()" id="save" type="submit" class="button is-info is-small"
-        [disabled]="form?.invalid || (!form.dirty && form.pristine)"
-        (click)="form?.valid && updateSchedule()" [appDisableUntilResponse]="reenableButton">Save</button>
+        [disabled]="form?.invalid || (!form.dirty && form.pristine)" (click)="form?.valid && updateSchedule()"
+        [appDisableUntilResponse]="reenableButton">Save</button>
     </footer>
   </div>
 </div>

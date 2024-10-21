@@ -196,13 +196,13 @@
           <label class="label">Readings Graph Default Duration</label>
           <div class="field has-addons">
             <div class="control column is-5 no-padding">
-              <input class="input is-small" type="number" #readings_graph_default_time min="1" [max]="getMaxTimeForReadings()"
-                appIntegerOnly>
+              <input class="input is-small" type="number" #readings_graph_default_time min="1" autocomplete="off"
+                [max]="getMaxTimeForReadings()" appIntegerOnly>
             </div>
             <div id="readings-graph-default-duration" class="dropdown control column is-7 no-padding">
               <div class="dropdown-trigger">
-                <button class="button is-small has-background-white-ter" aria-haspopup="true" aria-controls="dropdown-menu"
-                  (click)="toggleDropDown('readings-graph-default-duration')">
+                <button class="button is-small has-background-white-ter" aria-haspopup="true"
+                  aria-controls="dropdown-menu" (click)="toggleDropDown('readings-graph-default-duration')">
                   <span>{{selectedUnit}}</span>
                   <span class="icon is-small">
                     <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
@@ -243,7 +243,7 @@
             <label class="label">Flow Editor</label>
             <div class="control">
               <input type="checkbox" (click)="setFlowEditorStatus($event.target.checked)"
-              [checked]="flowEditorService.getFlowEditorStatus()">
+                [checked]="flowEditorService.getFlowEditorStatus()">
             </div>
           </div>
         </ng-container>
@@ -253,7 +253,7 @@
           <label class="label">Flow Editor</label>
           <div class="control">
             <input type="checkbox" (click)="setFlowEditorStatus($event.target.checked)"
-            [checked]="flowEditorService.getFlowEditorStatus()">
+              [checked]="flowEditorService.getFlowEditorStatus()">
           </div>
         </div>
       </div>
