@@ -25,7 +25,7 @@
             <div class="field">
               <app-configuration-group #filterConfigComponent [category]="getFilter(filter)" [from]="filter+'_'+from"
                 (changedConfigEvent)="getChangedFilterConfig($event, filter)"
-                [isFilterConfigExpanded]="isConfigExpanded" (formStatusEvent)="validFilterConfigForm = $event">
+                [recalculateTabsOverflow]="isConfigExpanded" (formStatusEvent)="validFilterConfigForm = $event">
               </app-configuration-group>
             </div>
             <div class="field">

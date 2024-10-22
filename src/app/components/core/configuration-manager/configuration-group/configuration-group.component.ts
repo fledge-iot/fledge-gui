@@ -17,7 +17,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   @Input() serviceStatus = false;
   @Input() from: string;
   @Input() sourceName: string;
-  @Input() isFilterConfigExpanded: boolean;
+  @Input() recalculateTabsOverflow: boolean;
 
   @Output() changedConfigEvent = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<boolean>();
@@ -75,7 +75,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   ngOnChanges() {
     this.categeryConfiguration();
     this.getChildConfigData();
-    if (this.isFilterConfigExpanded) {
+    if (this.recalculateTabsOverflow) {
       this.tabs.setOverFlow();
     }
   }

@@ -72,6 +72,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   validDeliveryConfigurationForm = true;
 
   public reenableButton = new EventEmitter<boolean>(false);
+  isTabsNavVisible = false;
 
   constructor(private formBuilder: UntypedFormBuilder,
     private notificationService: NotificationsService,
@@ -199,6 +200,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
 
     const nextContent = <HTMLElement>document.getElementById('c-' + sId);
     if (nextContent != null) {
+      this.isTabsNavVisible = sId == 3 || sId == 5 ? true : false;
       nextContent.setAttribute('class', 'box step-content  is-active');
     }
 
@@ -240,6 +242,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     const id = first.getAttribute('id');
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
+    this.isTabsNavVisible = +id == 2 || +id == 4 ? true : false;
+
     switch (+id) {
       case 1:
         this.reenableButton.emit(false);
