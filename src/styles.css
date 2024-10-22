@@ -456,7 +456,7 @@ span.tooltip {
   font-size: 0.9rem !important;
 }
 
-.input, .textarea, .select select, .CodeMirror-wrap {
+.input, .textarea, .select select, .CodeMirror-wrap, .card {
   border-radius: 2px !important;
 }
 
