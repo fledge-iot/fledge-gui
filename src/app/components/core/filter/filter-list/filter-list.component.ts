@@ -41,7 +41,7 @@ export class FilterListComponent {
   filterAPICallsStack = []; // hold all filter API calls to pass in forkJoin
   deletedFilterPipeline: string[] = [];
 
-  isConfigExpanded = false;
+  isConfigToggled: boolean;
 
   constructor(
     public rolesService: RolesService,
@@ -68,6 +68,7 @@ export class FilterListComponent {
   }
 
   activeAccordion(id: string) {
+    this.isConfigToggled = !this.isConfigToggled
     const last = <HTMLElement>document.getElementsByClassName('accordion card is-active')[0];
     if (last !== undefined) {
       const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('card-content')[0];
@@ -82,14 +83,12 @@ export class FilterListComponent {
       } else {
         last.classList.remove('is-active');
         lastActiveContentBody.hidden = true;
-        this.isConfigExpanded = false;
       }
     } else {
       const element = <HTMLElement>document.getElementById(id);
       const body = <HTMLElement>element.getElementsByClassName('card-content')[0];
       body.hidden = false;
       element.setAttribute('class', 'accordion card is-active');
-      this.isConfigExpanded = true;
     }
   }
 

@@ -18,6 +18,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   @Input() from: string;
   @Input() sourceName: string;
   @Input() recalculateTabsOverflow: boolean;
+  @Input() isFilterList: boolean;
 
   @Output() changedConfigEvent = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<boolean>();
@@ -75,7 +76,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   ngOnChanges() {
     this.categeryConfiguration();
     this.getChildConfigData();
-    if (this.recalculateTabsOverflow) {
+    if (this.isFilterList && this.recalculateTabsOverflow !== undefined) {
+      this.tabs.setOverFlow();
+    } else if (this.recalculateTabsOverflow) {
       this.tabs.setOverFlow();
     }
   }

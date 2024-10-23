@@ -24,8 +24,8 @@
           <ng-container *ngIf="hasFilter(filter)">
             <div class="field">
               <app-configuration-group #filterConfigComponent [category]="getFilter(filter)" [from]="filter+'_'+from"
-                (changedConfigEvent)="getChangedFilterConfig($event, filter)"
-                [recalculateTabsOverflow]="isConfigExpanded" (formStatusEvent)="validFilterConfigForm = $event">
+                (changedConfigEvent)="getChangedFilterConfig($event, filter)" [isFilterList]="true"
+                [recalculateTabsOverflow]="isConfigToggled" (formStatusEvent)="validFilterConfigForm = $event">
               </app-configuration-group>
             </div>
             <div class="field">
