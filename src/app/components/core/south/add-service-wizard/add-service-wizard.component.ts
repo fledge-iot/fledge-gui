@@ -49,6 +49,8 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     type: this.serviceType,
     pluginName: ''
   };
+  isTabsNavVisible = false;
+
   constructor(private formBuilder: UntypedFormBuilder,
     private servicesApiService: ServicesApiService,
     private pluginService: PluginService,
@@ -113,6 +115,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
 
     const nextContent = <HTMLElement>document.getElementById('c-' + sId);
     if (nextContent != null) {
+      this.isTabsNavVisible = +id == 1 ? true : false;
       nextContent.setAttribute('class', 'box step-content  is-active');
     }
 
@@ -168,6 +171,8 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     const id = first.getAttribute('id');
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
+    this.isTabsNavVisible = +id == 1 ? true : false;
+
     switch (+id) {
       case 1:
         // To verify if service with given name already exist

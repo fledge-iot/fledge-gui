@@ -21,7 +21,8 @@
     <div class="steps-content">
       <form [formGroup]="serviceForm" validate>
         <div class="box step-content is-active" id="c-1">
-          <span *ngIf="plugin" class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
+          <span *ngIf="plugin"
+            class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
             data-tooltip="Help" (click)="goToLink()">
             <i class="far fa-question-circle"></i>
           </span>
@@ -85,7 +86,8 @@
               <div class="field">
                 <div class="control">
                   <input class="input" id="name" autocomplete="off" type="text" placeholder="name"
-                    formControlName="name" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN">
+                    formControlName="name" title="No single quotes and double quotes!"
+                    [pattern]="QUOTATION_VALIDATION_PATTERN">
                   <small
                     *ngIf="serviceForm.controls['name'].hasError('required') && serviceForm.controls['name'].touched"
                     class="help is-danger level-left">Service name is required</small>
@@ -96,10 +98,10 @@
         </div>
         <div class="box step-content" id="c-2">
           <app-configuration-group *ngIf="configurationData" [category]="configurationData"
-            (changedConfigEvent)="getChangedConfig($event)" [from]="'add-service-form'"
-            (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
+            [recalculateTabsOverflow]="isTabsNavVisible" (changedConfigEvent)="getChangedConfig($event)"
+            [from]="'add-service-form'" (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
         </div>
-        <div class="box step-content" id="c-3">    
+        <div class="box step-content" id="c-3">
           <div class="column">
             <div class="config-div">
               <div class="field is-horizontal">
@@ -126,7 +128,8 @@
       </div>
       <div class="steps-action">
         <button (click)="moveNext()" data-nav="next" class="button is-link" id="next"
-          [disabled]="serviceForm.invalid || !validConfigurationForm" [appDisableUntilResponse]="reenableButton">Next</button>
+          [disabled]="serviceForm.invalid || !validConfigurationForm"
+          [appDisableUntilResponse]="reenableButton">Next</button>
       </div>
     </div>
   </div>
