@@ -45,7 +45,8 @@
               "./node_modules/animate.css/animate.css",
               "./node_modules/@ng-select/ng-select/themes/default.theme.css",
               "./node_modules/bulma-quickview/dist/css/bulma-quickview.min.css",
-              "src/styles.css"
+              "src/styles.css",
+              "bulma-custom.css"
             ],
             "scripts": [
               "./node_modules/plotly.js/dist/plotly.js",
@@ -126,7 +127,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "bulma-custom.css"
             ],
             "scripts": []
           }

@@ -17,7 +17,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "run:all": "node node_modules/@angular-architects/module-federation/src/server/mf-dev-server.js"
+    "run:all": "node node_modules/@angular-architects/module-federation/src/server/mf-dev-server.js",
+    "build-bulma": "sass --load-path=node_modules bulma-custom.scss bulma-custom.css"
   },
   "private": true,
   "dependencies": {
@@ -69,6 +70,7 @@
     "rete-render-utils": "^2.0.1",
     "rete-scopes-plugin": "^2.0.0",
     "rxjs": "~6.6.6",
+    "sass": "^1.80.3",
     "tslib": "^2.3.0",
     "web-worker": "^1.2.0",
     "zone.js": "~0.13.3"

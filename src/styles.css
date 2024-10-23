@@ -507,4 +507,20 @@ span.tooltip {
 .content table td {
   padding: 0.25em 0.5em;
 }
+
+.card-header a, .card-header button, .dropdown a {
+  box-shadow: none;
+}
+
+.modal-card-foot {
+  border-top: 1px solid #dbdbdb;
+}
+
+.modal-card-head {
+  border-bottom: 1px solid #dbdbdb;
+}
+
+.modal-card-foot .button:not(:last-child) {
+  margin-right: .5em;
+}
 /*****************/
