@@ -1,0 +1,23 @@
+.box button {
+    vertical-align: middle;
+    background: none;
+    border: none;
+}
+
+.box button:hover {
+    background-color: whitesmoke;
+}
+
+button,
+hr {
+    vertical-align: middle;
+}
+
+hr {
+    background: darkgrey;
+    border: 0;
+    display: inline-block;
+    height: 0.8rem;
+    width: 1px;
+    opacity: 0.4;
+}
