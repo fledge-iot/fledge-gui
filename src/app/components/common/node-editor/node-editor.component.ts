@@ -1173,6 +1173,18 @@ export class NodeEditorComponent implements OnInit {
     applyContentReordering(nodeId);
   }
 
+  reset() {
+    resetNodes();
+  }
+
+  callUndoAction() {
+    undoAction();
+  }
+
+  callRedoAction() {
+    redoAction();
+  }
+
   ngOnDestroy() {
     this.isAlive = false;
     this.subscription.unsubscribe();
