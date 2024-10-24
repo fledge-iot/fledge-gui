@@ -106,7 +106,7 @@ export class NodeEditorComponent implements OnInit {
   selectedAsset = '';
   MAX_RANGE = MAX_INT_SIZE / 2;
   isSidebarCollapsed: boolean;
-  isNodeSelect = false;
+  isNodeSelected = false;
   nodesToDelete = [];
 
   constructor(public injector: Injector,
@@ -285,11 +285,11 @@ export class NodeEditorComponent implements OnInit {
 
     this.nodeClickSubscription = this.flowEditorService.nodeClick.pipe(skip(1)).subscribe(data => {
       if (data.label !== 'Storage' && data.label !== 'Filter') {
-        this.isNodeSelect = data.selected;
-        if (this.isNodeSelect && !this.nodesToDelete?.some(node => (node.id == data.id))) {
+        this.isNodeSelected = data.selected;
+        if (this.isNodeSelected && !this.nodesToDelete?.some(node => (node.id == data.id))) {
           this.nodesToDelete.push({ id: data.id, 'label': data.label, 'name': data.controls.nameControl['name'] });
         }
-        else if (!this.isNodeSelect) {
+        else if (!this.isNodeSelected) {
           const nodesToDelete = this.nodesToDelete.filter(node => node.id !== data.id);
           this.nodesToDelete = nodesToDelete;
         }
@@ -741,7 +741,7 @@ export class NodeEditorComponent implements OnInit {
       deleteConnection(this.selectedConnectionId);
     }
     if (this.nodesToDelete.length !== 0) {
-      this.callDeleteAction();
+      this.onDeleteAction();
     }
   }
 
@@ -1144,17 +1144,9 @@ export class NodeEditorComponent implements OnInit {
     }
   }
 
-  // reset() {
-  //   resetNodes();
-  // }
-
-  // callUndoAction() {
-  //   undoAction();
-  // }
-
-  // callRedoAction() {
-  //   redoAction();
-  // }
+  onDeleteAction() {
+    this.openModal('from-toolbar-dialog');
+  }
 
   callDeleteAction() {
     this.nodesToDelete.forEach(node => {
@@ -1166,6 +1158,7 @@ export class NodeEditorComponent implements OnInit {
         this.deleteFilterFromPipeline();
       }
     });
+    this.closeModal('from-toolbar-dialog');
   }
 
   /**

@@ -225,3 +225,7 @@
   background-color: #fdf5e2;
   outline: 0 none;
 }
+
+.context-menu-btn, .context-menu-btn:hover {
+  background-color: transparent;
+}
