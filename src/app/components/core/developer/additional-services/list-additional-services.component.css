@@ -15,6 +15,7 @@ tr:hover .btn-delete {
     background: none;
     border: none;
     font-size: 0.85rem;
+    box-shadow: none;
 }
 
 .service-table {
@@ -23,6 +24,7 @@ tr:hover .btn-delete {
 
 #refresh-check {
     margin-left: 3px;
+    box-shadow: none;
 }
   
 .breadcrumb {

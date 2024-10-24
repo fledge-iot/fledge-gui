@@ -3,12 +3,13 @@
     <header class="card-header">
       <div id="north-tasks" class="card-header-title">
         North Instances
-        <button *ngIf="!isAlive" (click)="getNorthTasks(true)" class="button is-small" title="Reload" id="refresh-check">
+        <button *ngIf="!isAlive" (click)="getNorthTasks(true)" class="button is-small" title="Reload"
+          id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
-      <a *ngIf="rolesService?.hasEditPermissions()" id="add_task" class="fix-pad button is-light"
-        (click)="addNorthInstance()" role="'admin'">
+      <a *ngIf="rolesService?.hasEditPermissions()" id="add_task" class="button is-light" (click)="addNorthInstance()"
+        role="'admin'">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>

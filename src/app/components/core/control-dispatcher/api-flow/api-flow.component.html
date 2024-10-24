@@ -9,7 +9,7 @@
                     <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
                 </button>
             </div>
-            <a *ngIf="rolesService.hasControlAccess()" class="fix-pad button is-light"
+            <a *ngIf="rolesService.hasControlAccess()" class="button is-light"
                 [routerLink]="['/control-dispatcher/entry-points/add']">
                 <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
                 <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
@@ -35,8 +35,8 @@
                     <ng-container *ngFor="let ep of apiFlows; let i = index">
                         <tr id="select{{i}}">
                             <td class="align-content">
-                                <a *ngIf="ep.permitted && rolesService.hasEditPermissions()" class="button is-ghost ep-name mx-0 px-0"
-                                    (click)="getAndExecuteAPIFlow(ep.name);">
+                                <a *ngIf="ep.permitted && rolesService.hasEditPermissions()"
+                                    class="button is-ghost ep-name mx-0 px-0" (click)="getAndExecuteAPIFlow(ep.name);">
                                     {{ep.name}}
                                 </a>
                                 <span *ngIf="!ep.permitted || !rolesService.hasEditPermissions()">{{ep.name}} </span>

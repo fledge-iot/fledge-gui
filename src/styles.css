@@ -174,7 +174,7 @@ table.scroll tbody {
 }
 
 .fix-pad {
-  padding-top: 1.0rem;
+  padding-top: 0.9rem !important;
 }
 
 @media only screen and (max-width: 768px) {
@@ -456,7 +456,7 @@ span.tooltip {
   font-size: 0.9rem !important;
 }
 
-.input, .textarea, .select select, .CodeMirror-wrap, .card {
+.input, .textarea, .select select, .CodeMirror-wrap, .card, .dropdown .button {
   border-radius: 2px !important;
 }
 
@@ -508,8 +508,8 @@ span.tooltip {
   padding: 0.25em 0.5em;
 }
 
-.card-header a, .card-header button, .dropdown a {
-  box-shadow: none;
+.card-header a, .card-header button, .dropdown a, nav .button, .modal-card-head .button {
+  box-shadow: none !important;
 }
 
 .modal-card-foot {
@@ -522,5 +522,10 @@ span.tooltip {
 
 .modal-card-foot .button:not(:last-child) {
   margin-right: .5em;
+}
+
+.button.is-link[disabled] {
+  background-color: transparent !important;
+  color: #485fc7 !important;
 }
 /*****************/

@@ -3326,7 +3326,7 @@ a.box:active {
 
 .button {
   --bulma-button-family: false;
-  --bulma-button-weight: var(--bulma-weight-medium);
+  --bulma-button-weight: 400;
   --bulma-button-border-color: var(--bulma-border);
   --bulma-button-border-style: solid;
   --bulma-button-border-width: var(--bulma-control-border-width);
