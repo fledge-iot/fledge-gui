@@ -1,3 +1,26 @@
+## v2.5.0next [20xx-xx-xx]
+
+### Added
+- [FOGL-8942]: The ordering of the tabs in configuration user interface is no longer alphabetical, but controlled by the configuration category itself.[#471](https://github.com/fledge-iot/fledge-gui/pull/471)
+- [FOGL-8990]: The GUI rendering of lists in the configuration options has been improved.[#462](https://github.com/fledge-iot/fledge-gui/pull/462)
+- [FOGL-8841]: The user interface now hides configuration options the user does not have permission to change. [#437](https://github.com/fledge-iot/fledge-gui/pull/437) 
+
+### Fixed
+- [FOGL-8588]: Filter installation.[#467](https://github.com/fledge-iot/fledge-gui/pull/467)
+- [FOGL-9129]: Allow to choose a filter plugin, when clicked on + icon of filter node.[#466](https://github.com/fledge-iot/fledge-gui/pull/466)
+- [FOGL-9080]: Missing child categories added in category tree for configure step type while creating control script.[#460](https://github.com/fledge-iot/fledge-gui/pull/460)
+- [FOGL-9083]: Control API entry point access issue for less privileged user. [#458](https://github.com/fledge-iot/fledge-gui/pull/458)
+- [FOGL-9068]: Allow retrigger_time of 0 for notification. [#455](https://github.com/fledge-iot/fledge-gui/pull/455)
+- [FOGL-8803]: Deletion of persisted data in Developer mode. [#442](https://github.com/fledge-iot/fledge-gui/pull/442)
+- [FOGL-8891]: Logout active session issue on user profile page. [#441](https://github.com/fledge-iot/fledge-gui/pull/441)
+
+### Others
+- Visual Flow interface improvemnts 
+  - Delete option on connection line between nodes
+  - Undo/Redo functionality
+  - Filter drag & drop on connection line directly 
+- UI/UX improvement and various functional bug fixes.
+
 ## v2.5.0 [2024-06-26]
 
 ### Added
@@ -17,7 +40,6 @@
 ### Others
 - New & updated Brand logo & favicon [#403](https://github.com/fledge-iot/fledge-gui/pull/403)
 - UI/UX improvement and various functional bug fixes.
-
 
 
 ## v2.4.0 [2024-04-17]
