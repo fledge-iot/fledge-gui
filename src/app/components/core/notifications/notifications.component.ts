@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
-
+import { map } from 'rxjs/operators';
 import {
   AlertService, NotificationsService, SharedService, ProgressBarService, SchedulesService, ServicesApiService, RolesService
 } from '../../../services';
@@ -11,7 +11,7 @@ import { AdditionalServicesUtils } from '../developer/additional-services/additi
 import { AlertDialogComponent } from '../../common/alert-dialog/alert-dialog.component';
 import { NotificationModalComponent } from './notification-modal/notification-modal.component';
 import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.component';
-import { NotificationServiceWarningComponent } from './notification-service-warning/notification-service-warning.component';
+import { ServiceWarningComponent } from './service-warning/service-warning.component';
 import { ServiceConfigComponent } from './service-config/service-config.component';
 import { DocService } from '../../../services/doc.service';
 
@@ -23,30 +23,27 @@ import { DocService } from '../../../services/doc.service';
 })
 
 export class NotificationsComponent implements OnInit, OnDestroy {
-  isNotificationServiceAvailable: boolean;
-  isNotificationServiceEnabled: boolean;
   isNotificationModalOpen = false;
-  notificationServiceName = '';
   notificationInstances = [];
   notification: any;
   viewPort: any = '';
-  serviceInfo: {};
-  isServiceAvailable = false;
 
   public notificationServiceRecord: any;
-  public notificationServiceInstalled = false;
   private subscription: Subscription;
   private modalSub: Subscription;
   private viewPortSubscription: Subscription;
   private serviceDetailsSubscription: Subscription;
+  private paramsSubscription: Subscription;
   public showSpinner = false;
 
   isNotificationServiceEnable: boolean;
 
+  serviceInfo = { added: false, isEnabled: true, name: '', isInstalled: false, process: 'notification' };
+
   @ViewChild(NotificationModalComponent, { static: true }) notificationModal: NotificationModalComponent;
   @ViewChild(AlertDialogComponent) child: AlertDialogComponent;
   @ViewChild(ViewLogsComponent) viewLogsComponent: ViewLogsComponent;
-  @ViewChild(NotificationServiceWarningComponent, { static: true }) notificationServiceWarningComponent: NotificationServiceWarningComponent;
+  @ViewChild(ServiceWarningComponent, { static: true }) notificationServiceWarningComponent: ServiceWarningComponent;
   @ViewChild(ServiceConfigComponent, { static: true }) notificationServiceConfigComponent: ServiceConfigComponent;
 
   constructor(
@@ -57,27 +54,25 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     public alertService: AlertService,
     public router: Router,
     public docService: DocService,
+    public activatedRoute: ActivatedRoute,
     private sharedService: SharedService,
     private additionalServicesUtils: AdditionalServicesUtils,
     public rolesService: RolesService) {
-      this.additionalServicesUtils.getAllServiceStatus(false);
-    }
+    // If we are redirecting back after enabling/disabling/adding the service then no need to make all calls again
+    this.paramsSubscription = this.activatedRoute.paramMap
+      .pipe(map(() => window.history.state)).subscribe(data => {
+        if (!data?.shouldSkipCalls) {
+          this.additionalServicesUtils.getAllServiceStatus(false, 'notification');
+        }
+      })
+    // Issue may cause by refreshing the page because of old state data, so need to update history state
+    history.replaceState({ shouldSkipCalls: false }, '');
+  }
 
   ngOnInit() {
     this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
-      if (service) {
-        const notificationServiceDetail = service.find(s => s.process == 'notification');
-        if (notificationServiceDetail) {
-          this.isNotificationServiceEnabled = ["shutdown", "disabled", "installed"].includes(notificationServiceDetail?.state) ? false : true;
-          this.notificationServiceInstalled = true;
-          this.isNotificationServiceAvailable = notificationServiceDetail?.added;
-          this.notificationServiceName = notificationServiceDetail.name;
-        } else {
-          this.isNotificationServiceEnabled = false;
-          this.notificationServiceInstalled = false;
-          this.isNotificationServiceAvailable = false;
-          this.notificationServiceName = '';
-        }       
+      if (service.installed) {
+        this.serviceInfo = service.installed;
       }
     });
     this.getNotificationInstance();
@@ -93,7 +88,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   refreshServiceInfo() {
-    this.additionalServicesUtils.getAllServiceStatus(false);
+    this.additionalServicesUtils.getAllServiceStatus(false, 'notification');
   }
 
   public getNotificationInstance() {
@@ -136,7 +131,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.isNotificationModalOpen = true;
     this.notification = instance;
     this.notification.notificationEnabled = true;
-    if (this.isNotificationServiceAvailable && !this.isNotificationServiceEnabled) {
+    if (this.serviceInfo.added && !this.serviceInfo.isEnabled) {
       this.notification.notificationEnabled = false;
     }
     this.notificationModal.notification = instance;
@@ -147,19 +142,12 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   addNotificationInstance() {
     this.router.navigate(['/notification/add']);
   }
-  
+
   /**
    * Open Configure Service modal
    */
-   openServiceConfigureModal() {
-    const serviceInfo = {
-      name: this.notificationServiceName,
-      isEnabled: this.isNotificationServiceEnabled,
-      added: this.isNotificationServiceAvailable,
-      process: 'notification',
-      isInstalled: this.notificationServiceInstalled
-    }
-    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
+  openServiceConfigureModal() {
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo } });
   }
 
   goToLink(urlSlug: string) {
@@ -173,5 +161,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
     this.viewPortSubscription.unsubscribe();
     this.serviceDetailsSubscription.unsubscribe();
+    this.paramsSubscription.unsubscribe();
   }
 }

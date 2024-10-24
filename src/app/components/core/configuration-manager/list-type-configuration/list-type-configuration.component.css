@@ -1,0 +1,93 @@
+.box {
+    border-radius: 2px !important;
+    box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.07), 0 0px 0 1px rgba(10, 10, 10, 0.02) !important;
+}
+
+.toogle-icon {
+    display: inline-flex;
+    height: 1.2em;
+    width: 1.2em;
+    background-color: whitesmoke;
+    border-radius: 50%;
+}
+
+.card-header-title {
+    padding: 0.5rem 0.75rem;
+    flex-grow: unset;
+}
+
+.card-content {
+    padding: 0.5rem 1rem 0 1rem;
+    margin-bottom: -0.25rem;
+    overflow: hidden;
+}
+
+.card-shadow {
+    box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.01), 0 0px 0 1px rgba(10, 10, 10, 0.02) !important;
+}
+
+.card-header-shadow {
+    box-shadow: 0 0.125em 0.25em rgba(10, 10, 10, 0.01);
+}
+
+.collapse-btn {
+    border: none;
+    background-color: transparent;
+}
+
+.btn-container {
+    width: 70% !important;
+    display: flex;
+    justify-content: space-between;
+}
+
+.help {
+    font-weight: 400;
+    margin-top: 0;
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card {
+  border-bottom: 1px dashed whitesmoke;
+  border-radius: 2px;
+}
+
+.card:hover {
+    background-color: rgb(250, 250, 255);
+}
+
+.key-container {
+  width: 71% !important;
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn-panel {
+  visibility: hidden;
+}
+
+.lower-btn-panel {
+  margin-top: -6px;
+}
+
+.upper-btn-panel {
+  margin-top: -11px;
+}
+
+.btn-panel-container {
+  height: 15px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+}
+
+:host:hover .btn-panel {
+  visibility: visible;
+}
+
+.error {
+  border: 1px solid #f14668;
+}

@@ -44,3 +44,7 @@
 ::ng-deep .node-content-wrapper-active {
   background: none !important;
 }
+
+::ng-deep .tree-children .toggle-children, ::ng-deep .node-wrapper .toggle-children {
+  opacity: 0.4;
+}

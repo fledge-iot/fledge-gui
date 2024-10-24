@@ -1,5 +1,5 @@
 .media-content {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 .s-log {
@@ -21,8 +21,13 @@
   align-items: center;
 }
 
-.card { overflow: visible;}
-.card-content { overflow: visible; }
+.card {
+  overflow: visible;
+}
+
+.card-content {
+  overflow: visible;
+}
 
 #refresh-check {
   margin-left: 3px;
@@ -47,7 +52,6 @@
   vertical-align: top;
   background: none;
   border: none;
-  padding-top: 3px !important;
   padding-bottom: 0px !important;
   font-size: 14px;
 }

@@ -1,6 +1,6 @@
 <div class="container is-fluid">
-  <app-notification-service-warning [isEnabled]="isNotificationServiceEnabled" [isInstalled]="notificationServiceInstalled" [isAvailable]="isNotificationServiceAvailable" 
-  [serviceName]="notificationServiceName" (serviceConfigureModal)="openServiceConfigureModal()" (refreshService)="refreshServiceInfo()"></app-notification-service-warning>
+  <app-service-warning [service]="serviceInfo" (serviceConfigureModal)="openServiceConfigureModal()"
+    (refreshService)="refreshServiceInfo()" [serviceType]="'Notification'"></app-service-warning>
   <div class="card">
     <header class="card-header">
       <div id="notification-service" class="card-header-title">
@@ -14,16 +14,17 @@
         </p>
       </div>
 
-      <button *ngIf="rolesService?.hasControlAccess()" [disabled]="!isNotificationServiceEnabled" class="fix-pad button is-light mr-0 mt-0" (click)="addNotificationInstance()">
+      <button *ngIf="rolesService?.hasControlAccess()" [disabled]="!serviceInfo.isEnabled"
+        class="fix-pad button is-light mr-0 mt-0" (click)="addNotificationInstance()">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Create Notification Instance &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </button>
-      <div *ngIf="notificationServiceInstalled && isNotificationServiceEnabled" class="cog-icon">
-        <app-service-config (serviceConfigureModal)="openServiceConfigureModal()"></app-service-config>
-    </div>
-      <span *ngIf="isNotificationServiceEnabled"
-        class="icon is-small tooltip is-pulled-right is-hovered help-pad" data-tooltip="Help"
-        (click)="goToLink('using-the-notification-service')">
+      <div *ngIf="serviceInfo?.added" class="cog-icon">
+        <app-service-config (serviceConfigureModal)="openServiceConfigureModal()" [from]="'notification'">
+        </app-service-config>
+      </div>
+      <span *ngIf="serviceInfo?.isEnabled" class="icon is-small tooltip is-pulled-right is-hovered help-pad"
+        data-tooltip="Help" (click)="goToLink('using-the-notification-service')">
         <i class="far fa-question-circle"></i>
       </span>
     </header>
@@ -41,8 +42,7 @@
             <small class="no-rec">No Record</small>
           </div>
           <ng-container *ngIf="notificationInstances!= undefined && notificationInstances.length > 0">
-            <table class="table is-fullwidth scroll is-responsive is-hoverable" cellpadding="0"
-              cellspacing="0">
+            <table class="table is-fullwidth scroll is-responsive is-hoverable" cellpadding="0" cellspacing="0">
               <thead>
                 <tr>
                   <th class="align-content">Name</th>
@@ -70,7 +70,7 @@
                     <div class="tags has-addons">
                       <span *ngIf="instance.enable === 'false'" class="tag is-light">disabled</span>
                       <span *ngIf="instance.enable === 'true'" class="tag is-light is-success"
-                        [ngClass]="{'disable-tag': this.isNotificationServiceAvailable && !this.isNotificationServiceEnabled}">enabled</span>
+                        [ngClass]="{'disable-tag': serviceInfo.added && !serviceInfo.isEnabled}">enabled</span>
                     </div>
                   </td>
                 </tr>

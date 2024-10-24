@@ -1,0 +1,42 @@
+<div class="config-div" *ngIf="configuration.readonly != 'true'">
+  <div class="field is-horizontal">
+    <div class="field-label has-text-left">
+      <label
+        class="label tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline config-label is-inline-block"
+        [attr.for]="configuration.key" [attr.data-tooltip]="configuration.description">
+        {{configuration.label}}
+      </label>
+      <span class="px-1" *ngIf="rolesService?.hasEditPermissions()">
+        <i class="bi bi-xs bi-info-circle info-icon" aria-hidden="true"
+          title="Insufficient privileges to modify this"></i>
+      </span>
+    </div>
+    <div class="field-body">
+      <div [ngSwitch]="configuration.controlType" class="field" #cdmrField
+        [style.max-width.px]="['CODE', 'SCRIPT', 'JSON'].includes(configuration.controlType) && cdmrField.offsetWidth !== 0 ? cdmrField.offsetWidth : ''"
+        [ngClass]="{'codemirror-field': ['CODE', 'SCRIPT', 'JSON'].includes(configuration.controlType)}">
+
+        <label *ngSwitchCase="'CHECKBOX'" class="checkbox" [id]="configuration.key">
+          <input [type]="configuration.type" [checked]="configuration.value.toLowerCase() == 'true'" disabled="true" />
+        </label>
+
+        <ngx-codemirror *ngSwitchCase="'JSON'" #jsonEditor
+          [options]="codeMirrorConfiguration(configuration.controlType)" [disabled]="true"
+          [ngModel]="configuration.value" class="readonly-editor">
+        </ngx-codemirror>
+
+        <ng-container *ngSwitchCase="'SCRIPT'">
+          <ngx-codemirror #scriptCode [ngModel]="configuration.value"
+            [options]="codeMirrorConfiguration(configuration.controlType)" class="readonly-editor" [disabled]="true">
+          </ngx-codemirror>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'CODE'">
+          <ngx-codemirror [ngModel]="configuration.value" [options]="codeMirrorConfiguration(configuration.controlType)"
+            class="readonly-editor" [disabled]="true">
+          </ngx-codemirror>
+        </ng-container>
+        <span *ngSwitchDefault class="help">{{configuration.value ? configuration.value : "None"}}</span>
+      </div>
+    </div>
+  </div>

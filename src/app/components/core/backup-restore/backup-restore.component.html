@@ -119,7 +119,7 @@
       <button class="delete" aria-label="close" (click)="closeModal('delete-backup-dialog')"></button>
     </header>
     <section class="modal-card-body">
-      Are you sure you want to delete the backup <b>{{backup?.date}}</b>
+      Are you sure you want to delete the backup <b>{{backup?.date | dateparser:"YYYY-MM-DD HH:mm:ss"}}</b>
     </section>
     <footer class="modal-card-foot">
       <button class="button is-small" (click)="closeModal('delete-backup-dialog')">Cancel</button>
@@ -135,7 +135,7 @@
       <button class="delete" aria-label="close" (click)="closeModal('restore-backup-dialog')"></button>
     </header>
     <section class="modal-card-body">
-      Are you sure you want to restore the backup <b>{{backup?.date}}</b>
+      Are you sure you want to restore the backup <b>{{backup?.date | dateparser:"YYYY-MM-DD HH:mm:ss"}}</b>
     </section>
     <footer class="modal-card-foot">
       <button class="button is-small" (click)="closeModal('restore-backup-dialog')">Cancel</button>

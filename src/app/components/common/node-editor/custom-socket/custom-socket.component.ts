@@ -1,4 +1,4 @@
-import { Component, Input, HostBinding, AfterViewChecked, ChangeDetectorRef, OnChanges } from '@angular/core';
+import { Component, Input, ChangeDetectorRef, OnChanges } from '@angular/core';
 
 @Component({
   selector: 'app-custom-socket',
@@ -18,6 +18,4 @@ export class CustomSocketComponent implements OnChanges {
     this.cdr.detectChanges()
     requestAnimationFrame(() => this.rendered())
   }
-
-
 }

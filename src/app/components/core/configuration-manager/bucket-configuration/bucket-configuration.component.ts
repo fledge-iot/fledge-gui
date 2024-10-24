@@ -44,6 +44,9 @@ export class BucketConfigurationComponent implements OnInit {
     this.dataModel.value = typeof this.dataModel.value === 'string' ? JSON.parse(this.dataModel.value) : this.dataModel.value;
     for (const key in this.bucketModelConfiguration) {
       if (this.dataModel.value.hasOwnProperty(key)) {
+        if (this.dataModel?.permissions) {
+          this.bucketModelConfiguration[key].permissions = this.dataModel.permissions;
+        }
         this.bucketModelConfiguration[key].value = this.dataModel.value[key];
       }
     }

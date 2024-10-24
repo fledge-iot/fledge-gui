@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { orderBy } from 'lodash';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
+import { takeUntil, map } from 'rxjs/operators';
 import { AlertDialogComponent } from '../../../common/alert-dialog/alert-dialog.component';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { DocService } from '../../../../services/doc.service';
-import { AlertService, ControlPipelinesService, ProgressBarService, RolesService } from '../../../../services';
-import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-dispatcher-service.component';
+import { AlertService, ControlPipelinesService, ProgressBarService, RolesService, SharedService } from '../../../../services';
+import { AdditionalServicesUtils } from '../../developer/additional-services/additional-services-utils.service';
 
 @Component({
   selector: 'app-control-pipelines',
@@ -15,29 +15,50 @@ import { AddDispatcherServiceComponent } from './../add-dispatcher-service/add-d
 })
 export class ControlPipelinesComponent implements OnInit, OnDestroy {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;
-  @ViewChild(AddDispatcherServiceComponent, { static: true }) addDispatcherServiceComponent: AddDispatcherServiceComponent;
 
   pipelines = [];
   public showSpinner = false;
   public childData = {};
-  isServiceAvailable = false;
 
   destroy$: Subject<boolean> = new Subject<boolean>();
+  private serviceDetailsSubscription: Subscription;
+  private paramsSubscription: Subscription;
 
   public reenableButton = new EventEmitter<boolean>(false);
-  showConfigureModal = false;
-  serviceInfo;
+  serviceInfo = { added: false, isEnabled: true, name: '', isInstalled: false };
 
   constructor(private controlPipelinesService: ControlPipelinesService,
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
     private router: Router,
     public rolesService: RolesService,
-    public docService: DocService,) {}
+    public sharedService: SharedService,
+    public activatedRoute: ActivatedRoute,
+    private additionalServicesUtils: AdditionalServicesUtils,
+    public docService: DocService,) {
+    // If we are redirecting back after enabling/disabling/adding the service then no need to make all calls again
+    this.paramsSubscription = this.activatedRoute.paramMap
+      .pipe(map(() => window.history.state)).subscribe((data: any) => {
+        if (!data?.shouldSkipCalls) {
+          this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
+        }
+      })
+    // Issue may cause by refreshing the page because of old state data, so need to update history state
+    history.replaceState({ shouldSkipCalls: false }, '');
+  }
 
   ngOnInit() {
+    this.serviceDetailsSubscription = this.sharedService.installedServicePkgs.subscribe(service => {
+      if (service.installed) {
+        this.serviceInfo = service.installed;
+      }
+    });
     this.showLoadingSpinner();
     this.getControlPipelines();
+  }
+
+  refreshServiceInfo() {
+    this.additionalServicesUtils.getAllServiceStatus(false, 'dispatcher');
   }
 
   public getControlPipelines(showProgressBar = true): void {
@@ -114,7 +135,7 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
   * @param id   pipeline id to delete
   * @param name pipeline name
   */
-   openModal(id, name, key, message) {
+  openModal(id, name, key, message) {
     this.childData = {
       id: id,
       name: name,
@@ -170,31 +191,17 @@ export class ControlPipelinesComponent implements OnInit, OnDestroy {
     this.showSpinner = false;
   }
 
-  getServiceDetail(event) {
-    this.showConfigureModal = event.isOpen;
-    delete event.isOpen;
-    this.serviceInfo = event;
-    if (this.showConfigureModal) {
-      this.openServiceConfigureModal();
-    }
-  }
-
   /**
    * Open Configure Service modal
    */
   openServiceConfigureModal() {
-    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo }});
-  }
-
-  onNotify(handleEvent) {
-    if (handleEvent) {
-      this.addDispatcherServiceComponent.getInstalledServicesList();
-    }
-    return;
+    this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo } });
   }
 
   public ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
+    this.serviceDetailsSubscription.unsubscribe();
+    this.paramsSubscription.unsubscribe();
   }
 }

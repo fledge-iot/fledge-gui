@@ -107,7 +107,9 @@ export class AddEditAPIFlowComponent implements OnInit {
             allow: []
           };
         this.getDestTypes();
-        this.getUsers();
+        if(this.rolesService.hasControlAccess()) {
+          this.getUsers();
+        }
         this.route.params.subscribe(params => {
             this.apiFlowName = params['name'];
             if (this.apiFlowName) {

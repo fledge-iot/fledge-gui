@@ -3,14 +3,15 @@
   margin-right: 1%;
   box-shadow: 0 0 0.1em rgba(85, 85, 85, 0.5);
   overflow-y: auto !important;
-  max-height: 92vh;
-  height: 100vh; 
+  max-height: 94vh;
+  height: 100vh;
+  padding-bottom: 4rem;
 }
 
 .menu-toogle-icon {
   display: inline-flex;
-  height: 1.2em;
-  width: 1.2em;
+  height: 0.8em;
+  width: 0.8em;
   background-color: whitesmoke;
   border-radius: 50%;
 }
@@ -39,4 +40,149 @@ svg#control-dispatch {
 
 .menu-text {
   padding-right: 0.15rem;
+}
+
+#sidebarToggle {
+  display: inline-flex;
+  background-color: whitesmoke;
+  border-radius: 50%;
+  padding: 0;
+}
+
+.border-0 {
+  border: 0;
+}
+
+#sidemenu .sidemenu-link i, #mobile-sidemenu .sidemenu-link i {
+  margin-right: 0.25rem;
+}
+
+#sidebarToggle .icon {
+  font-size: 0.5rem;
+}
+
+#sidebarToggle:hover {
+  background-color: #485FC7;
+  color: white;
+}
+
+#mobile-sidemenu ul, #sidemenu ul {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#sidemenu li {
+  position: static;
+}
+
+#sidemenu li .submenu-div {
+  position: absolute;
+  z-index: 99;
+  display: none;
+}
+
+.show {
+  display: block !important;
+}
+
+@media (min-width: 1025px) {
+  #sidemenu.collapsed {
+    overflow: visible;
+    width: 6.5rem !important;
+  }
+
+  #sidemenu.collapsed .sidemenu-link {
+    text-align: center;
+    padding: 0.5rem 0.75rem;
+    width: 6.5rem;
+  }
+
+  #sidemenu.collapsed .sidemenu-link .sidemenu-text {
+    font-size: 0.65rem;
+    display: block;
+  }
+
+  #sidemenu.collapsed .submenu-text {
+    font-size: 0.75rem;
+    display: block;
+    padding: 0.5rem 1rem;
+  }
+
+  #sidemenu.collapsed .sidemenu-link i,
+  #sidemenu.collapsed .sidemenu-link #control-dispatch {
+    margin-right: 0 !important;
+    text-align: center;
+  }
+
+  #sidemenu.collapsed .sidemenu-link .fa-chevron-down {
+    margin-right: 0;
+    text-align: center;
+  }
+
+  li:has(.submenu-text.is-active) .sidemenu-link {
+    background-color: whitesmoke;
+  }
+
+  li:has(.submenu-text.is-active) .sidemenu-link .dot {
+    background-color: #485fc7;
+  }
+
+  .submenu-div {
+    position: absolute;
+    z-index: 1;
+    animation-name: growIn;
+    animation-duration: .2s;
+    margin: 0;
+  }
+
+  .submenu-list {
+    padding: 0.5rem 0;
+    min-width: 10rem;
+    font-size: 0.85rem;
+    margin: 0 0 1rem 0;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    border-radius: 0.35rem;
+    background-color: white;
+  }
+
+  #developer-submenu .submenu-list {
+    min-width: 15rem !important;
+  }
+
+  .dot-div {
+    text-align: right;
+    line-height: 0.2;
+  }
+
+  .dot {
+    height: 5px;
+    width: 5px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .sidebar-footer {
+    bottom: 0;
+    width: 99%;
+    position: absolute;
+    background-color: white;
+  }
+}
+
+.toggle-submenu-dropdown {
+  font-size: 0.5rem;
+  opacity: 0.7;
+}
+
+.sidemenu-link:hover .toggle-submenu-dropdown {
+  color: #485fc7;
+}
+
+::-webkit-scrollbar {
+  width: 2px;
+}
+
+.menu:not(.collapsed) {
+  font-size: 0.9rem !important;
 }

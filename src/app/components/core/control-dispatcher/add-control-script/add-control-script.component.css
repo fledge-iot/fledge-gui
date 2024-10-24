@@ -68,3 +68,7 @@ div.close-btn {
 .breadcrumb {
   margin-bottom: 0px !important;
 }
+
+.step-content {
+  overflow: inherit !important;
+}

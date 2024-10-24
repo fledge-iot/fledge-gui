@@ -5,7 +5,7 @@
       <span *ngIf="service" class="modal-card-title title-name">{{service.name}} <span *ngIf="isAddFilterWizard">- Add
           Filter</span>
         <span *ngIf="!isAddFilterWizard">
-          <i class="bi bi-info-circle plugin-info" aria-hidden="true" [title]="service?.plugin?.name"></i>
+          <i class="bi bi-info-circle info-icon" aria-hidden="true" [title]="service?.plugin?.name"></i>
         </span>
         <p class="help has-text-grey modal-subtitle">South Service</p>
       </span>
@@ -34,7 +34,7 @@
               </div>
             </div>
           </div>
-          <hr>
+          <hr class="hr-text">
           <div class="columns">
             <div class="column has-text-centered">
               <span class="label is-size-6 add-application" *ngIf="rolesService.hasEditPermissions(); else staticLabel">
@@ -51,9 +51,25 @@
           </div>
           <app-filter-list #filtersListComponent [service]="service?.name" [filterPipeline]="filterPipeline"
             (formStatus)="filterFormStatus($event)"></app-filter-list>
-          <hr>
-          <div class="columns margin-bottom" *ngIf="rolesService.hasEditPermissions()">
-            <div class="column">
+          <hr class="hr-text">
+          <div class="columns margin-bottom">
+            <ng-container *ngIf="service != undefined">
+              <div class="column is-9">
+                <div *ngIf="service.schedule_enabled" class="field is-horizontal service-info">
+                  <div class="field-label has-text-left service-info-text">
+                    <label class="label">Service Info</label>
+                  </div>
+                  <div class="field-body">
+                    <div class="field">
+                      <ng-container *ngIf="service.protocol && service.address && service.management_port">
+                        <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <div class="column btn-container" *ngIf="rolesService.hasEditPermissions()">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
                   <button class="button is-small" (click)="navToSouth()">Cancel</button>
@@ -66,22 +82,8 @@
               </div>
             </div>
           </div>
-          <hr *ngIf="rolesService.hasEditPermissions()">
+          <hr *ngIf="rolesService.hasEditPermissions()" class="hr-text">
           <ng-container *ngIf="service != undefined">
-            <div>
-              <div *ngIf="service.schedule_enabled" class="field is-horizontal service-info">
-                <div class="field-label has-text-left service-info-text">
-                  <label class="label">Service Info</label>
-                </div>
-                <div class="field-body">
-                  <div class="field">
-                    <ng-container *ngIf="service.protocol && service.address && service.management_port">
-                      <small>{{service.protocol}}://{{service.address}}:{{service.management_port}}</small>
-                    </ng-container>
-                  </div>
-                </div>
-              </div>
-            </div>
             <div class="field is-grouped is-pulled-left icon-group">
               <p class="control">
                 <span

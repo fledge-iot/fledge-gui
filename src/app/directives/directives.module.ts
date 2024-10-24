@@ -12,6 +12,7 @@ import { DisableUntilResponseDirective } from './disable-until-response.directiv
 import { IntegerOnlyDirective } from './integer-only.directive';
 import { EmptySpaceValidatorDirective } from './empty-space-validator.directive';
 import { FloatOnlyDirective } from './float-only.directive';
+import { MaxLengthDirective } from './max-length.directive';
 
 @NgModule({
   imports: [],
@@ -22,7 +23,7 @@ import { FloatOnlyDirective } from './float-only.directive';
     CustomMaxDirective, CustomJsonDirective,
     AccessControlDirective, DisableUntilResponseDirective,
     IntegerOnlyDirective, EmptySpaceValidatorDirective,
-    FloatOnlyDirective
+    FloatOnlyDirective, MaxLengthDirective
   ],
   exports: [
     NumberOnlyDirective, EqualValidatorDirective,
@@ -30,6 +31,7 @@ import { FloatOnlyDirective } from './float-only.directive';
     CustomMinDirective, CustomMaxDirective,
     CustomJsonDirective, AccessControlDirective,
     DisableUntilResponseDirective, IntegerOnlyDirective,
-    EmptySpaceValidatorDirective, FloatOnlyDirective]
+    EmptySpaceValidatorDirective, FloatOnlyDirective,
+    MaxLengthDirective]
 })
 export class DirectivesModule { }

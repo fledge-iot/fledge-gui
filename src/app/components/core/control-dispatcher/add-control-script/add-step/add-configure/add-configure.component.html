@@ -42,7 +42,7 @@
   <div class="field-body" *ngIf="configItems?.length > 0 else noconfig">
     <div class="field is-narrow">
       <div class="control" *ngIf="rolesService.hasControlAccess();else staticConfigItemDiv">
-        <div #configItem id="config-dropdown" class="dropdown is-left">
+        <div #configItem id="config-dropdown-{{controlIndex}}" class="dropdown is-left">
           <div class="dropdown-trigger">
             <button (click)="toggleDropDown(configItem.id)" class="button is-small" aria-haspopup="true"
               aria-controls="dropdown-menu">
@@ -54,7 +54,7 @@
           </div>
           <div class="dropdown-menu" id="dropdown-menu" role="menu">
             <div class="dropdown-content">
-              <a (click)="setItem(c); toggleDropDown('config-dropdown')" *ngFor="let c of configItems"
+              <a (click)="setItem(c); toggleDropDown(configItem.id)" *ngFor="let c of configItems"
                 class="dropdown-item">{{c.data.displayName ? c.data.displayName : (c.data.description.length <= 30 ?
                   c.data.description : (c.data.description|slice:0:30)+'...') }}</a>
             </div>

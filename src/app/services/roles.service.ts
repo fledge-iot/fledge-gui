@@ -33,12 +33,27 @@ export class RolesService {
     return [appRoles.admin, appRoles.control, appRoles.anonymous].includes(roleId);
   }
 
+  public hadEditPermissionsOnConfigItem(allowedRoles: string[] = []) {
+    try {
+      const roleId = Number(sessionStorage.getItem('roleId'));
+      const roleName = appRoles[roleId];
+      const loginSkipped = JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'));
+      return loginSkipped || roleName == 'admin' || allowedRoles.length == 0 || allowedRoles.includes(roleName);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   hasEditPermissionsOnPage(page: string) {
     if (page == 'control-pipeline') {
       return this.hasControlAccess();
     } else {
       return this.hasEditPermissions()
     }
+  }
+
+  hasAccessPermission(allowedRoles: string[] = []) {
+    return this.hasEditPermissions() && this?.hadEditPermissionsOnConfigItem(allowedRoles);
   }
 
   /**

@@ -9,3 +9,8 @@
 .tree-dropdown {
   padding-left: 5px;
 }
+
+::ng-deep .tree-children .toggle-children,
+::ng-deep .node-wrapper .toggle-children {
+  opacity: 0.4;
+}

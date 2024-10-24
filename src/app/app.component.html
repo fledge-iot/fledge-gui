@@ -3,11 +3,12 @@
 </div>
 
 <div class="columns m-0">
-  <div *ngIf="!isLoginView" class="column is-2 is-sidebar-menu  p-0" [ngClass]="{'is-hidden-mobile': !_opened}">
-    <app-side-menu (toggle)="toggleSidebar()"></app-side-menu>
+  <div *ngIf="!isLoginView" class="column is-sidebar-menu p-0"
+    [ngClass]="{'is-hidden-mobile': !_opened, 'is-2': !isSidemenuCollapsed}">
+    <app-side-menu (toggle)="toggleSidebar()" (sidebarCollapsedEvent)="setSidebarState($event)"></app-side-menu>
   </div>
-
-  <div class="column is-fullheight is-mobile pt-3" [ngClass]="!isLoginView ? 'is-10' : 'is-12'">
+  <div class="column is-fullheight is-mobile pt-3"
+    [ngClass]="(!isLoginView && !isSidemenuCollapsed) ? 'is-10 layout-custom-width' : (isSidemenuCollapsed ? 'is-11 expanded-custom-width' : 'is-12')">
     <div [ngClass]="{'overlay': !isServiceRunning
                     && !url?.includes('setting')
                     && !url?.includes('login') && !modalWindow}">

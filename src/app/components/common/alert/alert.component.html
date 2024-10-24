@@ -1,12 +1,21 @@
 <ng-container *ngIf="!darkAlerts">
-    <article id="alert" *ngIf="message" class="message" [ngClass]="{'is-success': message.type === 'success', 'is-info': message.type === 'info', 'is-danger': message.type === 'error', 'is-warning': message.type === 'warning' }">
-        <button *ngIf="message.type !== 'info'" class="delete" (click)=closeMessage()></button>
-        <div class="message-body" [innerHTML]="message.text"></div>
-    </article>
+  <article id="alert" class="message" *ngIf="message && !message?.autonomous"
+    [ngClass]="{'is-success': message.type === 'success', 'is-info': message.type === 'info', 'is-danger': message.type === 'error', 'is-warning': message.type === 'warning' }">
+    <button *ngIf="message.type !== 'info'" class="delete" (click)=closeMessage()></button>
+    <div class="message-body" [innerHTML]="message.text"></div>
+  </article>
 </ng-container>
 <ng-container *ngIf="darkAlerts">
-    <div id="alert" (click)="showLogs(message.text)" *ngIf="message" class="notification" [ngClass]="{'is-success': message.type === 'success', 'is-info': message.type === 'info', 'is-danger': message.type === 'error', 'is-warning': message.type === 'warning' }">
-        <button *ngIf="message.type !== 'info'" class="delete" (click)=closeMessage()></button>
-        <span [innerHTML]="message.text"></span>
-    </div>
+  <div id="alert" (click)="showLogs(message.text)" *ngIf="message && !message?.autonomous" class="notification"
+    [ngClass]="{'is-success': message.type === 'success', 'is-info': message.type === 'info', 'is-danger': message.type === 'error', 'is-warning': message.type === 'warning' }">
+    <button *ngIf="message.type !== 'info'" class="delete" (click)=closeMessage()></button>
+    <span [innerHTML]="message.text"></span>
+  </div>
+</ng-container>
+<ng-container *ngIf="message?.autonomous">
+  <article id="alert" *ngIf="message" class="message p-2"
+    [ngClass]="{'is-success': message.type === 'success', 'is-info': message.type === 'info', 'is-danger': message.type === 'error', 'is-warning': message.type === 'warning' }">
+    <button *ngIf="message.type !== 'info'" class="delete" (click)=closeMessage()></button>
+    <div class="message-body" [innerHTML]="message.text"></div>
+  </article>
 </ng-container>

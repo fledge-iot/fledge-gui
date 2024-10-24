@@ -44,7 +44,9 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" id="name" type="text" placeholder="name" formControlName="name" title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off">
+                  <input class="input" id="name" type="text" placeholder="name" formControlName="name"
+                    title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN"
+                    autocomplete="off">
                   <small *ngIf="name.hasError('required') && (name.dirty || name.touched)"
                     class="help is-danger level-left"><sup>*</sup>Notification instance name is
                     required</small>
@@ -93,7 +95,8 @@
                 <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
               </div>
               <div *ngIf="selectedRulePlugin" class="column is-1">
-                <span class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
+                <span
+                  class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
                   data-tooltip="Help" (click)="goToLink(selectedRulePlugin, notificationRulePlugins[0].type)">
                   <i class="far fa-question-circle"></i>
                 </span>
@@ -151,7 +154,8 @@
                 <small *ngIf="!isSinglePlugin" class="help is-danger level-left">* Please select a single plugin</small>
               </div>
               <div *ngIf="selectedDeliveryPlugin" class="column is-1">
-                <span class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
+                <span
+                  class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
                   data-tooltip="Help" (click)="goToLink(selectedDeliveryPlugin, notificationDeliveryPlugins[0].type)">
                   <i class="far fa-question-circle"></i>
                 </span>
@@ -184,70 +188,70 @@
         <div class="box step-content" id="c-6">
           <div class="column">
             <div class="config-div">
-          <div class="field is-horizontal">
-            <div class="field-label">
-              <label class="label has-text-left tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline"
-                data-tooltip="Type of notification">Type</label>
-            </div>
-            <div class="field-body last-step-field">
-              <div id="notify-type-dropdown" class="dropdown notification-type">
-                <div class="dropdown-trigger">
-                  <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                    (click)="toggleDropDown('notify-type-dropdown')">
-                    <span>{{notificationType}}</span>
-                    <span class="icon is-small">
-                      <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-                    </span>
-                  </button>
+              <div class="field is-horizontal">
+                <div class="field-label">
+                  <label class="label has-text-left tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline"
+                    data-tooltip="Type of notification">Type</label>
                 </div>
-                <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                  <div class="dropdown-content">
-                    <a class="dropdown-item" *ngFor="let type of notificationTypeList"
-                      (click)="toggleDropDown('notify-type-dropdown');setNotificationType(type)">
-                      {{type}}
-                    </a>
+                <div class="field-body last-step-field">
+                  <div id="notify-type-dropdown" class="dropdown notification-type">
+                    <div class="dropdown-trigger">
+                      <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                        (click)="toggleDropDown('notify-type-dropdown')">
+                        <span>{{notificationType}}</span>
+                        <span class="icon is-small">
+                          <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                        </span>
+                      </button>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                      <div class="dropdown-content">
+                        <a class="dropdown-item" *ngFor="let type of notificationTypeList"
+                          (click)="toggleDropDown('notify-type-dropdown');setNotificationType(type)">
+                          {{type}}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon notification-type-help"
+                    data-tooltip="Help" (click)="goToNotificationTypeLink()">
+                    <i class="far fa-question-circle"></i>
                   </div>
                 </div>
               </div>
-              <div
-                class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon notification-type-help"
-                data-tooltip="Help" (click)="goToNotificationTypeLink()">
-                <i class="far fa-question-circle"></i>
+              <div class="field is-horizontal">
+                <div class="field-label">
+                  <label class="label has-text-left tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline"
+                    data-tooltip="A dead period (in seconds), during which notifications will not be sent regardless of the notification type.">Retrigger
+                    Time</label>
+                </div>
+                <div class="field-body last-step-field">
+                  <div class="field">
+                    <div class="control">
+                      <input class="input is-small retrigger-time" #retriggerTime type='number' appFloatOnly min="0"
+                        placeholder="Retrigger Time" formControlName="retriggerTime">
+                      <span *ngIf="payload?.retrigger_time < 0" class="help is-danger">
+                        <sup>*</sup>Invalid Retrigger time.
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          <div class="field is-horizontal">
-            <div class="field-label">
-              <label class="label has-text-left tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline"
-                data-tooltip="A dead period (in seconds), during which notifications will not be sent regardless of the notification type.">Retrigger
-                Time</label>
-            </div>
-            <div class="field-body last-step-field">
-              <div class="field">
-                <div class="control">
-                  <input class="input is-small retrigger-time" #retriggerTime type='number' appNumberOnly min="0"
-                    placeholder="Retrigger Time" formControlName="retriggerTime">
-                  <span *ngIf="payload?.retrigger_time < 1" class="help is-danger">
-                    <sup>*</sup>Invalid Retrigger time.
-                  </span>
+              <div class="field is-horizontal">
+                <div class="field-label">
+                  <label class="label has-text-left tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline"
+                    data-tooltip="Enabled">Enabled</label>
+                </div>
+                <div class="field-body last-step-field">
+                  <div class="field">
+                    <div class="control">
+                      <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="field is-horizontal">
-            <div class="field-label">
-              <label class="label has-text-left tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline"
-                data-tooltip="Enabled">Enabled</label>
-            </div>
-            <div class="field-body last-step-field">
-              <div class="field">
-                <div class="control">
-                  <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
-                </div>
-              </div>
-            </div>
-          </div>
-          </div>
           </div>
         </div>
       </form>
@@ -258,7 +262,8 @@
       </div>
       <div class="steps-action">
         <button [disabled]="name.invalid || !validRuleConfigurationForm || !validDeliveryConfigurationForm"
-          (click)="moveNext()" data-nav="next" class="button is-link" id="next" [appDisableUntilResponse]="reenableButton">Next</button>
+          (click)="moveNext()" data-nav="next" class="button is-link" id="next"
+          [appDisableUntilResponse]="reenableButton">Next</button>
       </div>
     </div>
   </div>
