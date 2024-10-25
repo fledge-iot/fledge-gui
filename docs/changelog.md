@@ -15,7 +15,7 @@
 - [FOGL-8588]: Filter plugin installation issue where plugin name and package name had a mismatch.[#467](https://github.com/fledge-iot/fledge-gui/pull/467)
 - [FOGL-9080]: Missing child categories issue in category dropdown on add control script page.[#460](https://github.com/fledge-iot/fledge-gui/pull/460)
 - [FOGL-9083]: Control API entry point access issue for less privileged user. [#458](https://github.com/fledge-iot/fledge-gui/pull/458)
-- [FOGL-9068]: Allow retrigger_time of 0 for notification. [#455](https://github.com/fledge-iot/fledge-gui/pull/455)
+- [FOGL-9068]: Allow retrigger time of 0 for notification. [#455](https://github.com/fledge-iot/fledge-gui/pull/455)
 - [FOGL-8803]: Deletion of persisted data in Developer mode. [#442](https://github.com/fledge-iot/fledge-gui/pull/442)
 - [FOGL-8891]: Log out active session issue on user profile page. [#441](https://github.com/fledge-iot/fledge-gui/pull/441)
 
