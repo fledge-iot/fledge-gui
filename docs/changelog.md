@@ -1,18 +1,15 @@
 ## v2.6.0 [2024-10-24]
 
 ### Added
-- [FOGL-8841]: Optional permission array property in configuration to manage config item access based on user role. [#437](https://github.com/fledge-iot/fledge-gui/pull/437)
+- [FOGL-8841]: Manage Configuration items access for users, per optionally available role based permissions list. [#437](https://github.com/fledge-iot/fledge-gui/pull/437)
 
 ### Changed
 - [FOGL-8942]: Configuration items group tabs are sorted by the minimum order of config item in the group. [#471](https://github.com/fledge-iot/fledge-gui/pull/471)
 - [FOGL-8458]: Developer page access through developer sub-menu options. [#456](https://github.com/fledge-iot/fledge-gui/pull/456)
- 
-- [FOGL-8990]: Enhanced support for list/kvlist type configuration item.[#462](https://github.com/fledge-iot/fledge-gui/pull/462)
+- [FOGL-8990]: Enhanced support for list/kvlist type configuration item. [#462](https://github.com/fledge-iot/fledge-gui/pull/462)
   - Add & Delete 
   - Expand/Collapse single item
   - Expand All / Collapse All
-  
-
 
 ### Fixed
 - [FOGL-8588]: Filter plugin installation issue where plugin name and package name had a mismatch.[#467](https://github.com/fledge-iot/fledge-gui/pull/467)
