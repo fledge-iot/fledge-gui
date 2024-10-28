@@ -221,10 +221,11 @@ export class FilterListComponent {
     this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.service)
       .subscribe(() => {
         this.deletedFilterPipeline.forEach((filter, index) => {
-          this.filterService.deleteFilter(filter).subscribe(() => {
+          this.filterService.deleteFilter(filter).subscribe((data: any) => {
             if (this.deletedFilterPipeline.length === index + 1) {
               this.deletedFilterPipeline = []; // clear deleted filter reference
             }
+            this.toastService.success(data.result);
           },
             (error) => {
               if (error.status === 0) {
