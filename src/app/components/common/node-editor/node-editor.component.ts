@@ -108,6 +108,7 @@ export class NodeEditorComponent implements OnInit {
   isSidebarCollapsed: boolean;
   isNodeSelected = false;
   nodesToDelete = [];
+  selectedFilters = [];
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -287,11 +288,19 @@ export class NodeEditorComponent implements OnInit {
       if (data.label !== 'Storage' && data.label !== 'Filter') {
         this.isNodeSelected = data.selected;
         if (this.isNodeSelected && !this.nodesToDelete?.some(node => (node.id == data.id))) {
+          if (data.isFilterNode) {
+            if (!this.selectedFilters.some(filter => filter === data.label)) {
+              this.selectedFilters.push(data.label);
+            }
+          }
           this.nodesToDelete.push({ id: data.id, 'label': data.label, 'name': data.controls.nameControl['name'] });
         }
         else if (!this.isNodeSelected) {
           const nodesToDelete = this.nodesToDelete.filter(node => node.id !== data.id);
           this.nodesToDelete = nodesToDelete;
+
+          const selectedFilters = this.selectedFilters.filter(filter => filter !== data.label);
+          this.selectedFilters = selectedFilters;
         }
         this.moveNodeToFront(data.id);
       }
@@ -655,22 +664,29 @@ export class NodeEditorComponent implements OnInit {
   }
 
   deleteFilter() {
-    this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.source)
+    const filteredPipeline = this.filterPipeline.filter(filter =>
+      !this.selectedFilters.some(f => f === filter)
+    );
+    this.filterService.updateFilterPipeline({ 'pipeline': filteredPipeline }, this.service.name)
       .subscribe(() => {
-        this.filterService.deleteFilter(this.filterName).subscribe((data: any) => {
-          this.toastService.success(data.result);
-          setTimeout(() => {
-            this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
-          }, 1000);
-        },
-          (error) => {
-            this.reenableButton.emit(false);
-            if (error.status === 0) {
-              console.log('service down ', error);
-            } else {
-              this.toastService.error(error.statusText);
+        this.selectedFilters.forEach((filter, index) => {
+          this.filterService.deleteFilter(filter).subscribe((data: any) => {
+            if (this.selectedFilters.length === index + 1) {
+              this.selectedFilters = [];
             }
-          });
+            this.toastService.success(data.result);
+          },
+            (error) => {
+              if (error.status === 0) {
+                console.log('service down ', error);
+              } else {
+                this.toastService.error(error.statusText);
+              }
+            });
+        });
+        setTimeout(() => {
+          this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
+        }, 1000);
       },
         (error) => {
           if (error.status === 0) {
@@ -971,7 +987,6 @@ export class NodeEditorComponent implements OnInit {
     }
   }
 
-
   deleteService() {
     if (this.from === 'notifications') {
       this.deleteNotification();
@@ -1149,15 +1164,15 @@ export class NodeEditorComponent implements OnInit {
   }
 
   callDeleteAction() {
-    this.nodesToDelete.forEach(node => {
-      if (node.label === 'South' || node.label === 'North') {
-        this.dialogServiceName = node.name;
-        this.deleteService();
-      } else {
-        this.filterName = node.name;
-        this.deleteFilterFromPipeline();
-      }
-    });
+    const filterNodeToDelete = this.nodesToDelete.find(node => (node.label !== 'South' && node.label !== 'North'));
+    if (filterNodeToDelete) {
+      this.deleteFilter();
+    }
+    const nodeToDelete = this.nodesToDelete.find(node => (node.label === 'South' || node.label === 'North'));
+    if (nodeToDelete) {
+      this.dialogServiceName = nodeToDelete.name;
+      this.deleteService();
+    }
     this.closeModal('from-toolbar-dialog');
   }
 

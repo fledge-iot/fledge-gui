@@ -187,6 +187,10 @@ export class CustomNodeComponent implements OnChanges {
       }
     }
 
+    if (this.source && !this.data.selected) {
+      this.flowEditorService.nodeClick.next(this.data);
+    }
+
     const labels = ['AddService', 'AddTask'];
     if (labels.includes(this.data.label)) {
       this.data.label = "";
@@ -194,9 +198,6 @@ export class CustomNodeComponent implements OnChanges {
 
     if (this.data.label === 'Storage') {
       this.elRef.nativeElement.style.borderColor = "#999999";
-    }
-    if (!changes['data'] && this.source) {
-      this.flowEditorService.nodeClick.next(this.data);
     }
     this.cdr.detectChanges();
     requestAnimationFrame(() => this.rendered());
@@ -211,6 +212,13 @@ export class CustomNodeComponent implements OnChanges {
     const bi = b.value.index || 0;
 
     return ai - bi;
+  }
+
+  onNodeClick() {
+    if (this.source) {
+      this.data['isFilterNode'] = this.isFilterNode;
+      this.flowEditorService.nodeClick.next(this.data);
+    }
   }
 
   addService() {
