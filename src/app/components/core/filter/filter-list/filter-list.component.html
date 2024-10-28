@@ -1,5 +1,5 @@
 <div *ngIf="filterPipeline != undefined" class="view-content columns is-size-10" [ngClass]="{'pt-5 pl-5': sourceName}">
-  <div class="column">
+  <div class="column" [ngClass]="{'custom-width': from == 'control-pipeline'}">
     <div class="filter-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
       <div class="accordion card" *ngFor="let filter of filterPipeline; let i = index" [attr.id]="'list-item-' + i"
         cdkDrag [cdkDragDisabled]="filterPipeline.length == 1 || !rolesService.hasEditPermissionsOnPage(from)">

@@ -61,3 +61,7 @@ a {
 .plugin-name {
   font-weight: initial;
 }
+
+.custom-width:has(div .accordion.card.is-active) {
+  width: 67.5%;
+}
