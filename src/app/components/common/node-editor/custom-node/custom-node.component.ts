@@ -4,19 +4,12 @@ import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import {
-  ConfigurationService,
-  NorthService, PingService,
-  RolesService,
-  SchedulesService,
-  ServicesApiService,
-  ToastService
+  ConfigurationService, RolesService,
+  SchedulesService, ToastService
 } from "./../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
 import { Subject, Subscription } from "rxjs";
-import { takeUntil } from "rxjs/operators";
-import { Service } from "./../../../core/south/south-service";
-import { NorthTask } from "../../../core/north/north-task";
 
 @Component({
   selector: 'app-custom-node',
@@ -68,16 +61,14 @@ export class CustomNodeComponent implements OnChanges {
   filter = { pluginName: '', enabled: 'false', name: '', color: '', pluginVersion: "" }
   isServiceNode: boolean = false;
   subscription: Subscription;
-  addFilterSubscription: Subscription;
   pluginName = '';
   isFilterNode: boolean = false;
   destroy$: Subject<boolean> = new Subject<boolean>();
   fetchedTask;
   fetchedService;
-  showPlusIcon = false;
-  showDeleteIcon = false;
   nodeId = '';
   pluginVersion = '';
+  timeoutId;
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -85,17 +76,14 @@ export class CustomNodeComponent implements OnChanges {
 
   constructor(private cdr: ChangeDetectorRef,
     private schedulesService: SchedulesService,
-    private northService: NorthService,
     private docService: DocService,
     private router: Router,
     private route: ActivatedRoute,
-    private servicesApiService: ServicesApiService,
     public flowEditorService: FlowEditorService,
     private configService: ConfigurationService,
     private toastService: ToastService,
     public rolesService: RolesService,
-    private elRef: ElementRef,
-    private ping: PingService) {
+    private elRef: ElementRef) {
     this.route.params.subscribe(params => {
       this.from = params.from;
       this.source = params.name;
@@ -169,18 +157,10 @@ export class CustomNodeComponent implements OnChanges {
           this.isEnabled = true;
         }
       }
-      else {
-        this.addFilterSubscription = this.flowEditorService.showAddFilterIcon.subscribe((data) => {
-          if (data) {
-            if (data.addedFiltersIdColl.includes(this.nodeId)) {
-              this.elRef.nativeElement.style.outline = "#EA9999 dashed 2px";
-              this.elRef.nativeElement.style.borderWidth = "0px";
-              this.elRef.nativeElement.style.height = "auto";
-              this.showPlusIcon = true;
-              this.showDeleteIcon = true;
-            }
-          }
-        })
+      else if (!this.data['pseudoNode']) {
+        this.elRef.nativeElement.style.outline = "#EA9999 dashed 2px";
+        this.elRef.nativeElement.style.borderWidth = "0px";
+        this.elRef.nativeElement.style.height = "auto";
       }
     }
 
@@ -194,7 +174,7 @@ export class CustomNodeComponent implements OnChanges {
         }
       }
     }
-    
+
     const labels = ['AddService', 'AddTask'];
     if (labels.includes(this.data.label)) {
       this.data.label = "";
@@ -357,66 +337,6 @@ export class CustomNodeComponent implements OnChanges {
         });
   }
 
-  getNorthboundTasks() {
-    this.northService.getNorthTasks(true)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data: any) => {
-        const tasks = data as NorthTask[];
-        this.fetchedTask = tasks.find(task => (task.name == this.service.name));
-        if (this.fetchedTask) {
-          this.service.status = this.fetchedTask?.status;
-          let readingCount = this.fetchedTask.sent;
-          this.service.readingCount = readingCount;
-          this.service.schedule_enabled = this.fetchedTask.enabled;
-          if (this.service.schedule_enabled === true) {
-            this.isEnabled = true;
-          }
-          else {
-            this.isEnabled = false;
-          }
-        }
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.toastService.error(error.statusText);
-          }
-        });
-  }
-
-  getSouthboundServices() {
-    this.servicesApiService.getSouthServices(true)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data: any) => {
-        const services = data.services as Service[];
-        this.fetchedService = services.find(service => (service.name == this.service.name));
-        if (this.fetchedService) {
-          this.service.status = this.fetchedService.status;
-          let assetCount = this.fetchedService.assets.length;
-          let readingCount = this.fetchedService.assets.reduce((total, asset) => {
-            return total + asset.count;
-          }, 0)
-          this.service.assetCount = assetCount;
-          this.service.readingCount = readingCount;
-          this.service.schedule_enabled = this.fetchedService.schedule_enabled;
-          if (this.service.schedule_enabled === true) {
-            this.isEnabled = true;
-          }
-          else {
-            this.isEnabled = false;
-          }
-        }
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.toastService.error(error.statusText);
-          }
-        });
-  }
-
   removeFilter() {
     this.flowEditorService.removeFilter.next({ id: this.nodeId });
   }
@@ -426,12 +346,28 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   getAssetReadings() {
-    this.flowEditorService.exportReading.next({serviceName: this.service.name});
+    this.flowEditorService.exportReading.next({ serviceName: this.service.name });
+  }
+
+  openDropdown() {
+    this.timeoutId = setTimeout(() => {
+      this.flowEditorService.nodeClick.next({ nodeId: this.nodeId });
+      const dropDown = document.querySelector('#nodeDropdown-' + this.nodeId);
+      dropDown.classList.add('is-active');
+    }, 250);
+  }
+
+  closeDropdown() {
+    clearTimeout(this.timeoutId);
+    const dropDown = document.querySelector('#nodeDropdown-' + this.nodeId);
+    if (dropDown.classList.contains('is-active')) {
+      dropDown.classList.remove('is-active');
+    }
   }
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    this.addFilterSubscription?.unsubscribe();
+    // this.addFilterSubscription?.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }

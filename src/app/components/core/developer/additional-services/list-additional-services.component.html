@@ -2,7 +2,7 @@
   <div class="navbar-item">
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
-        <li><a [routerLink]="['/developer/options']">Developer</a></li>
+        <li class="breadcrumb-padding">Developer</li>
         <li class="is-active">
           <a href="#" aria-current="page">
             Additional Services
@@ -10,22 +10,23 @@
         </li>
       </ul>
     </nav>
-    <button class="button is-small" id="refresh-check" title="Reload" (click)="getAllServiceStatus(false)">
+    <button class="button is-small" id="refresh-check" title="Reload"
+      (click)="additionalServicesUtils.getAllServiceStatus(false, 'additional-services')">
       <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
     </button>
   </div>
-    <div class="card">
-      <div class="card-content" [ngClass]="{'change-overflow': viewPort !== 'mobile'}">
-        <div *ngIf="showLoading" class="has-text-centered has-text-grey">
-          Loading...
+  <div class="card">
+    <div class="card-content" [ngClass]="{'change-overflow': viewPort !== 'mobile'}">
+      <div *ngIf="showLoading" class="has-text-centered has-text-grey">
+        Loading...
+      </div>
+      <ng-container *ngIf="!showLoading">
+        <div class="has-text-centered" *ngIf="availableServicePkgs.length === 0 && installedServicePkgs.length === 0">
+          <small class="no-rec">No service packages are available with the configured archives repository.</small>
         </div>
-        <ng-container *ngIf="!showLoading">
-          <div class="has-text-centered" *ngIf="availableServicePkgs.length === 0 && installedServicePkgs.length === 0">
-            <small class="no-rec">No service packages are available with the configured archives repository.</small>
-          </div>
-          <table class="table is-responsive service-table is-hoverable mb-0">
-            <tbody>
-              <ng-container *ngFor="let s of installedServicePkgs; let i = index;">
+        <table class="table is-responsive service-table is-hoverable mb-0">
+          <tbody>
+            <ng-container *ngFor="let s of installedServicePkgs; let i = index;">
               <tr [ngClass]="{'remove-border': (installedServicePkgs.length - 1) === i}">
                 <td class="align-content content-pad py-1">
                   <small>{{s.type == "BucketStorage" ? "Bucket Storage" : s.type }}</small>

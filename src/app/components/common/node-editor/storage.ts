@@ -8,7 +8,6 @@ export class Storage extends ClassicPreset.Node {
 
   constructor(socket: ClassicPreset.Socket) {
     super("Storage");
-
     this.addInput("port", new ClassicPreset.Input(socket));
     this.addOutput("port", new ClassicPreset.Output(socket));
   }

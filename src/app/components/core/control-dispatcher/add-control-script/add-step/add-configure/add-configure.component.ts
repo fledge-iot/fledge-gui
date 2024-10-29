@@ -92,21 +92,12 @@ export class AddConfigureComponent implements OnInit {
         )
       ).subscribe(
         (category: any) => {
-          this.configurationService.getChildren(category.key)
-            .subscribe((data: any) => {
-              category.id = category.key;
-              category.name = category.displayName;
-              category.children = data.categories.map(c => {
-                c.id = c.key;
-                c.name = c.displayName;
-                return c;
-              });
-              this.nodes.push(category);
-              this.nodes = sortBy(this.nodes, (ca: any) => {
-                return ca.name;
-              });
-              this.tree.treeModel.update();
-            });
+          this.updateIdAndNameInTreeObject(category);
+          this.nodes.push(category);
+          this.nodes = sortBy(this.nodes, (c: any) => {
+            return c.name;
+          });
+          this.tree.treeModel.update();
         },
         error => {
           if (error.status === 0) {
@@ -115,6 +106,15 @@ export class AddConfigureComponent implements OnInit {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  updateIdAndNameInTreeObject(category) {
+    category.id = category.key;
+    category.name = (category.hasOwnProperty('displayName')) ? category.displayName : category.key;
+    // If the object has 'children' property recurse 
+    if (Array.isArray(category.children) && category.children.length > 0) {
+      category.children.forEach(c => this.updateIdAndNameInTreeObject(c));
+    }
   }
 
   public onNodeActive(event: any) {
@@ -163,22 +163,8 @@ export class AddConfigureComponent implements OnInit {
       } else {
         // set category name
         setTimeout(() => {
-          const category = this.tree.treeModel.nodes.find(r => {
-            if (r.key === this.config.category) {
-              return r;
-            } else {
-              r = r.children.find(child => (child.key === this.config.category))
-              return r;
-            }
-          });
-
-          if (this.config.category === category.key) {
-            this.config.category = category.displayName ? category.displayName : category.description;
-          } else {
-
-            const cat = category.children.find(child => (child.key === this.config.category));
-            this.config.category = cat.displayName ? cat.displayName : cat.description;
-          }
+          const category = this.setCategoryName(this.tree.treeModel.nodes);
+          this.config.category = category.displayName ? category.displayName : category.key;
         }, 1000);
         item = this.configItems.find(c => {
           if (this.config && this.config.item === c.key) {
@@ -187,7 +173,7 @@ export class AddConfigureComponent implements OnInit {
           }
         })
       }
-      this.selectedConfigItem = item.data.displayName ? item.data.displayName : item.data.description;
+      this.selectedConfigItem = item.data.displayName ? item.data.displayName : item.key;
       this.configValue = item.data.value;
       this.configureControlGroup().controls['item'].setValue(item.key);
       this.configureControlGroup().controls['value'].setValue(item.data.value);
@@ -200,9 +186,23 @@ export class AddConfigureComponent implements OnInit {
 
   }
 
+  setCategoryName(nodes) {
+    let category = nodes.find(r => r.key == this.config.category);
+    if(!category) {
+      for(let node of nodes){
+        if(node.children.length > 0) {
+          category = this.setCategoryName(node.children);
+          if(category){
+            return category;
+          }
+        }
+      }
+    }
+    return category;
+  }
+
   setItem(config: any) {
-    this.selectedConfigItem = config.data.displayName ? config.data.displayName : (config.data.description.length <= 30 ?
-      config.data.description : `${config.data.description.slice(0, 30)}...`);
+    this.selectedConfigItem = config.data.displayName ? config.data.displayName : config.key;
     this.configValue = config.data.value;
     this.configureControlGroup().controls['item'].setValue(config.key);
     this.configureControlGroup().controls['value'].setValue(config.data.value);

@@ -1,29 +1,29 @@
 :host {
-    display: inline-block;
-    cursor: pointer;
-    border: 8px solid white;
-    border-radius: 12px;
-    width: 24px;
-    height: 24px;
-    margin: 1px;
-    vertical-align: middle;
-    background: #96b38a;
-    z-index: 2;
-    box-sizing: border-box;
+  display: inline-block;
+  cursor: pointer;
+  border: 8px solid white;
+  border-radius: 12px;
+  width: 24px;
+  height: 24px;
+  margin: 1px;
+  vertical-align: middle;
+  background: #96b38a;
+  z-index: 2;
+  box-sizing: border-box;
 }
 
 :host:hover {
-    border-width: 0px;
+  border-width: 0px;
 }
 
 :host.multiple {
-    border-color: yellow;
+  border-color: yellow;
 }
 
 :host.output {
-    margin-right: -12px;
+  margin-right: -12px;
 }
 
 :host.input {
-    margin-left: -12px;
+  margin-left: -12px;
 }

@@ -54,7 +54,8 @@
         <span class="help-text">{{notification.notificationType | titlecase}}</span>
       </div>
       <div class="is-pulled-right">
-        <div class="dropdown is-hoverable" *ngIf="rolesService.hasEditPermissions()">
+        <div id="nodeDropdown-{{nodeId}}" class="dropdown" *ngIf="!source || rolesService.hasEditPermissions()"
+          (mouseenter)="openDropdown()" (mouseleave)="closeDropdown()">
           <div class="dropdown-trigger">
             <button class="button is-white is-small pt-0 pb-0 dropdown-button" aria-haspopup="true"
               aria-controls="dropdown-menu3">

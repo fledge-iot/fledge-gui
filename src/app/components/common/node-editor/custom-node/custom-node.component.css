@@ -2,7 +2,7 @@
   display: block;
   background: white;
   border: 2px solid silver;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
   box-sizing: border-box;
   width: 198px;
@@ -11,7 +11,8 @@
   user-select: none;
 }
 
-:host:has(div.add-service), :host:has(div.add-task) {
+:host:has(div.add-service),
+:host:has(div.add-task) {
   border: 2px dotted silver !important;
 }
 
@@ -23,6 +24,7 @@
 :host:hover .asset,
 :host:hover .trash-icon {
   visibility: visible !important;
+  cursor: pointer !important;
 }
 
 :host .title {
@@ -39,7 +41,7 @@
 
 :host .input {
   text-align: left;
-   display: inline-block;
+  display: inline-block;
   box-shadow: none !important;
   background-color: inherit !important;
   border: none !important;
@@ -145,7 +147,8 @@
   height: 1rem !important;
 }
 
-.add-service, .add-task {
+.add-service,
+.add-task {
   width: 198px;
   display: flex;
   justify-content: center;
@@ -195,7 +198,7 @@
   margin-left: 30px;
 }
 
-.south-storage-icon{
+.south-storage-icon {
   margin-top: 4px;
   margin-left: 10px;
 }

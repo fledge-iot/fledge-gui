@@ -1,0 +1,18 @@
+.button-container {
+  border: 1px solid whitesmoke;
+  border-radius: 4px;
+}
+
+.button {
+  border: none;
+}
+
+.button:hover {
+  background-color: whitesmoke;
+}
+
+.button:disabled {
+  opacity: 1 !important;
+  background-color: lightgray;
+  pointer-events: none;
+}

@@ -23,8 +23,28 @@
     bottom: 0;
     z-index: 999;
     height: 100%;
-    width: 83.5%;
+    width: 85%;
     text-align: center;
+  }
+}
+
+@media screen and (min-width: 1025px) {
+  .is-sidebar-menu {
+    flex-basis: auto;
+    flex-grow: unset;
+    flex-shrink: unset;
+  }
+
+  .is-sidebar-menu.is-2 {
+    width: 14.66667%;
+  }
+
+  .layout-custom-width {
+    width: 85%;
+  }
+
+  .expanded-custom-width {
+    width: 93%;
   }
 }
 
