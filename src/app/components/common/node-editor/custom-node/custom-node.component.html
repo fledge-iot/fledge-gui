@@ -1,5 +1,5 @@
 <div [ngClass]="{'selected-node': data.selected && this.source && data.label !=='Filter'}" class="node-container"
-  (mousedown)="onNodeClick()" *ngIf="data.label!=='Storage'; else storageTemplate">
+  (mousedown)="onNodeClick($event)" *ngIf="data.label!=='Storage'; else storageTemplate">
   <ng-container *ngIf="data.label!==''; else addServiceTemplate">
     <div class="title" data-testid="title">
       <div class="is-flex is-justify-content-space-between is-align-items-baseline">

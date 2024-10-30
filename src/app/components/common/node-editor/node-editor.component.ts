@@ -302,7 +302,9 @@ export class NodeEditorComponent implements OnInit {
           const selectedFilters = this.selectedFilters.filter(filter => filter !== data.label);
           this.selectedFilters = selectedFilters;
         }
-        this.moveNodeToFront(data.id);
+        if (data.moveToFront) {
+          this.moveNodeToFront(data.id);
+        }
       }
     })
 
