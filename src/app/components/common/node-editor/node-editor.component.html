@@ -77,7 +77,6 @@
       </div>
     </ng-container>
     <ng-container *ngIf="showFilterConfiguration">
-      ff
       <app-configuration-group *ngIf="filterCategory" [category]="filterCategory" [sourceName]="quickviewFilterName"
         (changedConfigEvent)="getChangedFilterConfig($event)" (formStatusEvent)="validFilterConfigForm = $event">
       </app-configuration-group>
