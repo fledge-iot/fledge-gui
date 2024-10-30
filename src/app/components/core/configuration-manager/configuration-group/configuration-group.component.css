@@ -133,3 +133,9 @@
 .card-content {
   padding: 0.5rem 1rem !important;
 }
+
+@media (min-width: 1550px) {
+  .custom-max-width {
+    max-width: 1110px !important;
+  }
+}
