@@ -8,10 +8,11 @@ import {
   ResponseHandler,
   RolesService,
   ToastService,
+  SharedService
 } from '../../../../services';
 import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
 import { catchError, map } from 'rxjs/operators';
-import { forkJoin, of } from 'rxjs';
+import { forkJoin, of, Subscription } from 'rxjs';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DocService } from '../../../../services/doc.service';
 

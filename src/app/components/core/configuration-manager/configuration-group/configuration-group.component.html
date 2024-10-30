@@ -1,4 +1,4 @@
-<div class="container" [ngClass]="{'is-fluid': sourceName}">
+<div class="container" [ngClass]="{'is-fluid': sourceName}" [id]="from">
   <nav *ngIf="sourceName && from !== 'rule-modal' && from !== 'delivery-modal'" class="breadcrumb"
     aria-label="breadcrumbs">
     <ul>
@@ -129,13 +129,13 @@
 
           <app-list-type-configuration *ngIf="g?.type == 'list'" [hidden]="selectedGroup.key !== g.group.key"
             [configuration]="g.config" [group]="g.group.key" [from]="from"
-            (changedConfig)="getChangedConfiguration($event)"
-            (formStatusEvent)="formStatus($event)"></app-list-type-configuration>
+            (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)">
+          </app-list-type-configuration>
 
           <app-kv-list-type-configuration *ngIf="g?.type == 'kvlist'" [hidden]="selectedGroup.key !== g.group.key"
             [configuration]="g.config" [group]="g.group.key" [from]="from"
-            (changedConfig)="getChangedConfiguration($event)"
-            (formStatusEvent)="formStatus($event)"></app-kv-list-type-configuration>
+            (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)">
+          </app-kv-list-type-configuration>
 
           <app-show-configuration *ngIf="!['bucket', 'list', 'kvlist'].includes(g?.type)"
             [hidden]="selectedGroup.key !== g.group.key" [groupConfiguration]="g.config" [group]="g.group.key"
@@ -148,15 +148,15 @@
         <ng-container *ngIf="g.category == category?.name+'Advanced'; else SecurityGroup">
           <app-show-configuration [hidden]="selectedGroup.key !== g.group.key" [groupConfiguration]="g.config"
             [group]="g.group.key" [selectedGroup]="selectedGroup.key" [fullConfiguration]="g.config" [from]="from"
-            (event)="getChangedAdvanceConfiguration($event)"
-            (formStatusEvent)="formStatus($event)"></app-show-configuration>
+            (event)="getChangedAdvanceConfiguration($event)" (formStatusEvent)="formStatus($event)">
+          </app-show-configuration>
         </ng-container>
         <ng-template #SecurityGroup>
           <ng-container *ngIf="g.category == category?.name+'Security'; else pluginGroup">
             <app-show-configuration [hidden]="selectedGroup.key !== g.group.key" [groupConfiguration]="g.config"
               [group]="g.group.key" [selectedGroup]="selectedGroup.key" [fullConfiguration]="g.config" [from]="from"
-              (event)="getChangedSecurityConfiguration($event)"
-              (formStatusEvent)="formStatus($event)"></app-show-configuration>
+              (event)="getChangedSecurityConfiguration($event)" (formStatusEvent)="formStatus($event)">
+            </app-show-configuration>
           </ng-container>
         </ng-template>
       </ng-container>

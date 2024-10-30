@@ -52,6 +52,19 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
 
   ngAfterViewInit() {
+    if (this.from.includes("control-pipeline")) {
+      const element = document.getElementById(this.from);
+      if (element) {
+        const currentMaxWidth = window.getComputedStyle(element).maxWidth;
+        const currentMaxWidthValue = parseFloat(currentMaxWidth);
+
+        // Calculate 65% of the current max-width
+        const newMaxWidthValue = currentMaxWidthValue * 0.65;
+
+        // Set the new max-width (keeping it in px)
+        element.style.maxWidth = newMaxWidthValue + 'px';
+      }
+    }
     const idSuffix = this.from + '_' + this.sourceName;
     const groupNavContents = document.getElementById("nav_contents_" + idSuffix);
     const groupNavigation = document.getElementById("group_navigation_" + idSuffix);

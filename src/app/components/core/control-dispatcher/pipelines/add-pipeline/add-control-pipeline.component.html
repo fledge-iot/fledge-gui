@@ -169,7 +169,7 @@
             <div class="field-label has-text-left">
               <label class="label">Filters</label>
             </div>
-            <div class="field-body filter-body">
+            <div class="field-body">
               <div class="field">
                 <div>
                   <app-filter-list *ngIf="filterPipeline.length > 0" #filtersListComponent [service]="pipelineName"
@@ -305,8 +305,8 @@
         </div>
       </form>
       <ng-container *ngIf="isAddFilterWizard">
-        <app-add-pipeline-filter-modal [pipelineName]="pipelineName"
-          (notify)="addNewFitlerInPipeline($event)"></app-add-pipeline-filter-modal>
+        <app-add-pipeline-filter-modal [pipelineName]="pipelineName" (notify)="addNewFitlerInPipeline($event)">
+        </app-add-pipeline-filter-modal>
       </ng-container>
     </div>
   </div>
