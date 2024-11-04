@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef, SimpleChanges } from "@angular/core";
+import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef } from "@angular/core";
 import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
@@ -100,7 +100,7 @@ export class CustomNodeComponent implements OnChanges {
     });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(): void {
     this.nodeId = this.data.id;
     if (this.data.label === 'South' || this.data.label === 'North') {
       if (this.elRef.nativeElement.children.length !== 0 && this.elRef.nativeElement.children[0].classList.contains('selected-node')) {
@@ -188,7 +188,6 @@ export class CustomNodeComponent implements OnChanges {
     }
 
     if (this.source && !this.data.selected) {
-      this.data['moveToFront'] = false;
       this.flowEditorService.nodeClick.next(this.data);
     }
 
@@ -215,11 +214,9 @@ export class CustomNodeComponent implements OnChanges {
     return ai - bi;
   }
 
-  onNodeClick(event) {
-    const isConfigClicked = event.target.classList.contains('bi-gear-wide-connected');
+  onNodeClick() {
     if (this.source) {
       this.data['isFilterNode'] = this.isFilterNode;
-      this.data['moveToFront'] = !isConfigClicked;
       this.flowEditorService.nodeClick.next(this.data);
     }
   }
@@ -377,12 +374,12 @@ export class CustomNodeComponent implements OnChanges {
 
   openDropdown() {
     this.timeoutId = setTimeout(() => {
-      this.data['moveToFront'] = true;
-      this.flowEditorService.nodeClick.next(this.data);
+      this.flowEditorService.nodeDropdownClick.next({ nodeId: this.nodeId });
       const dropDown = document.querySelector('#nodeDropdown-' + this.nodeId);
       dropDown.classList.add('is-active');
     }, 250);
   }
+
 
   closeDropdown() {
     clearTimeout(this.timeoutId);

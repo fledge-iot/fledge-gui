@@ -53,6 +53,7 @@ export class NodeEditorComponent implements OnInit {
   private logsSubscription: Subscription;
   private paramsSubscription: Subscription;
   private nodeClickSubscription: Subscription;
+  private nodeDropdownClickSubscription: Subscription;
 
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
@@ -106,9 +107,9 @@ export class NodeEditorComponent implements OnInit {
   selectedAsset = '';
   MAX_RANGE = MAX_INT_SIZE / 2;
   isSidebarCollapsed: boolean;
-  isNodeSelected = false;
   nodesToDelete = [];
   selectedFilters = [];
+
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -286,8 +287,7 @@ export class NodeEditorComponent implements OnInit {
 
     this.nodeClickSubscription = this.flowEditorService.nodeClick.pipe(skip(1)).subscribe(data => {
       if (data.label !== 'Storage' && data.label !== 'Filter') {
-        this.isNodeSelected = data.selected;
-        if (this.isNodeSelected && !this.nodesToDelete?.some(node => (node.id == data.id))) {
+        if (data.selected && !this.nodesToDelete?.some(node => (node.id == data.id))) {
           if (data.isFilterNode) {
             if (!this.selectedFilters.some(filter => filter === data.label)) {
               this.selectedFilters.push(data.label);
@@ -295,17 +295,18 @@ export class NodeEditorComponent implements OnInit {
           }
           this.nodesToDelete.push({ id: data.id, 'label': data.label, 'name': data.controls.nameControl['name'] });
         }
-        else if (!this.isNodeSelected) {
+        else if (!data.selected) {
           const nodesToDelete = this.nodesToDelete.filter(node => node.id !== data.id);
           this.nodesToDelete = nodesToDelete;
 
           const selectedFilters = this.selectedFilters.filter(filter => filter !== data.label);
           this.selectedFilters = selectedFilters;
         }
-        if (data.moveToFront) {
-          this.moveNodeToFront(data.id);
-        }
       }
+    })
+
+    this.nodeDropdownClickSubscription = this.flowEditorService.nodeDropdownClick.pipe(skip(1)).subscribe(data => {
+      this.moveNodeToFront(data.nodeId);
     })
 
     this.isAlive = true;
@@ -1212,6 +1213,7 @@ export class NodeEditorComponent implements OnInit {
     this.exportReadingSubscription.unsubscribe();
     this.logsSubscription.unsubscribe();
     this.nodeClickSubscription.unsubscribe();
+    this.nodeDropdownClickSubscription.unsubscribe();
     if (this.from === 'notifications') {
       this.serviceDetailsSubscription?.unsubscribe();
       this.paramsSubscription.unsubscribe();

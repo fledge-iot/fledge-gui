@@ -158,7 +158,7 @@ export class CustomNotificationNodeComponent implements OnChanges {
 
   openDropdown() {
     this.timeoutId = setTimeout(() => {
-      this.flowEditorService.nodeClick.next(this.data);
+      this.flowEditorService.nodeDropdownClick.next({ nodeId: this.nodeId });
       const dropDown = document.querySelector('#nodeDropdown-' + this.nodeId);
       dropDown.classList.add('is-active');
     }, 250);

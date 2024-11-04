@@ -15,6 +15,8 @@ export class FlowEditorService {
   public removeFilter: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public exportReading: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public nodeClick: BehaviorSubject<any> = new BehaviorSubject<any>(false);
+  public nodeDropdownClick: BehaviorSubject<any> = new BehaviorSubject<any>(false);
+
   constructor() { }
 
   public flowEditorControl(visible: boolean) {

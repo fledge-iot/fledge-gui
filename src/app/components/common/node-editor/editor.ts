@@ -644,6 +644,13 @@ export function resetNodes() {
   AreaExtensions.zoomAt(area, editor.getNodes());
 }
 
+// export function checkHistoryLength() {
+//   let historySnapshot = history.getHistorySnapshot();
+//   let historyLength = historySnapshot.length;
+//   const checkHistoryLength = historyLength > 0;
+//   return checkHistoryLength;
+// }
+
 function getSecondLastActionName() {
   let historySnapshot = history.getHistorySnapshot();
   let historyLength = historySnapshot.length;
