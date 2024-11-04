@@ -75,8 +75,12 @@ table.scroll tbody {
   max-height: 48px !important;
 }
 
-.add-btn {
-  font-size: 0.9rem;
+.add-btn,
+.steps,
+.title-name,
+.is-horizontal .label,
+.is-size-9 {
+  font-size: 0.9rem !important;
 }
 
 #card-title {
@@ -284,6 +288,7 @@ a.dropdown-item:hover {
   vertical-align: middle;
   background: none;
   border: none;
+  box-shadow: none;
 }
 
 .text-btn {
@@ -320,10 +325,6 @@ div:has(div.modal-disabled) {
 table thead th {
   font-size: 0.9rem !important;
   font-weight: 500;
-}
-
-.title-name {
-  font-size: 0.9rem;
 }
 
 .icon-group {
@@ -415,10 +416,6 @@ span.tooltip {
   cursor: pointer !important;
 }
 
-.is-horizontal .label {
-  font-size: 0.9rem;
-}
-
 .label {
   font-size: 0.75rem;
   font-weight: 500;
@@ -452,11 +449,13 @@ span.tooltip {
   padding: 1em 0.75em !important
 }
 
-.is-size-9 {
-  font-size: 0.9rem !important;
-}
-
-.input, .textarea, .select select, .CodeMirror-wrap, .card, .dropdown .button {
+.input,
+.textarea,
+.select select,
+.CodeMirror-wrap,
+.card,
+.panel,
+.panel-block {
   border-radius: 2px !important;
 }
 
@@ -508,7 +507,12 @@ span.tooltip {
   padding: 0.25em 0.5em;
 }
 
-.card-header a, .card-header button, .dropdown a, nav .button, .modal-card-head .button {
+.card-header a,
+.card-header button,
+.dropdown a,
+nav .button,
+.modal-card-head .button,
+.modal-card-head {
   box-shadow: none !important;
 }
 
@@ -528,4 +532,10 @@ span.tooltip {
   background-color: transparent !important;
   color: #485fc7 !important;
 }
+
+.label {
+  font-size: .75rem !important;
+}
+
+
 /*****************/

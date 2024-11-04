@@ -7163,7 +7163,7 @@ button.dropdown-item.is-selected {
   --bulma-navbar-item-hover-background-l-delta: var(--bulma-hover-background-l-delta);
   --bulma-navbar-item-active-background-l-delta: var(--bulma-active-background-l-delta);
   --bulma-navbar-item-color-l: var(--bulma-text-l);
-  --bulma-navbar-item-color: hsl(var(--bulma-navbar-h), var(--bulma-navbar-s), var(--bulma-navbar-item-color-l));
+  --bulma-navbar-item-color: #4a4a4a;
   --bulma-navbar-item-selected-h: var(--bulma-link-h);
   --bulma-navbar-item-selected-s: var(--bulma-link-s);
   --bulma-navbar-item-selected-l: var(--bulma-link-l);

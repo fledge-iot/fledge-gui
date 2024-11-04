@@ -6,8 +6,7 @@ $fw-400: 400;
 $fs-normal: 0.9rem;
 
 // Path to Bulma's sass folder
-@use "bulma/sass" with (
-  $radius-small: $radius-sm,
+@use "bulma/sass" with ($radius-small: $radius-sm,
   $card-header-weight: $fw-500,
   $link: $blue,
   $card-header-color: #363636,
@@ -20,5 +19,4 @@ $fs-normal: 0.9rem;
   $modal-card-head-padding: 20px,
   $modal-card-head-background-color: #f5f5f5,
   $modal-card-head-radius: $radius-medium,
-  $button-weight: $fw-400
-);
+  $button-weight: $fw-400);
