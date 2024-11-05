@@ -50,7 +50,7 @@
   <ng-container *ngIf="!isAddFilterWizard">
     <app-toolbar *ngIf="source && rolesService.hasEditPermissions()" class="is-inline-block pr-2"
       (reloadData)="reload()" (resetNodes)="reset()" (undo)="callUndoAction()" (redo)="callRedoAction()"
-      (delete)="onDeleteAction()" [isDisabled]="nodesToDelete.length == 0">
+      [isHistoryAvailable]="isHistoryAvailable" (delete)="onDeleteAction()" [isDisabled]="nodesToDelete.length == 0">
     </app-toolbar>
     <div class="rete" [ngClass]="{'expanded-width': isSidebarCollapsed, 'collapsed-width': !isSidebarCollapsed}" #rete>
     </div>

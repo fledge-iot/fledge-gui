@@ -307,6 +307,7 @@ async function nodesGrid(area: AreaPlugin<Schemes,
   socket: ClassicPreset.Socket,
   from: string, isServiceAvailable = null) {
   const service = from == 'south' ? new AddService() : from == 'north' ? new AddTask() : new AddNotification(isServiceAvailable);
+
   await editor.addNode(service);
   await area.translate(service.id, { x: 0, y: 0 });
 
@@ -609,7 +610,6 @@ export function undoAction() {
       }
     }
   }, 100);
-
   history.undo().then(() => {
   });
 }
@@ -644,12 +644,20 @@ export function resetNodes() {
   AreaExtensions.zoomAt(area, editor.getNodes());
 }
 
-// export function checkHistoryLength() {
-//   let historySnapshot = history.getHistorySnapshot();
-//   let historyLength = historySnapshot.length;
-//   const checkHistoryLength = historyLength > 0;
-//   return checkHistoryLength;
-// }
+export function checkHistoryLength() {
+  let historySnapshot = history.getHistorySnapshot();
+  let historyLength = historySnapshot.length;
+  const checkHistoryLength = historyLength > 0;
+
+  console.log('historySnapshot', historySnapshot);
+  console.log('checkHistoryLength', historyLength);
+  return checkHistoryLength;
+}
+
+export function clearHistory() {
+  history = new HistoryPlugin<Schemes>();
+  history.clear();
+}
 
 function getSecondLastActionName() {
   let historySnapshot = history.getHistorySnapshot();

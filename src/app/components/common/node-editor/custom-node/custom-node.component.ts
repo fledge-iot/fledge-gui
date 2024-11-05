@@ -11,6 +11,8 @@ import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
 import { Subject, Subscription } from "rxjs";
 
+import { checkHistoryLength } from './../editor';
+
 @Component({
   selector: 'app-custom-node',
   templateUrl: './custom-node.component.html',
@@ -101,6 +103,8 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   ngOnChanges(): void {
+    this.flowEditorService.checkHistory.next({ historyLength: checkHistoryLength() });
+
     this.nodeId = this.data.id;
     if (this.data.label === 'South' || this.data.label === 'North') {
       if (this.elRef.nativeElement.children.length !== 0 && this.elRef.nativeElement.children[0].classList.contains('selected-node')) {

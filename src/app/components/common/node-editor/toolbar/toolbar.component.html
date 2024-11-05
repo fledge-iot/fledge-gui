@@ -9,7 +9,8 @@
         <i class="bi bi-aspect-ratio"></i>
     </button>
     <hr class="m-0">
-    <button type="button" (click)="undoAction()" class="button is-small custom-tooltip">
+    <button type="button" (click)="undoAction()" [disabled]="!isHistoryAvailable"
+        class="button is-small custom-tooltip">
         <span class="tooltiptext"><strong>Undo</strong><br />Press Ctrl Z</span>
         <i class="bi bi-arrow-counterclockwise"></i>
     </button>

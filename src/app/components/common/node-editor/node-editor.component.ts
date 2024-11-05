@@ -23,7 +23,7 @@ import {
   SharedService,
   ToastService
 } from './../../../services';
-import { createEditor, deleteConnection, getUpdatedFilterPipeline, removeNode, updateFilterNode, updateNode, applyContentReordering, undoAction, redoAction, resetNodes } from './editor';
+import { createEditor, deleteConnection, getUpdatedFilterPipeline, removeNode, updateFilterNode, updateNode, applyContentReordering, undoAction, redoAction, resetNodes, clearHistory } from './editor';
 import { FlowEditorService } from './flow-editor.service';
 
 @Component({
@@ -109,7 +109,7 @@ export class NodeEditorComponent implements OnInit {
   isSidebarCollapsed: boolean;
   nodesToDelete = [];
   selectedFilters = [];
-
+  isHistoryAvailable: boolean;
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -333,6 +333,10 @@ export class NodeEditorComponent implements OnInit {
         removeNode(data.id);
       }
     })
+    this.flowEditorService.checkHistory.subscribe(data => {
+      console.log('checkHistory', data);
+      this.isHistoryAvailable = data.historyLength;
+    });
   }
 
   ngAfterViewInit(): void {

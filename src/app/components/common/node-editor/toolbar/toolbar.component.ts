@@ -7,6 +7,7 @@ import { Component, Output, EventEmitter, Input } from '@angular/core';
 })
 export class ToolbarComponent {
   @Input() isDisabled = new EventEmitter<boolean>();
+  @Input() isHistoryAvailable = new EventEmitter<boolean>();
   @Output() reloadData = new EventEmitter<Object>();
   @Output() resetNodes = new EventEmitter<Object>();
   @Output() undo = new EventEmitter<Object>();
