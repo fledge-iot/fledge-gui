@@ -78,7 +78,7 @@ table.scroll tbody {
 .add-btn,
 .steps,
 .title-name,
-.is-horizontal .label,
+.is-horizontal .label:not(.lbl-child),
 .is-size-9 {
   font-size: 0.9rem !important;
 }
@@ -416,7 +416,7 @@ span.tooltip {
   cursor: pointer !important;
 }
 
-.label {
+.label:not(.lbl-child) {
   font-size: 0.75rem;
   font-weight: 500;
 }
@@ -527,15 +527,5 @@ nav .button,
 .modal-card-foot .button:not(:last-child) {
   margin-right: .5em;
 }
-
-.button.is-link[disabled] {
-  background-color: transparent !important;
-  color: #485fc7 !important;
-}
-
-.label {
-  font-size: .75rem !important;
-}
-
 
 /*****************/

@@ -7046,9 +7046,9 @@ button.dropdown-item.is-selected {
   --bulma-modal-card-title-line-height: 1;
   --bulma-modal-card-title-size: 0.9rem;
   --bulma-modal-card-foot-background-color: var(--bulma-scheme-main-bis);
-  --bulma-modal-card-foot-radius: var(--bulma-radius-large);
+  --bulma-modal-card-foot-radius: 6px;
   --bulma-modal-card-body-background-color: var(--bulma-scheme-main);
-  --bulma-modal-card-body-padding: 2rem;
+  --bulma-modal-card-body-padding: 20px;
 }
 
 .modal {
@@ -7163,7 +7163,7 @@ button.dropdown-item.is-selected {
   --bulma-navbar-item-hover-background-l-delta: var(--bulma-hover-background-l-delta);
   --bulma-navbar-item-active-background-l-delta: var(--bulma-active-background-l-delta);
   --bulma-navbar-item-color-l: var(--bulma-text-l);
-  --bulma-navbar-item-color: #4a4a4a;
+  --bulma-navbar-item-color: hsl(var(--bulma-navbar-h), var(--bulma-navbar-s), var(--bulma-navbar-item-color-l));
   --bulma-navbar-item-selected-h: var(--bulma-link-h);
   --bulma-navbar-item-selected-s: var(--bulma-link-s);
   --bulma-navbar-item-selected-l: var(--bulma-link-l);
