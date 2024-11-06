@@ -32,6 +32,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
   public taskType = 'North';
   public source = '';
+  public isTabsNavVisible = false;
 
   // to hold child form state
   validConfigurationForm = true;
@@ -117,6 +118,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
     const nextContent = <HTMLElement>document.getElementById('c-' + sId);
     if (nextContent != null) {
+      this.isTabsNavVisible = sId == 2 ? true : false;
       nextContent.setAttribute('class', 'box step-content  is-active');
     }
 
@@ -162,6 +164,8 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
         // check if configuration form is valid or invalid
         this.validConfigurationForm ? nxtButton.disabled = false : nxtButton.disabled = true;
+
+        this.isTabsNavVisible = true;
         break;
       case 2:
         this.reenableButton.emit(false);

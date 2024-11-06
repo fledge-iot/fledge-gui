@@ -122,7 +122,8 @@
         </div>
         <div class="box step-content" id="c-3">
           <app-configuration-group #ruleConfigView *ngIf="rulePluginConfiguration" [category]="rulePluginConfiguration"
-            (changedConfigEvent)="getChangedRuleConfig($event)" [from]="'add-notification-form'"
+            [recalculateTabsOverflow]="isTabsNavVisible" (changedConfigEvent)="getChangedRuleConfig($event)"
+            [from]="'add-notification-rule-form'"
             (formStatusEvent)="checkRuleFormValidity($event)"></app-configuration-group>
         </div>
         <div class="box step-content" id="c-4">
@@ -181,8 +182,8 @@
         </div>
         <div class="box step-content" id="c-5">
           <app-configuration-group #deliveryConfigView *ngIf="deliveryPluginConfiguration"
-            [category]="deliveryPluginConfiguration" (changedConfigEvent)="getChangedDeliveryConfig($event)"
-            [from]="'add-notification-form'"
+            [recalculateTabsOverflow]="isTabsNavVisible" [category]="deliveryPluginConfiguration"
+            (changedConfigEvent)="getChangedDeliveryConfig($event)" [from]="'add-notification-delivery-form'"
             (formStatusEvent)="validDeliveryConfigurationForm = $event"></app-configuration-group>
         </div>
         <div class="box step-content" id="c-6">
