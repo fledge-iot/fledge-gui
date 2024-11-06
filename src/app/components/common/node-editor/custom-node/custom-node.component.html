@@ -21,7 +21,7 @@
                 <input type="checkbox" [checked]='isEnabled' (click)="toggleEnabled($event.target.checked)"
                   [disabled]="!rolesService.hasEditPermissions()">
               </label>
-              <button class="btn btn-icon pt-0" data-show="quickview" data-target="quickviewDefault"
+              <button class="btn btn-icon pt-0 btn-padding" data-show="quickview" data-target="quickviewDefault"
                 data-toggle="quickview" (click)="showConfigurationInQuickview()">
                 <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Configuration">
                   <i class="bi bi-gear-wide-connected bi-sm"></i>

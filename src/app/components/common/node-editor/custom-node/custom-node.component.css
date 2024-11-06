@@ -220,3 +220,7 @@
   background: whitesmoke;
   cursor: not-allowed !important;
 }
+
+.btn-padding {
+  padding-inline: 6px;
+}
