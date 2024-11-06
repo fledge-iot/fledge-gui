@@ -52,7 +52,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
 
   ngAfterViewInit() {
-    if (this.from.includes("control-pipeline")) {
+    if (this.from && this.from.includes("control-pipeline")) {
       const element = document.getElementById(this.from);
       if (element) {
         const currentMaxWidthValue = parseFloat(window.getComputedStyle(element).maxWidth);
