@@ -130,10 +130,28 @@ export class ConfigurationGroupComponent implements AfterViewInit {
       return false;
     });
 
-    // sort group items having default configuration as first element
+    // sort groups according to order of config items i.e. config item containing minimum order in the group represents groupOrder
     this.groups = this.groups
       .sort((a, b) => {
-        return ((+a?.order) - (+b?.order)) || a.group.name.localeCompare(b.group.name)
+        let groupOrderA = 1000000;
+        if (['bucket', 'list', 'kvlist'].includes(a.type)) {
+          groupOrderA = a.order ? Math.min(+a.order, groupOrderA) : groupOrderA;
+        }
+        else {
+          for (let item in a.config) {
+            groupOrderA = a.config[item].order ? Math.min(+a.config[item].order, groupOrderA) : groupOrderA;
+          }
+        }
+        let groupOrderB = 1000000;
+        if (['bucket', 'list', 'kvlist'].includes(b.type)) {
+          groupOrderB = b.order ? Math.min(+b.order, groupOrderB) : groupOrderB;
+        }
+        else {
+          for (let item in b.config) {
+            groupOrderB = b.config[item].order ? Math.min(+b.config[item].order, groupOrderB) : groupOrderB;
+          }
+        }
+        return ((groupOrderA - groupOrderB) || a.group.name.localeCompare(b.group.name));
       }).reduce((acc, e) => {
         e.group.key === 'Basic' ? acc.unshift(e) : acc.push(e);
         return acc;
