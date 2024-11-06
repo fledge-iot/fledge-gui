@@ -1,4 +1,4 @@
-<div class="container" [ngClass]="{'is-fluid': sourceName, 'custom-max-width': from.includes('control-pipeline')}"
+<div class="container" [ngClass]="{'is-fluid': sourceName, 'custom-max-width': from?.includes('control-pipeline')}"
   [id]="from">
   <nav *ngIf="sourceName && from !== 'rule-modal' && from !== 'delivery-modal'" class="breadcrumb"
     aria-label="breadcrumbs">
