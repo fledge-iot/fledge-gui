@@ -3,6 +3,10 @@
   padding: 0.5rem;
 }
 
+.custom-margin {
+  margin-top: -25px;
+}
+
 .expanded-width {
   width: 91vw;
 }

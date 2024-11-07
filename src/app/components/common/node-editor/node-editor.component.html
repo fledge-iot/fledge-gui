@@ -52,7 +52,9 @@
       (reloadData)="reload()" (resetNodes)="reset()" (undo)="callUndoAction()" (redo)="callRedoAction()"
       [historyData]="historyData" (delete)="onDeleteAction()" [isDeleteDisabled]="nodesToDelete.length == 0">
     </app-toolbar>
-    <div class="rete" [ngClass]="{'expanded-width': isSidebarCollapsed, 'collapsed-width': !isSidebarCollapsed}" #rete>
+    <div class="rete"
+      [ngClass]="{'expanded-width': isSidebarCollapsed, 'collapsed-width': !isSidebarCollapsed, 'custom-margin': source && rolesService.hasEditPermissions()}"
+      #rete>
     </div>
     <div class="dock"></div>
   </ng-container>
