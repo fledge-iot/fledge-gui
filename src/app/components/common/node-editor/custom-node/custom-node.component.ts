@@ -11,7 +11,7 @@ import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
 import { Subject, Subscription } from "rxjs";
 
-import { checkHistoryLength } from './../editor';
+import { canUndo, canRedo } from './../editor';
 
 @Component({
   selector: 'app-custom-node',
@@ -103,8 +103,6 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   ngOnChanges(): void {
-    this.flowEditorService.checkHistory.next({ historyLength: checkHistoryLength() });
-
     this.nodeId = this.data.id;
     if (this.data.label === 'South' || this.data.label === 'North') {
       if (this.elRef.nativeElement.children.length !== 0 && this.elRef.nativeElement.children[0].classList.contains('selected-node')) {
@@ -190,7 +188,6 @@ export class CustomNodeComponent implements OnChanges {
         }
       }
     }
-
     if (this.source && !this.data.selected) {
       this.flowEditorService.nodeClick.next(this.data);
     }
@@ -206,6 +203,7 @@ export class CustomNodeComponent implements OnChanges {
     this.cdr.detectChanges();
     requestAnimationFrame(() => this.rendered());
     this.seed++; // force render sockets
+    this.flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo() });
   }
 
   sortByIndex<

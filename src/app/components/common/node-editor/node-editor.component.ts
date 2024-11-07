@@ -109,7 +109,7 @@ export class NodeEditorComponent implements OnInit {
   isSidebarCollapsed: boolean;
   nodesToDelete = [];
   selectedFilters = [];
-  isHistoryAvailable: boolean;
+  historyData = { showUndo: false, showRedo: false };
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -176,13 +176,13 @@ export class NodeEditorComponent implements OnInit {
   @HostListener('document:keydown', ['$event'])
   onKeydownHandler(event) {
     if ((event.ctrlKey || event.metaKey) && event.keyCode == 90) {
-      undoAction();
+      undoAction(this.flowEditorService);
     }
     if ((event.ctrlKey || event.metaKey) && event.keyCode == 89) {
-      redoAction();
+      redoAction(this.flowEditorService);
     }
     if (event.keyCode == 32) {
-      resetNodes();
+      resetNodes(this.flowEditorService);
     }
     if (event.key === 'Delete') {
       this.deleteSelectedEntity();
@@ -286,6 +286,10 @@ export class NodeEditorComponent implements OnInit {
     });
 
     this.nodeClickSubscription = this.flowEditorService.nodeClick.pipe(skip(1)).subscribe(data => {
+      // Currently not possible to delete multiple connections
+      if (data.source && data.target) {
+        this.nodesToDelete.push({ id: data.id, 'label': 'Connection' });
+      }
       if (data.label !== 'Storage' && data.label !== 'Filter') {
         if (data.selected && !this.nodesToDelete?.some(node => (node.id == data.id))) {
           if (data.isFilterNode) {
@@ -334,8 +338,7 @@ export class NodeEditorComponent implements OnInit {
       }
     })
     this.flowEditorService.checkHistory.subscribe(data => {
-      console.log('checkHistory', data);
-      this.isHistoryAvailable = data.historyLength;
+      this.historyData = data;
     });
   }
 
@@ -1171,7 +1174,12 @@ export class NodeEditorComponent implements OnInit {
   }
 
   callDeleteAction() {
-    const filterNodeToDelete = this.nodesToDelete.find(node => (node.label !== 'South' && node.label !== 'North'));
+    const connectionToDelete = this.nodesToDelete.find(node => (node.label === 'Connection'));
+    if (connectionToDelete) {
+      deleteConnection(connectionToDelete.id);
+      this.nodesToDelete = [];
+    }
+    const filterNodeToDelete = this.nodesToDelete.find(node => (node.label !== 'South' && node.label !== 'North' && node.label !== 'Connection'));
     if (filterNodeToDelete) {
       this.deleteFilter();
     }
@@ -1196,15 +1204,15 @@ export class NodeEditorComponent implements OnInit {
   }
 
   reset() {
-    resetNodes();
+    resetNodes(this.flowEditorService);
   }
 
   callUndoAction() {
-    undoAction();
+    undoAction(this.flowEditorService);
   }
 
   callRedoAction() {
-    redoAction();
+    redoAction(this.flowEditorService);
   }
 
   ngOnDestroy() {

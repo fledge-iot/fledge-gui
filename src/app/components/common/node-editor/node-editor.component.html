@@ -50,7 +50,7 @@
   <ng-container *ngIf="!isAddFilterWizard">
     <app-toolbar *ngIf="source && rolesService.hasEditPermissions()" class="is-inline-block pr-2"
       (reloadData)="reload()" (resetNodes)="reset()" (undo)="callUndoAction()" (redo)="callRedoAction()"
-      [isHistoryAvailable]="isHistoryAvailable" (delete)="onDeleteAction()" [isDisabled]="nodesToDelete.length == 0">
+      [historyData]="historyData" (delete)="onDeleteAction()" [isDeleteDisabled]="nodesToDelete.length == 0">
     </app-toolbar>
     <div class="rete" [ngClass]="{'expanded-width': isSidebarCollapsed, 'collapsed-width': !isSidebarCollapsed}" #rete>
     </div>
@@ -224,7 +224,7 @@
     <button class="delete" aria-label="close" (click)="closeModal('from-toolbar-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Are you sure, You want to delete the selected nodes?
+    Are you sure, You want to delete the selected nodes/connection?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('from-toolbar-dialog')">Cancel</button>

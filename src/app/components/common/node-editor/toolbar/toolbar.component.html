@@ -9,20 +9,20 @@
         <i class="bi bi-aspect-ratio"></i>
     </button>
     <hr class="m-0">
-    <button type="button" (click)="undoAction()" [disabled]="!isHistoryAvailable"
+    <button type="button" (click)="undoAction()" [disabled]="!historyData['showUndo']"
         class="button is-small custom-tooltip">
         <span class="tooltiptext"><strong>Undo</strong><br />Press Ctrl Z</span>
         <i class="bi bi-arrow-counterclockwise"></i>
     </button>
     <hr class="m-0">
-    <button type="button" (click)="redoAction()" class="button is-small custom-tooltip">
+    <button type="button" (click)="redoAction()" [disabled]="!historyData['showRedo']"
+        class="button is-small custom-tooltip">
         <span class="tooltiptext"><strong>Redo</strong><br />Press Ctrl Y</span>
         <i class="bi bi-arrow-clockwise"></i>
     </button>
     <hr class="m-0">
-    <button type="button" (click)="deleteAction()" [disabled]="isDisabled" class="button is-small"
-        [ngClass]="{'custom-tooltip': !isDisabled}">
-        <span *ngIf="!isDisabled" class="tooltiptext"><strong>Delete</strong><br />Press delete</span>
+    <button type="button" (click)="deleteAction()" [disabled]="isDeleteDisabled" class="button is-small custom-tooltip">
+        <span class="tooltiptext"><strong>Delete</strong><br />Press delete</span>
         <i class="bi bi-trash"></i>
     </button>
 </div>
