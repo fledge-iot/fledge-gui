@@ -97,7 +97,7 @@
             </div>
           </div>
           <app-filter-list #filtersListComponent [service]="task?.name" [filterPipeline]="filterPipeline"
-            (formStatus)="filterFormStatus($event)"></app-filter-list>
+            [from]="'filter'" (formStatus)="filterFormStatus($event)"></app-filter-list>
           <hr *ngIf="rolesService.hasEditPermissions()" class="hr-text">
           <div class="columns margin-bottom">
             <div class="column is-9">

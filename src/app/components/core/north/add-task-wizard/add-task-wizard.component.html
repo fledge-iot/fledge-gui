@@ -146,6 +146,7 @@
         <div class="box step-content" id="c-2">
           <app-configuration-group *ngIf="configurationData" [category]="configurationData"
             (changedConfigEvent)="getChangedConfig($event)" [from]="'add-task-form'"
+            [recalculateTabsOverflow]="isTabsNavVisible"
             (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
         </div>
         <div class="box step-content" id="c-3">

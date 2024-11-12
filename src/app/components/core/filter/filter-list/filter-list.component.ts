@@ -8,10 +8,11 @@ import {
   ResponseHandler,
   RolesService,
   ToastService,
+  SharedService
 } from '../../../../services';
 import { ConfigurationGroupComponent } from '../../configuration-manager/configuration-group/configuration-group.component';
 import { catchError, map } from 'rxjs/operators';
-import { forkJoin, of } from 'rxjs';
+import { forkJoin, of, Subscription } from 'rxjs';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DocService } from '../../../../services/doc.service';
 
@@ -23,7 +24,6 @@ import { DocService } from '../../../../services/doc.service';
 export class FilterListComponent {
 
   @ViewChild('filterConfigComponent') filterConfigComponent: ConfigurationGroupComponent;
-
   @Input() filterPipeline: string[] = [];
   @Input() service: string = '';
   @Input() from: string = '';
@@ -41,6 +41,8 @@ export class FilterListComponent {
   changedFilterConfig = new Map();
   filterAPICallsStack = []; // hold all filter API calls to pass in forkJoin
   deletedFilterPipeline: string[] = [];
+
+  isConfigToggled: boolean;
 
   constructor(
     public rolesService: RolesService,
@@ -67,6 +69,7 @@ export class FilterListComponent {
   }
 
   activeAccordion(id: string) {
+    this.isConfigToggled = !this.isConfigToggled
     const last = <HTMLElement>document.getElementsByClassName('accordion card is-active')[0];
     if (last !== undefined) {
       const lastActiveContentBody = <HTMLElement>last.getElementsByClassName('card-content')[0];
