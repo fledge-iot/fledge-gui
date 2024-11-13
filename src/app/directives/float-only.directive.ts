@@ -26,16 +26,23 @@ export class FloatOnlyDirective {
     }
 
     if (event) {
-      return this.isVaildFloat(event);
+      return this.isValidFloat(event);
     }
   }
 
-  isVaildFloat(event) {
+  isValidFloat(event) {
     const allowedChars = /[0-9.]/;
     const inputChar = String.fromCharCode(event.charCode);
     const isAllowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'e', 'E', '-', '+'].includes(event.key);
     const isScientificNotation = event.key.toLowerCase() === 'e';
     const hasAlreadyScientificNotation = this.el.nativeElement.value.includes('e') || this.el.nativeElement.value.includes('E');
+    const cursorPosition = this.el.nativeElement.selectionStart;
+
+    // Don't allow decimal point after 'e' or 'E'
+    if (inputChar === '.' && hasAlreadyScientificNotation) {
+      const index = this.el.nativeElement.value.indexOf('e') || this.el.nativeElement.value.indexOf('E');
+      return cursorPosition < index;
+    }
     if (allowedChars.test(inputChar) || isAllowedKeys) {
       // Handle scientific notation input (like '1e10')
       if (isScientificNotation && hasAlreadyScientificNotation) {
