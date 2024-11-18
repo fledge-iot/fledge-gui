@@ -39,7 +39,7 @@
 
                       <input *ngSwitchCase="'INTEGER'" [formControlName]="configuration.key" [id]="configuration.key"
                         class="input is-fullwidth is-small" [minValue]="configuration.minimum" autocomplete="off"
-                        [maxValue]="configuration.maximum" appFloatOnly />
+                        [maxValue]="configuration.maximum" appIntegerOnly />
 
                       <input *ngSwitchCase="'FLOAT'" [formControlName]="configuration.key" [id]="configuration.key"
                         class="input is-fullwidth is-small" [minValue]="configuration.minimum" autocomplete="off"
