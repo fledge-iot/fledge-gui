@@ -123,8 +123,8 @@
         <div class="box step-content" id="c-3">
           <app-configuration-group #ruleConfigView *ngIf="rulePluginConfiguration" [category]="rulePluginConfiguration"
             [recalculateTabsOverflow]="isTabsNavVisible" (changedConfigEvent)="getChangedRuleConfig($event)"
-            [from]="'add-notification-rule-form'"
-            (formStatusEvent)="checkRuleFormValidity($event)"></app-configuration-group>
+            [from]="'add-notification-rule-form'" (formStatusEvent)="checkRuleFormValidity($event)">
+          </app-configuration-group>
         </div>
         <div class="box step-content" id="c-4">
           <div *ngIf="!notificationDeliveryPlugins || notificationDeliveryPlugins.length === 0"
@@ -262,7 +262,8 @@
         <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Cancel</button>
       </div>
       <div class="steps-action">
-        <button [disabled]="name.invalid || !validRuleConfigurationForm || !validDeliveryConfigurationForm"
+        <button
+          [disabled]="name.invalid || !validRuleConfigurationForm || !validDeliveryConfigurationForm || !pluginRequestDone"
           (click)="moveNext()" data-nav="next" class="button is-link" id="next"
           [appDisableUntilResponse]="reenableButton">Next</button>
       </div>
