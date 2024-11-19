@@ -49,6 +49,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
 
   public source = '';
+  public pluginRequestDone = false;
 
   notificationForm = new UntypedFormGroup({
     name: new UntypedFormControl(),
@@ -171,6 +172,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
                 this.pluginData.modalState = false;
                 this.selectInstalledPlugin();
               }
+              this.pluginRequestDone = true;
             }, 1000);
           });
     }, 2000);
