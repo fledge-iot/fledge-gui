@@ -203,7 +203,7 @@ export class CustomNodeComponent implements OnChanges {
     this.cdr.detectChanges();
     requestAnimationFrame(() => this.rendered());
     this.seed++; // force render sockets
-    this.flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo() });
+    this.flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo(false) });
   }
 
   sortByIndex<

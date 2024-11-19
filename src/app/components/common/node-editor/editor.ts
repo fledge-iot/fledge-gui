@@ -639,7 +639,6 @@ export function redoAction(flowEditorService) {
     }
   }, 100);
   redoItems.pop();
-
   history.redo().then(() => {
   });
   flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo() });
@@ -664,7 +663,10 @@ export function canUndo() {
   return checkHistoryLength;
 }
 
-export function canRedo() {
+export function canRedo(isRedoEnable = null) {
+  if (isRedoEnable === false) {
+    redoItems = [];
+  }
   return (redoItems.length > 0);
 }
 
