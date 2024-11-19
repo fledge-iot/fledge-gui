@@ -122,7 +122,7 @@
                 <div class="control">
                   <div class="columns is-mobile">
                     <div class="column">
-                      <input class="input" type='number' appNumberOnly min="0" max="365" placeholder="days"
+                      <input class="input" appIntegerOnly min="0" max="365" placeholder="days" autocomplete="off"
                         formControlName="repeatDays">
                       <span *ngIf="repeatDays.errors?.required || repeatDays.errors?.min || repeatDays.errors?.max"
                         class="help is-danger">
