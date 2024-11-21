@@ -60,6 +60,7 @@ let history: HistoryPlugin<Schemes>;
 let dock: DropNodePlugin;
 let newDockFilter;
 let arrange: AutoArrangePlugin<Schemes>;
+let redoItems = [];
 
 export const animatedApplier = new ArrangeAppliers.TransitionApplier<Schemes, never>(
   {
@@ -218,11 +219,10 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
     }
   }
   setCustomBackground(area) // Set custom background
-
   if (data.from !== 'notifications') {
-    createNodesAndConnections(socket, editor, arrange, area, data, connectionEvents);
+    createNodesAndConnections(socket, editor, arrange, area, data, connectionEvents, flowEditorService);
   } else {
-    nodesGrid(area, data.notifications, socket, data.from, data.isServiceEnabled);
+    nodesGrid(area, data.notifications, socket, data.from, flowEditorService, data.isServiceEnabled);
   }
 }
 
@@ -231,7 +231,7 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
   arrange: AutoArrangePlugin<Schemes, never>,
   area: AreaPlugin<Schemes, AreaExtra>,
   data: any,
-  connectionEvents) {
+  connectionEvents, flowEditorService) {
   if (data.source) {
     const db = new Storage(socket);
     const plugin = data.from == 'south' ? new South(socket, data.service) : new North(socket, data.task);
@@ -284,10 +284,11 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
     await arrange.layout();
     AreaExtensions.zoomAt(area, editor.getNodes());
     history.clear();
+    flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo() });
   }
   else {
     const nodes = data.from == 'south' ? data.services : data.tasks;
-    nodesGrid(area, nodes, socket, data.from);
+    nodesGrid(area, nodes, socket, data.from, flowEditorService);
   }
 }
 
@@ -306,8 +307,9 @@ function setCustomBackground(area: AreaPlugin<Schemes, AreaExtra>,) {
 async function nodesGrid(area: AreaPlugin<Schemes,
   AreaExtra>, nodeItems: [],
   socket: ClassicPreset.Socket,
-  from: string, isServiceAvailable = null) {
+  from: string, flowEditorService, isServiceAvailable = null) {
   const service = from == 'south' ? new AddService() : from == 'north' ? new AddTask() : new AddNotification(isServiceAvailable);
+
   await editor.addNode(service);
   await area.translate(service.id, { x: 0, y: 0 });
 
@@ -327,6 +329,7 @@ async function nodesGrid(area: AreaPlugin<Schemes,
     }
   }
   history.clear();
+  flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo() });
 }
 
 export function getUpdatedFilterPipeline() {
@@ -595,7 +598,7 @@ export function applyContentReordering(nodeId: string) {
   content.reorder(view.element, null);
 }
 
-export function undoAction() {
+export function undoAction(flowEditorService) {
   setTimeout(() => {
     // To hide the (+) icon on filter node when no connecrtion with that node
     const node = editor.getNodes().find(node => node.label == 'Filter')
@@ -611,11 +614,16 @@ export function undoAction() {
     }
   }, 100);
 
+  let historySnapshot = history.getHistorySnapshot();
+  let historyLength = historySnapshot.length;
+  redoItems.push(historySnapshot[historyLength - 1]);
+
   history.undo().then(() => {
   });
+  flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo() });
 }
 
-export function redoAction() {
+export function redoAction(flowEditorService) {
   setTimeout(() => {
     // To hide the (+) icon on filter node when no connecrtion with that node
     const node = editor.getNodes().find(node => node.label == 'Filter')
@@ -630,11 +638,13 @@ export function redoAction() {
       }
     }
   }, 100);
+  redoItems.pop();
   history.redo().then(() => {
   });
+  flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo() });
 }
 
-export function resetNodes() {
+export function resetNodes(flowEditorService) {
   // reset canvas to its initial state
   let historySnapshot = history.getHistorySnapshot();
   let historyLength = historySnapshot.length;
@@ -643,6 +653,21 @@ export function resetNodes() {
   }
   // reset zoom in/out state
   AreaExtensions.zoomAt(area, editor.getNodes());
+  flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo() });
+}
+
+export function canUndo() {
+  let historySnapshot = history.getHistorySnapshot();
+  let historyLength = historySnapshot.length;
+  const checkHistoryLength = historyLength > 0;
+  return checkHistoryLength;
+}
+
+export function canRedo(isRedoEnable = null) {
+  if (isRedoEnable === false) {
+    redoItems = [];
+  }
+  return (redoItems.length > 0);
 }
 
 function getSecondLastActionName() {

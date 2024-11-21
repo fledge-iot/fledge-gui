@@ -11,6 +11,8 @@ import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
 import { Subject, Subscription } from "rxjs";
 
+import { canUndo, canRedo } from './../editor';
+
 @Component({
   selector: 'app-custom-node',
   templateUrl: './custom-node.component.html',
@@ -103,6 +105,7 @@ export class CustomNodeComponent implements OnChanges {
   ngOnChanges(): void {
     this.nodeId = this.data.id;
     if (this.data.label === 'South' || this.data.label === 'North') {
+      this.setSetectedNodeColor('#C781BB');
       if (this.source !== '') {
         this.isServiceNode = true;
         this.elRef.nativeElement.style.borderColor = this.data.label === 'South' ? "#B6D7A8" : '#C781BB'
@@ -165,6 +168,7 @@ export class CustomNodeComponent implements OnChanges {
     }
 
     if (!this.nodeTypes.includes(this.data?.label) && !isEmpty(this.data.controls)) {
+      this.setSetectedNodeColor('#F9CB9C');
       if (this.filter.name == this.data.label) {
         this.filter.enabled = this.data?.controls?.enabledControl['enabled'];
         if (this.filter.enabled === 'true') {
@@ -173,6 +177,9 @@ export class CustomNodeComponent implements OnChanges {
           this.isEnabled = false;
         }
       }
+    }
+    if (this.source && !this.data.selected) {
+      this.flowEditorService.nodeClick.next(this.data);
     }
 
     const labels = ['AddService', 'AddTask'];
@@ -186,6 +193,16 @@ export class CustomNodeComponent implements OnChanges {
     this.cdr.detectChanges();
     requestAnimationFrame(() => this.rendered());
     this.seed++; // force render sockets
+    this.flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo(false) });
+  }
+
+  setSetectedNodeColor(colorCode) {
+    if (this.elRef.nativeElement.children.length !== 0 && this.elRef.nativeElement.children[0].classList.contains('selected-node')) {
+      let boxShadowValue = this.data.label === "South" ? "0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px #B6D7A8" : "0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px" + colorCode;
+      this.elRef.nativeElement.style.boxShadow = boxShadowValue;
+    } else {
+      this.elRef.nativeElement.style.removeProperty('box-shadow');
+    }
   }
 
   sortByIndex<
@@ -196,6 +213,13 @@ export class CustomNodeComponent implements OnChanges {
     const bi = b.value.index || 0;
 
     return ai - bi;
+  }
+
+  onNodeClick() {
+    if (this.source) {
+      this.data['isFilterNode'] = this.isFilterNode;
+      this.flowEditorService.nodeClick.next(this.data);
+    }
   }
 
   addService() {
@@ -351,11 +375,12 @@ export class CustomNodeComponent implements OnChanges {
 
   openDropdown() {
     this.timeoutId = setTimeout(() => {
-      this.flowEditorService.nodeClick.next({ nodeId: this.nodeId });
+      this.flowEditorService.nodeDropdownClick.next({ nodeId: this.nodeId });
       const dropDown = document.querySelector('#nodeDropdown-' + this.nodeId);
       dropDown.classList.add('is-active');
     }, 250);
   }
+
 
   closeDropdown() {
     clearTimeout(this.timeoutId);
@@ -367,7 +392,6 @@ export class CustomNodeComponent implements OnChanges {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    // this.addFilterSubscription?.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }
