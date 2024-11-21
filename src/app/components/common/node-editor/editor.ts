@@ -222,7 +222,7 @@ export async function createEditor(container: HTMLElement, injector: Injector, f
   if (data.from !== 'notifications') {
     createNodesAndConnections(socket, editor, arrange, area, data, connectionEvents, flowEditorService);
   } else {
-    nodesGrid(area, data.notifications, socket, data.from, flowEditorService, data.isServiceEnabled,);
+    nodesGrid(area, data.notifications, socket, data.from, flowEditorService, data.isServiceEnabled);
   }
 }
 
@@ -668,11 +668,6 @@ export function canRedo(isRedoEnable = null) {
     redoItems = [];
   }
   return (redoItems.length > 0);
-}
-
-export function clearHistory() {
-  history = new HistoryPlugin<Schemes>();
-  history.clear();
 }
 
 function getSecondLastActionName() {

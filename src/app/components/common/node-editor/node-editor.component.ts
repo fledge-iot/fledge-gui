@@ -23,7 +23,7 @@ import {
   SharedService,
   ToastService
 } from './../../../services';
-import { createEditor, deleteConnection, getUpdatedFilterPipeline, removeNode, updateFilterNode, updateNode, applyContentReordering, undoAction, redoAction, resetNodes, clearHistory } from './editor';
+import { createEditor, deleteConnection, getUpdatedFilterPipeline, removeNode, updateFilterNode, updateNode, applyContentReordering, undoAction, redoAction, resetNodes } from './editor';
 import { FlowEditorService } from './flow-editor.service';
 
 @Component({
@@ -310,7 +310,7 @@ export class NodeEditorComponent implements OnInit {
     })
 
     this.nodeDropdownClickSubscription = this.flowEditorService.nodeDropdownClick.pipe(skip(1)).subscribe(data => {
-      this.moveNodeToFront(data.nodeId);
+      applyContentReordering(data.nodeId);
     })
 
     this.isAlive = true;
@@ -1197,10 +1197,6 @@ export class NodeEditorComponent implements OnInit {
   openServiceConfigureModal() {
     this.serviceInfo.process = 'notification';
     this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo } });
-  }
-
-  moveNodeToFront(nodeId: string) {
-    applyContentReordering(nodeId);
   }
 
   reset() {

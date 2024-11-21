@@ -105,12 +105,7 @@ export class CustomNodeComponent implements OnChanges {
   ngOnChanges(): void {
     this.nodeId = this.data.id;
     if (this.data.label === 'South' || this.data.label === 'North') {
-      if (this.elRef.nativeElement.children.length !== 0 && this.elRef.nativeElement.children[0].classList.contains('selected-node')) {
-        let boxShadowValue = this.data.label === "South" ? "0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px #B6D7A8" : "0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px #C781BB";
-        this.elRef.nativeElement.style.boxShadow = boxShadowValue;
-      } else {
-        this.elRef.nativeElement.style.removeProperty('box-shadow');
-      }
+      this.setSetectedNodeColor('#C781BB');
       if (this.source !== '') {
         this.isServiceNode = true;
         this.elRef.nativeElement.style.borderColor = this.data.label === 'South' ? "#B6D7A8" : '#C781BB'
@@ -173,12 +168,7 @@ export class CustomNodeComponent implements OnChanges {
     }
 
     if (!this.nodeTypes.includes(this.data?.label) && !isEmpty(this.data.controls)) {
-      if (this.elRef.nativeElement.children.length !== 0 && this.elRef.nativeElement.children[0].classList.contains('selected-node')) {
-        let boxShadowValue = this.data.label === "South" ? "0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px #B6D7A8" : "0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgb(249, 203, 156)";
-        this.elRef.nativeElement.style.boxShadow = boxShadowValue;
-      } else {
-        this.elRef.nativeElement.style.removeProperty('box-shadow');
-      }
+      this.setSetectedNodeColor('#F9CB9C');
       if (this.filter.name == this.data.label) {
         this.filter.enabled = this.data?.controls?.enabledControl['enabled'];
         if (this.filter.enabled === 'true') {
@@ -204,6 +194,15 @@ export class CustomNodeComponent implements OnChanges {
     requestAnimationFrame(() => this.rendered());
     this.seed++; // force render sockets
     this.flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo(false) });
+  }
+
+  setSetectedNodeColor(colorCode) {
+    if (this.elRef.nativeElement.children.length !== 0 && this.elRef.nativeElement.children[0].classList.contains('selected-node')) {
+      let boxShadowValue = this.data.label === "South" ? "0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px #B6D7A8" : "0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px" + colorCode;
+      this.elRef.nativeElement.style.boxShadow = boxShadowValue;
+    } else {
+      this.elRef.nativeElement.style.removeProperty('box-shadow');
+    }
   }
 
   sortByIndex<
