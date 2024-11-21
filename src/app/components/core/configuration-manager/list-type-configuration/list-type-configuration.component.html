@@ -3,8 +3,8 @@
     <div class="btn-panel-container is-flex-direction-row-reverse">
       <div class="btn-panel upper-btn-panel">
         <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" (addnewItem)="addListItem(true)"
-         (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
-         [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)"/>
+          (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+          [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
       </div>
     </div>
   </ng-container>
@@ -15,12 +15,14 @@
           <div class="columns is-flex is-vcentered">
             <div class="column is-11">
               <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticView">
-                <input *ngIf="configuration.items == 'integer'" class="input is-small" type="text" formControlName="{{i}}"
-                  [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appIntegerOnly>
+                <input *ngIf="configuration.items == 'integer'" class="input is-small" type="text"
+                  formControlName="{{i}}" [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum"
+                  autocomplete="off" appIntegerOnly>
                 <input *ngIf="configuration.items == 'float'" class="input is-small" type="text" formControlName="{{i}}"
-                  [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" appFloatOnly>
-                <input *ngIf="configuration.items == 'string'" class="input is-small" type="text" formControlName="{{i}}"
-                  [attr.maxLength]="configuration?.length">
+                  [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" autocomplete="off"
+                  appFloatOnly>
+                <input *ngIf="configuration.items == 'string'" class="input is-small" type="text"
+                  formControlName="{{i}}" [attr.maxLength]="configuration?.length">
               </ng-container>
               <ng-template #staticView>
                 <span class="help">
@@ -28,7 +30,8 @@
                 </span>
               </ng-template>
             </div>
-            <div class="column is-1 has-text-right" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
+            <div class="column is-1 has-text-right"
+              *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
               <button class="delete my-1 is-small" (click)="removeListItem(i)"></button>
             </div>
           </div>
@@ -45,7 +48,7 @@
     </ng-container>
     <ng-template #objectTemplate>
       <div class="card mt-0 card-shadow" [ngClass]="{'error': item.invalid || items[i].status == false}">
-        <header class="card-header has-background-white card-header-shadow is-justify-content-space-between" 
+        <header class="card-header has-background-white card-header-shadow is-justify-content-space-between"
           id="card-header-{{configuration.key}}-{{i}}">
           <div class="card-header-title">
             <p class="subtitle is-size-9 mb-0">{{listLabel}}</p>
@@ -55,7 +58,8 @@
               <p class="help has-text-grey">{{item.value[firstKey].value}}</p>
             </div>
             <div class="btn-container">
-              <button class="card-header-icon tooltip has-tooltip-multiline has-tooltip-right has-tooltip-arrow" [attr.data-tooltip]="extractSingleListValue(item.value) | json" (click)="toggleCard(i)">
+              <button class="card-header-icon tooltip has-tooltip-multiline has-tooltip-right has-tooltip-arrow"
+                [attr.data-tooltip]="extractSingleListValue(item.value) | json" (click)="toggleCard(i)">
                 <span class="icon is-small">
                   <i class="bi bi-three-dots bi-sm" aria-hidden="true"></i>
                 </span>
@@ -76,12 +80,13 @@
                   [fullConfiguration]="initialProperties[i]" (event)="getChangedConfiguration(i, $event)"
                   (formStatusEvent)="formStatus($event, i)" [from]="from" [group]="group"></app-show-configuration>
               </div>
-              <div class="column is-1 has-text-right" [ngClass]="{'is-invisible': !rolesService.hasAccessPermission(configuration?.permissions)}">
+              <div class="column is-1 has-text-right"
+                [ngClass]="{'is-invisible': !rolesService.hasAccessPermission(configuration?.permissions)}">
                 <button class="delete my-3 is-small" (click)="removeListItem(i)"></button>
               </div>
               <div class="column is-1 has-text-right">
                 <button class="button is-small my-1 collapse-btn" (click)="toggleCard(i)"
-                [ngClass]="{'is-hidden':item.invalid || items[i].status == false}">
+                  [ngClass]="{'is-hidden':item.invalid || items[i].status == false}">
                   <span class="icon is-small toogle-icon" title="Collapse">
                     <i class="fas fa-xs fa-angle-up" aria-hidden="true"></i>
                   </span>
@@ -94,10 +99,12 @@
     </ng-template>
   </ng-container>
   <ng-container *ngIf="(configuration.items != 'object' || listItems.controls.length<=1); else objectButtonPanel">
-    <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)">
+    <ng-container
+      *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)">
       <div class="field">
         <p class="control">
-          <button class="button is-small" (click)="addListItem(false)" [disabled]="listItems.invalid || !validConfigurationForm"
+          <button class="button is-small" (click)="addListItem(false)"
+            [disabled]="listItems.invalid || !validConfigurationForm"
             [ngClass]="{'px-0 pt-1 is-ghost': configuration.items != 'object', 'mt-1': configuration.items == 'object'}">
             <span class="icon is-small mr-0">
               <i class="bi bi-plus bi-sm"></i>
@@ -111,9 +118,9 @@
   <ng-template #objectButtonPanel>
     <div class="btn-panel-container is-flex-direction-row">
       <div class="btn-panel lower-btn-panel">
-        <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" (addnewItem)="addListItem(false)" 
-        (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
-        [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)"/>
+        <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" (addnewItem)="addListItem(false)"
+          (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+          [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
       </div>
     </div>
   </ng-template>

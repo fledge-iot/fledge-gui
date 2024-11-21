@@ -56,6 +56,7 @@ export class AddFilterWizardComponent implements OnInit {
   updatedFilterPipeline: any;
 
   public reenableButton = new EventEmitter<boolean>(false);
+  isTabsNavVisible = false;
 
   constructor(private formBuilder: UntypedFormBuilder,
     private filterService: FilterService,
@@ -158,7 +159,6 @@ export class AddFilterWizardComponent implements OnInit {
     if (nextContent != null) {
       nextContent.setAttribute('class', 'box step-content is-active');
     }
-
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
     switch (+id) {
@@ -181,7 +181,8 @@ export class AddFilterWizardComponent implements OnInit {
     if (this.serviceForm.value['pluginToInstall']) {
       pluginToInstall = this.serviceForm.value['pluginToInstall'];
     }
-    const isPluginInstalled = this.plugins.filter(p => p.name.toLowerCase() === pluginToInstall.toLowerCase());
+    const expectedPackageName = 'fledge-filter-' + pluginToInstall.toLowerCase();
+    const isPluginInstalled = this.plugins.filter(p => p.packageName.toLowerCase() === expectedPackageName);
     if (this.serviceForm.value['pluginToInstall'] && isPluginInstalled.length === 0) {
       this.installPlugin(this.serviceForm.value['pluginToInstall']);
     } else {
@@ -216,7 +217,8 @@ export class AddFilterWizardComponent implements OnInit {
         let pluginValue = '';
         if (formValues['name']?.trim() !== '' && (formValues['plugin']?.length > 0 || formValues['pluginToInstall']?.length > 0)) {
           if (formValues['pluginToInstall']) {
-            pluginValue = this.plugins.find(p => p.name.toLowerCase() === formValues['pluginToInstall'].toLowerCase()).name;
+            const expectedPackageName = 'fledge-filter-' + formValues['pluginToInstall'].toLowerCase();
+            pluginValue = this.plugins.find(p => p.packageName.toLowerCase() === expectedPackageName).name;
           } else {
             pluginValue = this.serviceForm.value['plugin'][0];
           }
@@ -224,13 +226,13 @@ export class AddFilterWizardComponent implements OnInit {
         if (pluginInstalled) {
           this.getConfiguration(formValues['name'].trim(), pluginValue);
         }
-
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         this.reenableButton.emit(false);
         if (!this.validChildConfigurationForm) {
           nxtButton.disabled = true;
         }
+        this.isTabsNavVisible = true;
         break;
       case 2:
         this.addFilter();
@@ -400,7 +402,8 @@ export class AddFilterWizardComponent implements OnInit {
   public addFilter() {
     let pluginValue;
     if (this.serviceForm.value['pluginToInstall']) {
-      pluginValue = this.plugins.find(p => p.name.toLowerCase() === this.serviceForm.value['pluginToInstall'].toLowerCase()).name;
+      const expectedPackageName = 'fledge-filter-' + this.serviceForm.value['pluginToInstall'].toLowerCase();
+      pluginValue = this.plugins.find(p => p.packageName.toLowerCase() === expectedPackageName).name;
     } else {
       pluginValue = this.serviceForm.value['plugin'][0];
     }

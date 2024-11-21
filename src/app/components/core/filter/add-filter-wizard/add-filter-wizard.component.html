@@ -55,8 +55,8 @@
                 <div class="column">
                   <div class="field">
                     <div class="control">
-                      <input class="input" id="name" type="text" placeholder="name" title="No single quotes and double quotes!"
-                        autocomplete="off" formControlName="name">
+                      <input class="input" id="name" type="text" placeholder="name"
+                        title="No single quotes and double quotes!" autocomplete="off" formControlName="name">
                       <small
                         *ngIf="serviceForm.controls['name'].hasError('required') && serviceForm.controls['name'].touched"
                         class="help is-danger level-left">Application name is required</small>
@@ -89,7 +89,8 @@
               </div>
             </div>
             <div *ngIf="plugin" class="column is-1">
-              <span class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
+              <span
+                class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
                 data-tooltip="Help" (click)="goToLink(plugin)">
                 <i class="far fa-question-circle"></i>
               </span>
@@ -138,8 +139,8 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" id="name" type="text" placeholder="name" title="No single quotes and double quotes!"
-                    autocomplete="off" formControlName="name">
+                  <input class="input" id="name" type="text" placeholder="name"
+                    title="No single quotes and double quotes!" autocomplete="off" formControlName="name">
                   <small
                     *ngIf="serviceForm.controls['name'].hasError('required') && serviceForm.controls['name'].touched"
                     class="help is-danger level-left">Application name is required</small>
@@ -152,8 +153,8 @@
       </div>
       <div class="box step-content" id="c-2" [ngClass]="{'is-shadowless': source}">
         <app-configuration-group *ngIf="configurationData" #configChildComponent [category]="configurationData"
-          (changedConfigEvent)="getChangedConfig($event)" (formStatusEvent)="validChildConfigurationForm = $event"
-          [from]="'add-filter'">
+          [recalculateTabsOverflow]="isTabsNavVisible" (changedConfigEvent)="getChangedConfig($event)"
+          (formStatusEvent)="validChildConfigurationForm = $event" [from]="'add-filter'">
         </app-configuration-group>
 
       </div>

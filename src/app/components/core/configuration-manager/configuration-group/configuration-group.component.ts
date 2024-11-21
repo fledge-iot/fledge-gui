@@ -17,6 +17,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   @Input() serviceStatus = false;
   @Input() from: string;
   @Input() sourceName: string;
+  @Input() recalculateTabsOverflow: boolean;
+  @Input() isFilterList: boolean;
 
   @Output() changedConfigEvent = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<boolean>();
@@ -48,9 +50,22 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     private cdrf: ChangeDetectorRef
   ) { }
 
+
   ngAfterViewInit() {
-    const groupNavContents = document.getElementById("groupNavContents");
-    this.tabs = new TabHeader(groupNavContents);
+    if (this.from && this.from.includes("control-pipeline")) {
+      const element = document.getElementById(this.from);
+      if (element) {
+        const currentMaxWidthValue = parseFloat(window.getComputedStyle(element).maxWidth);
+
+        // Set the new max-width (65% of the current max-width)
+        element.style.maxWidth = currentMaxWidthValue * 0.65 + 'px';
+      }
+    }
+    const idSuffix = this.from + '_' + this.sourceName;
+    const groupNavContents = document.getElementById("nav_contents_" + idSuffix);
+    const groupNavigation = document.getElementById("group_navigation_" + idSuffix);
+    this.tabs = new TabHeader(groupNavContents, groupNavigation);
+
     window.addEventListener('resize', () => {
       this.tabs.setOverFlow();
     })
@@ -70,6 +85,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   ngOnChanges() {
     this.categeryConfiguration();
     this.getChildConfigData();
+    if ((this.isFilterList && this.recalculateTabsOverflow !== undefined) || this.recalculateTabsOverflow) {
+      this.tabs.setOverFlow();
+    }
   }
 
   public updateCategroyConfig(config) {
@@ -130,10 +148,28 @@ export class ConfigurationGroupComponent implements AfterViewInit {
       return false;
     });
 
-    // sort group items having default configuration as first element
+    // sort groups according to order of config items i.e. config item containing minimum order in the group represents groupOrder
     this.groups = this.groups
       .sort((a, b) => {
-        return ((+a?.order) - (+b?.order)) || a.group.name.localeCompare(b.group.name)
+        let groupOrderA = 1000000;
+        if (['bucket', 'list', 'kvlist'].includes(a.type)) {
+          groupOrderA = a.order ? Math.min(+a.order, groupOrderA) : groupOrderA;
+        }
+        else {
+          for (let item in a.config) {
+            groupOrderA = a.config[item].order ? Math.min(+a.config[item].order, groupOrderA) : groupOrderA;
+          }
+        }
+        let groupOrderB = 1000000;
+        if (['bucket', 'list', 'kvlist'].includes(b.type)) {
+          groupOrderB = b.order ? Math.min(+b.order, groupOrderB) : groupOrderB;
+        }
+        else {
+          for (let item in b.config) {
+            groupOrderB = b.config[item].order ? Math.min(+b.config[item].order, groupOrderB) : groupOrderB;
+          }
+        }
+        return ((groupOrderA - groupOrderB) || a.group.name.localeCompare(b.group.name));
       }).reduce((acc, e) => {
         e.group.key === 'Basic' ? acc.unshift(e) : acc.push(e);
         return acc;
@@ -147,7 +183,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
   buildGroupOfItems(configItems) {
     configItems?.forEach(config => {
-      if(config.readonly != 'true'){
+      if (config.readonly != 'true') {
         if (!config.hasOwnProperty('value')) {
           config.value = config.default;
         }
@@ -157,7 +193,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
           // If same group exist, create new group with coonfig key and the description of the configuration
           group = { key: config.key, name: config.key, description: config.description }
         }
-  
+
         this.groups.push({ category: this.category.name, group, config: config, type: config.type, key: config.key, ...(config.order && { order: config.order }) });
       }
     });

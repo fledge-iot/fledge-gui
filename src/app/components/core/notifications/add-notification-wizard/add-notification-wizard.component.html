@@ -122,8 +122,9 @@
         </div>
         <div class="box step-content" id="c-3">
           <app-configuration-group #ruleConfigView *ngIf="rulePluginConfiguration" [category]="rulePluginConfiguration"
-            (changedConfigEvent)="getChangedRuleConfig($event)" [from]="'add-notification-form'"
-            (formStatusEvent)="checkRuleFormValidity($event)"></app-configuration-group>
+            [recalculateTabsOverflow]="isTabsNavVisible" (changedConfigEvent)="getChangedRuleConfig($event)"
+            [from]="'add-notification-rule-form'" (formStatusEvent)="checkRuleFormValidity($event)">
+          </app-configuration-group>
         </div>
         <div class="box step-content" id="c-4">
           <div *ngIf="!notificationDeliveryPlugins || notificationDeliveryPlugins.length === 0"
@@ -181,8 +182,8 @@
         </div>
         <div class="box step-content" id="c-5">
           <app-configuration-group #deliveryConfigView *ngIf="deliveryPluginConfiguration"
-            [category]="deliveryPluginConfiguration" (changedConfigEvent)="getChangedDeliveryConfig($event)"
-            [from]="'add-notification-form'"
+            [recalculateTabsOverflow]="isTabsNavVisible" [category]="deliveryPluginConfiguration"
+            (changedConfigEvent)="getChangedDeliveryConfig($event)" [from]="'add-notification-delivery-form'"
             (formStatusEvent)="validDeliveryConfigurationForm = $event"></app-configuration-group>
         </div>
         <div class="box step-content" id="c-6">
@@ -229,8 +230,8 @@
                 <div class="field-body last-step-field">
                   <div class="field">
                     <div class="control">
-                      <input class="input is-small retrigger-time" #retriggerTime type='number' appFloatOnly min="0"
-                        placeholder="Retrigger Time" formControlName="retriggerTime">
+                      <input class="input is-small retrigger-time" #retriggerTime autocomplete="off" appFloatOnly
+                        min="0" placeholder="Retrigger Time" formControlName="retriggerTime">
                       <span *ngIf="payload?.retrigger_time < 0" class="help is-danger">
                         <sup>*</sup>Invalid Retrigger time.
                       </span>
@@ -261,7 +262,8 @@
         <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Cancel</button>
       </div>
       <div class="steps-action">
-        <button [disabled]="name.invalid || !validRuleConfigurationForm || !validDeliveryConfigurationForm"
+        <button
+          [disabled]="name.invalid || !validRuleConfigurationForm || !validDeliveryConfigurationForm || !pluginRequestDone"
           (click)="moveNext()" data-nav="next" class="button is-link" id="next"
           [appDisableUntilResponse]="reenableButton">Next</button>
       </div>
