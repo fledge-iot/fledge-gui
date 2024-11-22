@@ -23,7 +23,7 @@ import {
   SharedService,
   ToastService
 } from './../../../services';
-import { createEditor, deleteConnection, getUpdatedFilterPipeline, removeNode, updateFilterNode, updateNode, applyContentReordering, undoAction, redoAction } from './editor';
+import { createEditor, deleteConnection, getUpdatedFilterPipeline, removeNode, updateFilterNode, updateNode, applyContentReordering, undoAction, redoAction, resetNodes } from './editor';
 import { FlowEditorService } from './flow-editor.service';
 
 @Component({
@@ -32,7 +32,6 @@ import { FlowEditorService } from './flow-editor.service';
   styleUrls: ['./node-editor.component.css']
 })
 export class NodeEditorComponent implements OnInit {
-
   @ViewChild(ServiceWarningComponent, { static: true }) notificationServiceWarningComponent: ServiceWarningComponent;
   @ViewChild(ServiceConfigComponent, { static: true }) notificationServiceConfigComponent: ServiceConfigComponent;
   @ViewChild("rete") container!: ElementRef;
@@ -54,6 +53,7 @@ export class NodeEditorComponent implements OnInit {
   private logsSubscription: Subscription;
   private paramsSubscription: Subscription;
   private nodeClickSubscription: Subscription;
+  private nodeDropdownClickSubscription: Subscription;
 
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
@@ -107,6 +107,9 @@ export class NodeEditorComponent implements OnInit {
   selectedAsset = '';
   MAX_RANGE = MAX_INT_SIZE / 2;
   isSidebarCollapsed: boolean;
+  nodesToDelete = [];
+  selectedFilters = [];
+  historyData = { showUndo: false, showRedo: false };
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
@@ -173,13 +176,16 @@ export class NodeEditorComponent implements OnInit {
   @HostListener('document:keydown', ['$event'])
   onKeydownHandler(event) {
     if ((event.ctrlKey || event.metaKey) && event.keyCode == 90) {
-      undoAction();
+      undoAction(this.flowEditorService);
     }
     if ((event.ctrlKey || event.metaKey) && event.keyCode == 89) {
-      redoAction();
+      redoAction(this.flowEditorService);
+    }
+    if (event.keyCode == 32) {
+      resetNodes(this.flowEditorService);
     }
     if (event.key === 'Delete') {
-      this.deleteSelectedConnection();
+      this.deleteSelectedEntity();
     }
   }
 
@@ -280,7 +286,31 @@ export class NodeEditorComponent implements OnInit {
     });
 
     this.nodeClickSubscription = this.flowEditorService.nodeClick.pipe(skip(1)).subscribe(data => {
-      this.moveNodeToFront(data.nodeId);
+      // Currently not possible to delete multiple connections
+      if (data.source && data.target) {
+        this.nodesToDelete.push({ id: data.id, 'label': 'Connection' });
+      }
+      if (data.label !== 'Storage' && data.label !== 'Filter') {
+        if (data.selected && !this.nodesToDelete?.some(node => (node.id == data.id))) {
+          if (data.isFilterNode) {
+            if (!this.selectedFilters.some(filter => filter === data.label)) {
+              this.selectedFilters.push(data.label);
+            }
+          }
+          this.nodesToDelete.push({ id: data.id, 'label': data.label, 'name': data.controls.nameControl['name'] });
+        }
+        else if (!data.selected) {
+          const nodesToDelete = this.nodesToDelete.filter(node => node.id !== data.id);
+          this.nodesToDelete = nodesToDelete;
+
+          const selectedFilters = this.selectedFilters.filter(filter => filter !== data.label);
+          this.selectedFilters = selectedFilters;
+        }
+      }
+    })
+
+    this.nodeDropdownClickSubscription = this.flowEditorService.nodeDropdownClick.pipe(skip(1)).subscribe(data => {
+      applyContentReordering(data.nodeId);
     })
 
     this.isAlive = true;
@@ -307,6 +337,9 @@ export class NodeEditorComponent implements OnInit {
         removeNode(data.id);
       }
     })
+    this.flowEditorService.checkHistory.subscribe(data => {
+      this.historyData = data;
+    });
   }
 
   ngAfterViewInit(): void {
@@ -641,22 +674,29 @@ export class NodeEditorComponent implements OnInit {
   }
 
   deleteFilter() {
-    this.filterService.updateFilterPipeline({ 'pipeline': this.filterPipeline }, this.source)
+    const filteredPipeline = this.filterPipeline.filter(filter =>
+      !this.selectedFilters.some(f => f === filter)
+    );
+    this.filterService.updateFilterPipeline({ 'pipeline': filteredPipeline }, this.service.name)
       .subscribe(() => {
-        this.filterService.deleteFilter(this.filterName).subscribe((data: any) => {
-          this.toastService.success(data.result);
-          setTimeout(() => {
-            this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
-          }, 1000);
-        },
-          (error) => {
-            this.reenableButton.emit(false);
-            if (error.status === 0) {
-              console.log('service down ', error);
-            } else {
-              this.toastService.error(error.statusText);
+        this.selectedFilters.forEach((filter, index) => {
+          this.filterService.deleteFilter(filter).subscribe((data: any) => {
+            if (this.selectedFilters.length === index + 1) {
+              this.selectedFilters = [];
             }
-          });
+            this.toastService.success(data.result);
+          },
+            (error) => {
+              if (error.status === 0) {
+                console.log('service down ', error);
+              } else {
+                this.toastService.error(error.statusText);
+              }
+            });
+        });
+        setTimeout(() => {
+          this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
+        }, 1000);
       },
         (error) => {
           if (error.status === 0) {
@@ -722,9 +762,12 @@ export class NodeEditorComponent implements OnInit {
     return false;
   }
 
-  deleteSelectedConnection() {
+  deleteSelectedEntity() {
     if (this.selectedConnectionId) {
       deleteConnection(this.selectedConnectionId);
+    }
+    if (this.nodesToDelete.length !== 0) {
+      this.onDeleteAction();
     }
   }
 
@@ -1126,6 +1169,28 @@ export class NodeEditorComponent implements OnInit {
     }
   }
 
+  onDeleteAction() {
+    this.openModal('from-toolbar-dialog');
+  }
+
+  callDeleteAction() {
+    const connectionToDelete = this.nodesToDelete.find(node => (node.label === 'Connection'));
+    if (connectionToDelete) {
+      deleteConnection(connectionToDelete.id);
+      this.nodesToDelete = [];
+    }
+    const filterNodeToDelete = this.nodesToDelete.find(node => (node.label !== 'South' && node.label !== 'North' && node.label !== 'Connection'));
+    if (filterNodeToDelete) {
+      this.deleteFilter();
+    }
+    const nodeToDelete = this.nodesToDelete.find(node => (node.label === 'South' || node.label === 'North'));
+    if (nodeToDelete) {
+      this.dialogServiceName = nodeToDelete.name;
+      this.deleteService();
+    }
+    this.closeModal('from-toolbar-dialog');
+  }
+
   /**
      * Open Configure Service modal
      */
@@ -1134,8 +1199,16 @@ export class NodeEditorComponent implements OnInit {
     this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo } });
   }
 
-  moveNodeToFront(nodeId: string) {
-    applyContentReordering(nodeId);
+  reset() {
+    resetNodes(this.flowEditorService);
+  }
+
+  callUndoAction() {
+    undoAction(this.flowEditorService);
+  }
+
+  callRedoAction() {
+    redoAction(this.flowEditorService);
   }
 
   ngOnDestroy() {
@@ -1148,6 +1221,7 @@ export class NodeEditorComponent implements OnInit {
     this.exportReadingSubscription.unsubscribe();
     this.logsSubscription.unsubscribe();
     this.nodeClickSubscription.unsubscribe();
+    this.nodeDropdownClickSubscription.unsubscribe();
     if (this.from === 'notifications') {
       this.serviceDetailsSubscription?.unsubscribe();
       this.paramsSubscription.unsubscribe();
