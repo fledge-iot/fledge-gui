@@ -55,9 +55,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(ShutdownModalComponent, { static: true }) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent, { static: true }) childRestart: RestartModalComponent;
   @ViewChild(SystemAlertComponent, { static: true }) systemAlertComponent: SystemAlertComponent;
-  
+
   destroy$: Subject<boolean> = new Subject<boolean>();
-  
+
   constructor(private servicesApiService: ServicesApiService,
     private status: ConnectedServiceStatus,
     private alertService: AlertService,
@@ -161,6 +161,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           const bucketStorageService = servicesData.filter((el => (el.type === 'BucketStorage')));
 
           this.servicesRecord.push(coreService[0], storageService[0]);
+
           southboundServices.forEach(service => {
             this.servicesRecord.push(service);
           });
@@ -438,7 +439,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           this.ngProgress.done();
           const pollingScheduleID = data.schedules.find(s => s.processName === 'manage')?.id;
           serviceInfo['pollingScheduleID'] = pollingScheduleID;
-          this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
+          this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo } });
         },
         error => {
           this.ngProgress.done();
@@ -458,7 +459,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   navToServiceConfiguration(service) {
     let serviceInfo = {
       name: service.name,
-      isEnabled: service.status === 'running' ? true : false,
+      isEnabled: ["shutdown", "disabled", "installed", ""].includes(service.status) ? false : true,
       added: true,
       isInstalled: true
     }
@@ -473,9 +474,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         serviceInfo['process'] = 'bucket';
         serviceInfo['type'] = 'BucketStorage';
         serviceInfo['package'] = 'fledge-service-bucket';
-        this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
+        this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo } });
         break;
-      case 'Management':       
+      case 'Management':
         serviceInfo['process'] = 'management';
         serviceInfo['type'] = 'Management';
         serviceInfo['package'] = 'fledge-service-management';
@@ -485,16 +486,16 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         serviceInfo['process'] = 'dispatcher';
         serviceInfo['type'] = 'Dispatcher';
         serviceInfo['package'] = 'fledge-service-dispatcher';
-        this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
+        this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo } });
         break;
       case 'Notification':
         serviceInfo['process'] = 'notification';
         serviceInfo['type'] = 'Notification';
         serviceInfo['package'] = 'fledge-service-notification';
-        this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo }});
+        this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo } });
         break;
       default:
         break;
-      }
+    }
   }
 }
