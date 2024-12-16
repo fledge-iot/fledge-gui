@@ -169,7 +169,7 @@ export class AdditionalServicesUtils {
       } else {
         replacement.name = foundService.name;
         replacement.added = true;
-        replacement.state = ['failed', 'unresponsive'].includes(foundService.status) ? (foundSchedule?.enabled === true ? 'running' : 'disabled') : foundService.status;
+        replacement.state = ['failed', 'unresponsive'].includes(foundService.status) ? (foundSchedule?.enabled === true ? foundService.status : 'disabled') : foundService.status;
         atIndex = idx;
       }
       if (atIndex != -1) {
@@ -190,7 +190,6 @@ export class AdditionalServicesUtils {
         service.name = serviceDetail?.name;
         service.process = serviceDetail?.process;
       }
-
       this.sharedService.installedServicePkgs.next({ installed: service, availableToInstall: this.availableServicePkgs });
     } else {
       this.sharedService.installedServicePkgs.next({ installed: this.installedServicePkgs, availableToInstall: this.availableServicePkgs });
