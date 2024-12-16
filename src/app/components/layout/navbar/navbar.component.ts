@@ -51,6 +51,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   public showSpinner = false;
   isManualRefresh = false;
   servicesToShow = ['northbound', 'southbound', 'dispatcher', 'notification', 'management', 'bucketstorage'];
+  schedulesData = [];
 
   @ViewChild(ShutdownModalComponent, { static: true }) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent, { static: true }) childRestart: RestartModalComponent;
@@ -155,10 +156,19 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           northboundServices = sortBy(northboundServices, function (obj) {
             return obj.name.toLowerCase();
           });
-          const notificationService = servicesData.filter((el => (el.type === 'Notification')));
-          const managementService = servicesData.filter((el => (el.type === 'Management')));
-          const dispatcherService = servicesData.filter((el => (el.type === 'Dispatcher')));
-          const bucketStorageService = servicesData.filter((el => (el.type === 'BucketStorage')));
+
+          const currentService = JSON.parse(sessionStorage.getItem('SERVICE_NAME'));
+          let expectedExternalServiceType = ['Notification', 'Dispatcher'];
+          if (currentService === 'FogLAMP') {
+            expectedExternalServiceType = ['Notification', 'Management', 'Dispatcher', 'BucketStorage'];
+          }
+          const additionalServices = servicesData.filter((s) => expectedExternalServiceType.includes(s.type))
+
+          // If service is failed or unresponsive, check schedule as well
+          const failedOrUnresponsiveServices = additionalServices.filter((s) => ['failed', 'unresponsive'].includes(s.status.toLowerCase()));
+          if (failedOrUnresponsiveServices.length > 0) {
+            this.getSchedules();
+          }
 
           this.servicesRecord.push(coreService[0], storageService[0]);
 
@@ -168,22 +178,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           northboundServices.forEach(service => {
             this.servicesRecord.push(service);
           });
-          if (notificationService.length) {
-            this.servicesRecord.push(notificationService[0]);
+          if (additionalServices.length > 0) {
+            this.servicesRecord.push(additionalServices[0]);
           }
-
-          if (managementService.length) {
-            this.servicesRecord.push(managementService[0]);
-          }
-
-          if (dispatcherService.length) {
-            this.servicesRecord.push(dispatcherService[0]);
-          }
-
-          if (bucketStorageService.length) {
-            this.servicesRecord.push(bucketStorageService[0]);
-          }
-          this.sharedService.allServicesInfo.next(this.servicesRecord);
           this.hideLoadingSpinner();
         },
         (error) => {
@@ -431,15 +428,19 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate(['logs/syslog'], { queryParams: { source: service.name } });
   }
 
-  public showConfigWithPollingSchedule(serviceInfo): void {
+  public getSchedules(serviceInfo = null): void {
     this.ngProgress.start();
     this.schedulesService.getSchedules().
       subscribe(
         (data: any) => {
           this.ngProgress.done();
-          const pollingScheduleID = data.schedules.find(s => s.processName === 'manage')?.id;
-          serviceInfo['pollingScheduleID'] = pollingScheduleID;
-          this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo } });
+          this.schedulesData = data.schedules;
+          if (serviceInfo) {
+            this.schedulesData = data.schedules;
+            const pollingScheduleID = data.schedules.find(s => s.processName === 'manage')?.id;
+            serviceInfo['pollingScheduleID'] = pollingScheduleID;
+            this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo } });
+          }
         },
         error => {
           this.ngProgress.done();
@@ -457,9 +458,15 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   navToServiceConfiguration(service) {
+    let isServiceEnabled = ["shutdown", "disabled", "installed"].includes(service.status) ? false : true;
+    if (['failed', 'unresponsive'].includes(service.status.toLowerCase())) {
+      let isScheduleEnabled = this.schedulesData.find(sch => sch.name === service.name)?.enabled;
+      isServiceEnabled = ["shutdown", "disabled", "installed"].includes(service.status) || !isScheduleEnabled ? false : true;
+    }
+
     let serviceInfo = {
       name: service.name,
-      isEnabled: ["shutdown", "disabled", "installed"].includes(service.status) ? false : true,
+      isEnabled: isServiceEnabled,
       added: true,
       isInstalled: true
     }
@@ -480,7 +487,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         serviceInfo['process'] = 'management';
         serviceInfo['type'] = 'Management';
         serviceInfo['package'] = 'fledge-service-management';
-        this.showConfigWithPollingSchedule(serviceInfo);
+        this.getSchedules(serviceInfo);
         break;
       case 'Dispatcher':
         serviceInfo['process'] = 'dispatcher';

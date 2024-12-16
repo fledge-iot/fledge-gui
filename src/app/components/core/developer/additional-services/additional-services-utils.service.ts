@@ -90,8 +90,6 @@ export class AdditionalServicesUtils {
             servicesRegistry = data.services.filter((s => (s.type.toLowerCase() === from)));
           }
           this.servicesRegistry = servicesRegistry;
-
-          this.sharedService.allServicesInfo.next(this.servicesRegistry);
           const matchedServices = this.servicesRegistry.filter((svc) => this.expectedServices.some(es => es.type == svc.type));
           if (this.servicesRegistry?.length === this.expectedServices.length) {
             this.availableServicePkgs = [];
@@ -155,6 +153,7 @@ export class AdditionalServicesUtils {
       replacement = structuredClone(installed);
       let foundService = this.servicesRegistry.find(s => s.type == installed.type);
       let foundSchedule = this.servicesSchedules.find(s => s.processName == installed["schedule_process"]);
+
       if (foundService === undefined) {
         if (foundSchedule !== undefined) {
           replacement.name = foundSchedule.name;
@@ -170,8 +169,7 @@ export class AdditionalServicesUtils {
       } else {
         replacement.name = foundService.name;
         replacement.added = true;
-        replacement.state = foundService.status;
-        replacement.enabled = foundService.enabled;
+        replacement.state = ['failed', 'unresponsive'].includes(foundService.status) ? (foundSchedule?.enabled === true ? 'running' : 'disabled') : foundService.status;
         atIndex = idx;
       }
       if (atIndex != -1) {
@@ -192,6 +190,7 @@ export class AdditionalServicesUtils {
         service.name = serviceDetail?.name;
         service.process = serviceDetail?.process;
       }
+
       this.sharedService.installedServicePkgs.next({ installed: service, availableToInstall: this.availableServicePkgs });
     } else {
       this.sharedService.installedServicePkgs.next({ installed: this.installedServicePkgs, availableToInstall: this.availableServicePkgs });
