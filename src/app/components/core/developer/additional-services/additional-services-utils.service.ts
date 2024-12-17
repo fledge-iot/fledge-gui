@@ -153,7 +153,6 @@ export class AdditionalServicesUtils {
       replacement = structuredClone(installed);
       let foundService = this.servicesRegistry.find(s => s.type == installed.type);
       let foundSchedule = this.servicesSchedules.find(s => s.processName == installed["schedule_process"]);
-
       if (foundService === undefined) {
         if (foundSchedule !== undefined) {
           replacement.name = foundSchedule.name;
@@ -167,9 +166,16 @@ export class AdditionalServicesUtils {
           atIndex = idx;
         }
       } else {
+        let scheduleStatus;
+        if (foundSchedule) {
+          scheduleStatus = foundSchedule?.enabled === true ? 'running' : 'disabled';
+        }
+        let isFailedOrUnresponsiveService = ['failed', 'unresponsive'].includes(foundService.status);
+        let state = scheduleStatus && !isFailedOrUnresponsiveService ? scheduleStatus : foundService.status;
+
         replacement.name = foundService.name;
         replacement.added = true;
-        replacement.state = ['failed', 'unresponsive'].includes(foundService.status) ? (foundSchedule?.enabled === true ? foundService.status : 'disabled') : foundService.status;
+        replacement.state = state;
         atIndex = idx;
       }
       if (atIndex != -1) {

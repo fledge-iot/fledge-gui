@@ -171,16 +171,16 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           this.servicesRecord.push(coreService[0], storageService[0]);
-
           southboundServices.forEach(service => {
             this.servicesRecord.push(service);
           });
           northboundServices.forEach(service => {
             this.servicesRecord.push(service);
           });
-          if (additionalServices.length > 0) {
-            this.servicesRecord.push(additionalServices[0]);
-          }
+          additionalServices.forEach(service => {
+            this.servicesRecord.push(service);
+          });
+
           this.hideLoadingSpinner();
         },
         (error) => {
@@ -436,7 +436,6 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           this.ngProgress.done();
           this.schedulesData = data.schedules;
           if (serviceInfo) {
-            this.schedulesData = data.schedules;
             const pollingScheduleID = data.schedules.find(s => s.processName === 'manage')?.id;
             serviceInfo['pollingScheduleID'] = pollingScheduleID;
             this.router.navigate(['/developer/options/additional-services/config'], { state: { ...serviceInfo } });
