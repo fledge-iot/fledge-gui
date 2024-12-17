@@ -412,31 +412,28 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
             }),
           ))
       ).subscribe(() => {
-        this.ngProgress.done();
-
-        // For Bucket service page, we need to check response of /service API for updated state after enabling the service
-        // Apply condition when process is 'bucket' && not additional services list page && (enabling the service || adding bucket service in enabled mode)
-        if (this.serviceInfo.process === 'bucket' && !this.fromListPage && (status === true || (status === 'addService' && isEnabled))) {
-          this.getUpdatedServiceState(serviceName, status);
+        if (typeof (status) === 'boolean') {
+          // Due to delay in getting updated state (enable/disable), check the response of / service API too as per updated state before navigating on another page
+          this.getUpdatedServiceState(serviceName, status, isEnabled);
         } else {
+          this.ngProgress.done();
           let serviceDetail = { name: '', added: false, isEnabled: false, isInstalled: false, process: this.serviceInfo.process };
           serviceDetail.isEnabled = isEnabled !== null ? isEnabled : status;
           serviceDetail.isInstalled = true;
           serviceDetail.added = this.serviceInfo.added;
           serviceDetail.name = serviceName;
           serviceDetail.process = this.serviceInfo.process;
-          this.toggleModal(false);
-          this.reenableButton.emit(false);
 
           // set updated service details to get on different service pages
           this.sharedService.installedServicePkgs.next({ installed: serviceDetail });
-
+          this.toggleModal(false);
+          this.reenableButton.emit(false);
           this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process, true);
         }
       });
   }
 
-  getUpdatedServiceState(serviceName, status) {
+  getUpdatedServiceState(serviceName, status, isEnabled) {
     let i = 1;
     this.servicesApiService.getAllServices()
       .pipe(
@@ -444,7 +441,7 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
         // checking the response object for service  
         tap((response: any) => {
           const service = response.services.find((svc: any) => {
-            if (svc.type === 'BucketStorage') {
+            if (svc.type === this.serviceInfo.type) {
               return svc;
             }
           });
@@ -459,7 +456,8 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
           } else {
             // if service.status !== status then
             // throw an error to re-fetch:
-            if (service.status !== 'running') {
+            let expectedStatus = status ? 'running' : 'shutdown';
+            if (service.status !== expectedStatus) {
               i++;
               throw response;
             }
@@ -473,7 +471,7 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
                 this.ngProgress.done();
                 this.toggleModal(false);
                 this.reenableButton.emit(false);
-                this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, 'bucket');
+                this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
                 throw serviceStatus.error;
               }
             }),
@@ -490,7 +488,7 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
                 this.ngProgress.done();
                 this.toggleModal(false);
                 this.reenableButton.emit(false);
-                this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, 'bucket');
+                this.additionalServicesUtils.navToAdditionalServicePage(this.fromListPage, this.serviceInfo.process);
                 return;
               }
               return of(o);
@@ -498,7 +496,12 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
           ))
       ).subscribe(() => {
         this.ngProgress.done();
-        let serviceDetail = { name: serviceName, added: true, isEnabled: true, isInstalled: true, process: 'bucket' };
+        let serviceDetail = { name: '', added: false, isEnabled: false, isInstalled: false, process: this.serviceInfo.process };
+        serviceDetail.isEnabled = isEnabled !== null ? isEnabled : status;
+        serviceDetail.isInstalled = true;
+        serviceDetail.added = this.serviceInfo.added;
+        serviceDetail.name = serviceName;
+        serviceDetail.process = this.serviceInfo.process;
 
         // set updated service details to get on different service pages
         this.sharedService.installedServicePkgs.next({ installed: serviceDetail });

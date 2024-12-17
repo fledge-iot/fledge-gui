@@ -90,8 +90,6 @@ export class AdditionalServicesUtils {
             servicesRegistry = data.services.filter((s => (s.type.toLowerCase() === from)));
           }
           this.servicesRegistry = servicesRegistry;
-
-          this.sharedService.allServicesInfo.next(this.servicesRegistry);
           const matchedServices = this.servicesRegistry.filter((svc) => this.expectedServices.some(es => es.type == svc.type));
           if (this.servicesRegistry?.length === this.expectedServices.length) {
             this.availableServicePkgs = [];
@@ -168,10 +166,16 @@ export class AdditionalServicesUtils {
           atIndex = idx;
         }
       } else {
+        let scheduleStatus;
+        if (foundSchedule) {
+          scheduleStatus = foundSchedule?.enabled === true ? 'running' : 'disabled';
+        }
+        let isFailedOrUnresponsiveService = ['failed', 'unresponsive'].includes(foundService.status);
+        let state = scheduleStatus && !isFailedOrUnresponsiveService ? scheduleStatus : foundService.status;
+
         replacement.name = foundService.name;
         replacement.added = true;
-        replacement.state = foundService.status;
-        replacement.enabled = foundService.enabled;
+        replacement.state = state;
         atIndex = idx;
       }
       if (atIndex != -1) {
