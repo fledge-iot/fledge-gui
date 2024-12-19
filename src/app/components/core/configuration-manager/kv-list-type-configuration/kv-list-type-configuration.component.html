@@ -92,8 +92,8 @@
                 <div class="field is-horizontal mb-0">
                   <div class="field-label has-text-left">
                     <label class="label tooltip has-tooltip-multiline config-label has-tooltip-right has-tooltip-arrow"
-                      [attr.data-tooltip]="configuration.description"
-                      [ngClass]="{'is-inline-block': !rolesService.hasAccessPermission(configuration?.permissions)}">Key</label>
+                      [attr.data-tooltip]="configuration.keyDescription ? configuration.keyDescription :configuration.description"
+                      [ngClass]="{'is-inline-block': !rolesService.hasAccessPermission(configuration?.permissions)}">{{configuration.keyName ? configuration.keyName : "Key"}}</label>
                     <span class="ml-1" *ngIf="!rolesService.hasAccessPermission(configuration?.permissions)">
                       <i class="bi bi-xs bi-info-circle info-icon" aria-hidden="true"
                         title="Insufficient privileges to modify this"></i>
