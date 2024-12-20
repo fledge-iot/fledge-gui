@@ -157,11 +157,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
             return obj.name.toLowerCase();
           });
 
-          const currentService = JSON.parse(sessionStorage.getItem('SERVICE_NAME'));
-          let expectedExternalServiceType = ['Notification', 'Dispatcher'];
-          if (currentService === 'FogLAMP') {
-            expectedExternalServiceType = ['Notification', 'Management', 'Dispatcher', 'BucketStorage'];
-          }
+          // FYI; Four additional services exist in the Fledge and two in FogLAMP. There will be some extra API calls in Fledge (to search all of the expected additional services in different API response) because we don't have any info whether user is FogLAMP or Fledge.
+          let expectedExternalServiceType = ['Notification', 'Management', 'Dispatcher', 'BucketStorage'];
+
           const additionalServices = servicesData.filter((s) => expectedExternalServiceType.includes(s.type))
 
           // If service is failed or unresponsive, check schedule as well

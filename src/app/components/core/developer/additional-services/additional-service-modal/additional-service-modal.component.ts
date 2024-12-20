@@ -344,15 +344,21 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
       );
   }
 
-  enableService(name = null) {
+  async enableService(name = null) {
     let serviceName = this.serviceName;
     if (name != null) {
       serviceName = name;
     }
-    this.additionalServicesUtils.enableService(serviceName);
-    // enabling service takes time to get the updated state from API
-    this.getUpdatedState(true);
+    try {
+      // Wait for the service to be enabled
+      await this.additionalServicesUtils.enableService(serviceName);
+
+      this.getUpdatedState(true);
+    } catch (error) {
+      console.error('error', error);
+    }
   }
+
 
   getUpdatedState(status, name = null, isEnabled = null) {
     let i = 1;
@@ -412,18 +418,18 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
             }),
           ))
       ).subscribe(() => {
-        if (typeof (status) === 'boolean') {
+        if (status !== 'addService') {
           // Due to delay in getting updated state (enable/disable), check the response of / service API too as per updated state before navigating on another page
           this.getUpdatedServiceState(serviceName, status, isEnabled);
         } else {
           this.ngProgress.done();
-          let serviceDetail = { name: '', added: false, isEnabled: false, isInstalled: false, process: this.serviceInfo.process };
-          serviceDetail.isEnabled = isEnabled !== null ? isEnabled : status;
-          serviceDetail.isInstalled = true;
-          serviceDetail.added = this.serviceInfo.added;
-          serviceDetail.name = serviceName;
-          serviceDetail.process = this.serviceInfo.process;
-
+          let serviceDetail = {
+            name: serviceName,
+            added: this.serviceInfo.added,
+            isEnabled: isEnabled !== null ? isEnabled : status,
+            isInstalled: true,
+            process: this.serviceInfo.process
+          };
           // set updated service details to get on different service pages
           this.sharedService.installedServicePkgs.next({ installed: serviceDetail });
           this.toggleModal(false);
@@ -496,12 +502,13 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
           ))
       ).subscribe(() => {
         this.ngProgress.done();
-        let serviceDetail = { name: '', added: false, isEnabled: false, isInstalled: false, process: this.serviceInfo.process };
-        serviceDetail.isEnabled = isEnabled !== null ? isEnabled : status;
-        serviceDetail.isInstalled = true;
-        serviceDetail.added = this.serviceInfo.added;
-        serviceDetail.name = serviceName;
-        serviceDetail.process = this.serviceInfo.process;
+        let serviceDetail = {
+          name: serviceName,
+          added: this.serviceInfo.added,
+          isEnabled: isEnabled !== null ? isEnabled : status,
+          isInstalled: true,
+          process: this.serviceInfo.process
+        };
 
         // set updated service details to get on different service pages
         this.sharedService.installedServicePkgs.next({ installed: serviceDetail });
@@ -511,9 +518,15 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
       });
   }
 
-  disableService() {
-    this.additionalServicesUtils.disableService(this.serviceName);
-    this.getUpdatedState(false);
+  async disableService() {
+    try {
+      // Wait for the service to be disabled
+      await this.additionalServicesUtils.disableService(this.serviceName);
+
+      this.getUpdatedState(false);
+    } catch (error) {
+      console.error('error', error);
+    }
   }
 
   deleteService(serviceName: string) {

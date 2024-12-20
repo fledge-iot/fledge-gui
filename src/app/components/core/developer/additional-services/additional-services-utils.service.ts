@@ -69,12 +69,8 @@ export class AdditionalServicesUtils {
     private alertService: AlertService) {
   }
   public getAllServiceStatus(autoRefresh: boolean, from: string) {
-    // There are two more additional services exist in the FogLAMP. Get the current service name (Fledge/FogLAMP) and show resepected services detail accordingly
-    const currentService = JSON.parse(sessionStorage.getItem('SERVICE_NAME'));
-    let expectedExternalServiceType = ['Notification', 'Dispatcher'];
-    if (currentService === 'FogLAMP') {
-      expectedExternalServiceType = ['Notification', 'Management', 'Dispatcher', 'BucketStorage'];
-    }
+    // FYI; Four additional services exist in the Fledge and two in FogLAMP. There will be some extra API calls in Fledge (to search all of the expected additional services in different API response) because we don't have any info whether user is FogLAMP or Fledge.
+    let expectedExternalServiceType = ['Notification', 'Management', 'Dispatcher', 'BucketStorage'];
 
     if (from !== 'additional-services') {
       this.expectedServices = this.allExpectedServices.filter((s => (s.process === from)));
@@ -253,9 +249,9 @@ export class AdditionalServicesUtils {
       });
   }
 
-  enableService(serviceName) {
+  enableService(serviceName): Promise<any> {
     this.ngProgress.start();
-    this.schedulesService.enableScheduleByName(serviceName).subscribe(
+    return this.schedulesService.enableScheduleByName(serviceName).toPromise().then(
       (data) => {
         this.ngProgress.done();
         this.alertService.success(data["message"], true);
@@ -267,13 +263,14 @@ export class AdditionalServicesUtils {
         } else {
           this.alertService.error(error.statusText);
         }
+        throw error;
       }
     );
   }
 
-  disableService(serviceName) {
+  disableService(serviceName): Promise<any> {
     this.ngProgress.start();
-    this.schedulesService.disableScheduleByName(serviceName).subscribe(
+    return this.schedulesService.disableScheduleByName(serviceName).toPromise().then(
       (data) => {
         this.ngProgress.done();
         this.alertService.success(data["message"], true);
@@ -285,6 +282,7 @@ export class AdditionalServicesUtils {
         } else {
           this.alertService.error(error.statusText);
         }
+        throw error;
       }
     );
   }
