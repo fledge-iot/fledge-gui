@@ -69,7 +69,7 @@ export class AdditionalServicesUtils {
     private alertService: AlertService) {
   }
   public getAllServiceStatus(autoRefresh: boolean, from: string) {
-    // FYI; Four additional services exist in the Fledge and two in FogLAMP. There will be some extra API calls in Fledge (to search all of the expected additional services in different API response) because we don't have any info whether user is FogLAMP or Fledge.
+    // NOTE: Two additional services exist in the Fledge and four in FogLAMP. There will be some extra API calls in Fledge (to search all of the expected additional services in different API response) because we don't have any info whether user is FogLAMP or Fledge.
     let expectedExternalServiceType = ['Notification', 'Management', 'Dispatcher', 'BucketStorage'];
 
     if (from !== 'additional-services') {
@@ -162,16 +162,9 @@ export class AdditionalServicesUtils {
           atIndex = idx;
         }
       } else {
-        let scheduleStatus;
-        if (foundSchedule) {
-          scheduleStatus = foundSchedule?.enabled === true ? 'running' : 'disabled';
-        }
-        let isFailedOrUnresponsiveService = ['failed', 'unresponsive'].includes(foundService.status);
-        let state = scheduleStatus && !isFailedOrUnresponsiveService ? scheduleStatus : foundService.status;
-
         replacement.name = foundService.name;
         replacement.added = true;
-        replacement.state = state;
+        replacement.state = foundService.status;
         atIndex = idx;
       }
       if (atIndex != -1) {
@@ -186,7 +179,7 @@ export class AdditionalServicesUtils {
       const service = { name: '', added: false, isEnabled: false, isInstalled: false, process: from };
       const serviceDetail = this.installedServicePkgs.find(s => ['bucket', 'dispatcher', 'notification', 'management'].includes(s.process));
       if (serviceDetail) {
-        service.isEnabled = !["shutdown", "disabled", "installed"].includes(serviceDetail.state);
+        service.isEnabled = ["running", "true"].includes(serviceDetail.state);
         service.isInstalled = true;
         service.added = serviceDetail?.added;
         service.name = serviceDetail?.name;

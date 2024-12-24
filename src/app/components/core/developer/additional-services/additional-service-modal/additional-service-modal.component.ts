@@ -87,6 +87,12 @@ export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
           service.schedule_process = openedServiceModal.schedule_process;
           service.package = openedServiceModal.package;
 
+          // show schedule status on modal, if service is failed or unresponsive
+          let isFailedOrUnresponsiveService = ['failed', 'unresponsive'].includes(service.state);
+          if (isFailedOrUnresponsiveService) {
+            this.getSchedule(true);
+          }
+
           this.getServiceInfo(service, service?.pollingScheduleID);
           setTimeout(() => {
             this.toggleModal(true);

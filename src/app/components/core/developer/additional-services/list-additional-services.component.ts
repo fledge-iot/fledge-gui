@@ -103,7 +103,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     } else {
       service.isInstalled = true;
     }
-    service.isEnabled = ["shutdown", "disabled", "installed", ""].includes(service.state) ? false : true;
+    service.isEnabled = ["running", "true"].includes(service.state) ? true : false;
     service['pollingScheduleID'] = this.pollingScheduleID;
     service['fromListPage'] = true;
 

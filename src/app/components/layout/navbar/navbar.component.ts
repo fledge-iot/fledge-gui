@@ -157,10 +157,10 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
             return obj.name.toLowerCase();
           });
 
-          // FYI; Four additional services exist in the Fledge and two in FogLAMP. There will be some extra API calls in Fledge (to search all of the expected additional services in different API response) because we don't have any info whether user is FogLAMP or Fledge.
+          // NOTE: Two additional services exist in the Fledge and four in FogLAMP. There will be some extra API calls in Fledge (to search all of the expected additional services in different API response) because we don't have any info whether user is FogLAMP or Fledge.
           let expectedExternalServiceType = ['Notification', 'Management', 'Dispatcher', 'BucketStorage'];
 
-          const additionalServices = servicesData.filter((s) => expectedExternalServiceType.includes(s.type))
+          const additionalServices = servicesData.filter((s) => expectedExternalServiceType.includes(s.type));
 
           // If service is failed or unresponsive, check schedule as well
           const failedOrUnresponsiveServices = additionalServices.filter((s) => ['failed', 'unresponsive'].includes(s.status.toLowerCase()));
@@ -455,10 +455,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   navToServiceConfiguration(service) {
-    let isServiceEnabled = ["shutdown", "disabled", "installed"].includes(service.status) ? false : true;
+    let isServiceEnabled = ["running", "true"].includes(service.state);
     if (['failed', 'unresponsive'].includes(service.status.toLowerCase())) {
-      let isScheduleEnabled = this.schedulesData.find(sch => sch.name === service.name)?.enabled;
-      isServiceEnabled = ["shutdown", "disabled", "installed"].includes(service.status) || !isScheduleEnabled ? false : true;
+      isServiceEnabled = this.schedulesData.find(sch => sch.name === service.name)?.enabled;
     }
 
     let serviceInfo = {
