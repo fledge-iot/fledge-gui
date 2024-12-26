@@ -157,7 +157,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
             return obj.name.toLowerCase();
           });
 
-          // NOTE: Two additional services exist in the Fledge and four in FogLAMP. There will be some extra API calls in Fledge (to search all of the expected additional services in different API response) because we don't have any info whether user is FogLAMP or Fledge.
+          // NOTE: Open source additional services are notification and dispatcher only so there will be some extra API calls
           let expectedExternalServiceType = ['Notification', 'Management', 'Dispatcher', 'BucketStorage'];
 
           const additionalServices = servicesData.filter((s) => expectedExternalServiceType.includes(s.type));
