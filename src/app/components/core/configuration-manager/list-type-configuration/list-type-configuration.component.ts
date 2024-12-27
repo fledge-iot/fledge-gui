@@ -14,6 +14,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   @Input() configuration;
   @Input() group: string = '';
   @Input() from = '';
+  @Input() index: number;
   @Output() changedConfig = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
   listItemsForm: FormGroup;
@@ -33,7 +34,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   ngOnInit() {
-    if(this.configuration.items == 'object'){
+    if (this.configuration.items == 'object') {
       this.firstKey = Object.keys(this.configuration.properties)[0];
       // Show first property label as list card header
       this.listLabel = this.configuration.properties[this.firstKey].displayName ? this.configuration.properties[this.firstKey].displayName : this.firstKey;
@@ -44,8 +45,8 @@ export class ListTypeConfigurationComponent implements OnInit {
       this.initListItem(false, element);
     });
     this.onControlValueChanges();
-    if(this.configuration.items == 'object' && this.listItems.length == 1){
-      this.expandListItem(this.listItems.length-1); // Expand the list if only one item is present
+    if (this.configuration.items == 'object' && this.listItems.length == 1) {
+      this.expandListItem(this.listItems.length - 1); // Expand the list if only one item is present
     }
   }
 
@@ -67,23 +68,23 @@ export class ListTypeConfigurationComponent implements OnInit {
           objectConfig[key].permissions = this.configuration.permissions;
         }
       }
-      if(isPrepend) {
+      if (isPrepend) {
         this.initialProperties.unshift(objectConfig);
-        this.items.unshift({status : true});
+        this.items.unshift({ status: true });
       }
-      else{
+      else {
         this.initialProperties.push(objectConfig);
-        this.items.push({status : true});
+        this.items.push({ status: true });
       }
       listItem = new FormControl(objectConfig);
     }
     else {
       listItem = new FormControl(v, [CustomValidator.nospaceValidator]);
     }
-    if(isPrepend) {
+    if (isPrepend) {
       this.listItems.insert(0, listItem);
     }
-    else{
+    else {
       this.listItems.push(listItem);
     }
     this.cdRef.detectChanges();
@@ -97,13 +98,13 @@ export class ListTypeConfigurationComponent implements OnInit {
     }
     this.initListItem(isPrepend);
     this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
-    if(this.configuration.items == 'object'){
+    if (this.configuration.items == 'object') {
       // Expand newly added item
-      if(isPrepend){
+      if (isPrepend) {
         this.expandListItem(0);
       }
-      else{
-        this.expandListItem(this.listItems.length-1);
+      else {
+        this.expandListItem(this.listItems.length - 1);
       }
     }
   }
@@ -190,14 +191,14 @@ export class ListTypeConfigurationComponent implements OnInit {
     return valueObj;
   }
 
-  toggleCard(index) {
-    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
-    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
-    if(cardBody.classList.contains('is-hidden')){
+  toggleCard(i) {
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.index);
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.index);
+    if (cardBody.classList.contains('is-hidden')) {
       cardBody.classList.remove('is-hidden');
       cardHeader.classList.add('is-hidden');
     }
-    else{
+    else {
       cardBody.classList.add('is-hidden');
       cardHeader.classList.remove('is-hidden');
     }
@@ -209,27 +210,27 @@ export class ListTypeConfigurationComponent implements OnInit {
     }, 1);
   }
 
-  expandCollapseSingleItem(index: number, isExpand: boolean) {
-    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
-    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
-    if(isExpand) {
+  expandCollapseSingleItem(i: number, isExpand: boolean) {
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.index);
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.index);
+    if (isExpand) {
       cardHeader.classList.add('is-hidden');
       cardBody.classList.remove('is-hidden');
     }
-    else{
+    else {
       cardHeader.classList.remove('is-hidden');
       cardBody.classList.add('is-hidden');
     }
   }
 
   expandAllItems() {
-    for(let i=0; i<this.listItems.length; i++){
+    for (let i = 0; i < this.listItems.length; i++) {
       this.expandCollapseSingleItem(i, true);
     }
   }
-  
+
   collapseAllItems() {
-    for(let i=0; i<this.listItems.length; i++){
+    for (let i = 0; i < this.listItems.length; i++) {
       this.expandCollapseSingleItem(i, false);
     }
   }
