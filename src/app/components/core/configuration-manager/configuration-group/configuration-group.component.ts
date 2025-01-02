@@ -16,7 +16,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   @Input() plugin: string;
   @Input() serviceStatus = false;
   @Input() from: string;
-  @Input() index: number;
   @Input() sourceName: string;
   @Input() recalculateTabsOverflow: boolean;
   @Input() isFilterList: boolean;

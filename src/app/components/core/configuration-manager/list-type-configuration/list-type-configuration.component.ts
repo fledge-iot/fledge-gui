@@ -14,7 +14,6 @@ export class ListTypeConfigurationComponent implements OnInit {
   @Input() configuration;
   @Input() group: string = '';
   @Input() from = '';
-  @Input() index: number;
   @Output() changedConfig = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
   listItemsForm: FormGroup;
@@ -192,8 +191,8 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   toggleCard(i) {
-    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.index);
-    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.index);
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
     if (cardBody.classList.contains('is-hidden')) {
       cardBody.classList.remove('is-hidden');
       cardHeader.classList.add('is-hidden');
@@ -211,8 +210,8 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   expandCollapseSingleItem(i: number, isExpand: boolean) {
-    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.index);
-    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.index);
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
     if (isExpand) {
       cardHeader.classList.add('is-hidden');
       cardBody.classList.remove('is-hidden');
