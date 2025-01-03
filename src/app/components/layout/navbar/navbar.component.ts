@@ -455,7 +455,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   navToServiceConfiguration(service) {
-    let isServiceEnabled = ["running", "true"].includes(service.state);
+    let isServiceEnabled = ["running", "true"].includes(service.status);
     if (['failed', 'unresponsive'].includes(service.status.toLowerCase())) {
       isServiceEnabled = this.schedulesData.find(sch => sch.name === service.name)?.enabled;
     }
