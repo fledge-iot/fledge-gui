@@ -106,11 +106,13 @@
 
                     <app-list-type-configuration *ngIf="g?.type == 'list'" [configuration]="g.config"
                       [group]="g.group.key" [from]="from" (changedConfig)="getChangedConfiguration($event)"
-                      (formStatusEvent)="formStatus($event)"></app-list-type-configuration>
+                      (formStatusEvent)="formStatus($event)">
+                    </app-list-type-configuration>
 
                     <app-kv-list-type-configuration *ngIf="g?.type == 'kvlist'" [configuration]="g.config"
                       [group]="g.group.key" [from]="from" (changedConfig)="getChangedConfiguration($event)"
-                      (formStatusEvent)="formStatus($event)"></app-kv-list-type-configuration>
+                      (formStatusEvent)="formStatus($event)">
+                    </app-kv-list-type-configuration>
                   </div>
                 </ng-template>
               </div>

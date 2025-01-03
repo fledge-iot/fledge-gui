@@ -37,8 +37,8 @@ export class KvListTypeConfigurationComponent implements OnInit {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
     this.onControlValueChanges();
-    if(this.configuration.items == 'object' && this.kvListItems.length == 1){
-      this.expandListItem(this.kvListItems.length-1); // Expand the list if only one item is present
+    if (this.configuration.items == 'object' && this.kvListItems.length == 1) {
+      this.expandListItem(this.kvListItems.length - 1); // Expand the list if only one item is present
     }
   }
 
@@ -65,13 +65,13 @@ export class KvListTypeConfigurationComponent implements OnInit {
           objectConfig[key].permissions = this.configuration.permissions;
         }
       }
-      if(isPrepend) {
+      if (isPrepend) {
         this.initialProperties.unshift(objectConfig);
-        this.items.unshift({status : true});
+        this.items.unshift({ status: true });
       }
-      else{
+      else {
         this.initialProperties.push(objectConfig);
-        this.items.push({status : true});
+        this.items.push({ status: true });
       }
       return this.fb.group({
         key: [param?.key, [Validators.required, CustomValidator.nospaceValidator]],
@@ -90,20 +90,20 @@ export class KvListTypeConfigurationComponent implements OnInit {
     if (controlsLength > listSize) {
       return;
     }
-    if(isPrepend){
+    if (isPrepend) {
       this.kvListItems.insert(0, this.initListItem(isPrepend, { key: '', value: '' }));
     }
-    else{
+    else {
       this.kvListItems.push(this.initListItem(isPrepend, { key: '', value: '' }));
     }
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
-    if(this.configuration.items == 'object'){
+    if (this.configuration.items == 'object') {
       // Expand newly added item
-      if(isPrepend){
+      if (isPrepend) {
         this.expandListItem(0);
       }
-      else{
-        this.expandListItem(this.kvListItems.length-1);
+      else {
+        this.expandListItem(this.kvListItems.length - 1);
       }
     }
   }
@@ -173,10 +173,10 @@ export class KvListTypeConfigurationComponent implements OnInit {
   extractKvListValues(value) {
     let valueObj = {};
     for (let property in value) {
-      if(value[property].hasOwnProperty('value')){
+      if (value[property].hasOwnProperty('value')) {
         valueObj[property] = value[property].value;
       }
-      else{
+      else {
         valueObj[property] = value[property].default;
       }
       if (value[property].type == 'json') {
@@ -186,14 +186,14 @@ export class KvListTypeConfigurationComponent implements OnInit {
     return valueObj;
   }
 
-  toggleCard(index) {
-    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
-    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
-    if(cardBody.classList.contains('is-hidden')){
+  toggleCard(i) {
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
+    if (cardBody.classList.contains('is-hidden')) {
       cardBody.classList.remove('is-hidden');
       cardHeader.classList.add('is-hidden');
     }
-    else{
+    else {
       cardBody.classList.add('is-hidden');
       cardHeader.classList.remove('is-hidden');
     }
@@ -205,27 +205,27 @@ export class KvListTypeConfigurationComponent implements OnInit {
     }, 1);
   }
 
-  expandCollapseSingleItem(index: number, isExpand: boolean) {
-    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
-    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
-    if(isExpand) {
+  expandCollapseSingleItem(i: number, isExpand: boolean) {
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
+    if (isExpand) {
       cardHeader.classList.add('is-hidden');
       cardBody.classList.remove('is-hidden');
     }
-    else{
+    else {
       cardHeader.classList.remove('is-hidden');
       cardBody.classList.add('is-hidden');
     }
   }
 
   expandAllItems() {
-    for(let i=0; i<this.kvListItems.length; i++){
+    for (let i = 0; i < this.kvListItems.length; i++) {
       this.expandCollapseSingleItem(i, true);
     }
   }
 
   collapseAllItems() {
-    for(let i=0; i<this.kvListItems.length; i++){
+    for (let i = 0; i < this.kvListItems.length; i++) {
       this.expandCollapseSingleItem(i, false);
     }
   }
