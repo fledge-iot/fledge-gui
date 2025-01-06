@@ -87,12 +87,19 @@ export class AdditionalServicesUtils {
           }
           this.servicesRegistry = servicesRegistry;
           const matchedServices = this.servicesRegistry.filter((svc) => this.expectedServices.some(es => es.type == svc.type));
-          if (this.servicesRegistry?.length === this.expectedServices.length) {
+          if (this.servicesRegistry?.length === this.expectedServices.length || autoRefresh) {
             this.availableServicePkgs = [];
             let serviceTypes = [];
-            this.expectedServices.forEach(function (s) {
-              serviceTypes.push(s["process"]);
-            });
+            if (autoRefresh) {
+              this.servicesRegistry.forEach(function (s) {
+                let serviceType = s["type"] === 'BucketStorage' ? 'bucket' : s["type"].toLowerCase();
+                serviceTypes.push(serviceType);
+              });
+            } else {
+              this.expectedServices.forEach(function (s) {
+                serviceTypes.push(s["process"]);
+              });
+            }
             this.showInstalledAndAddedServices(serviceTypes, from);
             this.ngProgress.done();
           }
@@ -105,11 +112,14 @@ export class AdditionalServicesUtils {
         });
   }
 
-  public checkSchedules(from: string) {
+  public checkSchedules(from: string): Promise<any> {
     this.ngProgress.start();
-    this.schedulesService.getSchedules().
-      subscribe((data: Schedule) => {
+    return this.schedulesService.getSchedules().toPromise().then(
+      (data: Schedule) => {
         this.servicesSchedules = data['schedules'].filter((sch) => this.expectedServices.some(es => es.schedule_process == sch.processName));
+        if (from === 'failedOrUnresponsiveSvc') {
+          return;
+        }
         this.pollingScheduleID = data['schedules'].find(s => s.processName === 'manage')?.id;
 
         // If schedule of all services available then no need to make other API calls
@@ -126,17 +136,17 @@ export class AdditionalServicesUtils {
           this.checkInstalledServices(from);
         }
       },
-        (error) => {
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+      (error) => {
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
-  public showInstalledAndAddedServices(services, from: string) {
+  async showInstalledAndAddedServices(services, from: string) {
     let svcs = services.filter(
       (s) => !["south", "north", "storage"].includes(s)
     );
@@ -179,7 +189,13 @@ export class AdditionalServicesUtils {
       const service = { name: '', added: false, isEnabled: false, isInstalled: false, process: from };
       const serviceDetail = this.installedServicePkgs.find(s => ['bucket', 'dispatcher', 'notification', 'management'].includes(s.process));
       if (serviceDetail) {
-        service.isEnabled = ["running", "true"].includes(serviceDetail.state);
+        // To get the schedule status on individual service pages, if service is 'failed' or 'unresponsive'
+        if (['failed', 'unresponsive'].includes(serviceDetail.state.toLowerCase())) {
+          await this.checkSchedules('failedOrUnresponsiveSvc');
+          service.isEnabled = this.servicesSchedules.find(sch => sch.name === serviceDetail.name)?.enabled;
+        } else {
+          service.isEnabled = ["running", "true"].includes(serviceDetail.state);
+        }
         service.isInstalled = true;
         service.added = serviceDetail?.added;
         service.name = serviceDetail?.name;
