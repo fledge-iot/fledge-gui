@@ -87,19 +87,24 @@ export class AdditionalServicesUtils {
           }
           this.servicesRegistry = servicesRegistry;
           const matchedServices = this.servicesRegistry.filter((svc) => this.expectedServices.some(es => es.type == svc.type));
-          if (this.servicesRegistry?.length === this.expectedServices.length || autoRefresh) {
+
+          if (autoRefresh) {
+            this.installedServicePkgs.forEach(function (s) {
+              const matchedService = matchedServices.find((svc) => svc.type === s.type);
+              if (matchedService) {
+                s.state = matchedService.status;
+              }
+            });
+            this.sharedService.installedServicePkgs.next({ installed: this.installedServicePkgs, availableToInstall: this.availableServicePkgs });
+            return;
+          }
+
+          if (this.servicesRegistry?.length === this.expectedServices.length) {
             this.availableServicePkgs = [];
             let serviceTypes = [];
-            if (autoRefresh) {
-              this.servicesRegistry.forEach(function (s) {
-                let serviceType = s["type"] === 'BucketStorage' ? 'bucket' : s["type"].toLowerCase();
-                serviceTypes.push(serviceType);
-              });
-            } else {
-              this.expectedServices.forEach(function (s) {
-                serviceTypes.push(s["process"]);
-              });
-            }
+            this.expectedServices.forEach(function (s) {
+              serviceTypes.push(s["process"]);
+            });
             this.showInstalledAndAddedServices(serviceTypes, from);
             this.ngProgress.done();
           }
