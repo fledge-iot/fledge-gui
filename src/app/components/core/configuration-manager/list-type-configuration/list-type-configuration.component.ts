@@ -4,6 +4,7 @@ import { filter, uniqWith, isEqual } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
 import { RolesService } from '../../../../services';
+import { CsvService } from '../../../../services/csv.service';
 
 @Component({
   selector: 'app-list-type-configuration',
@@ -22,10 +23,16 @@ export class ListTypeConfigurationComponent implements OnInit {
   listLabel: string;
   firstKey: string;
   validConfigurationForm = true;
+  isValidFileExtension = true;
+  isValidFile = true;
+  isFileLoaded = false;
+  fileName = '';
+  fileData;
 
   constructor(
     public cdRef: ChangeDetectorRef,
     public rolesService: RolesService,
+    public csvService: CsvService,
     private fb: FormBuilder) {
     this.listItemsForm = this.fb.group({
       listItems: this.fb.array([])
@@ -232,5 +239,31 @@ export class ListTypeConfigurationComponent implements OnInit {
     for (let i = 0; i < this.listItems.length; i++) {
       this.expandCollapseSingleItem(i, false);
     }
+  }
+
+  async loadFile(event: any) {
+    this.fileName = this.csvService.getFileName(event);
+    this.isValidFileExtension = this.csvService.isExtensionValid(event);
+    this.isValidFile = await this.csvService.isFileValid(event, this.configuration.properties);
+    if (this.isValidFileExtension && this.isValidFile) {
+      this.fileData = await this.csvService.importData(event);
+      this.isFileLoaded = true;
+    }
+  }
+
+  appendCsvData() {
+    this.fileData.forEach(element => {
+      this.initListItem(false, element);
+    });
+    this.isFileLoaded = false;
+  }
+
+  overrideCsvData() {
+    this.listItems.clear();
+    this.initialProperties = [];
+    this.fileData.forEach(element => {
+      this.initListItem(false, element);
+    });
+    this.isFileLoaded = false;
   }
 }

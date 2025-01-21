@@ -91,3 +91,8 @@
 .error {
   border: 1px solid #f14668;
 }
+
+.invalid {
+  display: block;
+  font-size: 0.75rem;
+}
