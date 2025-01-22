@@ -54,6 +54,12 @@ export class CsvService {
     return file.name;
   }
 
+  async getTableData(event: any) {
+    let csvText = await this.getTextFromFile(event);
+    const dataRows = csvText.split('\n');
+    return dataRows;
+  }
+
   async isFileValid(event: any, properties) {
     let csvText = await this.getTextFromFile(event);
     const propertyNames = csvText.slice(0, csvText.indexOf('\n')).split(',');

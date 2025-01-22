@@ -26,6 +26,7 @@ import { ListTypeConfigurationComponent } from './components/core/configuration-
 import { KvListTypeConfigurationComponent } from './components/core/configuration-manager/kv-list-type-configuration/kv-list-type-configuration.component';
 import { StaticConfigurationComponent } from './components/core/configuration-manager/static-configuration/static-configuration.component';
 import { ButtonPanelComponent } from './components/core/configuration-manager/button-panel/button-panel.component';
+import { FileImportModalComponent } from './components/common/file-import-modal/file-import-modal.component';
 
 @NgModule({
   imports: [
@@ -56,7 +57,8 @@ import { ButtonPanelComponent } from './components/core/configuration-manager/bu
     TaskScheduleComponent,
     ServiceWarningComponent,
     ServiceConfigComponent,
-    ButtonPanelComponent
+    ButtonPanelComponent,
+    FileImportModalComponent
   ],
   exports: [
     ConfigurationGroupComponent,

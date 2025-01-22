@@ -1,10 +1,11 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective } from '@angular/forms';
 import { filter, uniqWith, isEqual } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
 import { RolesService } from '../../../../services';
 import { CsvService } from '../../../../services/csv.service';
+import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
 
 @Component({
   selector: 'app-list-type-configuration',
@@ -17,6 +18,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   @Input() from = '';
   @Output() changedConfig = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
+  @ViewChild(FileImportModalComponent, { static: true }) fileImportModal: FileImportModalComponent;
   listItemsForm: FormGroup;
   initialProperties = [];
   items = [];
@@ -28,6 +30,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   isFileLoaded = false;
   fileName = '';
   fileData;
+  tableData;
 
   constructor(
     public cdRef: ChangeDetectorRef,
@@ -247,7 +250,9 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.isValidFile = await this.csvService.isFileValid(event, this.configuration.properties);
     if (this.isValidFileExtension && this.isValidFile) {
       this.fileData = await this.csvService.importData(event);
+      this.tableData = await this.csvService.getTableData(event);
       this.isFileLoaded = true;
+      this.fileImportModal.toggleModal(true);
     }
   }
 

@@ -1,0 +1,32 @@
+<div id="fileUpload" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title is-size-6">Import File</p>
+      <button class="delete" aria-label="close" (click)="formReset()"></button>
+    </header>
+    <section class="modal-card-body">
+      <table class="table is-responsive" *ngIf="tableData">
+        <thead>
+          <tr>
+            <th *ngFor="let prop of tableData[0].split(',')">{{prop}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of tableData; let i = index;">
+            <ng-container *ngIf="i!=0">
+              <td *ngFor="let val of row.split(',')">
+                {{val}}
+              </td>
+            </ng-container>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer class="modal-card-foot">
+      <button class="button is-small" (click)="appendFileData()">Append</button>
+      <button class="button is-small is-info" (click)="overrideFileData()">Override</button>
+    </footer>
+  </div>
+</div>
