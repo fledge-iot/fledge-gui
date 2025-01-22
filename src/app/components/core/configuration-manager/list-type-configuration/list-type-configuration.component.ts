@@ -4,7 +4,6 @@ import { filter, uniqWith, isEqual } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
 import { RolesService } from '../../../../services';
-import { CsvService } from '../../../../services/csv.service';
 import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
 
 @Component({
@@ -25,17 +24,10 @@ export class ListTypeConfigurationComponent implements OnInit {
   listLabel: string;
   firstKey: string;
   validConfigurationForm = true;
-  isValidFileExtension = true;
-  isValidFile = true;
-  isFileLoaded = false;
-  fileName = '';
-  fileData;
-  tableData;
 
   constructor(
     public cdRef: ChangeDetectorRef,
     public rolesService: RolesService,
-    public csvService: CsvService,
     private fb: FormBuilder) {
     this.listItemsForm = this.fb.group({
       listItems: this.fb.array([])
@@ -244,31 +236,21 @@ export class ListTypeConfigurationComponent implements OnInit {
     }
   }
 
-  async loadFile(event: any) {
-    this.fileName = this.csvService.getFileName(event);
-    this.isValidFileExtension = this.csvService.isExtensionValid(event);
-    this.isValidFile = await this.csvService.isFileValid(event, this.configuration.properties);
-    if (this.isValidFileExtension && this.isValidFile) {
-      this.fileData = await this.csvService.importData(event);
-      this.tableData = await this.csvService.getTableData(event);
-      this.isFileLoaded = true;
-      this.fileImportModal.toggleModal(true);
-    }
-  }
-
-  appendCsvData() {
-    this.fileData.forEach(element => {
+  appendCsvData(event) {
+    event.fileData.forEach(element => {
       this.initListItem(false, element);
     });
-    this.isFileLoaded = false;
   }
 
-  overrideCsvData() {
+  overrideCsvData(event) {
     this.listItems.clear();
     this.initialProperties = [];
-    this.fileData.forEach(element => {
+    event.fileData.forEach(element => {
       this.initListItem(false, element);
     });
-    this.isFileLoaded = false;
+  }
+
+  openModal() {
+    this.fileImportModal.toggleModal(true);
   }
 }

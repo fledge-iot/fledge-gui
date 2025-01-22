@@ -1,4 +1,5 @@
-import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
+import { CsvService } from '../../../services/csv.service';
 
 @Component({
   selector: 'app-file-import-modal',
@@ -7,11 +8,18 @@ import { Component, EventEmitter, HostListener, Input, Output } from '@angular/c
 })
 export class FileImportModalComponent {
 
-  @Input() tableData;
+  @Input() properties;
   @Output() appendFile = new EventEmitter<any>();
   @Output() overrideFile = new EventEmitter<any>();
 
-  constructor() { }
+  isValidFileExtension = true;
+  isValidFile = true;
+  fileData;
+  tableData;
+  isFileLoaded = false;
+
+  @ViewChild('fileImport', { static: true }) fileImport: ElementRef;
+  constructor(public csvService: CsvService,) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     this.formReset();
@@ -32,15 +40,32 @@ export class FileImportModalComponent {
 
   formReset() {
     this.toggleModal(false);
+    this.tableData = null;
+    this.isFileLoaded = false;
+    this.isValidFileExtension = true;
+    this.isValidFile = true;
+    this.fileImport.nativeElement.value = '';
   }
 
   appendFileData() {
-    this.appendFile.emit({ appendFile: true });
-    this.toggleModal(false);
+    this.appendFile.emit({ fileData: this.fileData });
+    this.formReset();
   }
 
   overrideFileData() {
-    this.overrideFile.emit({ overrideFile: true });
-    this.toggleModal(false);
+    this.overrideFile.emit({ fileData: this.fileData });
+    this.formReset();
+  }
+
+  async loadFile(event: any) {
+    this.isFileLoaded = false;
+    this.tableData = null;
+    this.isValidFileExtension = this.csvService.isExtensionValid(event);
+    this.isValidFile = await this.csvService.isFileValid(event, this.properties);
+    if (this.isValidFileExtension && this.isValidFile) {
+      this.tableData = await this.csvService.getTableData(event);
+      this.fileData = await this.csvService.importData(event);
+      this.isFileLoaded = true;
+    }
   }
 }

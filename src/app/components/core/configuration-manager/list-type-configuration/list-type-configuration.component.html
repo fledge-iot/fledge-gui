@@ -127,11 +127,8 @@
               </span>
               <span>{{listItems.controls.length==0 ? 'Add item' : 'Add new item'}}</span>
             </button>
-            <input #fileUpload type="file" accept="'.csv'" (change)="loadFile($event)" hidden="true">
-            <button class="button is-small mt-1 ml-2" (click)="fileUpload.click()">Import CSV</button>
-            <template [ngTemplateOutlet]="fileNameTemplate"></template>
+            <button class="button is-small mt-1 ml-2" (click)="openModal()">Import</button>
           </p>
-          <template [ngTemplateOutlet]="invalidFileTemplate"></template>
         </div>
       </ng-container>
     </ng-container>
@@ -139,40 +136,12 @@
       <div class="btn-panel-container is-flex-direction-row">
         <div class="btn-panel lower-btn-panel">
           <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" (addnewItem)="addListItem(false)"
-            (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()" (importFile)="fileUpload.click()"
+            (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()" (importFile)="openModal()"
             [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
         </div>
       </div>
-      <input #fileUpload type="file" accept="'.csv'" (change)="loadFile($event)" hidden="true">
-      <template [ngTemplateOutlet]="fileNameTemplate"></template>
-      <template [ngTemplateOutlet]="invalidFileTemplate"></template>
     </ng-template>
   </ng-template>
 </div>
-
-<ng-template #fileNameTemplate>
-  <ng-container *ngIf="isFileLoaded">
-    <div class="is-inline-flex mt-3">
-      <span class="is-size-7 mx-2">{{fileName}}</span>
-      <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Append items"
-        (click)="appendCsvData()">
-        <i class="bi bi-arrow-left-short" aria-hidden="true"></i>
-      </span>
-      <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Override items"
-        (click)="overrideCsvData()">
-        <i class="bi bi-arrow-right-short" aria-hidden="true"></i>
-      </span>
-    </div>
-  </ng-container>
-</ng-template>
-
-<ng-template #invalidFileTemplate>
-  <span *ngIf="!isValidFileExtension" class="invalid has-text-danger mt-1">
-    Cannot recognise, upload a valid *.csv extension file
-  </span>
-  <span *ngIf="isValidFileExtension && !isValidFile" class="invalid has-text-danger mt-1">
-    Invalid File
-  </span>
-</ng-template>
-
-<app-file-import-modal (appendFile)="appendCsvData()" (overrideFile)="overrideCsvData()" [tableData]="tableData" />
+<app-file-import-modal (appendFile)="appendCsvData($event)" (overrideFile)="overrideCsvData($event)"
+  [properties]="configuration.properties" />

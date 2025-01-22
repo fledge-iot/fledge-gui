@@ -6,6 +6,8 @@
       <button class="delete" aria-label="close" (click)="formReset()"></button>
     </header>
     <section class="modal-card-body">
+      <input #fileImport class="input is-small is-fullwidth" type="file" accept="'.csv'" (change)="loadFile($event)">
+      <template [ngTemplateOutlet]="invalidFileTemplate"></template>
       <table class="table is-responsive" *ngIf="tableData">
         <thead>
           <tr>
@@ -25,8 +27,17 @@
     </section>
 
     <footer class="modal-card-foot">
-      <button class="button is-small" (click)="appendFileData()">Append</button>
-      <button class="button is-small is-info" (click)="overrideFileData()">Override</button>
+      <button class="button is-small" (click)="appendFileData()" [disabled]="!isFileLoaded">Append</button>
+      <button class="button is-small is-info" (click)="overrideFileData()" [disabled]="!isFileLoaded">Override</button>
     </footer>
   </div>
 </div>
+
+<ng-template #invalidFileTemplate>
+  <span *ngIf="!isValidFileExtension" class="invalid has-text-danger mt-1">
+    Cannot recognise, upload a valid *.csv extension file
+  </span>
+  <span *ngIf="isValidFileExtension && !isValidFile" class="invalid has-text-danger mt-1">
+    Invalid File
+  </span>
+</ng-template>
