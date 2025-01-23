@@ -1,5 +1,6 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
 import { CsvService } from '../../../services/csv.service';
+import { ProgressBarService } from '../../../services';
 
 @Component({
   selector: 'app-file-import-modal',
@@ -20,7 +21,9 @@ export class FileImportModalComponent {
   fileName = '';
 
   @ViewChild('fileImport', { static: true }) fileImport: ElementRef;
-  constructor(public csvService: CsvService,) { }
+  constructor(public csvService: CsvService,
+    public ngProgress: ProgressBarService,
+  ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     this.formReset();
@@ -58,16 +61,20 @@ export class FileImportModalComponent {
   }
 
   async loadFile(files: File[]) {
+    this.ngProgress.start();
     this.isFileLoaded = false;
     this.tableData = null;
     this.fileName = this.csvService.getFileName(files);
     this.isValidFileExtension = this.csvService.isExtensionValid(files);
-    this.isValidFile = await this.csvService.isFileValid(files, this.properties);
-    if (this.isValidFileExtension && this.isValidFile) {
-      this.tableData = await this.csvService.getTableData(files);
-      this.fileData = await this.csvService.importData(files);
-      this.isFileLoaded = true;
+    if (this.isValidFileExtension) {
+      this.isValidFile = await this.csvService.isFileValid(files, this.properties);
+      if (this.isValidFile) {
+        this.tableData = await this.csvService.getTableData(files);
+        this.fileData = await this.csvService.importData(files);
+        this.isFileLoaded = true;
+      }
     }
+    this.ngProgress.done();
   }
 
   onFileChange(event: any) {
