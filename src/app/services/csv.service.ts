@@ -7,14 +7,14 @@ export class CsvService {
 
   constructor() { }
 
-  async importData(event: any) {
-    let fileContent = await this.getTextFromFile(event);
+  async importData(files: File[]) {
+    let fileContent = await this.getTextFromFile(files);
     let importedData = this.importDataFromCSV(fileContent);
     return importedData;
   }
 
-  async getTextFromFile(event: any) {
-    const file: File = event.target.files[0];
+  async getTextFromFile(files: File[]) {
+    const file: File = files[0];
     let fileContent = await file.text();
     let lastCharacter = fileContent.slice(-1);
     if (lastCharacter == '\n') {
@@ -40,8 +40,8 @@ export class CsvService {
     return dataArray;
   }
 
-  isExtensionValid(event: any) {
-    const file: File = event.target.files[0];
+  isExtensionValid(files: File[]) {
+    const file: File = files[0];
     const ext = file.name.substring(file.name.lastIndexOf('.') + 1);
     if (ext == 'csv') {
       return true;
@@ -49,19 +49,19 @@ export class CsvService {
     return false;
   }
 
-  getFileName(event: any) {
-    const file: File = event.target.files[0];
+  getFileName(files: File[]) {
+    const file: File = files[0];
     return file.name;
   }
 
-  async getTableData(event: any) {
-    let csvText = await this.getTextFromFile(event);
+  async getTableData(files: File[]) {
+    let csvText = await this.getTextFromFile(files);
     const dataRows = csvText.split('\n');
     return dataRows;
   }
 
-  async isFileValid(event: any, properties) {
-    let csvText = await this.getTextFromFile(event);
+  async isFileValid(files: File[], properties) {
+    let csvText = await this.getTextFromFile(files);
     const propertyNames = csvText.slice(0, csvText.indexOf('\n')).split(',');
     let propertiesLength = Object.keys(properties).length;
     if (propertiesLength != propertyNames.length) {

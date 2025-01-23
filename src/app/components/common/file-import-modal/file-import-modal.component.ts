@@ -17,6 +17,7 @@ export class FileImportModalComponent {
   fileData;
   tableData;
   isFileLoaded = false;
+  fileName = '';
 
   @ViewChild('fileImport', { static: true }) fileImport: ElementRef;
   constructor(public csvService: CsvService,) { }
@@ -44,6 +45,7 @@ export class FileImportModalComponent {
     this.isFileLoaded = false;
     this.isValidFileExtension = true;
     this.isValidFile = true;
+    this.fileName = '';
     this.fileImport.nativeElement.value = '';
   }
 
@@ -57,15 +59,31 @@ export class FileImportModalComponent {
     this.formReset();
   }
 
-  async loadFile(event: any) {
+  async loadFile(files: File[]) {
     this.isFileLoaded = false;
     this.tableData = null;
-    this.isValidFileExtension = this.csvService.isExtensionValid(event);
-    this.isValidFile = await this.csvService.isFileValid(event, this.properties);
+    this.fileName = this.csvService.getFileName(files);
+    this.isValidFileExtension = this.csvService.isExtensionValid(files);
+    this.isValidFile = await this.csvService.isFileValid(files, this.properties);
     if (this.isValidFileExtension && this.isValidFile) {
-      this.tableData = await this.csvService.getTableData(event);
-      this.fileData = await this.csvService.importData(event);
+      this.tableData = await this.csvService.getTableData(files);
+      this.fileData = await this.csvService.importData(files);
       this.isFileLoaded = true;
     }
+  }
+
+  onFileChange(event: any) {
+    this.loadFile(event.target.files);
+  }
+
+  // File drag
+  onDragOver(event: any) {
+    event.preventDefault();
+  }
+
+  // File drop success
+  onDropSuccess(event: any) {
+    event.preventDefault();
+    this.loadFile(event.dataTransfer.files);
   }
 }

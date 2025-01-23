@@ -6,9 +6,24 @@
       <button class="delete" aria-label="close" (click)="formReset()"></button>
     </header>
     <section class="modal-card-body">
-      <input #fileImport class="input is-small is-fullwidth" type="file" accept="'.csv'" (change)="loadFile($event)">
+      <div class="file has-name is-fullwidth is-small" (dragover)="onDragOver($event)" (drop)="onDropSuccess($event)">
+        <label class="file-label">
+          <input #fileImport class="file-input" type="file" accept="'.csv'" (change)="onFileChange($event)">
+          <span class="file-cta">
+            <span class="file-icon">
+              <i class="fas fa-upload"></i>
+            </span>
+            <span class="file-label">
+              Browse/Drag & drop
+            </span>
+          </span>
+          <span class="file-name">
+            {{fileName}}
+          </span>
+        </label>
+      </div>
       <template [ngTemplateOutlet]="invalidFileTemplate"></template>
-      <table class="table is-responsive" *ngIf="tableData">
+      <table class="table is-responsive mt-2" *ngIf="tableData">
         <thead>
           <tr>
             <th *ngFor="let prop of tableData[0].split(',')">{{prop}}</th>
@@ -27,8 +42,10 @@
     </section>
 
     <footer class="modal-card-foot">
-      <button class="button is-small" (click)="appendFileData()" [disabled]="!isFileLoaded">Append</button>
-      <button class="button is-small is-info" (click)="overrideFileData()" [disabled]="!isFileLoaded">Override</button>
+      <button class="button is-small is-link is-outlined" (click)="appendFileData()"
+        [disabled]="!isFileLoaded">Append</button>
+      <button class="button is-small is-link is-outlined" (click)="overrideFileData()"
+        [disabled]="!isFileLoaded">Override</button>
     </footer>
   </div>
 </div>
