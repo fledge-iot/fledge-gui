@@ -24,14 +24,12 @@ export class FileImportModalComponent {
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     this.formReset();
-    event.stopImmediatePropagation();
-    event.preventDefault()
   }
 
   ngOnInit() { }
 
   public toggleModal(isOpen: Boolean) {
-    const modalName = <HTMLDivElement>document.getElementById('fileUpload');
+    const modalName = <HTMLDivElement>document.getElementById('modal-box');
     if (isOpen) {
       modalName.classList.add('is-active');
       return;

@@ -1,4 +1,4 @@
-<div id="fileUpload" class="modal">
+<div id="modal-box" class="modal">
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
@@ -6,7 +6,8 @@
       <button class="delete" aria-label="close" (click)="formReset()"></button>
     </header>
     <section class="modal-card-body">
-      <div class="file has-name is-fullwidth is-small" (dragover)="onDragOver($event)" (drop)="onDropSuccess($event)">
+      <div class="file has-name is-fullwidth is-small" [ngClass]="{'error': !isValidFileExtension || !isValidFile}"
+        (dragover)="onDragOver($event)" (drop)="onDropSuccess($event)">
         <label class="file-label">
           <input #fileImport class="file-input" type="file" accept="'.csv'" (change)="onFileChange($event)">
           <span class="file-cta">
@@ -52,7 +53,7 @@
 
 <ng-template #invalidFileTemplate>
   <span *ngIf="!isValidFileExtension" class="invalid has-text-danger mt-1">
-    Cannot recognise, upload a valid *.csv extension file
+    Allowed CSV/JSON only
   </span>
   <span *ngIf="isValidFileExtension && !isValidFile" class="invalid has-text-danger mt-1">
     Invalid File

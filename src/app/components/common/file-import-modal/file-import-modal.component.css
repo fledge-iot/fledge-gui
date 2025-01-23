@@ -2,3 +2,8 @@
   display: block;
   font-size: 0.75rem;
 }
+
+.error {
+  border: 1px solid #f14668;
+  border-radius: 6px;
+}
