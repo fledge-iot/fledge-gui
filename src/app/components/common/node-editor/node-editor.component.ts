@@ -682,7 +682,7 @@ export class NodeEditorComponent implements OnInit {
             (Array.isArray(filter) && filter.length > 0) ||
             (!Array.isArray(filter) && !this.selectedFilters.includes(filter)));
 
-    this.filterService.updateFilterPipeline({ 'pipeline': filteredPipeline }, this.service.name)
+    this.filterService.updateFilterPipeline({ 'pipeline': filteredPipeline }, this.source)
       .subscribe(() => {
         this.selectedFilters.forEach((filter, index) => {
           this.filterService.deleteFilter(filter).subscribe((data: any) => {
