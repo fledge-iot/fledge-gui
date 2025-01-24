@@ -103,7 +103,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     } else {
       service.isInstalled = true;
     }
-    service.isEnabled = ["shutdown", "disabled", "installed", ""].includes(service.state) ? false : true;
+    service.isEnabled = ["running", "true"].includes(service.state) ? true : false;
     service['pollingScheduleID'] = this.pollingScheduleID;
     service['fromListPage'] = true;
 
@@ -173,14 +173,18 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
     this.dialogService.close(id);
   }
 
-  stateUpdate() {
-    if (["shutdown", "disabled"].includes(this.service.state)) {
-      this.additionalServicesUtils.enableService(this.service.name);
-      // enabling service takes time to get the updated state from API
-      this.getUpdatedState('running');
-    } else {
-      this.additionalServicesUtils.disableService(this.service.name);
-      this.getUpdatedState('shutdown');
+  async stateUpdate() {
+    try {
+      if (["shutdown", "disabled"].includes(this.service.state)) {
+        await this.additionalServicesUtils.enableService(this.service.name);
+        // enabling service takes time to get the updated state from API
+        this.getUpdatedState('running');
+      } else {
+        await this.additionalServicesUtils.disableService(this.service.name);
+        this.getUpdatedState('shutdown');
+      }
+    } catch (error) {
+      console.error('error', error);
     }
   }
 
