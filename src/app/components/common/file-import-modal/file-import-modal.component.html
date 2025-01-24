@@ -53,7 +53,7 @@
 
 <ng-template #invalidFileTemplate>
   <span *ngIf="!isValidFileExtension" class="invalid has-text-danger mt-1">
-    Allowed CSV/JSON only
+    Only CSV or JSON file is allowed
   </span>
   <span *ngIf="isValidFileExtension && !isValidFile" class="invalid has-text-danger mt-1">
     Invalid File

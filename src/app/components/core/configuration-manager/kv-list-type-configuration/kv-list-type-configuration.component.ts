@@ -1,9 +1,10 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { filter } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
 import { RolesService } from '../../../../services';
+import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
 
 @Component({
   selector: 'app-kv-list-type-configuration',
@@ -16,6 +17,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
   @Input() from = '';
   @Output() changedConfig = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
+  @ViewChild(FileImportModalComponent, { static: true }) fileImportModal: FileImportModalComponent;
   kvListItemsForm: FormGroup;
   initialProperties = [];
   items = [];
@@ -228,5 +230,23 @@ export class KvListTypeConfigurationComponent implements OnInit {
     for (let i = 0; i < this.kvListItems.length; i++) {
       this.expandCollapseSingleItem(i, false);
     }
+  }
+
+  appendCsvData(event) {
+    for (const [key, value] of Object.entries(event.fileData)) {
+      this.kvListItems.push(this.initListItem(false, { key, value }));
+    }
+  }
+
+  overrideCsvData(event) {
+    this.kvListItems.clear();
+    this.initialProperties = [];
+    for (const [key, value] of Object.entries(event.fileData)) {
+      this.kvListItems.push(this.initListItem(false, { key, value }));
+    }
+  }
+
+  openModal() {
+    this.fileImportModal.toggleModal(true);
   }
 }

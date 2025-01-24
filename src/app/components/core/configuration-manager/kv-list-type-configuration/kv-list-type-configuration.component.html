@@ -142,14 +142,13 @@
         </div>
       </ng-template>
     </ng-container>
-    <ng-container *ngIf="(configuration.items != 'object' || kvListItems.controls.length<=1); else objectButtonPanel">
+    <ng-container *ngIf="configuration.items != 'object'; else objectButtonPanel">
       <ng-container
         *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
         <div class="field">
           <p class="control">
-            <button class="button is-small mb-1" (click)="addListItem(false)"
-              [disabled]="kvListItems.invalid || !validConfigurationForm"
-              [ngClass]="{'px-0 pt-1 is-ghost': configuration.items != 'object', 'mt-1': configuration.items == 'object'}">
+            <button class="button is-small mb-1 px-0 pt-1 is-ghost" (click)="addListItem(false)"
+              [disabled]="kvListItems.invalid || !validConfigurationForm">
               <span class="icon is-small mr-0">
                 <i class="bi bi-plus bi-sm"></i>
               </span>
@@ -160,16 +159,38 @@
       </ng-container>
     </ng-container>
     <ng-template #objectButtonPanel>
-      <div class="btn-panel-container is-flex-direction-row">
-        <div class="btn-panel lower-btn-panel">
-          <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm"
-            (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
-            [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)" />
+      <ng-container *ngIf="kvListItems.controls.length<=1; else buttonPanelTemplate">
+        <ng-container
+          *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
+          <div class="field">
+            <p class="control">
+              <button class="button is-small mb-1 mt-1" (click)="addListItem(false)"
+                [disabled]="kvListItems.invalid || !validConfigurationForm">
+                <span class="icon is-small mr-0">
+                  <i class="bi bi-plus bi-sm"></i>
+                </span>
+                <span>{{kvListItems.controls.length==0 ? 'Add item' : 'Add new item'}}</span>
+              </button>
+              <button class="button is-small mt-1 ml-2" (click)="openModal()">Import</button>
+            </p>
+          </div>
+        </ng-container>
+      </ng-container>
+      <ng-template #buttonPanelTemplate>
+        <div class="btn-panel-container is-flex-direction-row">
+          <div class="btn-panel lower-btn-panel">
+            <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm"
+              (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+              (importFile)="openModal()"
+              [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)" />
+          </div>
         </div>
-      </div>
+      </ng-template>
     </ng-template>
     <ng-container
       *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
     </ng-container>
   </div>
 </div>
+<app-file-import-modal (appendFile)="appendCsvData($event)" (overrideFile)="overrideCsvData($event)"
+  [configuration]="configuration" />

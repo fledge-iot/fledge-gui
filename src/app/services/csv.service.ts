@@ -7,9 +7,9 @@ export class CsvService {
 
   constructor() { }
 
-  async importData(files: File[]) {
+  async importData(files: File[], type) {
     let fileContent = await this.getTextFromFile(files);
-    let importedData = this.importDataFromCSV(fileContent);
+    let importedData = this.importDataFromCSV(fileContent, type);
     return importedData;
   }
 
@@ -23,21 +23,39 @@ export class CsvService {
     return fileContent;
   }
 
-  importDataFromCSV(csvText: string): Array<any> {
+  importDataFromCSV(csvText: string, type) {
     const propertyNames = csvText.slice(0, csvText.indexOf('\n')).split(',');
     const dataRows = csvText.slice(csvText.indexOf('\n') + 1).split('\n');
-    let dataArray = [];
-    dataRows.forEach((row) => {
-      let values = row.split(',');
-      let obj = new Object();
-      for (let index = 0; index < propertyNames.length; index++) {
-        const propertyName = propertyNames[index];
-        let val = values[index];
-        obj[propertyName] = val;
-      }
-      dataArray.push(obj);
-    });
-    return dataArray;
+    if (type == 'kvlist') {
+      let dataObj = {};
+      dataRows.forEach((row) => {
+        let values = row.split(',');
+        let obj = new Object();
+        for (let index = 0; index < propertyNames.length; index++) {
+          if (index != 0) {
+            const propertyName = propertyNames[index];
+            let val = values[index];
+            obj[propertyName] = val;
+          }
+        }
+        dataObj[values[0]] = obj;
+      });
+      return dataObj;
+    }
+    else {
+      let dataArray = [];
+      dataRows.forEach((row) => {
+        let values = row.split(',');
+        let obj = new Object();
+        for (let index = 0; index < propertyNames.length; index++) {
+          const propertyName = propertyNames[index];
+          let val = values[index];
+          obj[propertyName] = val;
+        }
+        dataArray.push(obj);
+      });
+      return dataArray;
+    }
   }
 
   isExtensionValid(files: File[]) {
@@ -60,27 +78,52 @@ export class CsvService {
     return dataRows;
   }
 
-  async isFileValid(files: File[], properties) {
+  async isFileValid(files: File[], properties, type, keyName = 'Key') {
     let csvText = await this.getTextFromFile(files);
     const propertyNames = csvText.slice(0, csvText.indexOf('\n')).split(',');
     let propertiesLength = Object.keys(properties).length;
-    if (propertiesLength != propertyNames.length) {
-      return false;
-    }
-    for (let key of Object.keys(properties)) {
-      if (propertyNames.indexOf(key) == -1) {
+    if (type == 'kvlist') {
+      if (propertyNames.length != propertiesLength + 1) {
         return false;
       }
-    }
-    const dataRows = csvText.slice(csvText.indexOf('\n') + 1).split('\n');
-    for (let row of dataRows) {
-      if (row) {
-        let values = row.split(',');
-        if (values.length !== propertiesLength) {
+      for (let key of Object.keys(properties)) {
+        if (propertyNames.indexOf(key) == -1) {
           return false;
         }
       }
+      if (propertyNames.indexOf(keyName) == -1) {
+        return false;
+      }
+      const dataRows = csvText.slice(csvText.indexOf('\n') + 1).split('\n');
+      for (let row of dataRows) {
+        if (row) {
+          let values = row.split(',');
+          if (values.length !== propertiesLength + 1) {
+            return false;
+          }
+        }
+      }
+      return true;
     }
-    return true;
+    else {
+      if (propertiesLength != propertyNames.length) {
+        return false;
+      }
+      for (let key of Object.keys(properties)) {
+        if (propertyNames.indexOf(key) == -1) {
+          return false;
+        }
+      }
+      const dataRows = csvText.slice(csvText.indexOf('\n') + 1).split('\n');
+      for (let row of dataRows) {
+        if (row) {
+          let values = row.split(',');
+          if (values.length !== propertiesLength) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
   }
 }

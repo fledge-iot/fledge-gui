@@ -9,7 +9,7 @@ import { ProgressBarService } from '../../../services';
 })
 export class FileImportModalComponent {
 
-  @Input() properties;
+  @Input() configuration;
   @Output() appendFile = new EventEmitter<any>();
   @Output() overrideFile = new EventEmitter<any>();
 
@@ -67,10 +67,10 @@ export class FileImportModalComponent {
     this.fileName = this.csvService.getFileName(files);
     this.isValidFileExtension = this.csvService.isExtensionValid(files);
     if (this.isValidFileExtension) {
-      this.isValidFile = await this.csvService.isFileValid(files, this.properties);
+      this.isValidFile = await this.csvService.isFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
       if (this.isValidFile) {
         this.tableData = await this.csvService.getTableData(files);
-        this.fileData = await this.csvService.importData(files);
+        this.fileData = await this.csvService.importData(files, this.configuration.type);
         this.isFileLoaded = true;
       }
     }
