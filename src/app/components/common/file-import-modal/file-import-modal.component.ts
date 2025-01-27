@@ -19,6 +19,7 @@ export class FileImportModalComponent {
   tableData;
   isFileLoaded = false;
   fileName = '';
+  fileExtension;
 
   @ViewChild('fileImport', { static: true }) fileImport: ElementRef;
   constructor(public csvService: CsvService,
@@ -43,6 +44,7 @@ export class FileImportModalComponent {
   formReset() {
     this.toggleModal(false);
     this.tableData = null;
+    this.fileData = null;
     this.isFileLoaded = false;
     this.isValidFileExtension = true;
     this.isValidFile = true;
@@ -64,14 +66,24 @@ export class FileImportModalComponent {
     this.ngProgress.start();
     this.isFileLoaded = false;
     this.tableData = null;
-    this.fileName = this.csvService.getFileName(files);
-    this.isValidFileExtension = this.csvService.isExtensionValid(files);
+    this.fileName = this.getFileName(files);
+    this.fileExtension = this.getFileExtension(files).toLowerCase();
+    this.isValidFileExtension = this.isExtensionValid(this.fileExtension);
     if (this.isValidFileExtension) {
-      this.isValidFile = await this.csvService.isFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
-      if (this.isValidFile) {
-        this.tableData = await this.csvService.getTableData(files);
-        this.fileData = await this.csvService.importData(files, this.configuration.type);
-        this.isFileLoaded = true;
+      if (this.fileExtension == 'csv') {
+        this.isValidFile = await this.csvService.isFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
+        if (this.isValidFile) {
+          this.tableData = await this.csvService.getTableData(files);
+          this.fileData = await this.csvService.importData(files, this.configuration.type);
+          this.isFileLoaded = true;
+        }
+      }
+      else {
+        this.isValidFile = await this.csvService.isJsonFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
+        if (this.isValidFile) {
+          this.fileData = await this.csvService.importJsonData(files, this.configuration.type);
+          this.isFileLoaded = true;
+        }
       }
     }
     this.ngProgress.done();
@@ -90,5 +102,22 @@ export class FileImportModalComponent {
   onDropSuccess(event: any) {
     event.preventDefault();
     this.loadFile(event.dataTransfer.files);
+  }
+
+  getFileName(files: File[]) {
+    const file: File = files[0];
+    return file.name;
+  }
+
+  getFileExtension(files: File[]) {
+    const file: File = files[0];
+    return file.name.substring(file.name.lastIndexOf('.') + 1);
+  }
+
+  isExtensionValid(ext) {
+    if (ext == 'csv' || ext == 'json') {
+      return true;
+    }
+    return false;
   }
 }

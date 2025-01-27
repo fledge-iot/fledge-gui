@@ -40,6 +40,9 @@
           </tr>
         </tbody>
       </table>
+      <pre class="mt-3" *ngIf="fileExtension=='json' && fileData">
+        {{fileData | json}}
+      </pre>
     </section>
 
     <footer class="modal-card-foot">

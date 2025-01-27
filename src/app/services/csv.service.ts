@@ -126,4 +126,50 @@ export class CsvService {
       return true;
     }
   }
+
+  async isJsonFileValid(files: File[], properties, type, keyName = 'Key') {
+    let jsonText = await this.getTextFromFile(files);
+    let jsonObj = JSON.parse(jsonText);
+    let propertiesLength = Object.keys(properties).length;
+    if (type == 'kvlist') {
+      if (Array.isArray(jsonObj)) {
+        return false;
+      }
+      if (Object.keys(jsonObj).length == 0) {
+        return false;
+      }
+      for (let [k, v] of Object.entries(jsonObj)) {
+        if (Object.keys(v).length != propertiesLength) {
+          return false;
+        }
+        for (let key of Object.keys(properties)) {
+          if (!v.hasOwnProperty(key)) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+    else {
+      if (!Array.isArray(jsonObj) || jsonObj.length == 0) {
+        return false;
+      }
+      for (let item of jsonObj) {
+        if (Object.keys(item).length != propertiesLength) {
+          return false;
+        }
+        for (let key of Object.keys(properties)) {
+          if (!item.hasOwnProperty(key)) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+  }
+
+  async importJsonData(files: File[], type) {
+    let jsonText = await this.getTextFromFile(files);
+    return JSON.parse(jsonText);
+  }
 }
