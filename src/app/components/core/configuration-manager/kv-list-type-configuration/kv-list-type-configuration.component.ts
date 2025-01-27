@@ -232,13 +232,13 @@ export class KvListTypeConfigurationComponent implements OnInit {
     }
   }
 
-  appendCsvData(event) {
+  appendFileData(event) {
     for (const [key, value] of Object.entries(event.fileData)) {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
   }
 
-  overrideCsvData(event) {
+  overrideFileData(event) {
     this.kvListItems.clear();
     this.initialProperties = [];
     for (const [key, value] of Object.entries(event.fileData)) {

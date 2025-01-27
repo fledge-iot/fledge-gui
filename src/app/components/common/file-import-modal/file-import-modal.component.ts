@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
-import { CsvService } from '../../../services/csv.service';
+import { FileImportService } from '../../../services/file-import.service';
 import { ProgressBarService } from '../../../services';
 
 @Component({
@@ -22,7 +22,7 @@ export class FileImportModalComponent {
   fileExtension;
 
   @ViewChild('fileImport', { static: true }) fileImport: ElementRef;
-  constructor(public csvService: CsvService,
+  constructor(public fileImportService: FileImportService,
     public ngProgress: ProgressBarService,
   ) { }
 
@@ -64,24 +64,22 @@ export class FileImportModalComponent {
 
   async loadFile(files: File[]) {
     this.ngProgress.start();
-    this.isFileLoaded = false;
-    this.tableData = null;
-    this.fileName = this.getFileName(files);
-    this.fileExtension = this.getFileExtension(files).toLowerCase();
-    this.isValidFileExtension = this.isExtensionValid(this.fileExtension);
+    this.fileName = this.fileImportService.getFileName(files);
+    this.fileExtension = this.fileImportService.getFileExtension(files).toLowerCase();
+    this.isValidFileExtension = this.fileImportService.isExtensionValid(this.fileExtension);
     if (this.isValidFileExtension) {
       if (this.fileExtension == 'csv') {
-        this.isValidFile = await this.csvService.isFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
+        this.isValidFile = await this.fileImportService.isCsvFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
         if (this.isValidFile) {
-          this.tableData = await this.csvService.getTableData(files);
-          this.fileData = await this.csvService.importData(files, this.configuration.type);
+          this.tableData = await this.fileImportService.getTableData(files);
+          this.fileData = await this.fileImportService.importCsvData(files, this.configuration.type);
           this.isFileLoaded = true;
         }
       }
       else {
-        this.isValidFile = await this.csvService.isJsonFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
+        this.isValidFile = await this.fileImportService.isJsonFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
         if (this.isValidFile) {
-          this.fileData = await this.csvService.importJsonData(files, this.configuration.type);
+          this.fileData = await this.fileImportService.importJsonData(files, this.configuration.type);
           this.isFileLoaded = true;
         }
       }
@@ -102,22 +100,5 @@ export class FileImportModalComponent {
   onDropSuccess(event: any) {
     event.preventDefault();
     this.loadFile(event.dataTransfer.files);
-  }
-
-  getFileName(files: File[]) {
-    const file: File = files[0];
-    return file.name;
-  }
-
-  getFileExtension(files: File[]) {
-    const file: File = files[0];
-    return file.name.substring(file.name.lastIndexOf('.') + 1);
-  }
-
-  isExtensionValid(ext) {
-    if (ext == 'csv' || ext == 'json') {
-      return true;
-    }
-    return false;
   }
 }

@@ -3,11 +3,11 @@ import { Injectable } from '@angular/core';
 @Injectable({
   providedIn: 'root'
 })
-export class CsvService {
+export class FileImportService {
 
   constructor() { }
 
-  async importData(files: File[], type) {
+  async importCsvData(files: File[], type) {
     let fileContent = await this.getTextFromFile(files);
     let importedData = this.importDataFromCSV(fileContent, type);
     return importedData;
@@ -58,27 +58,13 @@ export class CsvService {
     }
   }
 
-  isExtensionValid(files: File[]) {
-    const file: File = files[0];
-    const ext = file.name.substring(file.name.lastIndexOf('.') + 1);
-    if (ext == 'csv') {
-      return true;
-    }
-    return false;
-  }
-
-  getFileName(files: File[]) {
-    const file: File = files[0];
-    return file.name;
-  }
-
   async getTableData(files: File[]) {
     let csvText = await this.getTextFromFile(files);
     const dataRows = csvText.split('\n');
     return dataRows;
   }
 
-  async isFileValid(files: File[], properties, type, keyName = 'Key') {
+  async isCsvFileValid(files: File[], properties, type, keyName = 'Key') {
     let csvText = await this.getTextFromFile(files);
     const propertyNames = csvText.slice(0, csvText.indexOf('\n')).split(',');
     let propertiesLength = Object.keys(properties).length;
@@ -171,5 +157,22 @@ export class CsvService {
   async importJsonData(files: File[], type) {
     let jsonText = await this.getTextFromFile(files);
     return JSON.parse(jsonText);
+  }
+
+  getFileName(files: File[]) {
+    const file: File = files[0];
+    return file.name;
+  }
+
+  getFileExtension(files: File[]) {
+    const file: File = files[0];
+    return file.name.substring(file.name.lastIndexOf('.') + 1);
+  }
+
+  isExtensionValid(ext) {
+    if (ext == 'csv' || ext == 'json') {
+      return true;
+    }
+    return false;
   }
 }

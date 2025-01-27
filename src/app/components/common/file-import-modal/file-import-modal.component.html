@@ -9,7 +9,7 @@
       <div class="file has-name is-fullwidth is-small" [ngClass]="{'error': !isValidFileExtension || !isValidFile}"
         (dragover)="onDragOver($event)" (drop)="onDropSuccess($event)">
         <label class="file-label">
-          <input #fileImport class="file-input" type="file" accept="'.csv'" (change)="onFileChange($event)">
+          <input #fileImport class="file-input" type="file" (change)="onFileChange($event)">
           <span class="file-cta">
             <span class="file-icon">
               <i class="fas fa-upload"></i>
@@ -24,7 +24,7 @@
         </label>
       </div>
       <template [ngTemplateOutlet]="invalidFileTemplate"></template>
-      <table class="table is-responsive mt-2" *ngIf="tableData">
+      <table class="table is-responsive mt-2" *ngIf="fileExtension=='csv' && tableData">
         <thead>
           <tr>
             <th *ngFor="let prop of tableData[0].split(',')">{{prop}}</th>

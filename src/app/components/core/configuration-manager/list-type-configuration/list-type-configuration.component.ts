@@ -236,13 +236,13 @@ export class ListTypeConfigurationComponent implements OnInit {
     }
   }
 
-  appendCsvData(event) {
+  appendFileData(event) {
     event.fileData.forEach(element => {
       this.initListItem(false, element);
     });
   }
 
-  overrideCsvData(event) {
+  overrideFileData(event) {
     this.listItems.clear();
     this.initialProperties = [];
     event.fileData.forEach(element => {
