@@ -6,7 +6,7 @@
       <button class="delete" aria-label="close" (click)="formReset()"></button>
     </header>
     <section class="modal-card-body">
-      <div class="file has-name is-fullwidth is-small" [ngClass]="{'error': !isValidFileExtension || !isValidFile}"
+      <div class="file has-name is-fullwidth is-small" [ngClass]="{'error': !file.isValidExtension || !file.isValid}"
         (dragover)="onDragOver($event)" (drop)="onDropSuccess($event)">
         <label class="file-label">
           <input #fileImport class="file-input" type="file" (change)="onFileChange($event)">
@@ -19,12 +19,12 @@
             </span>
           </span>
           <span class="file-name">
-            {{fileName}}
+            {{file.name}}
           </span>
         </label>
       </div>
       <template [ngTemplateOutlet]="invalidFileTemplate"></template>
-      <table class="table is-responsive mt-2" *ngIf="fileExtension=='csv' && tableData">
+      <table class="table is-responsive mt-2" *ngIf="file.extension=='csv' && tableData">
         <thead>
           <tr>
             <th *ngFor="let prop of tableData[0].split(',')">{{prop}}</th>
@@ -40,25 +40,25 @@
           </tr>
         </tbody>
       </table>
-      <pre class="mt-3" *ngIf="fileExtension=='json' && fileData">
-        {{fileData | json}}
+      <pre class="mt-3" *ngIf="file.extension=='json' && file.data">
+        {{file.data | json}}
       </pre>
     </section>
 
     <footer class="modal-card-foot">
       <button class="button is-small is-link is-outlined" (click)="appendFileData()"
-        [disabled]="!isFileLoaded">Append</button>
+        [disabled]="!file.isLoaded">Append</button>
       <button class="button is-small is-link is-outlined" (click)="overrideFileData()"
-        [disabled]="!isFileLoaded">Override</button>
+        [disabled]="!file.isLoaded">Override</button>
     </footer>
   </div>
 </div>
 
 <ng-template #invalidFileTemplate>
-  <span *ngIf="!isValidFileExtension" class="invalid has-text-danger mt-1">
+  <span *ngIf="!file.isValidExtension" class="invalid has-text-danger mt-1">
     Only CSV or JSON file is allowed
   </span>
-  <span *ngIf="isValidFileExtension && !isValidFile" class="invalid has-text-danger mt-1">
+  <span *ngIf="file.isValidExtension && !file.isValid" class="invalid has-text-danger mt-1">
     Invalid File
   </span>
 </ng-template>

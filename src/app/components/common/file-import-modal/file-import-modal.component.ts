@@ -13,13 +13,8 @@ export class FileImportModalComponent {
   @Output() appendFile = new EventEmitter<any>();
   @Output() overrideFile = new EventEmitter<any>();
 
-  isValidFileExtension = true;
-  isValidFile = true;
-  fileData;
   tableData;
-  isFileLoaded = false;
-  fileName = '';
-  fileExtension;
+  file = { name: '', extension: '', isLoaded: false, data: null, isValid: true, isValidExtension: true }
 
   @ViewChild('fileImport', { static: true }) fileImport: ElementRef;
   constructor(public fileImportService: FileImportService,
@@ -44,43 +39,39 @@ export class FileImportModalComponent {
   formReset() {
     this.toggleModal(false);
     this.tableData = null;
-    this.fileData = null;
-    this.isFileLoaded = false;
-    this.isValidFileExtension = true;
-    this.isValidFile = true;
-    this.fileName = '';
+    this.file = { name: '', extension: '', isLoaded: false, data: null, isValid: true, isValidExtension: true };
     this.fileImport.nativeElement.value = '';
   }
 
   appendFileData() {
-    this.appendFile.emit({ fileData: this.fileData });
+    this.appendFile.emit({ fileData: this.file.data });
     this.formReset();
   }
 
   overrideFileData() {
-    this.overrideFile.emit({ fileData: this.fileData });
+    this.overrideFile.emit({ fileData: this.file.data });
     this.formReset();
   }
 
   async loadFile(files: File[]) {
     this.ngProgress.start();
-    this.fileName = this.fileImportService.getFileName(files);
-    this.fileExtension = this.fileImportService.getFileExtension(files).toLowerCase();
-    this.isValidFileExtension = this.fileImportService.isExtensionValid(this.fileExtension);
-    if (this.isValidFileExtension) {
-      if (this.fileExtension == 'csv') {
-        this.isValidFile = await this.fileImportService.isCsvFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
-        if (this.isValidFile) {
+    this.file.name = this.fileImportService.getFileName(files);
+    this.file.extension = this.fileImportService.getFileExtension(files).toLowerCase();
+    this.file.isValidExtension = this.fileImportService.isExtensionValid(this.file.extension);
+    if (this.file.isValidExtension) {
+      if (this.file.extension == 'csv') {
+        this.file.isValid = await this.fileImportService.isCsvFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
+        if (this.file.isValid) {
           this.tableData = await this.fileImportService.getTableData(files);
-          this.fileData = await this.fileImportService.importCsvData(files, this.configuration.type);
-          this.isFileLoaded = true;
+          this.file.data = await this.fileImportService.importCsvData(files, this.configuration.type);
+          this.file.isLoaded = true;
         }
       }
       else {
-        this.isValidFile = await this.fileImportService.isJsonFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
-        if (this.isValidFile) {
-          this.fileData = await this.fileImportService.importJsonData(files, this.configuration.type);
-          this.isFileLoaded = true;
+        this.file.isValid = await this.fileImportService.isJsonFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
+        if (this.file.isValid) {
+          this.file.data = await this.fileImportService.importJsonData(files, this.configuration.type);
+          this.file.isLoaded = true;
         }
       }
     }
