@@ -1,7 +1,10 @@
 import { ClassicPreset, GetSchemes, getUID } from 'rete';
 import { BidirectFlow, Context, SocketData } from 'rete-connection-plugin';
 import { getUpdatedFilterPipeline } from './editor';
-import { PseudoNodeControl } from './filter';
+import { Filter, PseudoNodeControl } from './filter';
+import { South } from './nodes/south';
+import { North } from './nodes/north';
+import { Storage } from './storage';
 
 type ClassicScheme = GetSchemes<ClassicPreset.Node, ClassicPreset.Connection<ClassicPreset.Node, ClassicPreset.Node> & { isLoop?: boolean }>
 
@@ -14,8 +17,26 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
           return;
         }
 
+        const connectionExist = context.editor.getConnections().find(conn => (conn.source == initial.nodeId && conn.target == socket.nodeId));
+        if (connectionExist) {
+          return;
+        }
+
         const fromNode = context.editor.getNode(initial.nodeId);
         const toNode = context.editor.getNode(socket.nodeId);
+        const isNorthNode = context.editor.getNodes().find(node => node.label == 'North');
+
+        // Invalid connection check
+        if (
+          (fromNode instanceof Storage && toNode instanceof South) ||
+          (fromNode instanceof North && toNode instanceof Storage) ||
+          (fromNode instanceof Filter && toNode instanceof South) ||
+          (fromNode instanceof North && toNode instanceof Filter) ||
+          (isNorthNode && fromNode instanceof Filter && toNode instanceof Storage)
+        ) {
+          return;
+        }
+
 
         // Avoid connection loop in pipeline
         const pipeline = getUpdatedFilterPipeline();
