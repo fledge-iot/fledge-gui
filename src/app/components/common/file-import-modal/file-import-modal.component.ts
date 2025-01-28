@@ -71,6 +71,7 @@ export class FileImportModalComponent {
         this.file.isValid = await this.fileImportService.isJsonFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
         if (this.file.isValid) {
           this.file.data = await this.fileImportService.importJsonData(files, this.configuration.type);
+          this.tableData = this.fileImportService.getJsonTableData(this.file.data, this.configuration.type, this.configuration.keyName);
           this.file.isLoaded = true;
         }
       }

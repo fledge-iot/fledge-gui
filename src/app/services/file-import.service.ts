@@ -175,4 +175,32 @@ export class FileImportService {
     }
     return false;
   }
+
+  getJsonTableData(json, type, keyName = 'Key') {
+    if (type == 'list') {
+      const header = Object.keys(json[0]);
+      const rows = json.map((obj) => {
+        return header.map((key) => {
+          const value = obj[key];
+          return `${value}`;
+        }).join(',');
+      });
+      return [header.join(','), ...rows];
+    }
+    else {
+      let rows = [];
+      let header;
+      for (let [key, val] of Object.entries(json)) {
+        header = Object.keys(val);
+        let row = header.map((key) => {
+          const value = val[key];
+          return `${value}`;
+        }).join(',');
+        row = key + ',' + row;
+        rows.push(row)
+      }
+      header = keyName + ',' + header.join(',');
+      return [header, ...rows];
+    }
+  }
 }

@@ -24,7 +24,7 @@
         </label>
       </div>
       <template [ngTemplateOutlet]="invalidFileTemplate"></template>
-      <table class="table is-responsive mt-2" *ngIf="file.extension=='csv' && tableData">
+      <table class="table is-responsive mt-2" *ngIf="tableData">
         <thead>
           <tr>
             <th *ngFor="let prop of tableData[0].split(',')">{{prop}}</th>
@@ -40,9 +40,6 @@
           </tr>
         </tbody>
       </table>
-      <pre class="mt-3" *ngIf="file.extension=='json' && file.data">
-        {{file.data | json}}
-      </pre>
     </section>
 
     <footer class="modal-card-foot">
