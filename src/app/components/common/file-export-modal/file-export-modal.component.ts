@@ -8,8 +8,7 @@ import { AlertService } from '../../../services';
 })
 export class FileExportModalComponent {
   @Input() data;
-  @Input() type;
-  @Input() keyName;
+  @Input() configuration;
   @Input() fileName;
   format = 'csv';
 
@@ -20,7 +19,7 @@ export class FileExportModalComponent {
   }
 
   public toggleModal(isOpen: boolean) {
-    const modalName = <HTMLDivElement>document.getElementById('file-export-modal');
+    const modalName = <HTMLDivElement>document.getElementById('file-export-modal-' + this.configuration.key);
     if (isOpen) {
       modalName.classList.add('is-active');
       return;
@@ -74,7 +73,7 @@ export class FileExportModalComponent {
   }
 
   jsonTocsv(json) {
-    if (this.type == 'list') {
+    if (this.configuration.type == 'list') {
       const header = Object.keys(json[0]);
       const rows = json.map((obj) => {
         return header.map((key) => {
@@ -96,7 +95,7 @@ export class FileExportModalComponent {
         row = key + ',' + row;
         rows.push(row)
       }
-      header = this.keyName + ',' + header.join(',');
+      header = this.configuration.keyName + ',' + header.join(',');
       return [header, ...rows].join('\n');
     }
   }

@@ -195,5 +195,5 @@
 </div>
 <app-file-import-modal (appendFile)="appendFileData($event)" (overrideFile)="overrideFileData($event)"
   [configuration]="configuration" />
-<app-file-export-modal [data]="kvlistValues" [type]="'kvlist'" [keyName]="configuration?.keyName"
+<app-file-export-modal [data]="kvlistValues" [configuration]="configuration"
   [fileName]="categoryName + '-' + configuration.key" />

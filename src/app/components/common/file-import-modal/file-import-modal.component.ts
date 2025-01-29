@@ -37,7 +37,7 @@ export class FileImportModalComponent {
   ngOnInit() { }
 
   public toggleModal(isOpen: boolean) {
-    const modalName = <HTMLDivElement>document.getElementById('file-import-modal');
+    const modalName = <HTMLDivElement>document.getElementById('file-import-modal-' + this.configuration.key);
     if (isOpen) {
       modalName.classList.add('is-active');
       return;
