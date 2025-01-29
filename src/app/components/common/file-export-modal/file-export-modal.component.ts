@@ -10,6 +10,7 @@ export class FileExportModalComponent {
   @Input() data;
   @Input() type;
   @Input() keyName;
+  @Input() fileName;
   format = 'csv';
 
   constructor(private alertService: AlertService) { }
@@ -27,14 +28,14 @@ export class FileExportModalComponent {
     modalName.classList.remove('is-active');
   }
 
-  exportFile(fileName = 'abc') {
+  exportFile() {
     if (this.format == 'json') {
       let jsonData = JSON.stringify(this.data);
-      this.downloadFile(jsonData, fileName);
+      this.downloadFile(jsonData, this.fileName);
     }
     else {
       let csvData = this.jsonTocsv(this.data);
-      this.downloadFile(csvData, fileName);
+      this.downloadFile(csvData, this.fileName);
     }
   }
 

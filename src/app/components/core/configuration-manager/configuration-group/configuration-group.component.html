@@ -105,13 +105,13 @@
                       [from]="from" [group]="g.group.key"></app-bucket-configuration>
 
                     <app-list-type-configuration *ngIf="g?.type == 'list'" [configuration]="g.config"
-                      [group]="g.group.key" [from]="from" (changedConfig)="getChangedConfiguration($event)"
-                      (formStatusEvent)="formStatus($event)">
+                      [categoryName]="g.category" [group]="g.group.key" [from]="from"
+                      (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)">
                     </app-list-type-configuration>
 
                     <app-kv-list-type-configuration *ngIf="g?.type == 'kvlist'" [configuration]="g.config"
-                      [group]="g.group.key" [from]="from" (changedConfig)="getChangedConfiguration($event)"
-                      (formStatusEvent)="formStatus($event)">
+                      [categoryName]="g.category" [group]="g.group.key" [from]="from"
+                      (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)">
                     </app-kv-list-type-configuration>
                   </div>
                 </ng-template>
@@ -131,12 +131,12 @@
             (formStatusEvent)="formStatus($event)" [from]="from" [group]="g.group.key"></app-bucket-configuration>
 
           <app-list-type-configuration *ngIf="g?.type == 'list'" [hidden]="selectedGroup.key !== g.group.key"
-            [configuration]="g.config" [group]="g.group.key" [from]="from"
+            [configuration]="g.config" [group]="g.group.key" [from]="from" [categoryName]="g.category"
             (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)">
           </app-list-type-configuration>
 
           <app-kv-list-type-configuration *ngIf="g?.type == 'kvlist'" [hidden]="selectedGroup.key !== g.group.key"
-            [configuration]="g.config" [group]="g.group.key" [from]="from"
+            [configuration]="g.config" [group]="g.group.key" [from]="from" [categoryName]="g.category"
             (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)">
           </app-kv-list-type-configuration>
 

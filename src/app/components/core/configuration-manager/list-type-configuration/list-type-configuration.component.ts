@@ -14,6 +14,7 @@ import { FileExportModalComponent } from '../../../common/file-export-modal/file
 })
 export class ListTypeConfigurationComponent implements OnInit {
   @Input() configuration;
+  @Input() categoryName;
   @Input() group: string = '';
   @Input() from = '';
   @Output() changedConfig = new EventEmitter<any>();
