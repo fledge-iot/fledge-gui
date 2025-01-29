@@ -8,6 +8,8 @@ import { AlertService } from '../../../services';
 })
 export class FileExportModalComponent {
   @Input() data;
+  @Input() type;
+  @Input() keyName;
   format = 'csv';
 
   constructor(private alertService: AlertService) { }
@@ -71,13 +73,30 @@ export class FileExportModalComponent {
   }
 
   jsonTocsv(json) {
-    const header = Object.keys(json[0]);
-    const rows = json.map((obj) => {
-      return header.map((key) => {
-        const value = obj[key];
-        return `${value}`;
-      }).join(',');
-    });
-    return [header.join(','), ...rows].join('\n');
+    if (this.type == 'list') {
+      const header = Object.keys(json[0]);
+      const rows = json.map((obj) => {
+        return header.map((key) => {
+          const value = obj[key];
+          return `${value}`;
+        }).join(',');
+      });
+      return [header.join(','), ...rows].join('\n');
+    }
+    else {
+      let rows = [];
+      let header;
+      for (let [key, val] of Object.entries(json)) {
+        header = Object.keys(val);
+        let row = header.map((key) => {
+          const value = val[key];
+          return `${value}`;
+        }).join(',');
+        row = key + ',' + row;
+        rows.push(row)
+      }
+      header = this.keyName + ',' + header.join(',');
+      return [header, ...rows].join('\n');
+    }
   }
 }

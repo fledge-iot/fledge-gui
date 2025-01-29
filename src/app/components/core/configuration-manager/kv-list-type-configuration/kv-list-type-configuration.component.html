@@ -5,6 +5,7 @@
         <div class="btn-panel upper-btn-panel">
           <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm" (addnewItem)="addListItem(true)"
             (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()" (importFile)="openModal()"
+            (exportFile)="openExportFileModal()"
             [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)" />
         </div>
       </div>
@@ -181,7 +182,7 @@
           <div class="btn-panel lower-btn-panel">
             <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm"
               (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
-              (importFile)="openModal()"
+              (importFile)="openModal()" (exportFile)="openExportFileModal()"
               [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)" />
           </div>
         </div>
@@ -194,3 +195,4 @@
 </div>
 <app-file-import-modal (appendFile)="appendFileData($event)" (overrideFile)="overrideFileData($event)"
   [configuration]="configuration" />
+<app-file-export-modal [data]="kvlistValues" [type]="'kvlist'" [keyName]="configuration?.keyName" />
