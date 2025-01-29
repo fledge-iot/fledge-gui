@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, HostListener, Input } from '@angular/core';
 import { AlertService } from '../../../services';
 
 @Component({
@@ -14,8 +14,12 @@ export class FileExportModalComponent {
 
   constructor(private alertService: AlertService) { }
 
-  public toggleModal(isOpen: Boolean) {
-    const modalName = <HTMLDivElement>document.getElementById('modal-box-1');
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+    this.formReset();
+  }
+
+  public toggleModal(isOpen: boolean) {
+    const modalName = <HTMLDivElement>document.getElementById('file-export-modal');
     if (isOpen) {
       modalName.classList.add('is-active');
       return;
@@ -38,15 +42,11 @@ export class FileExportModalComponent {
     this.toggleModal(false);
   }
 
-  public toggleDropDown(id: string) {
-    const activeDropDowns = Array.prototype.slice.call(document.querySelectorAll('.dropdown.is-active'));
-    if (activeDropDowns.length > 0) {
-      if (activeDropDowns[0].id !== id) {
-        activeDropDowns[0].classList.remove('is-active');
-      }
+  toggleDropDown(id: string) {
+    const dropdown = document.getElementById(id);
+    if (dropdown) {
+      dropdown.classList.toggle('is-active');
     }
-    const dropDown = document.querySelector(`#${id}`);
-    dropDown.classList.toggle('is-active');
   }
 
   setformat(format) {

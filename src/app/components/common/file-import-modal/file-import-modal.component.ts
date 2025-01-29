@@ -2,6 +2,15 @@ import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewC
 import { FileImportService } from '../../../services/file-import.service';
 import { ProgressBarService } from '../../../services';
 
+export interface FileData {
+  name: string;
+  extension: string;
+  isLoaded: boolean;
+  data: any;
+  isValid: boolean;
+  isValidExtension: boolean;
+}
+
 @Component({
   selector: 'app-file-import-modal',
   templateUrl: './file-import-modal.component.html',
@@ -14,7 +23,7 @@ export class FileImportModalComponent {
   @Output() overrideFile = new EventEmitter<any>();
 
   tableData;
-  file = { name: '', extension: '', isLoaded: false, data: null, isValid: true, isValidExtension: true }
+  file: FileData = { name: '', extension: '', isLoaded: false, data: null, isValid: true, isValidExtension: true };
 
   @ViewChild('fileImport', { static: true }) fileImport: ElementRef;
   constructor(public fileImportService: FileImportService,
@@ -27,8 +36,8 @@ export class FileImportModalComponent {
 
   ngOnInit() { }
 
-  public toggleModal(isOpen: Boolean) {
-    const modalName = <HTMLDivElement>document.getElementById('modal-box');
+  public toggleModal(isOpen: boolean) {
+    const modalName = <HTMLDivElement>document.getElementById('file-import-modal');
     if (isOpen) {
       modalName.classList.add('is-active');
       return;
