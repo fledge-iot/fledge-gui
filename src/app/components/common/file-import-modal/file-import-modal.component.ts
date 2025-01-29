@@ -64,24 +64,28 @@ export class FileImportModalComponent {
 
   async loadFile(files: File[]) {
     this.ngProgress.start();
-    this.file.name = this.fileImportService.getFileName(files);
-    this.file.extension = this.fileImportService.getFileExtension(files).toLowerCase();
-    this.file.isValidExtension = this.fileImportService.isExtensionValid(this.file.extension);
-    if (this.file.isValidExtension) {
-      if (this.file.extension == 'csv') {
-        this.file.isValid = await this.fileImportService.isCsvFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
-        if (this.file.isValid) {
-          this.tableData = await this.fileImportService.getTableData(files);
-          this.file.data = await this.fileImportService.importCsvData(files, this.configuration.type);
-          this.file.isLoaded = true;
+    if (files.length > 0) {
+      this.file.isLoaded = false;
+      this.tableData = null;
+      this.file.name = this.fileImportService.getFileName(files);
+      this.file.extension = this.fileImportService.getFileExtension(files).toLowerCase();
+      this.file.isValidExtension = this.fileImportService.isExtensionValid(this.file.extension);
+      if (this.file.isValidExtension) {
+        if (this.file.extension == 'csv') {
+          this.file.isValid = await this.fileImportService.isCsvFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
+          if (this.file.isValid) {
+            this.tableData = await this.fileImportService.getTableData(files);
+            this.file.data = await this.fileImportService.importCsvData(files, this.configuration.type);
+            this.file.isLoaded = true;
+          }
         }
-      }
-      else {
-        this.file.isValid = await this.fileImportService.isJsonFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
-        if (this.file.isValid) {
-          this.file.data = await this.fileImportService.importJsonData(files, this.configuration.type);
-          this.tableData = this.fileImportService.getJsonTableData(this.file.data, this.configuration.type, this.configuration.keyName);
-          this.file.isLoaded = true;
+        else {
+          this.file.isValid = await this.fileImportService.isJsonFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
+          if (this.file.isValid) {
+            this.file.data = await this.fileImportService.importJsonData(files, this.configuration.type);
+            this.tableData = this.fileImportService.getJsonTableData(this.file.data, this.configuration.type, this.configuration.keyName);
+            this.file.isLoaded = true;
+          }
         }
       }
     }
