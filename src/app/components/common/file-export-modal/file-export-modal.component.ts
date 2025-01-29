@@ -39,12 +39,21 @@ export class FileExportModalComponent {
   }
 
   formReset() {
+    this.setformat('csv');
+    this.hideDropDown('format-dropdown');
     this.toggleModal(false);
   }
 
   toggleDropDown(id: string) {
     const dropdown = document.getElementById(id);
     if (dropdown) {
+      dropdown.classList.toggle('is-active');
+    }
+  }
+
+  hideDropDown(id: string) {
+    const dropdown = document.getElementById(id);
+    if (dropdown && dropdown.classList.contains('is-active')) {
       dropdown.classList.toggle('is-active');
     }
   }
