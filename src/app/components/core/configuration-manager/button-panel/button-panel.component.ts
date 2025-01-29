@@ -13,6 +13,7 @@ export class ButtonPanelComponent {
   @Output() expandAll = new EventEmitter<any>();
   @Output() collapseAll = new EventEmitter<any>();
   @Output() importFile = new EventEmitter<any>();
+  @Output() exportFile = new EventEmitter<any>();
 
   addItem() {
     this.addnewItem.emit({ addItem: true });
@@ -28,5 +29,9 @@ export class ButtonPanelComponent {
 
   importData() {
     this.importFile.emit({ importFile: true });
+  }
+
+  exportData() {
+    this.exportFile.emit({ exportFile: true });
   }
 }

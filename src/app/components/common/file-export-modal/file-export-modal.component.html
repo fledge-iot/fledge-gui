@@ -1,0 +1,33 @@
+<div id="modal-box-1" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title is-size-6">Export File</p>
+      <button class="delete" aria-label="close" (click)="formReset()"></button>
+    </header>
+    <section class="modal-card-body">
+      <div id="format-dropdown" class="dropdown">
+        <div class="dropdown-trigger">
+          <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+            (click)="toggleDropDown('format-dropdown')">
+            <span>{{format | uppercase}}</span>
+            <span class="icon is-small">
+              <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+            </span>
+          </button>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <a class="dropdown-item" (click)="toggleDropDown('format-dropdown');setformat('csv')">CSV</a>
+            <a class="dropdown-item" (click)="toggleDropDown('format-dropdown');setformat('json')">JSON</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="modal-card-foot">
+      <button class="button is-small is-outlined" (click)="formReset()">Cancel</button>
+      <button class="button is-small is-link is-outlined" (click)="exportFile()">Export</button>
+    </footer>
+  </div>
+</div>

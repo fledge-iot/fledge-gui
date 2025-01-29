@@ -5,6 +5,7 @@ import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
 import { RolesService } from '../../../../services';
 import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
+import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
 
 @Component({
   selector: 'app-list-type-configuration',
@@ -18,12 +19,14 @@ export class ListTypeConfigurationComponent implements OnInit {
   @Output() changedConfig = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
   @ViewChild(FileImportModalComponent, { static: true }) fileImportModal: FileImportModalComponent;
+  @ViewChild(FileExportModalComponent, { static: true }) fileExportModal: FileExportModalComponent;
   listItemsForm: FormGroup;
   initialProperties = [];
   items = [];
   listLabel: string;
   firstKey: string;
   validConfigurationForm = true;
+  listValues;
 
   constructor(
     public cdRef: ChangeDetectorRef,
@@ -252,5 +255,11 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   openModal() {
     this.fileImportModal.toggleModal(true);
+  }
+
+  openExportFileModal() {
+    this.listValues = this.extractListValues(this.listItems.value);
+    this.listValues = uniqWith(this.listValues, isEqual);
+    this.fileExportModal.toggleModal(true);
   }
 }

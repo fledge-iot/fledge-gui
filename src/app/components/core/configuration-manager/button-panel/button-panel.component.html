@@ -11,7 +11,15 @@
     <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Import"
       (click)="importData()" [disabled]="!isFormValid">
       <span class="icon is-small">
-        <i class="fas fa-xs fa-upload"></i>
+        <i class="bi bi-upload"></i>
+      </span>
+    </button>
+  </p>
+  <p class="control" *ngIf="isAddButtonVisible">
+    <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Export"
+      (click)="exportData()" [disabled]="!isFormValid">
+      <span class="icon is-small">
+        <i class="bi bi-download"></i>
       </span>
     </button>
   </p>

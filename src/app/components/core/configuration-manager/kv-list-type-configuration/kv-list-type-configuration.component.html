@@ -4,7 +4,7 @@
       <div class="btn-panel-container is-flex-direction-row-reverse">
         <div class="btn-panel upper-btn-panel">
           <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm" (addnewItem)="addListItem(true)"
-            (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+            (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()" (importFile)="openModal()"
             [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)" />
         </div>
       </div>
