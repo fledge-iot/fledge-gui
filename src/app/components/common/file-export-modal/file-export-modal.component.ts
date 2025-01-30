@@ -9,7 +9,7 @@ import { AlertService } from '../../../services';
 export class FileExportModalComponent {
   @Input() data;
   @Input() configuration;
-  @Input() fileName;
+  @Input() categoryName;
   format = 'csv';
 
   constructor(private alertService: AlertService) { }
@@ -30,11 +30,13 @@ export class FileExportModalComponent {
   exportFile() {
     if (this.format == 'json') {
       let jsonData = JSON.stringify(this.data);
-      this.downloadFile(jsonData, this.fileName);
+      let fileName = this.categoryName + '-' + this.configuration?.key;
+      this.downloadFile(jsonData, fileName);
     }
     else {
       let csvData = this.jsonTocsv(this.data);
-      this.downloadFile(csvData, this.fileName);
+      let fileName = this.categoryName + '-' + this.configuration?.key;
+      this.downloadFile(csvData, fileName);
     }
   }
 

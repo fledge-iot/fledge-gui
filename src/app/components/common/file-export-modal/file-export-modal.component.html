@@ -2,14 +2,17 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-6">Export File</p>
+      <span class="modal-card-title is-size-6">{{configuration?.displayName ? configuration?.displayName
+        :configuration?.key}}
+        <p class="help has-text-grey">{{categoryName}}</p>
+      </span>
       <button class="delete" aria-label="close" (click)="formReset()"></button>
     </header>
-    <section class="modal-card-body">
+    <section class="modal-card-body pl-1">
       <div>
         <div class="field is-horizontal">
           <div class="field-label has-text-left column is-4">
-            <label class="label">Export</label>
+            <label class="label">Format</label>
           </div>
           <div class="field-body column is-2">
             <div id="format-dropdown" class="dropdown">
@@ -35,7 +38,6 @@
     </section>
 
     <footer class="modal-card-foot p-4">
-      <button class="button is-small is-outlined" (click)="formReset()">Cancel</button>
       <button class="button is-small is-link is-outlined" (click)="exportFile()">Export</button>
     </footer>
   </div>
