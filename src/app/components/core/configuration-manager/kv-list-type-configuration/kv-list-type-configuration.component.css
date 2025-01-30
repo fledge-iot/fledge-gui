@@ -94,3 +94,7 @@
 .error {
   border: 1px solid #f14668;
 }
+
+.export-btn {
+  width: 10px;
+}
