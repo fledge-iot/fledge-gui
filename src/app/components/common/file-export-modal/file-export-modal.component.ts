@@ -29,7 +29,34 @@ export class FileExportModalComponent {
 
   exportFile() {
     if (this.format == 'json') {
-      let jsonData = JSON.stringify(this.data);
+      let jsonData;
+      if (this.configuration.type == 'list') {
+        if (this.data.length > 0) {
+          jsonData = JSON.stringify(this.data);
+        }
+        else {
+          let json = {};
+          for (let key of Object.keys(this.configuration.properties)) {
+            json[key] = '';
+          }
+          jsonData = JSON.stringify([json]);
+        }
+      }
+      else {
+        if (Object.keys(this.data).length > 0) {
+          jsonData = JSON.stringify(this.data);
+        }
+        else {
+          let json = {};
+          for (let key of Object.keys(this.configuration.properties)) {
+            json[key] = '';
+          }
+          let jsonObj = {};
+          let keyName = this.configuration.keyName ? this.configuration.keyName : 'Key';
+          jsonObj[keyName] = json;
+          jsonData = JSON.stringify(jsonObj);
+        }
+      }
       let fileName = this.categoryName + '-' + this.configuration?.key;
       this.downloadFile(jsonData, fileName);
     }
@@ -85,26 +112,38 @@ export class FileExportModalComponent {
 
   jsonTocsv(json) {
     if (this.configuration.type == 'list') {
-      const header = Object.keys(json[0]);
-      const rows = json.map((obj) => {
-        return header.map((key) => {
-          const value = obj[key];
-          return `${value}`;
-        }).join(',');
-      });
-      return [header.join(','), ...rows].join('\n');
+      let header;
+      if (json.length > 0) {
+        header = Object.keys(json[0]);
+        const rows = json.map((obj) => {
+          return header.map((key) => {
+            const value = obj[key];
+            return `${value}`;
+          }).join(',');
+        });
+        return [header.join(','), ...rows].join('\n');
+      }
+      else {
+        header = Object.keys(this.configuration.properties);
+        return header.join(',');
+      }
     }
     else {
       let rows = [];
       let header;
-      for (let [key, val] of Object.entries(json)) {
-        header = Object.keys(val);
-        let row = header.map((key) => {
-          const value = val[key];
-          return `${value}`;
-        }).join(',');
-        row = key + ',' + row;
-        rows.push(row)
+      if (Object.keys(json).length > 0) {
+        for (let [key, val] of Object.entries(json)) {
+          header = Object.keys(val);
+          let row = header.map((key) => {
+            const value = val[key];
+            return `${value}`;
+          }).join(',');
+          row = key + ',' + row;
+          rows.push(row)
+        }
+      }
+      else {
+        header = Object.keys(this.configuration.properties);
       }
       header = (this.configuration.keyName ? this.configuration.keyName : 'Key') + ',' + header.join(',');
       return [header, ...rows].join('\n');
