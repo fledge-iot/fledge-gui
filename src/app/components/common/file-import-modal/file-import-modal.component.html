@@ -9,8 +9,9 @@
       <div class="file has-name is-fullwidth is-small" [ngClass]="{'error': !file.isValidExtension || !file.isValid}"
         (dragover)="onDragOver($event)" (drop)="onDropSuccess($event)">
         <label class="file-label">
-          <input #fileImport class="file-input" type="file" (change)="onFileChange($event)">
-          <span class="file-cta">
+          <input #fileImport class="file-input p-5" type="file" (click)="$event.target.value=null;"
+            (change)="onFileChange($event)">
+          <span class="file-cta p-5">
             <span class="file-icon">
               <i class="fas fa-upload"></i>
             </span>
@@ -18,8 +19,10 @@
               Browse/Drag & drop
             </span>
           </span>
-          <span class="file-name">
-            {{file.name}}
+          <span class="file-name p-5 is-flex">
+            <span>
+              {{file.name}}
+            </span>
           </span>
         </label>
       </div>
