@@ -255,12 +255,28 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   openModal() {
+    this.hideDropDown();
     this.fileImportModal.toggleModal(true);
   }
 
   openExportFileModal() {
+    this.hideDropDown();
     this.listValues = this.extractListValues(this.listItems.value);
     this.listValues = uniqWith(this.listValues, isEqual);
     this.fileExportModal.toggleModal(true);
+  }
+
+  toggleDropdown() {
+    const dropDown = document.getElementById('export-dropdown-' + this.configuration?.key);
+    if (dropDown) {
+      dropDown.classList.toggle('is-active');
+    }
+  }
+
+  hideDropDown() {
+    const dropdown = document.getElementById('export-dropdown-' + this.configuration?.key);
+    if (dropdown && dropdown.classList.contains('is-active')) {
+      dropdown.classList.toggle('is-active');
+    }
   }
 }

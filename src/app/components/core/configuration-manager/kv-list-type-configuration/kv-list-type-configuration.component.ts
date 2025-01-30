@@ -251,13 +251,29 @@ export class KvListTypeConfigurationComponent implements OnInit {
   }
 
   openModal() {
+    this.hideDropDown();
     this.fileImportModal.toggleModal(true);
   }
 
   openExportFileModal() {
+    this.hideDropDown();
     for (let [ind, val] of this.kvListItems.value.entries()) {
       this.kvlistValues[val.key] = this.extractKvListValues(val.value);
     }
     this.fileExportModal.toggleModal(true);
+  }
+
+  toggleDropdown() {
+    const dropDown = document.getElementById('export-dropdown-' + this.configuration?.key);
+    if (dropDown) {
+      dropDown.classList.toggle('is-active');
+    }
+  }
+
+  hideDropDown() {
+    const dropdown = document.getElementById('export-dropdown-' + this.configuration?.key);
+    if (dropdown && dropdown.classList.contains('is-active')) {
+      dropdown.classList.toggle('is-active');
+    }
   }
 }
