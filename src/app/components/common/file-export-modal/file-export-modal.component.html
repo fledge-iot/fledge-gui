@@ -15,10 +15,10 @@
             <label class="label">Format</label>
           </div>
           <div class="field-body column is-2">
-            <div id="format-dropdown" class="dropdown">
+            <div [id]="'format-dropdown-' + configuration.key" class="dropdown">
               <div class="dropdown-trigger">
                 <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                  (click)="toggleDropDown('format-dropdown')">
+                  (click)="toggleDropDown('format-dropdown-' + configuration.key)">
                   <span>{{format | uppercase}}</span>
                   <span class="icon is-small">
                     <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
@@ -27,8 +27,10 @@
               </div>
               <div class="dropdown-menu" id="dropdown-menu" role="menu">
                 <div class="dropdown-content">
-                  <a class="dropdown-item" (click)="toggleDropDown('format-dropdown');setformat('csv')">CSV</a>
-                  <a class="dropdown-item" (click)="toggleDropDown('format-dropdown');setformat('json')">JSON</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('format-dropdown-' + configuration.key);setformat('csv')">CSV</a>
+                  <a class="dropdown-item"
+                    (click)="toggleDropDown('format-dropdown-' + configuration.key);setformat('json')">JSON</a>
                 </div>
               </div>
             </div>

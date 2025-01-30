@@ -42,7 +42,7 @@ export class FileExportModalComponent {
 
   formReset() {
     this.setformat('csv');
-    this.hideDropDown('format-dropdown');
+    this.hideDropDown('format-dropdown-' + this.configuration.key);
     this.toggleModal(false);
   }
 
@@ -106,7 +106,7 @@ export class FileExportModalComponent {
         row = key + ',' + row;
         rows.push(row)
       }
-      header = this.configuration.keyName + ',' + header.join(',');
+      header = (this.configuration.keyName ? this.configuration.keyName : 'Key') + ',' + header.join(',');
       return [header, ...rows].join('\n');
     }
   }
