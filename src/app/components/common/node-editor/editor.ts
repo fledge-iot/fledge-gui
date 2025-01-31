@@ -1,5 +1,5 @@
 import { Injector } from "@angular/core";
-import { curveBasis, CurveFactory } from "d3-shape";
+import { curveBasis } from "d3-shape";
 import { isEmpty } from 'lodash';
 import { easeInOut } from "popmotion";
 import { ClassicPreset, GetSchemes, NodeEditor } from "rete";
@@ -29,30 +29,14 @@ import { insertableNodes } from "./insert-node";
 import { AddNotification } from "./nodes/add-notification";
 import { AddService } from "./nodes/add-service";
 import { AddTask } from "./nodes/add-task";
-import { North } from "./nodes/north";
-import { Notification } from "./nodes/notification";
-import { South } from "./nodes/south";
 import { createSelector } from "./selector";
-import { Storage } from "./nodes/storage";
 import { DropNodePlugin } from "./drop-plugin";
+import { North, Notification, South, Storage } from "./nodes";
+import { Connection } from "./connection";
 
 type Node = South | North | Filter | Notification;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 type AreaExtra = AngularArea2D<Schemes> | MinimapExtra | ContextMenuExtra;
-
-export class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> {
-  selected?: boolean
-  click: (data: Connection<A, B>) => void
-  remove: (data: Connection<A, B>) => void
-  curve?: CurveFactory
-
-  constructor(events: { click: (data: Connection<A, B>) => void, remove: (data: Connection<A, B>) => void }, source: A, target: B, public isLoop?: boolean) {
-    super(source, 'port', target, 'port')
-    this.click = events.click;
-    this.remove = events.remove;
-    this.isLoop = false;
-  }
-}
 
 let editor = new NodeEditor<Schemes>();
 let area: AreaPlugin<Schemes, AreaExtra>;

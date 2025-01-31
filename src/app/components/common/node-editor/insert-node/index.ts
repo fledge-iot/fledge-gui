@@ -5,7 +5,8 @@ import { checkElementIntersectPath } from "./utils";
 import { Filter } from "../nodes/filter";
 import { South } from "../nodes/south";
 import { North } from "../nodes/north";
-import { Connection } from "../editor";
+import { Connection } from "../connection";
+
 
 type Schemes = GetSchemes<
   BaseSchemes["Node"] & Size,
