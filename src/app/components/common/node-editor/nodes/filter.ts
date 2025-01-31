@@ -1,6 +1,6 @@
 import { ClassicPreset } from "rete";
-import { EnabledControl, NameControl, PluginControl } from "./controls/common-custom-control";
-import { FilterColorControl } from "./controls/filter-custom-control";
+import { EnabledControl, NameControl, PluginControl } from "../controls/common-custom-control";
+import { FilterColorControl } from "../controls/filter-custom-control";
 
 export class PseudoNodeControl extends ClassicPreset.Control {
   constructor(public pseudoConnection: boolean) {

@@ -24,7 +24,7 @@ import { CustomConnectionComponent } from "./custom-connection/custom-connection
 import { CustomNodeComponent } from "./custom-node/custom-node.component";
 import { CustomNotificationNodeComponent } from "./custom-notification-node/custom-notification-node.component";
 import { CustomSocketComponent } from "./custom-socket/custom-socket.component";
-import { Filter, PseudoNodeControl } from "./filter";
+import { Filter, PseudoNodeControl } from "./nodes/filter";
 import { insertableNodes } from "./insert-node";
 import { AddNotification } from "./nodes/add-notification";
 import { AddService } from "./nodes/add-service";
@@ -33,7 +33,7 @@ import { North } from "./nodes/north";
 import { Notification } from "./nodes/notification";
 import { South } from "./nodes/south";
 import { createSelector } from "./selector";
-import { Storage } from "./storage";
+import { Storage } from "./nodes/storage";
 import { DropNodePlugin } from "./drop-plugin";
 
 type Node = South | North | Filter | Notification;

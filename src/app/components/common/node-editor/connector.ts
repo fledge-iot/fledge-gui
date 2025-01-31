@@ -1,10 +1,10 @@
 import { ClassicPreset, GetSchemes, getUID } from 'rete';
 import { BidirectFlow, Context, SocketData } from 'rete-connection-plugin';
 import { getUpdatedFilterPipeline } from './editor';
-import { Filter, PseudoNodeControl } from './filter';
+import { Filter, PseudoNodeControl } from './nodes/filter';
 import { South } from './nodes/south';
 import { North } from './nodes/north';
-import { Storage } from './storage';
+import { Storage } from './nodes/storage';
 
 type ClassicScheme = GetSchemes<ClassicPreset.Node, ClassicPreset.Connection<ClassicPreset.Node, ClassicPreset.Node> & { isLoop?: boolean }>
 
