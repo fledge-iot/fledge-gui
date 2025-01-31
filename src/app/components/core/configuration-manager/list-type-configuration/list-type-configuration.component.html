@@ -3,7 +3,8 @@
     <div class="btn-panel-container is-flex-direction-row-reverse">
       <div class="btn-panel upper-btn-panel">
         <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" (addnewItem)="addListItem(true)"
-          (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+          (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()" (importFile)="openModal()"
+          (exportFile)="openExportFileModal()"
           [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
       </div>
     </div>
@@ -98,14 +99,13 @@
       </div>
     </ng-template>
   </ng-container>
-  <ng-container *ngIf="(configuration.items != 'object' || listItems.controls.length<=1); else objectButtonPanel">
+  <ng-container *ngIf="configuration.items != 'object'; else objectButtonPanel">
     <ng-container
       *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)">
       <div class="field">
         <p class="control">
-          <button class="button is-small" (click)="addListItem(false)"
-            [disabled]="listItems.invalid || !validConfigurationForm"
-            [ngClass]="{'px-0 pt-1 is-ghost': configuration.items != 'object', 'mt-1': configuration.items == 'object'}">
+          <button class="button is-small px-0 pt-1 is-ghost" (click)="addListItem(false)"
+            [disabled]="listItems.invalid || !validConfigurationForm">
             <span class="icon is-small mr-0">
               <i class="bi bi-plus bi-sm"></i>
             </span>
@@ -116,12 +116,56 @@
     </ng-container>
   </ng-container>
   <ng-template #objectButtonPanel>
-    <div class="btn-panel-container is-flex-direction-row">
-      <div class="btn-panel lower-btn-panel">
-        <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" (addnewItem)="addListItem(false)"
-          (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
-          [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
+    <ng-container *ngIf="listItems.controls.length<=1; else buttonPanelTemplate">
+      <ng-container
+        *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)">
+        <div class="field">
+          <span class="control">
+            <div class="field has-addons">
+              <div class="control p-0">
+                <button class="button is-small mt-1" (click)="addListItem(false)"
+                  [disabled]="listItems.invalid || !validConfigurationForm">
+                  <span class="icon is-small mr-0">
+                    <i class="bi bi-plus bi-sm"></i>
+                  </span>
+                  <span>{{listItems.controls.length==0 ? 'Add item' : 'Add new item'}}</span>
+                </button>
+              </div>
+              <div class="control p-0">
+                <button class="button is-small mt-1 ml-2" (click)="openModal()">Import</button>
+              </div>
+              <div [id]="'export-dropdown-' + configuration?.key" class="dropdown control mt-1">
+                <div class="dropdown-trigger">
+                  <button class="button is-small small-btn export-btn" aria-haspopup="true"
+                    aria-controls="dropdown-menu" (click)=toggleDropdown()>
+                    <span class="icon is-small">
+                      <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                  <div class="dropdown-content">
+                    <a class="dropdown-item" (click)="openExportFileModal()">Export</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </span>
+        </div>
+      </ng-container>
+    </ng-container>
+    <ng-template #buttonPanelTemplate>
+      <div class="btn-panel-container is-flex-direction-row">
+        <div class="btn-panel lower-btn-panel">
+          <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" (addnewItem)="addListItem(false)"
+            (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()" (importFile)="openModal()"
+            (exportFile)="openExportFileModal()"
+            [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
+        </div>
       </div>
-    </div>
+    </ng-template>
   </ng-template>
 </div>
+<app-file-import-modal (appendFile)="appendFileData($event)" (overrideFile)="overrideFileData($event)"
+  [configuration]="configuration" />
+<app-file-export-modal [data]="listValues" [configuration]="configuration" [categoryName]="categoryName" />

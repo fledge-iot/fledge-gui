@@ -1,9 +1,11 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective } from '@angular/forms';
 import { filter, uniqWith, isEqual } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
 import { RolesService } from '../../../../services';
+import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
+import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
 
 @Component({
   selector: 'app-list-type-configuration',
@@ -12,16 +14,20 @@ import { RolesService } from '../../../../services';
 })
 export class ListTypeConfigurationComponent implements OnInit {
   @Input() configuration;
+  @Input() categoryName;
   @Input() group: string = '';
   @Input() from = '';
   @Output() changedConfig = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
+  @ViewChild(FileImportModalComponent, { static: true }) fileImportModal: FileImportModalComponent;
+  @ViewChild(FileExportModalComponent, { static: true }) fileExportModal: FileExportModalComponent;
   listItemsForm: FormGroup;
   initialProperties = [];
   items = [];
   listLabel: string;
   firstKey: string;
   validConfigurationForm = true;
+  listValues;
 
   constructor(
     public cdRef: ChangeDetectorRef,
@@ -231,6 +237,46 @@ export class ListTypeConfigurationComponent implements OnInit {
   collapseAllItems() {
     for (let i = 0; i < this.listItems.length; i++) {
       this.expandCollapseSingleItem(i, false);
+    }
+  }
+
+  appendFileData(event) {
+    event.fileData.forEach(element => {
+      this.initListItem(false, element);
+    });
+  }
+
+  overrideFileData(event) {
+    this.listItems.clear();
+    this.initialProperties = [];
+    event.fileData.forEach(element => {
+      this.initListItem(false, element);
+    });
+  }
+
+  openModal() {
+    this.hideDropDown();
+    this.fileImportModal.toggleModal(true);
+  }
+
+  openExportFileModal() {
+    this.hideDropDown();
+    this.listValues = this.extractListValues(this.listItems.value);
+    this.listValues = uniqWith(this.listValues, isEqual);
+    this.fileExportModal.toggleModal(true);
+  }
+
+  toggleDropdown() {
+    const dropDown = document.getElementById('export-dropdown-' + this.configuration?.key);
+    if (dropDown) {
+      dropDown.classList.toggle('is-active');
+    }
+  }
+
+  hideDropDown() {
+    const dropdown = document.getElementById('export-dropdown-' + this.configuration?.key);
+    if (dropdown && dropdown.classList.contains('is-active')) {
+      dropdown.classList.toggle('is-active');
     }
   }
 }

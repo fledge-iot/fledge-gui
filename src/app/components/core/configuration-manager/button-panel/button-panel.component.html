@@ -1,15 +1,31 @@
 <div class="field has-addons button-container">
   <p class="control" *ngIf="isAddButtonVisible">
-    <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Add new item" (click)="addItem()"
-    [disabled]="!isFormValid">
+    <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Add new item"
+      (click)="addItem()" [disabled]="!isFormValid">
       <span class="icon is-small">
         <i class="fas fa-xs fa-plus"></i>
       </span>
     </button>
   </p>
+  <p class="control" *ngIf="isAddButtonVisible">
+    <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Import"
+      (click)="importData()" [disabled]="!isFormValid">
+      <span class="icon is-small">
+        <i class="bi bi-upload"></i>
+      </span>
+    </button>
+  </p>
+  <p class="control" *ngIf="isAddButtonVisible">
+    <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Export"
+      (click)="exportData()" [disabled]="!isFormValid">
+      <span class="icon is-small">
+        <i class="bi bi-download"></i>
+      </span>
+    </button>
+  </p>
   <p class="control">
     <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Collapse All"
-     (click)="collapseAllItems()">
+      (click)="collapseAllItems()">
       <span class="icon is-small">
         <i class="fas fa-xs fa-angles-up"></i>
       </span>
@@ -17,7 +33,7 @@
   </p>
   <p class="control">
     <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Expand All"
-     (click)="expandAllItems()">
+      (click)="expandAllItems()">
       <span class="icon is-small">
         <i class="fas fa-xs fa-angles-down"></i>
       </span>

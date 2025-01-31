@@ -1,9 +1,11 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { filter } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
 import { RolesService } from '../../../../services';
+import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
+import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
 
 @Component({
   selector: 'app-kv-list-type-configuration',
@@ -12,14 +14,18 @@ import { RolesService } from '../../../../services';
 })
 export class KvListTypeConfigurationComponent implements OnInit {
   @Input() configuration;
+  @Input() categoryName;
   @Input() group: string = '';
   @Input() from = '';
   @Output() changedConfig = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
+  @ViewChild(FileImportModalComponent, { static: true }) fileImportModal: FileImportModalComponent;
+  @ViewChild(FileExportModalComponent, { static: true }) fileExportModal: FileExportModalComponent;
   kvListItemsForm: FormGroup;
   initialProperties = [];
   items = [];
   validConfigurationForm = true;
+  kvlistValues = {};
 
   constructor(
     public cdRef: ChangeDetectorRef,
@@ -227,6 +233,47 @@ export class KvListTypeConfigurationComponent implements OnInit {
   collapseAllItems() {
     for (let i = 0; i < this.kvListItems.length; i++) {
       this.expandCollapseSingleItem(i, false);
+    }
+  }
+
+  appendFileData(event) {
+    for (const [key, value] of Object.entries(event.fileData)) {
+      this.kvListItems.push(this.initListItem(false, { key, value }));
+    }
+  }
+
+  overrideFileData(event) {
+    this.kvListItems.clear();
+    this.initialProperties = [];
+    for (const [key, value] of Object.entries(event.fileData)) {
+      this.kvListItems.push(this.initListItem(false, { key, value }));
+    }
+  }
+
+  openModal() {
+    this.hideDropDown();
+    this.fileImportModal.toggleModal(true);
+  }
+
+  openExportFileModal() {
+    this.hideDropDown();
+    for (let [ind, val] of this.kvListItems.value.entries()) {
+      this.kvlistValues[val.key] = this.extractKvListValues(val.value);
+    }
+    this.fileExportModal.toggleModal(true);
+  }
+
+  toggleDropdown() {
+    const dropDown = document.getElementById('export-dropdown-' + this.configuration?.key);
+    if (dropDown) {
+      dropDown.classList.toggle('is-active');
+    }
+  }
+
+  hideDropDown() {
+    const dropdown = document.getElementById('export-dropdown-' + this.configuration?.key);
+    if (dropdown && dropdown.classList.contains('is-active')) {
+      dropdown.classList.toggle('is-active');
     }
   }
 }

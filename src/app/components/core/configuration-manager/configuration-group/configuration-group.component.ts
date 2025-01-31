@@ -111,7 +111,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
       const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic";
-      return { category: this.category.name, group: { key: g, name: g }, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })), type: g }
+      return { category: this.category.name ? this.category.name : this.category.key, group: { key: g, name: g }, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })), type: g }
     }).value();
 
     Object.keys(this.category.config).map(k => {
@@ -194,7 +194,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
           group = { key: config.key, name: config.key, description: config.description }
         }
 
-        this.groups.push({ category: this.category.name, group, config: config, type: config.type, key: config.key, ...(config.order && { order: config.order }) });
+        this.groups.push({ category: this.category.name ? this.category.name : this.category.key, group, config: config, type: config.type, key: config.key, ...(config.order && { order: config.order }) });
       }
     });
 
