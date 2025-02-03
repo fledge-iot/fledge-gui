@@ -37,7 +37,7 @@
             </li>
             <ng-container *ngIf="!['notifications', 'additional-services'].includes(from)">
               <li [ngClass]="{'is-active': selectedGroup?.key == 'Developer'}"
-                *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissionsOnPage(from)">
+                *ngIf="developerFeaturesService.getDeveloperFeatureControl() && (pages.includes(from) || from.endsWith('_filter')) && rolesService.hasEditPermissionsOnPage(from)">
                 <h6 class="is-6 is-small-font">
                   <a (click)="selectTab({key: 'Developer', name: 'Developer'})">Developer</a>
                 </h6>
@@ -164,7 +164,8 @@
         </ng-template>
       </ng-container>
       <ng-container *ngIf="!['notifications', 'additional-services'].includes(from)">
-        <app-plugin-persist-data *ngIf="selectedGroup.key == 'Developer' && pages.includes(from)"
+        <app-plugin-persist-data
+          *ngIf="selectedGroup.key == 'Developer' && (pages.includes(from) || from.endsWith('_filter'))"
           [serviceStaus]="serviceStatus" [serviceName]="category?.name" [pluginName]="plugin">
         </app-plugin-persist-data>
       </ng-container>
