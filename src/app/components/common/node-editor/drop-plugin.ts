@@ -1,4 +1,4 @@
-import { BaseSchemes, ClassicPreset, GetSchemes, NodeEditor, Root, Scope } from 'rete'
+import { BaseSchemes, GetSchemes, NodeEditor, Root, Scope } from 'rete'
 import { AngularArea2D } from 'rete-angular-plugin';
 import { Area2D, AreaPlugin } from 'rete-area-plugin'
 import { Position } from 'rete-area-plugin/_types/types'

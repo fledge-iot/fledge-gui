@@ -1,3 +1,4 @@
+import { FlowEditorService } from './flow-editor.service';
 import { Injector } from "@angular/core";
 import { curveBasis } from "d3-shape";
 import { isEmpty } from 'lodash';
@@ -33,6 +34,7 @@ import { createSelector } from "./selector";
 import { DropNodePlugin } from "./drop-plugin";
 import { North, Notification, South, Storage } from "./nodes";
 import { Connection } from "./connection";
+import { AlertService, RolesService } from '../../../../app/services';
 
 type Node = South | North | Filter | Notification;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
@@ -53,158 +55,163 @@ export const animatedApplier = new ArrangeAppliers.TransitionApplier<Schemes, ne
   }
 );
 
-export async function createEditor(container: HTMLElement, injector: Injector, flowEditorService, rolesService, alertService, data) {
+interface ConnectionEvents {
+  click: (data: Schemes['Connection']) => void;
+  remove: (data: Schemes['Connection']) => void;
+}
+
+export let connectionEvents: ConnectionEvents = {
+  click: () => { },
+  remove: () => { }
+};
+
+export async function createEditor(
+  container: HTMLElement,
+  injector: Injector,
+  flowEditorService: FlowEditorService,
+  rolesService: RolesService,
+  alertService: AlertService,
+  data: any
+) {
   const socket = new ClassicPreset.Socket("socket");
+  initializeEditor(container);
+  const render = setupPlugins(injector);
+  setupPresets(render, data);
+  const selector = createSelector(area, flowEditorService);
+  connectionEvents = setupConnectionEvents(selector);
+  setupInsertableNodes();
+  configureEditor(connectionEvents, render);
+  applyCustomSettings(socket, data, flowEditorService, rolesService, alertService);
+}
+
+function initializeEditor(container: HTMLElement) {
   editor = new NodeEditor<Schemes>();
   area = new AreaPlugin<Schemes, AreaExtra>(container);
-  const connection = new ConnectionPlugin<Schemes, AreaExtra>();
-  const render = new AngularPlugin<Schemes, AreaExtra>({ injector });
-  arrange = new AutoArrangePlugin<Schemes>();
   history = new HistoryPlugin<Schemes>();
+  arrange = new AutoArrangePlugin<Schemes>();
   dock = new DropNodePlugin(editor, area);
-  const minimap = new MinimapPlugin<Schemes>({
-    boundViewport: true
-  });
+}
 
+function setupPlugins(injector: Injector) {
+  const render = new AngularPlugin<Schemes, AreaExtra>({ injector });
   const pathPlugin = new ConnectionPathPlugin<Schemes, AreaExtra>({
     curve: (c) => c.curve || curveBasis,
-    arrow: () => { return { marker: 'M4,-4 L4,4 L16,0 z' } }
+    arrow: () => ({ marker: 'M4,-4 L4,4 L16,0 z' })
   });
 
   // @ts-ignore
   render.use(pathPlugin);
+  return render;
+}
 
+function setupInsertableNodes() {
   insertableNodes(area, {
     async createConnections(node, connection) {
-      if (!isEmpty(node.inputs) && !isEmpty(node.outputs) && node?.label == 'Filter') {
-        const pseudoNodeControl = (node.controls.pseudoNodeControl) as PseudoNodeControl;
-        pseudoNodeControl.pseudoConnection = true;
-      }
-      if (!isEmpty(node.inputs)) {
-        await editor.addConnection(
-          new Connection(
-            connectionEvents,
-            editor.getNode(connection.source),
-            node
-          )
-        );
-      }
-      if (!isEmpty(node.outputs)) {
-        await editor.addConnection(
-          new Connection(
-            connectionEvents,
-            node,
-            editor.getNode(connection.target)
-          )
-        )
-      }
-      arrange.layout({
-        applier: animatedApplier
-      });
+      handleConnections(node, connection);
     }
   });
+}
 
-  const contextMenu = new ContextMenuPlugin<Schemes>({
-    items(context) {
-      if (context === 'root') {
-        return {
-          searchBar: false,
-          list: []
-        }
-      }
-      if ('source' in context && 'target' in context) {
-        const deleteItem = {
-          label: 'Delete',
-          key: 'delete',
-          async handler() {
-            // connection
-            const connectionId = context.id
-            const connection = editor.getConnection(connectionId);
-            const source = editor.getNode(connection.source);
-            const destination = editor.getNode(connection.target);
-            if (source.label == 'Filter' || destination.label == 'Filter') {
-              const pseudoNodeControl = (source.controls.pseudoNodeControl || destination.controls.pseudoNodeControl) as PseudoNodeControl;
-              pseudoNodeControl.pseudoConnection = false;
-            }
-            await editor.removeConnection(connectionId);
-          }
-        }
-        return {
-          searchBar: false,
-          list: [deleteItem]
-        }
-      }
-      return {
-        searchBar: false,
-        list: []
-      }
-    }
-  })
-
-  render.addPreset(Presets.classic.setup(
-    {
-      customize: {
-        node() {
-          if (data.from == 'notifications') {
-            return CustomNotificationNodeComponent;
-          }
-          return CustomNodeComponent;
-        },
-        connection() {
-          return CustomConnectionComponent
-        },
-        socket() {
-          return CustomSocketComponent
-        }
-      }
-    }
-  ));
-
-  const connectionEvents = {
-    click: (data: Schemes['Connection']) => {
-      selector.selectConnection(data)
-    },
-    remove: (data: Schemes['Connection']) => {
-      editor.removeConnection(data.id)
-    }
+async function handleConnections(node, connection) {
+  if (!isEmpty(node.inputs) && !isEmpty(node.outputs) && node?.label === 'Filter') {
+    const pseudoNodeControl = node.controls.pseudoNodeControl as PseudoNodeControl;
+    pseudoNodeControl.pseudoConnection = true;
   }
+  if (!isEmpty(node.inputs)) {
+    await editor.addConnection(new Connection(connectionEvents, editor.getNode(connection.source), node));
+  }
+  if (!isEmpty(node.outputs)) {
+    await editor.addConnection(new Connection(connectionEvents, node, editor.getNode(connection.target)));
+  }
+  arrange.layout({ applier: animatedApplier });
+}
 
-  const selector = createSelector(area, flowEditorService);
+function getContextMenuItems(context) {
+  if (context === 'root') return { searchBar: false, list: [] };
+  if ('source' in context && 'target' in context) {
+    return {
+      searchBar: false,
+      list: [getDeleteItem(context)]
+    };
+  }
+  return { searchBar: false, list: [] };
+}
+
+function getDeleteItem(context) {
+  return {
+    label: 'Delete',
+    key: 'delete',
+    async handler() {
+      const connection = editor.getConnection(context.id);
+      const source = editor.getNode(connection.source);
+      const destination = editor.getNode(connection.target);
+      if (source.label === 'Filter' || destination.label === 'Filter') {
+        const pseudoNodeControl = source.controls.pseudoNodeControl || destination.controls.pseudoNodeControl as PseudoNodeControl;
+        pseudoNodeControl['pseudoConnection'] = false;
+      }
+      await editor.removeConnection(context.id);
+    }
+  };
+}
+
+function setupPresets(render, data) {
+  render.addPreset(Presets.classic.setup({
+    customize: {
+      node: () => (data.from === 'notifications' ? CustomNotificationNodeComponent : CustomNodeComponent),
+      connection: () => CustomConnectionComponent,
+      socket: () => CustomSocketComponent
+    }
+  }));
+}
+
+function setupConnectionEvents(selector) {
+  return {
+    click: (data: Schemes['Connection']) => selector.selectConnection(data),
+    remove: (data: Schemes['Connection']) => editor.removeConnection(data.id)
+  };
+}
+
+function configureEditor(connectionEvents, render) {
+  const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   connection.addPreset(() => new Connector(connectionEvents));
   arrange.addPreset(ArrangePresets.classic.setup());
   render.addPreset(Presets.contextMenu.setup());
   dock.addPreset(DockPresets.classic.setup({ area, size: 70, scale: 0.6 }));
-  // scopes.addPreset(ScopesPresets.classic.setup());
   history.addPreset(HistoryPresets.classic.setup());
   render.addPreset(Presets.minimap.setup({ size: 150 }));
-
   editor.use(area);
   area.use(connection);
   area.use(render);
   area.use(arrange);
   area.use(dock);
   area.use(history);
-  // stop dock item click event
-  dock.clickStrategy = { add() { } }
+  dock.clickStrategy = { add() { } };
+}
 
-  if (data.source) {
-    if (rolesService.hasEditPermissions()) {
-      area.use(minimap);
-      area.use(contextMenu);
-      newDockFilter = () => {
-        const index = editor.getNodes().findIndex(n => (n.label == 'Filter'));
-        if (index == -1) {
-          return new Filter(socket, { pluginName: '', enabled: 'false', filterName: 'Filter', color: "#F9CB9C" }, true)
-        } else {
-          alertService.message({ type: 'warning', message: 'An unconfigured filter node already exists on canvas.' }, true)
-        }
-      }
-      dock.add(newDockFilter);
-    }
+function applyCustomSettings(socket, data, flowEditorService, rolesService, alertService) {
+  if (data.source && rolesService.hasEditPermissions()) {
+    area.use(new MinimapPlugin<Schemes>({ boundViewport: true }));
+    area.use(new ContextMenuPlugin<Schemes>({ items: getContextMenuItems }));
+    newDockFilter = createFilterDock(socket, alertService);
+    dock.add(newDockFilter);
   }
-  setCustomBackground(area) // Set custom background
+  setCustomBackground(area);
+  initializeNodes(socket, data, flowEditorService);
+}
+
+function createFilterDock(socket, alertService) {
+  return () => {
+    if (editor.getNodes().some(n => n.label === 'Filter')) {
+      alertService.message({ type: 'warning', message: 'An unconfigured filter node already exists on canvas.' }, true);
+    } else {
+      return new Filter(socket, { pluginName: '', enabled: 'false', filterName: 'Filter', color: "#F9CB9C" }, true);
+    }
+  };
+}
+
+function initializeNodes(socket, data, flowEditorService) {
   if (data.from !== 'notifications') {
-    createNodesAndConnections(socket, editor, arrange, area, data, connectionEvents, flowEditorService);
+    createNodesAndConnections(socket, editor, arrange, area, data, flowEditorService);
   } else {
     nodesGrid(area, data.notifications, socket, data.from, flowEditorService, data.isServiceEnabled);
   }
@@ -215,7 +222,7 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
   arrange: AutoArrangePlugin<Schemes, never>,
   area: AreaPlugin<Schemes, AreaExtra>,
   data: any,
-  connectionEvents, flowEditorService) {
+  flowEditorService) {
   if (data.source) {
     const db = new Storage(socket);
     const plugin = data.from == 'south' ? new South(socket, data.service) : new North(socket, data.task);
