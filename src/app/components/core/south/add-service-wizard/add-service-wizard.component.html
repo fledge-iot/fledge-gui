@@ -1,5 +1,5 @@
 <div class="container is-fluid">
-  <div class="steps">
+  <div class="steps steps-sm">
     <div class="step-item is-active is-success" id="1">
       <div class="step-marker">1</div>
       <div class="step-details">
@@ -18,7 +18,7 @@
         <p>Done</p>
       </div>
     </div>
-    <div class="steps-content">
+    <div class="steps-content desc-text">
       <form [formGroup]="serviceForm" validate>
         <div class="box step-content is-active" id="c-1">
           <span *ngIf="plugin"
@@ -85,7 +85,7 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" id="name" autocomplete="off" type="text" placeholder="name"
+                  <input class="input is-small" id="name" autocomplete="off" type="text" placeholder="name"
                     formControlName="name" title="No single quotes and double quotes!"
                     [pattern]="QUOTATION_VALIDATION_PATTERN">
                   <small
@@ -124,10 +124,10 @@
     </div>
     <div class="steps-actions">
       <div class="steps-action">
-        <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Cancel</button>
+        <button (click)="movePrevious()" data-nav="previous" class="button is-small" id="previous">Cancel</button>
       </div>
       <div class="steps-action">
-        <button (click)="moveNext()" data-nav="next" class="button is-link" id="next"
+        <button (click)="moveNext()" data-nav="next" class="button is-link is-small" id="next"
           [disabled]="serviceForm.invalid || !validConfigurationForm"
           [appDisableUntilResponse]="reenableButton">Next</button>
       </div>

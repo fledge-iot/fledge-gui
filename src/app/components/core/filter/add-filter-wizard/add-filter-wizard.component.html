@@ -1,4 +1,4 @@
-<div class="steps">
+<div class="steps steps-sm">
   <div class="step-item is-active is-success" id="1">
     <div class="step-marker">1</div>
     <div class="step-details">
@@ -11,7 +11,8 @@
       <p>Review Configuration</p>
     </div>
   </div>
-  <div class="steps-content my-0" [ngClass]="{'loading':!pluginData.length && !stopLoading && requestInProgress}">
+  <div class="steps-content my-0 desc-text"
+    [ngClass]="{'loading':!pluginData.length && !stopLoading && requestInProgress}">
     <form [formGroup]="serviceForm" validate>
       <div class="box step-content is-active my-0" id="c-1" [ngClass]="{'is-shadowless': source}">
 

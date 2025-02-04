@@ -1,5 +1,5 @@
 <div class="container is-fluid">
-  <div class="steps">
+  <div class="steps steps-sm">
     <div class="step-item is-active is-success" id="1">
       <div class="step-marker">1</div>
       <div class="step-details">
@@ -34,7 +34,7 @@
         <p>Done</p>
       </div>
     </div>
-    <div class="steps-content">
+    <div class="steps-content desc-text">
       <form [formGroup]="notificationForm" novalidate>
         <div class="box step-content  is-active" id="c-1">
           <div class="field is-horizontal form-group">
@@ -44,7 +44,7 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" id="name" type="text" placeholder="name" formControlName="name"
+                  <input class="input is-small" id="name" type="text" placeholder="name" formControlName="name"
                     title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN"
                     autocomplete="off">
                   <small *ngIf="name.hasError('required') && (name.dirty || name.touched)"
@@ -61,7 +61,7 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" id="description" type="text" #desc placeholder="description"
+                  <input class="input is-small" id="description" type="text" #desc placeholder="description"
                     formControlName="description">
                 </div>
               </div>
@@ -259,12 +259,12 @@
     </div>
     <div class="steps-actions">
       <div class="steps-action">
-        <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Cancel</button>
+        <button (click)="movePrevious()" data-nav="previous" class="button is-small" id="previous">Cancel</button>
       </div>
       <div class="steps-action">
         <button
           [disabled]="name.invalid || !validRuleConfigurationForm || !validDeliveryConfigurationForm || !pluginRequestDone"
-          (click)="moveNext()" data-nav="next" class="button is-link" id="next"
+          (click)="moveNext()" data-nav="next" class="button is-link is-small" id="next"
           [appDisableUntilResponse]="reenableButton">Next</button>
       </div>
     </div>

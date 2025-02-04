@@ -5,7 +5,7 @@
 :host ::ng-deep ng-select .ng-dropdown-panel {
     z-index: 40 !important;
 }
-  
+
 :host ::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
     max-height: 200px !important;
 }
@@ -21,4 +21,17 @@
 
 .modal-card-body {
     overflow: visible !important;
+}
+
+::ng-deep ng-select {
+    font-size: 0.8rem !important;
+}
+
+::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
+    max-height: 200px !important;
+}
+
+::ng-deep .ng-select.ng-select-single .ng-select-container {
+    min-height: 5px;
+    height: 30px !important;
 }
