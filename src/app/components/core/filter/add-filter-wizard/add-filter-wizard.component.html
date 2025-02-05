@@ -14,7 +14,7 @@
   <div class="steps-content my-0 desc-text"
     [ngClass]="{'loading':!pluginData.length && !stopLoading && requestInProgress}">
     <form [formGroup]="serviceForm" validate>
-      <div class="box step-content is-active my-0" id="c-1" [ngClass]="{'is-shadowless': source}">
+      <div class="box step-content is-active my-0 is-shadowless" id="c-1">
 
         <ng-container *ngIf="!plugins || plugins.length === 0">
           <div *ngIf="!show" class="has-text-centered">
@@ -152,7 +152,7 @@
 
         </ng-container>
       </div>
-      <div class="box step-content" id="c-2" [ngClass]="{'is-shadowless': source}">
+      <div class="box step-content" id="c-2">
         <app-configuration-group *ngIf="configurationData" #configChildComponent [category]="configurationData"
           [recalculateTabsOverflow]="isTabsNavVisible" (changedConfigEvent)="getChangedConfig($event)"
           (formStatusEvent)="validChildConfigurationForm = $event" [from]="'add-filter'">
