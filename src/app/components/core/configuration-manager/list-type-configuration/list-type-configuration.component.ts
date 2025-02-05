@@ -3,9 +3,10 @@ import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective } fr
 import { filter, uniqWith, isEqual } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
-import { RolesService } from '../../../../services';
+import { ConfigurationControlService, RolesService } from '../../../../services';
 import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
 import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
+import { KeyValue } from '@angular/common';
 
 @Component({
   selector: 'app-list-type-configuration',
@@ -28,10 +29,13 @@ export class ListTypeConfigurationComponent implements OnInit {
   firstKey: string;
   validConfigurationForm = true;
   listValues;
+  tableHeaders = [];
+  originalOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => { return 0; }
 
   constructor(
     public cdRef: ChangeDetectorRef,
     public rolesService: RolesService,
+    public configControlService: ConfigurationControlService,
     private fb: FormBuilder) {
     this.listItemsForm = this.fb.group({
       listItems: this.fb.array([])
@@ -43,6 +47,7 @@ export class ListTypeConfigurationComponent implements OnInit {
       this.firstKey = Object.keys(this.configuration.properties)[0];
       // Show first property label as list card header
       this.listLabel = this.configuration.properties[this.firstKey].displayName ? this.configuration.properties[this.firstKey].displayName : this.firstKey;
+      this.createTableHeader();
     }
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
     values = JSON.parse(values) as [];
@@ -81,7 +86,9 @@ export class ListTypeConfigurationComponent implements OnInit {
         this.initialProperties.push(objectConfig);
         this.items.push({ status: true });
       }
-      listItem = new FormControl(objectConfig);
+      // listItem = new FormControl(objectConfig);
+      let groupConfigurations = this.configControlService.createConfigurationBase(objectConfig);
+      listItem = this.configControlService.toFormGroup(objectConfig, groupConfigurations);
     }
     else {
       listItem = new FormControl(v, [CustomValidator.nospaceValidator]);
@@ -134,7 +141,7 @@ export class ListTypeConfigurationComponent implements OnInit {
         });
       }
       if (this.configuration.items == 'object') {
-        value = this.extractListValues(value);
+        // value = this.extractListValues(value);
       }
       value = uniqWith(value, isEqual);
       this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(value) });
@@ -277,6 +284,13 @@ export class ListTypeConfigurationComponent implements OnInit {
     const dropdown = document.getElementById('export-dropdown-' + this.configuration?.key);
     if (dropdown && dropdown.classList.contains('is-active')) {
       dropdown.classList.toggle('is-active');
+    }
+  }
+
+  createTableHeader() {
+    for (const [key, val] of Object.entries(this.configuration.properties)) {
+      const value = (val as any)?.displayName || key;
+      this.tableHeaders.push(value);
     }
   }
 }

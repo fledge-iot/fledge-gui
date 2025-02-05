@@ -48,7 +48,7 @@
       </div>
     </ng-container>
     <ng-template #objectTemplate>
-      <div class="card mt-0 card-shadow" [ngClass]="{'error': item.invalid || items[i].status == false}">
+      <div class="card mt-0 card-shadow is-hidden" [ngClass]="{'error': item.invalid || items[i].status == false}">
         <header class="card-header has-background-white card-header-shadow is-justify-content-space-between"
           id="card-header-{{configuration.key}}-{{i}}-{{from}}">
           <div class="card-header-title">
@@ -98,6 +98,28 @@
         </div>
       </div>
     </ng-template>
+  </ng-container>
+  <ng-container *ngIf="configuration.items == 'object'">
+    <table class="table is-responsive is-hoverable mt-2 form-group">
+      <thead>
+        <tr>
+          <th></th>
+          <th *ngFor="let header of tableHeaders">{{header}}</th>
+        </tr>
+      </thead>
+      <tbody formArrayName="listItems">
+        <tr *ngFor="let item of listItems.controls; let i = index;" [formGroupName]="i">
+          <td>
+            <span class="icon is-small" (click)="removeListItem(i)">
+              <i class="bi bi-xs bi-trash"></i>
+            </span>
+          </td>
+          <td *ngFor="let val of item.controls | keyvalue: originalOrder;">
+            <input type="text" class="input is-small" [formControlName]="val.key">
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </ng-container>
   <ng-container *ngIf="configuration.items != 'object'; else objectButtonPanel">
     <ng-container
