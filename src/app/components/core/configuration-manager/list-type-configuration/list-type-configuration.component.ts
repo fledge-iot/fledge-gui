@@ -30,6 +30,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   validConfigurationForm = true;
   listValues;
   tableHeaders = [];
+  isListView = true;
   originalOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => { return 0; }
 
   constructor(
@@ -291,6 +292,15 @@ export class ListTypeConfigurationComponent implements OnInit {
     for (const [key, val] of Object.entries(this.configuration.properties)) {
       const value = (val as any)?.displayName || key;
       this.tableHeaders.push(value);
+    }
+  }
+
+  setCurrentView(view: string) {
+    if (view == 'list') {
+      this.isListView = true;
+    }
+    else {
+      this.isListView = false;
     }
   }
 }
