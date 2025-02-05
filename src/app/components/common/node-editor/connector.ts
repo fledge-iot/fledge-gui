@@ -1,3 +1,4 @@
+import { FlowEditorService } from './flow-editor.service';
 import { ClassicPreset, GetSchemes, getUID } from 'rete';
 import { BidirectFlow, Context, SocketData } from 'rete-connection-plugin';
 import { getUpdatedFilterPipeline } from './editor';
@@ -9,7 +10,7 @@ import { Storage } from './nodes/storage';
 type ClassicScheme = GetSchemes<ClassicPreset.Node, ClassicPreset.Connection<ClassicPreset.Node, ClassicPreset.Node> & { isLoop?: boolean }>
 
 export class Connector<S extends ClassicScheme, K extends any[]> extends BidirectFlow<S, K> {
-  constructor(props: { click: (data: S['Connection']) => void, remove: (data: S['Connection']) => void }) {
+  constructor(props: { click: (data: S['Connection']) => void, remove: (data: S['Connection']) => void }, flowEditorService: FlowEditorService) {
     super({
       makeConnection<K extends any[]>(initial: SocketData, socket: SocketData, context: Context<S, K>) {
         // Avoid self loop of node connection
@@ -53,10 +54,12 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
         }
 
         // Avoid connection loop in pipeline
-        const pipeline = getUpdatedFilterPipeline();
+        const updatedPipeline = getUpdatedFilterPipeline();
+        console.log(updatedPipeline);
+
         let exists = false;
-        if (typeof pipeline == 'object') {
-          exists = contains(toNode.label, pipeline);
+        if (typeof updatedPipeline == 'object') {
+          exists = contains(toNode.label, updatedPipeline);
           if (exists) {
             return;
           }
@@ -72,6 +75,15 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
             isLoop: false,
             ...props
           })
+
+        // console.log('connect');
+        // const pipeline = getUpdatedFilterPipeline();
+        // console.log(pipeline);
+        if (updatedPipeline.length > 0) {
+          flowEditorService.emitPipelineUpdate(updatedPipeline);
+        }
+
+
 
         // To hide/show (+) icon on the add filter node
         setTimeout(() => {

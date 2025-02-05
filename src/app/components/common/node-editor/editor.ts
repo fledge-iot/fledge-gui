@@ -40,9 +40,9 @@ type Node = South | North | Filter | Notification;
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;
 type AreaExtra = AngularArea2D<Schemes> | MinimapExtra | ContextMenuExtra;
 
-let editor = new NodeEditor<Schemes>();
-let area: AreaPlugin<Schemes, AreaExtra>;
-let history: HistoryPlugin<Schemes>;
+export let editor = new NodeEditor<Schemes>();
+export let area: AreaPlugin<Schemes, AreaExtra>;
+export let history: HistoryPlugin<Schemes>;
 let dock: DropNodePlugin;
 let newDockFilter;
 let arrange: AutoArrangePlugin<Schemes>;
@@ -54,6 +54,7 @@ export const animatedApplier = new ArrangeAppliers.TransitionApplier<Schemes, ne
     timingFunction: easeInOut
   }
 );
+
 
 interface ConnectionEvents {
   click: (data: Schemes['Connection']) => void;
@@ -79,8 +80,8 @@ export async function createEditor(
   setupPresets(render, data);
   const selector = createSelector(area, flowEditorService);
   connectionEvents = setupConnectionEvents(selector);
-  setupInsertableNodes();
-  configureEditor(connectionEvents, render);
+  setupInsertableNodes(flowEditorService);
+  configureEditor(connectionEvents, render, flowEditorService);
   applyCustomSettings(socket, data, flowEditorService, rolesService, alertService);
 }
 
@@ -104,15 +105,15 @@ function setupPlugins(injector: Injector) {
   return render;
 }
 
-function setupInsertableNodes() {
+function setupInsertableNodes(flowEditorService: FlowEditorService) {
   insertableNodes(area, {
     async createConnections(node, connection) {
-      handleConnections(node, connection);
+      handleConnections(node, connection, flowEditorService);
     }
   });
 }
 
-async function handleConnections(node, connection) {
+async function handleConnections(node, connection, flowEditorService: FlowEditorService) {
   if (!isEmpty(node.inputs) && !isEmpty(node.outputs) && node?.label === 'Filter') {
     const pseudoNodeControl = node.controls.pseudoNodeControl as PseudoNodeControl;
     pseudoNodeControl.pseudoConnection = true;
@@ -123,6 +124,12 @@ async function handleConnections(node, connection) {
   if (!isEmpty(node.outputs)) {
     await editor.addConnection(new Connection(connectionEvents, node, editor.getNode(connection.target)));
   }
+  const pipeline = getUpdatedFilterPipeline();
+  console.log(pipeline);
+  if (pipeline.length > 0) {
+    flowEditorService.emitPipelineUpdate(pipeline);
+  }
+
   arrange.layout({ applier: animatedApplier });
 }
 
@@ -171,9 +178,9 @@ function setupConnectionEvents(selector) {
   };
 }
 
-function configureEditor(connectionEvents, render) {
+function configureEditor(connectionEvents, render, flowEditorService: FlowEditorService) {
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
-  connection.addPreset(() => new Connector(connectionEvents));
+  connection.addPreset(() => new Connector(connectionEvents, flowEditorService));
   arrange.addPreset(ArrangePresets.classic.setup());
   render.addPreset(Presets.contextMenu.setup());
   dock.addPreset(DockPresets.classic.setup({ area, size: 70, scale: 0.6 }));
@@ -327,6 +334,11 @@ export function getUpdatedFilterPipeline() {
   let nodes = editor.getNodes();
   let connections = editor.getConnections();
 
+  console.log('nodes', nodes);
+  console.log('connection ', connections);
+
+
+
   for (let i = 0; i < nodes.length; i++) {
     if (i == 0) {
       // check if starting node of pipeline i.e. south/storage is connected
@@ -364,7 +376,7 @@ export function getUpdatedFilterPipeline() {
     return index === connections.findIndex(c => connection.source === c.source && connection.target === c.target);
   });
 
-  let updatedFilterPipeline = [];
+  let updatedFilterPipeline: any = [];
   let sourceNode = nodes[0];
   while (connections.find(c => c.source === sourceNode.id)) {
     let previousSourceNode = sourceNode;
@@ -422,8 +434,11 @@ export function getUpdatedFilterPipeline() {
       break;
     }
   }
+  console.log('updated pipeline', updatedFilterPipeline);
+
   return updatedFilterPipeline;
 }
+
 
 function getBranchNodes(pipeline, connections, node) {
   if (node.label === "Storage" || node.label === "North") {
@@ -450,6 +465,20 @@ function getBranchNodes(pipeline, connections, node) {
   }
   branchNodes.pop();
   return branchNodes;
+}
+
+function existsInPipeline(pipeline, filterName) {
+  for (const element of pipeline) {
+    if (typeof (element) === "string") {
+      if (element === filterName) {
+        return true;
+      }
+    }
+    else if (element.indexOf(filterName) !== -1) {
+      return true;
+    }
+  }
+  return false;
 }
 
 export function updateFilterNode(filterConfiguration) {
@@ -536,20 +565,6 @@ export function deleteConnection(connectionId) {
 
 function rgbToHex(r, g, b) {
   return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-}
-
-function existsInPipeline(pipeline, filterName) {
-  for (const element of pipeline) {
-    if (typeof (element) === "string") {
-      if (element === filterName) {
-        return true;
-      }
-    }
-    else if (element.indexOf(filterName) !== -1) {
-      return true;
-    }
-  }
-  return false;
 }
 
 export async function removeNode(nodeId) {

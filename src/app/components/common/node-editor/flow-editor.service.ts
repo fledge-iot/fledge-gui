@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,21 @@ export class FlowEditorService {
   public nodeDropdownClick: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public checkHistory: BehaviorSubject<any> = new BehaviorSubject<any>(false);
 
+  private pipelineSubject = new BehaviorSubject<(string | string[])[]>([]);
+  updatedFilterPipelineData$: Observable<(string | string[])[]> = this.pipelineSubject.asObservable();
+
   constructor() { }
+
+  emitPipelineUpdate(result: (string | string[])[]): void {
+    if (result) {
+      result = result.filter(f => f != 'Filter');
+      this.pipelineSubject.next(result);
+    }
+  }
+
+  clearPipelineData(): void {
+    this.pipelineSubject.next(null);
+  }
 
   public flowEditorControl(visible: boolean) {
     localStorage.setItem('FLOW_EDITOR', JSON.stringify(visible));
