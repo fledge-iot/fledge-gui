@@ -125,7 +125,6 @@ async function handleConnections(node, connection, flowEditorService: FlowEditor
     await editor.addConnection(new Connection(connectionEvents, node, editor.getNode(connection.target)));
   }
   const pipeline = getUpdatedFilterPipeline();
-  console.log(pipeline);
   if (pipeline.length > 0) {
     flowEditorService.emitPipelineUpdate(pipeline);
   }
@@ -334,11 +333,6 @@ export function getUpdatedFilterPipeline() {
   let nodes = editor.getNodes();
   let connections = editor.getConnections();
 
-  console.log('nodes', nodes);
-  console.log('connection ', connections);
-
-
-
   for (let i = 0; i < nodes.length; i++) {
     if (i == 0) {
       // check if starting node of pipeline i.e. south/storage is connected
@@ -434,8 +428,6 @@ export function getUpdatedFilterPipeline() {
       break;
     }
   }
-  console.log('updated pipeline', updatedFilterPipeline);
-
   return updatedFilterPipeline;
 }
 

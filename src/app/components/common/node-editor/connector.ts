@@ -76,14 +76,9 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
             ...props
           })
 
-        // console.log('connect');
-        // const pipeline = getUpdatedFilterPipeline();
-        // console.log(pipeline);
         if (updatedPipeline.length > 0) {
           flowEditorService.emitPipelineUpdate(updatedPipeline);
         }
-
-
 
         // To hide/show (+) icon on the add filter node
         setTimeout(() => {
