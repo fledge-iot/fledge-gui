@@ -1,5 +1,5 @@
 <div class="container is-fluid">
-  <div class="steps">
+  <div class="steps steps-sm">
     <div class="step-item is-active is-success" id="1">
       <div class="step-marker">1</div>
       <div class="step-details">
@@ -18,7 +18,7 @@
         <p>Done</p>
       </div>
     </div>
-    <div class="steps-content">
+    <div class="steps-content mb-0 desc-text">
       <form [formGroup]="taskForm" validate>
         <div class="box step-content is-active" id="c-1">
           <span *ngIf="plugin"
@@ -84,7 +84,7 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" type="text" placeholder="name" formControlName="name"
+                  <input class="input is-small" type="text" placeholder="name" formControlName="name"
                     title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN"
                     autocomplete="off" required>
                   <span *ngIf="taskForm.controls['name'].hasError('required') && taskForm.controls['name'].touched"
@@ -122,15 +122,15 @@
                 <div class="control">
                   <div class="columns is-mobile">
                     <div class="column">
-                      <input class="input" appIntegerOnly min="0" max="365" placeholder="days" autocomplete="off"
-                        formControlName="repeatDays">
+                      <input class="input is-small" appIntegerOnly min="0" max="365" placeholder="days"
+                        autocomplete="off" formControlName="repeatDays">
                       <span *ngIf="repeatDays.errors?.required || repeatDays.errors?.min || repeatDays.errors?.max"
                         class="help is-danger">
                         <sup>*</sup>Repeat days must be in range 0 - 365.
                       </span>
                     </div>
                     <div class="column">
-                      <input class="input" type='text' placeholder="HH:mm:ss" formControlName="repeatTime"
+                      <input class="input is-small" type='text' placeholder="HH:mm:ss" formControlName="repeatTime"
                         mask='00:00:00' (input)="setRepeatIntervalValue($event)" [pattern]='regExp'>
 
                       <span *ngIf="repeatTime.errors?.required || repeatTime.errors?.pattern" class="help is-danger">
@@ -146,8 +146,8 @@
         <div class="box step-content" id="c-2">
           <app-configuration-group *ngIf="configurationData" [category]="configurationData"
             (changedConfigEvent)="getChangedConfig($event)" [from]="'add-task-form'"
-            [recalculateTabsOverflow]="isTabsNavVisible"
-            (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
+            [recalculateTabsOverflow]="isTabsNavVisible" (formStatusEvent)="validConfigurationForm = $event">
+          </app-configuration-group>
         </div>
         <div class="box step-content" id="c-3">
           <div class="column">
@@ -172,10 +172,10 @@
     </div>
     <div class="steps-actions">
       <div class="steps-action">
-        <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Cancel</button>
+        <button (click)="movePrevious()" data-nav="previous" class="button is-small" id="previous">Cancel</button>
       </div>
       <div class="steps-action">
-        <button (click)="moveNext()" data-nav="next" class="button is-link" id="next"
+        <button (click)="moveNext()" data-nav="next" class="button is-link is-small" id="next"
           [disabled]="taskForm.invalid || !validConfigurationForm"
           [appDisableUntilResponse]="reenableButton">Next</button>
       </div>

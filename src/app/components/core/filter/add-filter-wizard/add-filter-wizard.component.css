@@ -1,5 +1,5 @@
 .description {
-  flex-shrink:initial !important;
+  flex-shrink: initial !important;
 }
 
 .loading {
@@ -17,6 +17,15 @@
 :host ::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-disabled {
   color: #848181 !important;
   font-size: 0.80rem !important;
+}
+
+:host ::ng-deep ng-select {
+  font-size: 0.8rem !important;
+}
+
+:host ::ng-deep .ng-select.ng-select-single .ng-select-container {
+  min-height: 5px;
+  height: 30px !important;
 }
 
 .steps {
