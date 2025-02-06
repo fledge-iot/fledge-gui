@@ -116,7 +116,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     const nextContent = <HTMLElement>document.getElementById('c-' + sId);
     if (nextContent != null) {
       this.isTabsNavVisible = +id == 1 ? true : false;
-      nextContent.setAttribute('class', 'box step-content  is-active');
+      nextContent.setAttribute('class', 'box step-content is-active');
     }
 
     const nxtButton = <HTMLButtonElement>document.getElementById('next');

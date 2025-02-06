@@ -286,10 +286,6 @@ a.dropdown-item:hover {
   border: none;
 }
 
-.text-btn {
-  font-size: 0.85rem;
-}
-
 .select::after {
   font-size: x-small;
 }
@@ -382,7 +378,9 @@ span.tooltip {
   font-size: 0.75rem;
 }
 
-.bi-sm {
+.bi-sm,
+.text-btn,
+.steps-sm {
   font-size: 0.85rem;
 }
 
@@ -456,7 +454,10 @@ span.tooltip {
   font-size: 0.9rem !important;
 }
 
-.input, .textarea, .select select, .CodeMirror-wrap {
+.input,
+.textarea,
+.select select,
+.CodeMirror-wrap {
   border-radius: 2px !important;
 }
 
