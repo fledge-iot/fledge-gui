@@ -13,19 +13,22 @@ export class QuickviewComponent implements OnInit {
   @ViewChild('quickViewBlock') quickViewBlock;
   @Input() showReadings: boolean;
   @Input() showLogs: boolean;
-  
-  @ContentChild('notificationLogs', {static:false}) notificationLogsComponent;
-  @ContentChild('systemLogs', {static:false}) systemLogsComponent;
+
+  @ContentChild('notificationLogs', { static: false }) notificationLogsComponent;
+  @ContentChild('systemLogs', { static: false }) systemLogsComponent;
 
   constructor(
     public flowEditorService: FlowEditorService,
-  ) {}
+  ) { }
 
-  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event) {
     this.quickView.nativeElement.classList.remove('is-active');
     this.onCloseQuickview();
+    event.preventdefault();
   }
-  
+
+
+
   ngOnInit(): void {
     // this is a work around to attach quickview component after the data is loaded in child component (which is rendered through ng-content)
     var count = 0;
