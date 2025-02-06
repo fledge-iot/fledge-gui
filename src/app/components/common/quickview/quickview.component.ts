@@ -21,10 +21,9 @@ export class QuickviewComponent implements OnInit {
     public flowEditorService: FlowEditorService,
   ) { }
 
-  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event) {
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     this.quickView.nativeElement.classList.remove('is-active');
     this.onCloseQuickview();
-    event.preventdefault();
   }
 
 
