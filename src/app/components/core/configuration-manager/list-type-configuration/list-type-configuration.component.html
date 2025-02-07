@@ -139,7 +139,8 @@
             </span>
           </td>
           <td *ngFor="let val of item.controls | keyvalue: originalOrder;">
-            <input type="text" class="input is-small" [formControlName]="val.key">
+            <app-property-configuration [from]="from" [configuration]="configuration.properties[val.key]"
+              [control]="val.value" />
           </td>
         </tr>
       </tbody>

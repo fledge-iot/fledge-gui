@@ -28,6 +28,7 @@ import { StaticConfigurationComponent } from './components/core/configuration-ma
 import { ButtonPanelComponent } from './components/core/configuration-manager/button-panel/button-panel.component';
 import { FileImportModalComponent } from './components/common/file-import-modal/file-import-modal.component';
 import { FileExportModalComponent } from './components/common/file-export-modal/file-export-modal.component';
+import { PropertyConfigurationComponent } from './components/core/configuration-manager/property-configuration/property-configuration.component';
 
 @NgModule({
   imports: [
@@ -60,7 +61,8 @@ import { FileExportModalComponent } from './components/common/file-export-modal/
     ServiceConfigComponent,
     ButtonPanelComponent,
     FileImportModalComponent,
-    FileExportModalComponent
+    FileExportModalComponent,
+    PropertyConfigurationComponent
   ],
   exports: [
     ConfigurationGroupComponent,
