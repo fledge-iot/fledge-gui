@@ -142,7 +142,12 @@ export class ListTypeConfigurationComponent implements OnInit {
         });
       }
       if (this.configuration.items == 'object') {
-        // value = this.extractListValues(value);
+        for (let [index, property] of this.initialProperties.entries()) {
+          for (let [key, prop] of Object.entries(property)) {
+            let val = prop as any
+            val.value = value[index][key];
+          }
+        }
       }
       value = uniqWith(value, isEqual);
       this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(value) });
@@ -150,16 +155,8 @@ export class ListTypeConfigurationComponent implements OnInit {
     })
   }
 
-  getChangedConfiguration(index: string, propertyChangedValues: any) {
-    for (let [ind, val] of this.listItems.value.entries()) {
-      for (let property in val) {
-        if (ind == index && property == Object.keys(propertyChangedValues)[0]) {
-          val[property] = Object.values(propertyChangedValues)[0];
-        }
-      }
-      this.listItems.value[ind] = val;
-    }
-    // let listValues = this.extractListValues(this.listItems.value);
+  getChangedConfiguration(index, propertyChangedValues: any) {
+    this.listItems.controls[index].patchValue(propertyChangedValues);
     let listValues = this.listItems.value;
     listValues = uniqWith(listValues, isEqual);
     this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(listValues) });
