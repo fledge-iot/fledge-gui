@@ -127,7 +127,7 @@ async function handleConnections(node, connection, flowEditorService: FlowEditor
 
   if (node?.label !== 'Filter') {
     const pipeline = getUpdatedFilterPipeline();
-    if (pipeline.length > 0) {
+    if (pipeline?.length > 0) {
       flowEditorService.emitPipelineUpdate(pipeline);
     }
   }
@@ -135,18 +135,18 @@ async function handleConnections(node, connection, flowEditorService: FlowEditor
   arrange.layout({ applier: animatedApplier });
 }
 
-function getContextMenuItems(context) {
+function getContextMenuItems(context, flowEditorService) {
   if (context === 'root') return { searchBar: false, list: [] };
   if ('source' in context && 'target' in context) {
     return {
       searchBar: false,
-      list: [getDeleteItem(context)]
+      list: [getDeleteItem(context, flowEditorService)]
     };
   }
   return { searchBar: false, list: [] };
 }
 
-function getDeleteItem(context) {
+function getDeleteItem(context, flowEditorService) {
   return {
     label: 'Delete',
     key: 'delete',
@@ -159,6 +159,12 @@ function getDeleteItem(context) {
         pseudoNodeControl['pseudoConnection'] = false;
       }
       await editor.removeConnection(context.id);
+      if (source.label !== 'Filter' || destination.label !== 'Filter') {
+        const pipeline = getUpdatedFilterPipeline();
+        if (pipeline?.length > 0) {
+          flowEditorService.emitPipelineUpdate(pipeline);
+        }
+      }
     }
   };
 }
@@ -200,7 +206,7 @@ function configureEditor(connectionEvents, render, flowEditorService: FlowEditor
 function applyCustomSettings(socket, data, flowEditorService, rolesService, alertService) {
   if (data.source && rolesService.hasEditPermissions()) {
     area.use(new MinimapPlugin<Schemes>({ boundViewport: true }));
-    area.use(new ContextMenuPlugin<Schemes>({ items: getContextMenuItems }));
+    area.use(new ContextMenuPlugin<Schemes>({ items: (context) => getContextMenuItems(context, flowEditorService) }));
     newDockFilter = createFilterDock(socket, alertService);
     dock.add(newDockFilter);
   }

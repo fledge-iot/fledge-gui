@@ -197,7 +197,6 @@ export class NodeEditorComponent implements OnInit {
 
 
   ngOnInit(): void {
-    // Subscribe to the pipeline update observable.
     this.pipelineSubscription = this.flowEditorService.updatedFilterPipelineData$.subscribe(
       (pipeline: (string | string[])[]) => {
         if (pipeline) {
