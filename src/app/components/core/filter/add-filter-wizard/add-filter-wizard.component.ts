@@ -157,7 +157,7 @@ export class AddFilterWizardComponent implements OnInit {
 
     const nextContent = <HTMLElement>document.getElementById('c-' + sId);
     if (nextContent != null) {
-      nextContent.setAttribute('class', 'box step-content is-active');
+      nextContent.setAttribute('class', 'box step-content is-shadowless is-active');
     }
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
@@ -260,7 +260,7 @@ export class AddFilterWizardComponent implements OnInit {
 
     const nextContent = <HTMLElement>document.getElementById('c-' + sId);
     if (nextContent != null) {
-      nextContent.setAttribute('class', 'box step-content is-active');
+      nextContent.setAttribute('class', 'box step-content is-shadowless is-active');
     }
   }
 

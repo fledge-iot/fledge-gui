@@ -2,7 +2,7 @@
   <div class="modal-background"></div>
   <div class="modal-card" [ngClass]="{'loading':!plugins.length && !stopLoading}">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-5">{{data.type === 'Notify' ? 'Delivery' : data.type}} Plugins</p>
+      <p class="modal-card-title is-size-6">{{data.type === 'Notify' ? 'Delivery' : data.type}} Plugins</p>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
