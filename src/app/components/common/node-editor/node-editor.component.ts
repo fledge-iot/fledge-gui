@@ -195,22 +195,13 @@ export class NodeEditorComponent implements OnInit {
     }
   }
 
-  isFilterPipelineChanged(changedPipeline: any[], currentPipeline: any[]): boolean {
-    return Array.isArray(changedPipeline) && Array.isArray(currentPipeline) && changedPipeline.length === currentPipeline.length &&
-      changedPipeline.every((item, index) =>
-        Array.isArray(item) && Array.isArray(currentPipeline[index])
-          ? this.isFilterPipelineChanged(item, currentPipeline[index])
-          : item === currentPipeline[index]
-      );
-  }
 
   ngOnInit(): void {
     // Subscribe to the pipeline update observable.
     this.pipelineSubscription = this.flowEditorService.updatedFilterPipelineData$.subscribe(
       (pipeline: (string | string[])[]) => {
-        if (!this.isFilterPipelineChanged(pipeline, this.filterPipeline)) {
+        if (pipeline) {
           this.updatedFilterPipeline = pipeline;
-          console.log('updated', this.updatedFilterPipeline);
         }
       }
     );

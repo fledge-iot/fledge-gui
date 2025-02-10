@@ -55,8 +55,6 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
 
         // Avoid connection loop in pipeline
         const updatedPipeline = getUpdatedFilterPipeline();
-        console.log(updatedPipeline);
-
         let exists = false;
         if (typeof updatedPipeline == 'object') {
           exists = contains(toNode.label, updatedPipeline);
@@ -75,10 +73,6 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
             isLoop: false,
             ...props
           })
-
-        if (updatedPipeline.length > 0) {
-          flowEditorService.emitPipelineUpdate(updatedPipeline);
-        }
 
         // To hide/show (+) icon on the add filter node
         setTimeout(() => {
@@ -100,7 +94,12 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
               pseudoNodeControl.pseudoConnection = true;
             }
           }
+          const changedPipeline = getUpdatedFilterPipeline();
+          if (changedPipeline.length > 0) {
+            flowEditorService.emitPipelineUpdate(changedPipeline);
+          }
         }, 0);
+
 
         return true;
       }

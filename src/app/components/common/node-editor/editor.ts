@@ -124,9 +124,12 @@ async function handleConnections(node, connection, flowEditorService: FlowEditor
   if (!isEmpty(node.outputs)) {
     await editor.addConnection(new Connection(connectionEvents, node, editor.getNode(connection.target)));
   }
-  const pipeline = getUpdatedFilterPipeline();
-  if (pipeline.length > 0) {
-    flowEditorService.emitPipelineUpdate(pipeline);
+
+  if (node?.label !== 'Filter') {
+    const pipeline = getUpdatedFilterPipeline();
+    if (pipeline.length > 0) {
+      flowEditorService.emitPipelineUpdate(pipeline);
+    }
   }
 
   arrange.layout({ applier: animatedApplier });
