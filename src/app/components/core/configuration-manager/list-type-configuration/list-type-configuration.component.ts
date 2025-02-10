@@ -154,12 +154,13 @@ export class ListTypeConfigurationComponent implements OnInit {
     for (let [ind, val] of this.listItems.value.entries()) {
       for (let property in val) {
         if (ind == index && property == Object.keys(propertyChangedValues)[0]) {
-          val[property].value = Object.values(propertyChangedValues)[0];
+          val[property] = Object.values(propertyChangedValues)[0];
         }
       }
       this.listItems.value[ind] = val;
     }
-    let listValues = this.extractListValues(this.listItems.value);
+    // let listValues = this.extractListValues(this.listItems.value);
+    let listValues = this.listItems.value;
     listValues = uniqWith(listValues, isEqual);
     this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(listValues) });
     this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
