@@ -180,7 +180,6 @@ export class NodeEditorComponent implements OnInit {
     if (quickView?.classList.contains('is-active')) {
       return;
     }
-    event.preventDefault();
 
     if ((event.ctrlKey || event.metaKey) && event.keyCode == 90) {
       undoAction(this.flowEditorService);
