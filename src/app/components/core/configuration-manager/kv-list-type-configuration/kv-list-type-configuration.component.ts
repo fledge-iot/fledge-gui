@@ -136,7 +136,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
       // remove empty, undefined, null values
       data = filter((data), (d: any) => d.key && d.key.trim() !== ''); // remove empty, undefined, null values
       const transformedObject = {};
-      data.forEach(item => {
+      data.forEach((item, index) => {
         // float value conversion
         if (this.configuration?.items == 'float') {
           if (+item.value && Number.isInteger(+item.value)) {
@@ -148,7 +148,11 @@ export class KvListTypeConfigurationComponent implements OnInit {
         }
         let itemValue = item.value;
         if (this.configuration.items == 'object') {
-          // itemValue = this.extractKvListValues(item.value);
+          let property = this.initialProperties[index]
+          for (let [key, prop] of Object.entries(property)) {
+            let val = prop as any
+            val.value = itemValue[key];
+          }
         }
         transformedObject[item.key] = itemValue;
       });
@@ -158,17 +162,8 @@ export class KvListTypeConfigurationComponent implements OnInit {
   }
 
   getChangedConfiguration(index: string, propertyChangedValues: any) {
-    const transformedObject = {};
-    for (let [ind, val] of this.kvListItems.value.entries()) {
-      for (let property in val.value) {
-        if (ind == index && property == Object.keys(propertyChangedValues)[0]) {
-          val.value[property].value = Object.values(propertyChangedValues)[0];
-        }
-      }
-      this.kvListItems.value[ind] = val;
-      transformedObject[val.key] = this.extractKvListValues(val.value);
-    }
-    this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(transformedObject) });
+    this.kvListItems.controls[index].controls['value'].patchValue(propertyChangedValues);
+    this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(this.kvListItems.value) });
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
   }
 
