@@ -3,9 +3,10 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { filter } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
-import { RolesService } from '../../../../services';
+import { ConfigurationControlService, RolesService } from '../../../../services';
 import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
 import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
+import { KeyValue } from '@angular/common';
 
 @Component({
   selector: 'app-kv-list-type-configuration',
@@ -26,10 +27,14 @@ export class KvListTypeConfigurationComponent implements OnInit {
   items = [];
   validConfigurationForm = true;
   kvlistValues = {};
+  tableHeaders = [];
+  isListView = true;
+  originalOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => { return 0; }
 
   constructor(
     public cdRef: ChangeDetectorRef,
     public rolesService: RolesService,
+    public configControlService: ConfigurationControlService,
     private fb: FormBuilder) {
     this.kvListItemsForm = this.fb.group({
       kvListItems: this.fb.array([])
@@ -43,8 +48,11 @@ export class KvListTypeConfigurationComponent implements OnInit {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
     this.onControlValueChanges();
-    if (this.configuration.items == 'object' && this.kvListItems.length == 1) {
-      this.expandListItem(this.kvListItems.length - 1); // Expand the list if only one item is present
+    if (this.configuration.items == 'object') {
+      this.createTableHeader();
+      if (this.kvListItems.length == 1) {
+        this.expandListItem(this.kvListItems.length - 1); // Expand the list if only one item is present
+      }
     }
   }
 
@@ -79,9 +87,11 @@ export class KvListTypeConfigurationComponent implements OnInit {
         this.initialProperties.push(objectConfig);
         this.items.push({ status: true });
       }
+      let groupConfigurations = this.configControlService.createConfigurationBase(objectConfig);
+      let kvListItem = this.configControlService.toFormGroup(objectConfig, groupConfigurations);
       return this.fb.group({
         key: [param?.key, [Validators.required, CustomValidator.nospaceValidator]],
-        value: [objectConfig]
+        value: kvListItem
       });
     }
     return this.fb.group({
@@ -138,7 +148,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
         }
         let itemValue = item.value;
         if (this.configuration.items == 'object') {
-          itemValue = this.extractKvListValues(item.value);
+          // itemValue = this.extractKvListValues(item.value);
         }
         transformedObject[item.key] = itemValue;
       });
@@ -274,6 +284,22 @@ export class KvListTypeConfigurationComponent implements OnInit {
     const dropdown = document.getElementById('export-dropdown-' + this.configuration?.key);
     if (dropdown && dropdown.classList.contains('is-active')) {
       dropdown.classList.toggle('is-active');
+    }
+  }
+
+  createTableHeader() {
+    for (const [key, val] of Object.entries(this.configuration.properties)) {
+      const value = (val as any)?.displayName || key;
+      this.tableHeaders.push(value);
+    }
+  }
+
+  setCurrentView(view: string) {
+    if (view == 'list') {
+      this.isListView = true;
+    }
+    else {
+      this.isListView = false;
     }
   }
 }
