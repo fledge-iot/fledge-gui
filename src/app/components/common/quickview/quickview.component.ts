@@ -1,6 +1,7 @@
 import { Component, HostListener, Input, OnInit, ViewChild, ContentChild } from '@angular/core';
-import * as bulmaQuickview from './../../../../../node_modules/bulma-quickview/dist/js/bulma-quickview.min.js'
 import { FlowEditorService } from './../node-editor/flow-editor.service';
+
+declare const bulmaQuickview: any;
 
 @Component({
   selector: 'app-quickview',
@@ -13,22 +14,22 @@ export class QuickviewComponent implements OnInit {
   @ViewChild('quickViewBlock') quickViewBlock;
   @Input() showReadings: boolean;
   @Input() showLogs: boolean;
-  
-  @ContentChild('notificationLogs', {static:false}) notificationLogsComponent;
-  @ContentChild('systemLogs', {static:false}) systemLogsComponent;
+
+  @ContentChild('notificationLogs', { static: false }) notificationLogsComponent;
+  @ContentChild('systemLogs', { static: false }) systemLogsComponent;
 
   constructor(
     public flowEditorService: FlowEditorService,
-  ) {}
+  ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     this.quickView.nativeElement.classList.remove('is-active');
     this.onCloseQuickview();
   }
-  
+
   ngOnInit(): void {
     // this is a work around to attach quickview component after the data is loaded in child component (which is rendered through ng-content)
-    var count = 0;
+    let count = 0;
     let intervalId = setInterval(() => {
       bulmaQuickview.attach();
       count++;
