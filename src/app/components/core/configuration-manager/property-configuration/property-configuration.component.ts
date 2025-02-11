@@ -11,7 +11,7 @@ import { RolesService } from '../../../../services';
 export class PropertyConfigurationComponent {
   @Input() control: FormControl;
   @Input() configuration
-  @Input() from = '';
+  @Input() permissions = [];
 
   constructor(public rolesService: RolesService) { }
 

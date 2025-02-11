@@ -1,4 +1,4 @@
-<fieldset [disabled]="!rolesService?.hasEditPermissionsOnPage(from)">
+<fieldset [disabled]="!rolesService.hasAccessPermission(permissions)">
   <div [ngSwitch]="configuration.type">
     <input
       *ngSwitchCase="['string','IPv4','IPv6'].includes(configuration.type) ? configuration.type : !configuration.type"

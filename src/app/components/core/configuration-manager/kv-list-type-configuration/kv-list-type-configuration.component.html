@@ -172,14 +172,14 @@
       <table class="table is-responsive is-hoverable mb-0 form-group">
         <thead>
           <tr>
-            <th></th>
+            <th *ngIf="rolesService.hasAccessPermission(configuration?.permissions)"></th>
             <th>{{configuration.keyName ? configuration.keyName : "Key"}}</th>
             <th *ngFor="let header of tableHeaders">{{header}}</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let item of kvListItems.controls; let i = index;" [formGroupName]="i">
-            <td>
+            <td *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
               <span class="icon is-small" (click)="removeListItem(i)">
                 <i class="bi bi-xs bi-trash"></i>
               </span>
@@ -198,8 +198,8 @@
               </ng-template>
             </td>
             <td *ngFor="let val of item.controls['value'].controls | keyvalue: originalOrder;">
-              <app-property-configuration [from]="from" [configuration]="configuration.properties[val.key]"
-                [control]="val.value" />
+              <app-property-configuration [permissions]="configuration?.permissions"
+                [configuration]="configuration.properties[val.key]" [control]="val.value" />
             </td>
           </tr>
         </tbody>

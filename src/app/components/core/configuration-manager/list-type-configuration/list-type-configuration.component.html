@@ -127,20 +127,20 @@
     <table class="table is-responsive is-hoverable mb-0 form-group">
       <thead>
         <tr>
-          <th></th>
+          <th *ngIf="rolesService.hasAccessPermission(configuration?.permissions)"></th>
           <th *ngFor="let header of tableHeaders">{{header}}</th>
         </tr>
       </thead>
       <tbody formArrayName="listItems">
         <tr *ngFor="let item of listItems.controls; let i = index;" [formGroupName]="i">
-          <td>
+          <td *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
             <span class="icon is-small" (click)="removeListItem(i)">
               <i class="bi bi-xs bi-trash"></i>
             </span>
           </td>
           <td *ngFor="let val of item.controls | keyvalue: originalOrder;">
-            <app-property-configuration [from]="from" [configuration]="configuration.properties[val.key]"
-              [control]="val.value" />
+            <app-property-configuration [permissions]="configuration?.permissions"
+              [configuration]="configuration.properties[val.key]" [control]="val.value" />
           </td>
         </tr>
       </tbody>
