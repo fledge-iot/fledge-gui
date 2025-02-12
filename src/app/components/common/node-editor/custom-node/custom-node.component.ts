@@ -4,14 +4,14 @@ import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import {
-  ConfigurationService, RolesService,
-  SchedulesService, ToastService
+  RolesService
 } from "./../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
 import { Subject, Subscription } from "rxjs";
 
 import { canUndo, canRedo } from './../editor';
+import { DialogService } from '../../confirmation-dialog/dialog.service';
 
 @Component({
   selector: 'app-custom-node',
@@ -72,19 +72,20 @@ export class CustomNodeComponent implements OnChanges {
   pluginVersion = '';
   timeoutId;
 
+  previousState: boolean;  // To store previous state of checkbox
+  serviceStatusSubscription: Subscription;
+
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
   }
 
   constructor(private cdr: ChangeDetectorRef,
-    private schedulesService: SchedulesService,
     private docService: DocService,
     private router: Router,
     private route: ActivatedRoute,
     public flowEditorService: FlowEditorService,
-    private configService: ConfigurationService,
-    private toastService: ToastService,
     public rolesService: RolesService,
+    private dialogService: DialogService,
     private elRef: ElementRef) {
     this.route.params.subscribe(params => {
       this.from = params.from;
@@ -100,6 +101,10 @@ export class CustomNodeComponent implements OnChanges {
         this.router.navigated = false;
       }
     });
+  }
+
+  openModal(id: string) {
+    this.dialogService.open(id);
   }
 
   ngOnChanges(): void {
@@ -251,49 +256,6 @@ export class CustomNodeComponent implements OnChanges {
     this.router.navigate(['/south']);
   }
 
-  toggleEnabled(isEnabled) {
-    this.isEnabled = isEnabled;
-    if (this.isServiceNode) {
-      if (this.isEnabled) {
-        this.enableSchedule(this.service.name);
-      }
-      else {
-        this.disableSchedule(this.service.name);
-      }
-    }
-    if (this.isFilterNode) {
-      this.updateFilterConfiguration();
-    }
-  }
-
-  public disableSchedule(serviceName) {
-    this.schedulesService.disableScheduleByName(serviceName)
-      .subscribe((data: any) => {
-        this.toastService.success(data.message);
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.toastService.error(error.statusText);
-          }
-        });
-  }
-
-  public enableSchedule(serviceName) {
-    this.schedulesService.enableScheduleByName(serviceName)
-      .subscribe((data: any) => {
-        this.toastService.success(data.message);
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.toastService.error(error.statusText);
-          }
-        });
-  }
-
   goToLink() {
     if (this.isServiceNode) {
       this.docService.goToPluginLink({ name: this.pluginName, type: this.from });
@@ -327,6 +289,34 @@ export class CustomNodeComponent implements OnChanges {
     }
   }
 
+  onCheckboxClicked(event: Event) {
+    const checkbox = event.target as HTMLInputElement;
+    const newCheckedState = checkbox.checked;
+    // Store the previous state
+    this.previousState = this.isEnabled;
+    this.openStatusConfirmationDialog(newCheckedState);
+    checkbox.checked = this.previousState;
+  }
+
+  openStatusConfirmationDialog(status: boolean) {
+    let nodeName = null;
+    let type = null;
+    let oldState = false;
+    let category = '';
+    if (this.isServiceNode) {
+      nodeName = this.service?.name;
+    } else if (this.isFilterNode) {
+      nodeName = this.filter?.name;
+      category = `${this.source}_${this.filter.name}`;
+      type = 'filter';
+      oldState = (this.filter.enabled == 'true');
+    }
+    if (nodeName) {
+      this.flowEditorService.updateNodeStatusSubject.next({ name: nodeName, newState: status, type, oldState, category });
+      this.openModal('service-status-dialog');
+    }
+  }
+
   openTaskSchedule() {
     this.flowEditorService.showItemsInQuickview.next({ showTaskSchedule: true, serviceName: this.service.name });
   }
@@ -337,28 +327,6 @@ export class CustomNodeComponent implements OnChanges {
 
   navToAddServicePage() {
     this.router.navigate(['/flow/editor', this.from, 'add'], { queryParams: { source: 'flowEditor' } });
-  }
-
-  updateFilterConfiguration() {
-    let catName = `${this.source}_${this.filter.name}`;
-    this.configService.
-      updateBulkConfiguration(catName, { enable: String(this.isEnabled) })
-      .subscribe(() => {
-        this.data.controls.enabledControl['enabled'] = JSON.stringify(this.isEnabled);
-        if (this.isEnabled) {
-          this.toastService.success(`${this.filter.name} filter enabled`);
-        }
-        else {
-          this.toastService.success(`${this.filter.name} filter disabled`);
-        }
-      },
-        (error) => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.toastService.error(error.statusText);
-          }
-        });
   }
 
   removeFilter() {

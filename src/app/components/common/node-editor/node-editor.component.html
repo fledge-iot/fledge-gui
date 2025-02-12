@@ -220,6 +220,40 @@
   </footer>
 </app-confirmation-dialog>
 
+<app-confirmation-dialog id="service-status-dialog">
+  <header class="modal-card-head">
+    <span class="modal-card-title is-size-6">{{scheduleChangedState? 'Enable' : 'Disable'}}</span>
+    <button type="button" aria-label="close" class="delete" (click)="closeModal('service-status-dialog')"></button>
+  </header>
+  <section class="modal-card-body">
+    <span *ngIf="service">
+      Are you sure, You want to {{!service?.schedule_enabled? 'enable' : 'disable'}} the {{service?.name}} service?
+    </span>
+    <span *ngIf="task">
+      Are you sure, You want to {{!task?.enabled? 'enable' : 'disable'}} the {{task.name}} {{task?.execution ==
+      'service'? 'service': 'task'}}?
+    </span>
+    <span *ngIf="filter">
+      Are you sure, You want to {{!this.filter?.oldState? 'enable' : 'disable'}} the {{filter.name}} filter?
+    </span>
+  </section>
+  <footer class="modal-card-foot">
+    <button type="button" class="button is-small" (click)="closeModal('service-status-dialog')">Cancel</button>
+    <button type="button" *ngIf="service" class="button is-small"
+      [ngClass]="{'is-danger': service.schedule_enabled, 'is-info': !service.schedule_enabled}"
+      (click)="toggleServiceState({name:service?.name, state: !service.schedule_enabled})">{{!service.schedule_enabled?
+      'Enable' :'Disable'}}</button>
+    <button type="button" *ngIf="task" class="button is-small"
+      [ngClass]="{'is-danger': task?.enabled, 'is-info': !task?.enabled}"
+      (click)="toggleServiceState({name:task?.name, state: !task.enabled})">{{!task?.enabled?
+      'Enable':'Disable'}}</button>
+    <button type="button" *ngIf="filter" class="button is-small"
+      [ngClass]="{'is-danger': this.filter?.oldState, 'is-info': !this.filter?.oldState}"
+      (click)="updateFilterConfiguration({name:filter?.name, state: filter.newState ,category:filter.category})">{{!this.filter?.oldState?
+      'Enable' : 'Disable'}}</button>
+  </footer>
+</app-confirmation-dialog>
+
 <app-confirmation-dialog id="from-toolbar-dialog">
   <header class="modal-card-head">
     <span class="modal-card-title is-size-6">Delete</span>
