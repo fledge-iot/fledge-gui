@@ -102,3 +102,10 @@
 .toggle-btn-container {
   margin-top: -10px;
 }
+
+.sticky-header {
+  position: sticky;
+  top: -20px;
+  background: white;
+  z-index: 100;
+}

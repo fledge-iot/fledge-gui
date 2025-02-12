@@ -108,7 +108,7 @@
   </ng-container>
   <ng-container *ngIf="configuration.items == 'object' && isListView">
     <table class="table is-responsive is-hoverable mb-0 form-group">
-      <thead>
+      <thead class="sticky-header">
         <tr>
           <th *ngIf="rolesService.hasAccessPermission(configuration?.permissions)"></th>
           <th *ngFor="let header of tableHeaders">{{header}}</th>
