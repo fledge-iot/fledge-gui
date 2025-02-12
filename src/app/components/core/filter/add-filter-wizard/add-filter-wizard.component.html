@@ -1,4 +1,4 @@
-<div class="steps">
+<div class="steps steps-sm">
   <div class="step-item is-active is-success" id="1">
     <div class="step-marker">1</div>
     <div class="step-details">
@@ -11,9 +11,10 @@
       <p>Review Configuration</p>
     </div>
   </div>
-  <div class="steps-content" [ngClass]="{'loading':!pluginData.length && !stopLoading && requestInProgress}">
+  <div class="steps-content my-0 desc-text"
+    [ngClass]="{'loading':!pluginData.length && !stopLoading && requestInProgress}">
     <form [formGroup]="serviceForm" validate>
-      <div class="box step-content is-active" id="c-1" [ngClass]="{'is-shadowless': source}">
+      <div class="box step-content is-active my-0 is-shadowless" id="c-1">
 
         <ng-container *ngIf="!plugins || plugins.length === 0">
           <div *ngIf="!show" class="has-text-centered">
@@ -73,7 +74,7 @@
             <div class="field-label is-normal">
               <label class="label">Plugin</label>
             </div>
-            <div class="field-body">
+            <div class="field-body mb-0">
               <div class="column is-vertical-center">
                 <div class="select is-multiple">
                   <select #selectedPlugin multiple name="type" formControlName="plugin"
@@ -97,7 +98,7 @@
             </div>
           </div>
 
-          <div class="field is-horizontal form-group">
+          <div class="field is-horizontal form-group mb-0">
             <div class="field-label is-normal">
               <label class="label"></label>
             </div>
@@ -139,7 +140,7 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" id="name" type="text" placeholder="name"
+                  <input class="input is-small" id="name" type="text" placeholder="name"
                     title="No single quotes and double quotes!" autocomplete="off" formControlName="name">
                   <small
                     *ngIf="serviceForm.controls['name'].hasError('required') && serviceForm.controls['name'].touched"
@@ -151,7 +152,7 @@
 
         </ng-container>
       </div>
-      <div class="box step-content" id="c-2" [ngClass]="{'is-shadowless': source}">
+      <div class="box step-content" id="c-2">
         <app-configuration-group *ngIf="configurationData" #configChildComponent [category]="configurationData"
           [recalculateTabsOverflow]="isTabsNavVisible" (changedConfigEvent)="getChangedConfig($event)"
           (formStatusEvent)="validChildConfigurationForm = $event" [from]="'add-filter'">
@@ -162,11 +163,11 @@
   </div>
   <div class="steps-actions">
     <div class="steps-action">
-      <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Cancel</button>
+      <button (click)="movePrevious()" data-nav="previous" class="button is-small" id="previous">Cancel</button>
     </div>
     <div class="steps-action">
       <button (click)="gotoNext()" data-nav="next" [disabled]="serviceForm.invalid || !validChildConfigurationForm"
-        class="button is-link" id="next" [appDisableUntilResponse]="reenableButton">Next</button>
+        class="button is-small is-link" id="next" [appDisableUntilResponse]="reenableButton">Next</button>
     </div>
   </div>
 </div>

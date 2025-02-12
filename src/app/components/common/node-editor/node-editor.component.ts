@@ -175,6 +175,12 @@ export class NodeEditorComponent implements OnInit {
 
   @HostListener('document:keydown', ['$event'])
   onKeydownHandler(event) {
+    // Prevent actions when the focus is inside QuickviewComponent
+    const quickView = document.getElementById('quickviewDefault');
+    if (quickView?.classList.contains('is-active')) {
+      return;
+    }
+
     if ((event.ctrlKey || event.metaKey) && event.keyCode == 90) {
       undoAction(this.flowEditorService);
     }
@@ -184,7 +190,7 @@ export class NodeEditorComponent implements OnInit {
     if (event.keyCode == 32) {
       resetNodes(this.flowEditorService);
     }
-    if (event.key === 'Delete') {
+    if (event.key === 'Delete' || (event.key == 'Backspace' && event.metaKey)) {
       this.deleteSelectedEntity();
     }
   }
