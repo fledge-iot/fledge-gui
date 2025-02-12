@@ -201,3 +201,9 @@ svg#north-icon {
 .sidemenu-link.is-active #north-icon {
   filter: invert(1) brightness(100%);
 }
+
+.sidemenu-link #south-icon,
+.sidemenu-link #north-icon {
+  vertical-align: middle;
+  margin-top: -9px;
+}
