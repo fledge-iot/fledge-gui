@@ -205,5 +205,9 @@ svg#north-icon {
 .sidemenu-link #south-icon,
 .sidemenu-link #north-icon {
   vertical-align: middle;
-  margin-top: -9px;
+  margin-top: -7px;
+}
+
+.bi-graph-up {
+  margin-right: 0rem !important;
 }
