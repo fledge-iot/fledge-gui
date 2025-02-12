@@ -29,7 +29,6 @@ export class ListTypeConfigurationComponent implements OnInit {
   firstKey: string;
   validConfigurationForm = true;
   listValues;
-  tableHeaders = [];
   isListView = true;
   originalOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => { return 0; }
 
@@ -48,7 +47,6 @@ export class ListTypeConfigurationComponent implements OnInit {
       this.firstKey = Object.keys(this.configuration.properties)[0];
       // Show first property label as list card header
       this.listLabel = this.configuration.properties[this.firstKey].displayName ? this.configuration.properties[this.firstKey].displayName : this.firstKey;
-      this.createTableHeader();
     }
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
     values = JSON.parse(values) as [];
@@ -283,13 +281,6 @@ export class ListTypeConfigurationComponent implements OnInit {
     const dropdown = document.getElementById('export-dropdown-' + this.configuration?.key);
     if (dropdown && dropdown.classList.contains('is-active')) {
       dropdown.classList.toggle('is-active');
-    }
-  }
-
-  createTableHeader() {
-    for (const [key, val] of Object.entries(this.configuration.properties)) {
-      const value = (val as any)?.displayName || key;
-      this.tableHeaders.push(value);
     }
   }
 

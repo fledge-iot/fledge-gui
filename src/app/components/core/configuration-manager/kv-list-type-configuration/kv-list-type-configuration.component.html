@@ -156,8 +156,13 @@
         <thead class="sticky-header">
           <tr>
             <th *ngIf="rolesService.hasAccessPermission(configuration?.permissions)"></th>
-            <th>{{configuration.keyName ? configuration.keyName : "Key"}}</th>
-            <th *ngFor="let header of tableHeaders">{{header}}</th>
+            <th class="tooltip has-tooltip-multiline has-tooltip-bottom has-tooltip-arrow"
+              [attr.data-tooltip]="configuration.keyDescription">{{configuration.keyName ? configuration.keyName :
+              "Key"}}</th>
+            <th *ngFor="let prop of configuration?.properties | keyvalue: originalOrder;"
+              class="tooltip has-tooltip-multiline has-tooltip-bottom has-tooltip-arrow"
+              [attr.data-tooltip]="prop.value?.description">{{prop.value?.displayName ||
+              prop.key}}</th>
           </tr>
         </thead>
         <tbody>

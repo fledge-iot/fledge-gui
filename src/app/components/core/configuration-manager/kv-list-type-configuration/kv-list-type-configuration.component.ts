@@ -27,7 +27,6 @@ export class KvListTypeConfigurationComponent implements OnInit {
   items = [];
   validConfigurationForm = true;
   kvlistValues = {};
-  tableHeaders = [];
   isListView = true;
   originalOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => { return 0; }
 
@@ -48,11 +47,8 @@ export class KvListTypeConfigurationComponent implements OnInit {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
     this.onControlValueChanges();
-    if (this.configuration.items == 'object') {
-      this.createTableHeader();
-      if (this.kvListItems.length == 1) {
-        this.expandListItem(this.kvListItems.length - 1); // Expand the list if only one item is present
-      }
+    if (this.configuration.items == 'object' && this.kvListItems.length == 1) {
+      this.expandListItem(this.kvListItems.length - 1); // Expand the list if only one item is present
     }
   }
 
@@ -279,13 +275,6 @@ export class KvListTypeConfigurationComponent implements OnInit {
     const dropdown = document.getElementById('export-dropdown-' + this.configuration?.key);
     if (dropdown && dropdown.classList.contains('is-active')) {
       dropdown.classList.toggle('is-active');
-    }
-  }
-
-  createTableHeader() {
-    for (const [key, val] of Object.entries(this.configuration.properties)) {
-      const value = (val as any)?.displayName || key;
-      this.tableHeaders.push(value);
     }
   }
 
