@@ -38,6 +38,14 @@ svg#control-dispatch {
   stroke-width: 10rem;
 }
 
+img#south-icon,
+svg#north-icon {
+  padding-top: 5px;
+  fill: #4a4a4a;
+  width: 16px;
+  height: 20px;
+}
+
 .menu-text {
   padding-right: 0.15rem;
 }
@@ -53,7 +61,8 @@ svg#control-dispatch {
   border: 0;
 }
 
-#sidemenu .sidemenu-link i, #mobile-sidemenu .sidemenu-link i {
+#sidemenu .sidemenu-link i,
+#mobile-sidemenu .sidemenu-link i {
   margin-right: 0.25rem;
 }
 
@@ -66,7 +75,8 @@ svg#control-dispatch {
   color: white;
 }
 
-#mobile-sidemenu ul, #sidemenu ul {
+#mobile-sidemenu ul,
+#sidemenu ul {
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -185,4 +195,9 @@ svg#control-dispatch {
 
 .menu:not(.collapsed) {
   font-size: 0.9rem !important;
+}
+
+.sidemenu-link.is-active #south-icon,
+.sidemenu-link.is-active #north-icon {
+  filter: invert(1) brightness(100%);
 }
