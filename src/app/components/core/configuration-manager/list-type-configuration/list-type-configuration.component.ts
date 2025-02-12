@@ -293,12 +293,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     }
   }
 
-  setCurrentView(view: string) {
-    if (view == 'list') {
-      this.isListView = true;
-    }
-    else {
-      this.isListView = false;
-    }
+  setCurrentView(event) {
+    this.isListView = event.isListView;
   }
 }

@@ -29,6 +29,7 @@ import { ButtonPanelComponent } from './components/core/configuration-manager/bu
 import { FileImportModalComponent } from './components/common/file-import-modal/file-import-modal.component';
 import { FileExportModalComponent } from './components/common/file-export-modal/file-export-modal.component';
 import { PropertyConfigurationComponent } from './components/core/configuration-manager/property-configuration/property-configuration.component';
+import { ToggleSwitchComponent } from './components/core/configuration-manager/toggle-switch/toggle-switch.component';
 
 @NgModule({
   imports: [
@@ -62,7 +63,8 @@ import { PropertyConfigurationComponent } from './components/core/configuration-
     ButtonPanelComponent,
     FileImportModalComponent,
     FileExportModalComponent,
-    PropertyConfigurationComponent
+    PropertyConfigurationComponent,
+    ToggleSwitchComponent
   ],
   exports: [
     ConfigurationGroupComponent,
