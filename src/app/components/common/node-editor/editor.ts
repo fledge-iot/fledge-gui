@@ -619,6 +619,12 @@ export function undoAction(flowEditorService) {
         area.update('node', node.id);
       }
     }
+    if (node?.label !== 'Filter') {
+      const pipeline = getUpdatedFilterPipeline();
+      if (pipeline?.length > 0) {
+        flowEditorService.emitPipelineUpdate(pipeline);
+      }
+    }
   }, 100);
 
   let historySnapshot = history.getHistorySnapshot();
