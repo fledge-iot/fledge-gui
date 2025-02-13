@@ -1362,7 +1362,6 @@ export class NodeEditorComponent implements OnInit {
     this.nodeClickSubscription?.unsubscribe();
     this.nodeDropdownClickSubscription?.unsubscribe();
     this.serviceStatusSubscription?.unsubscribe();
-    this.nodeDropdownClickSubscription.unsubscribe();
     if (this.from === 'notifications') {
       this.serviceDetailsSubscription?.unsubscribe();
       this.paramsSubscription?.unsubscribe();
