@@ -215,7 +215,8 @@
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('state-change-dialog')">Cancel</button>
-    <button class="button is-small is-outlined is-info" (click)="toggleState(btnText)">{{btnText}}</button>
+    <button class="button is-small is-outlined is-info" [appDisableUntilResponse]="reenableButton"
+      (click)="toggleState(btnText)">{{btnText}}</button>
   </footer>
 </app-confirmation-dialog>
 
@@ -243,14 +244,16 @@
 
   <footer class="modal-card-foot">
     <button type="button" class="button is-small" (click)="closeModal('service-status-dialog')">Cancel</button>
-    <button *ngIf="service || task" type="button" class="button is-small is-outlined is-info" (click)="toggleServiceState({
+    <button *ngIf="service || task" type="button" class="button is-small is-outlined is-info"
+      [appDisableUntilResponse]="reenableButton" (click)="toggleServiceState({
         name: service?.name || task?.name,
         state: !(service?.schedule_enabled || task?.enabled)
       })">
       {{ (service?.schedule_enabled || task?.enabled) ? 'Disable' : 'Enable' }}
     </button>
 
-    <button *ngIf="filter" type="button" class="button is-small is-outlined is-info" (click)="updateFilterConfiguration({
+    <button *ngIf="filter" type="button" class="button is-small is-outlined is-info"
+      [appDisableUntilResponse]="reenableButton" (click)="updateFilterConfiguration({
         name: filter.name,
         state: filter.newState,
         category: filter.category

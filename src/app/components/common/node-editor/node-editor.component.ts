@@ -502,8 +502,10 @@ export class NodeEditorComponent implements OnInit {
         }
         this.closeModal('service-status-dialog');
         this.ngProgress.done();
+        this.reenableButton.emit(false);
       },
         (error) => {
+          this.reenableButton.emit(false);
           this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
@@ -1214,10 +1216,11 @@ export class NodeEditorComponent implements OnInit {
         if (this.task) {
           this.task.enabled = enable;
         }
-
+        this.reenableButton.emit(false);
         updateNode(this.buildUpdateData());
       },
       (error) => {
+        this.reenableButton.emit(false);
         this.ngProgress.done();
         if (error.status === 0) {
           console.log('service down ', error);
