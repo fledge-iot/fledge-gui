@@ -207,16 +207,15 @@
 
 <app-confirmation-dialog id="state-change-dialog">
   <header class="modal-card-head">
-    <span class="modal-card-title is-size-6">{{btnText}} Instance</span>
+    <span class="modal-card-title is-size-6">{{dialogServiceName}}</span>
     <button class="delete" aria-label="close" (click)="closeModal('state-change-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Are you sure, You want to {{btnText.toLowerCase()}} the notification instance {{dialogServiceName}}?
+    Are you sure, You want to {{btnText.toLowerCase()}} the <b>{{dialogServiceName}}</b> notification instance?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('state-change-dialog')">Cancel</button>
-    <button class="button is-small" [ngClass]="{'is-danger': btnText === 'Disable', 'is-info': btnText === 'Enable'}"
-      (click)="toggleState(btnText)">{{btnText}}</button>
+    <button class="button is-small is-outlined is-info" (click)="toggleState(btnText)">{{btnText}}</button>
   </footer>
 </app-confirmation-dialog>
 
@@ -244,18 +243,14 @@
 
   <footer class="modal-card-foot">
     <button type="button" class="button is-small" (click)="closeModal('service-status-dialog')">Cancel</button>
-
-    <button *ngIf="service || task" type="button" class="button is-small"
-      [ngClass]="{'is-danger': service?.schedule_enabled || task?.enabled, 'is-info': !(service?.schedule_enabled || task?.enabled)}"
-      (click)="toggleServiceState({
+    <button *ngIf="service || task" type="button" class="button is-small is-outlined is-info" (click)="toggleServiceState({
         name: service?.name || task?.name,
         state: !(service?.schedule_enabled || task?.enabled)
       })">
       {{ (service?.schedule_enabled || task?.enabled) ? 'Disable' : 'Enable' }}
     </button>
 
-    <button *ngIf="filter" type="button" class="button is-small"
-      [ngClass]="{'is-danger': filter.oldState, 'is-info': !filter.oldState}" (click)="updateFilterConfiguration({
+    <button *ngIf="filter" type="button" class="button is-small is-outlined is-info" (click)="updateFilterConfiguration({
         name: filter.name,
         state: filter.newState,
         category: filter.category
