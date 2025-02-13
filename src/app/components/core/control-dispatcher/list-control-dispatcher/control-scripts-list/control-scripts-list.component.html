@@ -36,11 +36,12 @@
         <tbody>
           <tr *ngFor="let script of controlScripts">
             <td>
-              <a [routerLink]="['/control-dispatcher/script', script?.name, 'details']">
+              <a [routerLink]="['/control-dispatcher/script', script?.name, 'details']"
+                class="button is-ghost p-0 is-text">
                 {{script?.name}}
               </a>
             </td>
-            <td>
+            <td class="pt-3">
               <div *ngIf="rolesService.hasControlAccess()" class="dropdown is-hoverable">
                 <div class="dropdown-trigger">
                   <button class="button is-light is-small" aria-haspopup="true" aria-controls="dropdown-menu3">

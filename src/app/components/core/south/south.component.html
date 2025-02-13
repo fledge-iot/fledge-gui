@@ -51,7 +51,8 @@
                 <tr *ngFor="let svc of southboundServices" [ngClass]="{'fade': (svc.schedule_enabled === false)}"
                   class="parent">
                   <td class="align-content">
-                    <a class="button is-text service-name" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
+                    <a class="button is-ghost is-text py-0 service-name"
+                      (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
                   </td>
                   <td class="align-content content-pad">
                     <div class="tags has-addons">
@@ -71,7 +72,7 @@
                   <td class="align-content content-pad">
                     <small>{{svc?.plugin?.version}}</small>
                   </td>
-                  <td class="align-content">
+                  <td class="align-content pt-2">
                     <table class="table is-narrow is-responsive" [ngClass]="{'is-borderless': !svc.expanded}">
                       <tr *ngFor='let data of svc.assets; let i = index'
                         [ngClass]="{' fade': (svc.schedule_enabled===false)}">
@@ -118,7 +119,7 @@
                       </tr>
                     </table>
                   </td>
-                  <td>
+                  <td class="pt-2">
                     <span *ngIf="svc?.assets?.length > 1" (click)="showHideAsset(svc)"
                       [ngClass]="{'open': svc.expanded}"
                       class="icon is-small tooltip has-tooltip-right has-tooltip-arrow tooltip-help is-pulled-right is-hovered"
