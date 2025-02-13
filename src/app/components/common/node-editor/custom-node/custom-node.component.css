@@ -226,6 +226,7 @@
   outline: 0 none;
 }
 
-.context-menu-btn, .context-menu-btn:hover {
+.context-menu-btn,
+.context-menu-btn:hover {
   background-color: transparent;
 }
