@@ -211,7 +211,7 @@
     <button class="delete" aria-label="close" (click)="closeModal('state-change-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Are you sure, You want to {{btnText.toLowerCase()}} the <b>{{dialogServiceName}}</b> notification instance?
+    Are you sure, you want to {{btnText.toLowerCase()}} the <b>{{dialogServiceName}}</b> notification instance?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('state-change-dialog')">Cancel</button>
@@ -229,15 +229,15 @@
 
   <section class="modal-card-body">
     <span *ngIf="service">
-      Are you sure you want to {{ service.schedule_enabled ? 'disable' : 'enable' }} the <b>{{ service.name }}</b>
+      Are you sure, you want to {{ service.schedule_enabled ? 'disable' : 'enable' }} the <b>{{ service.name }}</b>
       service?
     </span>
     <span *ngIf="task">
-      Are you sure you want to {{ task.enabled ? 'disable' : 'enable' }} the <b>{{ task.name }}</b>
+      Are you sure, you want to {{ task.enabled ? 'disable' : 'enable' }} the <b>{{ task.name }}</b>
       {{ task.execution === 'service' ? 'service' : 'task' }}?
     </span>
     <span *ngIf="filter">
-      Are you sure you want to {{ filter.oldState ? 'disable' : 'enable' }} the <b>{{ filter.name }}</b> filter?
+      Are you sure, you want to {{ filter.oldState ? 'disable' : 'enable' }} the <b>{{ filter.name }}</b> filter?
     </span>
   </section>
 
