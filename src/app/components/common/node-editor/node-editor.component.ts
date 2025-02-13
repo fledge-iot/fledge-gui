@@ -531,7 +531,9 @@ export class NodeEditorComponent implements OnInit {
       .subscribe((data: any) => {
         const tasks = data as NorthTask[];
         this.tasks = tasks;
-        this.task = tasks.find(t => (t.name == this.source));
+        if (this.source) {
+          this.task = tasks.find(t => (t.name == this.source));
+        }
 
         data = {
           from: this.from,
