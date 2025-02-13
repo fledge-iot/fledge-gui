@@ -1,6 +1,14 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
+export interface NodeStatus {
+  name: string;
+  newState: boolean;
+  type?: string;
+  oldState?: boolean;
+  category?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -17,6 +25,7 @@ export class FlowEditorService {
   public nodeClick: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public nodeDropdownClick: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public checkHistory: BehaviorSubject<any> = new BehaviorSubject<any>(false);
+  public updateNodeStatusSubject: BehaviorSubject<NodeStatus> = new BehaviorSubject<NodeStatus>({ name: '', newState: false, type: '' });
 
   constructor() { }
 

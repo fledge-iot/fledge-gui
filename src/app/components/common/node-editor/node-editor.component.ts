@@ -19,12 +19,13 @@ import {
   NotificationsService,
   PingService, ProgressBarService,
   ResponseHandler, RolesService,
+  SchedulesService,
   ServicesApiService,
   SharedService,
   ToastService
 } from './../../../services';
 import { createEditor, deleteConnection, getUpdatedFilterPipeline, removeNode, updateFilterNode, updateNode, applyContentReordering, undoAction, redoAction, resetNodes } from './editor';
-import { FlowEditorService } from './flow-editor.service';
+import { FlowEditorService, NodeStatus } from './flow-editor.service';
 
 @Component({
   selector: 'app-node-editor',
@@ -47,6 +48,7 @@ export class NodeEditorComponent implements OnInit {
   private filterSubscription: Subscription;
   private connectionSubscription: Subscription;
   private serviceSubscription: Subscription;
+  private serviceStatusSubscription: Subscription;
   private removeFilterSubscription: Subscription;
   private exportReadingSubscription: Subscription;
   private serviceDetailsSubscription: Subscription;
@@ -111,6 +113,9 @@ export class NodeEditorComponent implements OnInit {
   selectedFilters = [];
   historyData = { showUndo: false, showRedo: false };
 
+  filter: NodeStatus;
+  scheduleChangedState = false;
+
   constructor(public injector: Injector,
     private route: ActivatedRoute,
     private filterService: FilterService,
@@ -131,6 +136,7 @@ export class NodeEditorComponent implements OnInit {
     private assetService: AssetsService,
     public generateCsv: GenerateCsvService,
     private docService: DocService,
+    private schedulesService: SchedulesService,
     private additionalServicesUtils: AdditionalServicesUtils,
     public sharedService: SharedService,
     private router: Router) {
@@ -283,6 +289,17 @@ export class NodeEditorComponent implements OnInit {
       } else {
         this.openModal('state-change-dialog');
         this.btnText = data.buttonText;
+      }
+    });
+
+    this.serviceStatusSubscription = this.flowEditorService.updateNodeStatusSubject.pipe(skip(1)).subscribe((data: NodeStatus) => {
+      this.filter = null;
+      this.dialogServiceName = data.name;
+      this.scheduleChangedState = data.newState;
+      this.service = this.services?.find(service => service.name == data.name);
+      this.task = this.tasks?.find(task => task.name == data.name);
+      if (data.type == 'filter') {
+        this.filter = { name: data.name, category: data.category, newState: data.newState, oldState: data.oldState }
       }
     });
 
@@ -465,6 +482,39 @@ export class NodeEditorComponent implements OnInit {
     }
   }
 
+  updateFilterConfiguration(data: { name: string, state: boolean, category: string }) {
+    this.ngProgress.start();
+    this.configService.updateBulkConfiguration(data.category, { enable: String(data.state) })
+      .subscribe((filterConfig: any) => {
+        if (filterConfig.enable.value == 'true') {
+          this.toastService.success(`${this.filter.name} filter enabled`);
+        } else {
+          this.toastService.success(`${this.filter.name} filter disabled`);
+        }
+        const filterConf = this.filterConfigurations.find(f => {
+          if (f.filterName == data.name) {
+            f.enabled = filterConfig.enable.value
+            return f;
+          }
+        })
+        if (filterConf) {
+          updateFilterNode(filterConf);
+        }
+        this.closeModal('service-status-dialog');
+        this.ngProgress.done();
+        this.reenableButton.emit(false);
+      },
+        (error) => {
+          this.reenableButton.emit(false);
+          this.ngProgress.done();
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.toastService.error(error.statusText);
+          }
+        });
+  }
+
   getChangedNotificationConfig(changedConfiguration: any) {
     this.notificationChangedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, this.pluginConfiguration);
   }
@@ -483,8 +533,6 @@ export class NodeEditorComponent implements OnInit {
       .subscribe((data: any) => {
         const tasks = data as NorthTask[];
         this.tasks = tasks;
-        this.task = tasks.find(t => (t.name == this.source));
-
         data = {
           from: this.from,
           source: this.source,
@@ -1145,6 +1193,65 @@ export class NodeEditorComponent implements OnInit {
     this.docService.goToServiceDocLink(urlSlug, 'fledge-service-notification');
   }
 
+  toggleServiceState(data) {
+    if (data.state) {
+      this.enableSchedule(data.name);
+    }
+    else {
+      this.disableSchedule(data.name);
+    }
+  }
+
+  public toggleSchedule(name: string, enable: boolean) {
+    this.ngProgress.start();
+    const scheduleService = enable ? this.schedulesService.enableScheduleByName(name) : this.schedulesService.disableScheduleByName(name);
+    scheduleService.subscribe(
+      (data: any) => {
+        this.toastService.success(data.message);
+        this.ngProgress.done();
+        this.closeModal('service-status-dialog');
+        if (this.service) {
+          this.service.schedule_enabled = enable;
+        }
+        if (this.task) {
+          this.task.enabled = enable;
+        }
+        this.reenableButton.emit(false);
+        updateNode(this.buildUpdateData());
+      },
+      (error) => {
+        this.reenableButton.emit(false);
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.toastService.error(error.statusText);
+        }
+      }
+    );
+  }
+
+  private buildUpdateData() {
+    return {
+      from: this.from,
+      source: this.source,
+      filterPipeline: this.filterPipeline,
+      service: this.service ?? undefined,
+      services: this.services ?? undefined,
+      task: this.task ?? undefined,
+      tasks: this.tasks ?? undefined,
+      filterConfigurations: this.filterConfigurations,
+    };
+  }
+
+  public disableSchedule(name: string) {
+    this.toggleSchedule(name, false);
+  }
+
+  public enableSchedule(name: string) {
+    this.toggleSchedule(name, true);
+  }
+
   toggleState(state) {
     const payload = {
       enable: state === 'Enable' ? 'true' : 'false'
@@ -1224,14 +1331,15 @@ export class NodeEditorComponent implements OnInit {
 
   ngOnDestroy() {
     this.isAlive = false;
-    this.subscription.unsubscribe();
-    this.filterSubscription.unsubscribe();
-    this.connectionSubscription.unsubscribe();
-    this.serviceSubscription.unsubscribe();
-    this.removeFilterSubscription.unsubscribe();
-    this.exportReadingSubscription.unsubscribe();
-    this.logsSubscription.unsubscribe();
-    this.nodeClickSubscription.unsubscribe();
+    this.subscription?.unsubscribe();
+    this.filterSubscription?.unsubscribe();
+    this.connectionSubscription?.unsubscribe();
+    this.serviceSubscription?.unsubscribe();
+    this.removeFilterSubscription?.unsubscribe();
+    this.exportReadingSubscription?.unsubscribe();
+    this.logsSubscription?.unsubscribe();
+    this.nodeClickSubscription?.unsubscribe();
+    this.serviceStatusSubscription?.unsubscribe();
     this.nodeDropdownClickSubscription.unsubscribe();
     if (this.from === 'notifications') {
       this.serviceDetailsSubscription?.unsubscribe();
