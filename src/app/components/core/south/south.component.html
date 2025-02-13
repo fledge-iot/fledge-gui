@@ -51,7 +51,8 @@
                 <tr *ngFor="let svc of southboundServices" [ngClass]="{'fade': (svc.schedule_enabled === false)}"
                   class="parent">
                   <td class="align-content">
-                    <a class="button is-text service-name" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
+                    <a class="button is-ghost is-text py-0 service-name"
+                      (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
                   </td>
                   <td class="align-content content-pad">
                     <div class="tags has-addons">

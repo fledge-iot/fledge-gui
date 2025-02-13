@@ -55,7 +55,8 @@
               <tbody>
                 <tr *ngFor="let instance of notificationInstances" [ngClass]="{'fade': (instance.enable == 'false')}">
                   <td class="align-content">
-                    <a class="button is-text" (click)="openNotificationInstanceModal(instance)">{{instance.name}}</a>
+                    <a class="button is-ghost is-text py-0"
+                      (click)="openNotificationInstanceModal(instance)">{{instance.name}}</a>
                   </td>
                   <td class="align-content">
                     {{instance.channel}}
