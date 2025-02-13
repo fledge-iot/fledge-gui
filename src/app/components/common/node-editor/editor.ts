@@ -127,9 +127,7 @@ async function handleConnections(node, connection, flowEditorService: FlowEditor
 
   if (node?.label !== 'Filter') {
     const pipeline = getUpdatedFilterPipeline();
-    if (pipeline?.length > 0) {
-      flowEditorService.emitPipelineUpdate(pipeline);
-    }
+    flowEditorService.emitPipelineUpdate(pipeline);
   }
 
   arrange.layout({ applier: animatedApplier });
@@ -161,9 +159,7 @@ function getDeleteItem(context, flowEditorService) {
       await editor.removeConnection(context.id);
       if (source.label !== 'Filter' || destination.label !== 'Filter') {
         const pipeline = getUpdatedFilterPipeline();
-        if (pipeline?.length > 0) {
-          flowEditorService.emitPipelineUpdate(pipeline);
-        }
+        flowEditorService.emitPipelineUpdate(pipeline);
       }
     }
   };
@@ -347,37 +343,22 @@ export function getUpdatedFilterPipeline() {
       // check if starting node of pipeline i.e. south/storage is connected
       if (!connections.find(c => c.source === nodes[i].id)) {
         console.log("Dangling connection at output socket");
-        return false;
+        return [];
       }
     }
     else if (i == 1) {
       // check if last node of pipeline i.e. storage/north is connected
       if (!connections.find(c => c.target === nodes[i].id)) {
         console.log("Dangling connection at input socket");
-        return false;
+        return [];
       }
     }
-    else {
-      // check if all the filters are connected from both sides
-      if (!connections.find(c => c.source === nodes[i].id) || !connections.find(c => c.target === nodes[i].id)) {
-        console.log("Dangling connection");
-        return false;
-      }
+    // check if all the filters are connected from both sides
+    else if (!connections.find(c => c.source === nodes[i].id) || !connections.find(c => c.target === nodes[i].id)) {
+      console.log("Dangling connection");
+      return [];
     }
   }
-
-  // check if node loop to self
-  for (let i = 0; i < connections.length; i++) {
-    if (connections[i].source === connections[i].target) {
-      console.log("self loop exist in pipeline")
-      return false;
-    }
-  }
-
-  // Remove duplicate connections
-  connections = connections.filter((connection, index) => {
-    return index === connections.findIndex(c => connection.source === c.source && connection.target === c.target);
-  });
 
   let updatedFilterPipeline: any = [];
   let sourceNode = nodes[0];
@@ -390,7 +371,7 @@ export function getUpdatedFilterPipeline() {
       if (filterNode.label !== "Storage" && filterNode.label != 'North') {
         if (existsInPipeline(updatedFilterPipeline, filterNode.label)) {
           console.log("invalid pipeline");
-          return false;
+          return [];
         }
         updatedFilterPipeline.push(filterNode.label);
       }
@@ -406,7 +387,7 @@ export function getUpdatedFilterPipeline() {
         if (branch) {
           if (branch.length === 0) {
             console.log("invalid pipeline");
-            return false;
+            return [];
           }
           updatedFilterPipeline.push(branch);
         }
@@ -417,7 +398,7 @@ export function getUpdatedFilterPipeline() {
       // check if more than one master branch
       if (masterBranchStartIndex.length > 1) {
         console.log("Multi level deep pipeline not supported.")
-        return false;
+        return [];
       }
       if (masterBranchStartIndex.length === 1) {
         let node = editor.getNode(connlist[masterBranchStartIndex[0]].target);

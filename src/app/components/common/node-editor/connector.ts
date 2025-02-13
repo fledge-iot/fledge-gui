@@ -95,9 +95,7 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
             }
           }
           const changedPipeline = getUpdatedFilterPipeline();
-          if (changedPipeline.length > 0) {
-            flowEditorService.emitPipelineUpdate(changedPipeline);
-          }
+          flowEditorService.emitPipelineUpdate(changedPipeline);
         }, 0);
 
 

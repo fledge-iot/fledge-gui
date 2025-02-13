@@ -34,10 +34,8 @@ export class FlowEditorService {
   constructor() { }
 
   emitPipelineUpdate(result: (string | string[])[]): void {
-    if (result) {
-      result = result.filter(f => f != 'Filter');
-      this.pipelineSubject.next(result);
-    }
+    result = result?.filter(f => f != 'Filter');
+    this.pipelineSubject.next(result);
   }
 
   clearPipelineData(): void {
