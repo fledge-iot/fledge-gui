@@ -106,7 +106,7 @@
       </ng-container>
     </ng-template>
   </ng-container>
-  <ng-container *ngIf="configuration.items == 'object' && isListView">
+  <ng-container *ngIf="configuration.items == 'object' && isListView && listItems.controls?.length>0">
     <table class="table is-responsive is-hoverable mb-0 form-group">
       <thead class="sticky-header">
         <tr>

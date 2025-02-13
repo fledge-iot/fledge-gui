@@ -54,9 +54,6 @@ export class ListTypeConfigurationComponent implements OnInit {
       this.initListItem(false, element);
     });
     this.onControlValueChanges();
-    if (this.configuration.items == 'object' && this.listItems.length == 1) {
-      this.expandListItem(this.listItems.length - 1); // Expand the list if only one item is present
-    }
   }
 
   get listItems() {
@@ -109,7 +106,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     }
     this.initListItem(isPrepend);
     this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
-    if (this.configuration.items == 'object') {
+    if (this.configuration.items == 'object' && !this.isListView) {
       // Expand newly added item
       if (isPrepend) {
         this.expandListItem(0);
@@ -143,7 +140,7 @@ export class ListTypeConfigurationComponent implements OnInit {
         for (let [index, property] of this.initialProperties.entries()) {
           for (let [key, prop] of Object.entries(property)) {
             let val = prop as any
-            val.value = value[index][key];
+            val.value = value?.[index]?.[key];
           }
         }
       }
@@ -286,5 +283,8 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   setCurrentView(event) {
     this.isListView = event.isListView;
+    if (this.listItems.length == 1 && !this.isListView) {
+      this.expandListItem(0); // Expand the list if only one item is present
+    }
   }
 }

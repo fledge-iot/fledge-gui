@@ -47,9 +47,6 @@ export class KvListTypeConfigurationComponent implements OnInit {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
     this.onControlValueChanges();
-    if (this.configuration.items == 'object' && this.kvListItems.length == 1) {
-      this.expandListItem(this.kvListItems.length - 1); // Expand the list if only one item is present
-    }
   }
 
   get kvListItems() {
@@ -109,7 +106,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
       this.kvListItems.push(this.initListItem(isPrepend, { key: '', value: '' }));
     }
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
-    if (this.configuration.items == 'object') {
+    if (this.configuration.items == 'object' && !this.isListView) {
       // Expand newly added item
       if (isPrepend) {
         this.expandListItem(0);
@@ -280,5 +277,8 @@ export class KvListTypeConfigurationComponent implements OnInit {
 
   setCurrentView(event) {
     this.isListView = event.isListView;
+    if (this.kvListItems.length == 1 && !this.isListView) {
+      this.expandListItem(0); // Expand the list if only one item is present
+    }
   }
 }
