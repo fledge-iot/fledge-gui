@@ -1,15 +1,15 @@
 <div class="field has-addons">
   <p class="control">
-    <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow toggle-btn" data-tooltip="List view"
-      (click)="setCurrentView('list')">
+    <button class="button is-small tooltip has-tooltip-right has-tooltip-arrow toggle-btn" data-tooltip="List view"
+      (click)="setCurrentView('list')" [disabled]="isListView">
       <span class="icon is-small">
         <i class="bi bi-xs bi-list-task"></i>
       </span>
     </button>
   </p>
   <p class="control">
-    <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow toggle-btn" data-tooltip="Detail view"
-      (click)="setCurrentView('detail')">
+    <button class="button is-small tooltip has-tooltip-right has-tooltip-arrow toggle-btn" data-tooltip="Detail view"
+      (click)="setCurrentView('detail')" [disabled]="!isListView">
       <span class="icon is-small">
         <i class="bi bi-xs bi-view-list"></i>
       </span>

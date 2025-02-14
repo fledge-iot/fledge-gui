@@ -7,12 +7,15 @@ import { Component, EventEmitter, Output } from '@angular/core';
 })
 export class ToggleSwitchComponent {
   @Output() currentView = new EventEmitter<any>();
+  isListView = true;
 
   setCurrentView(view: string) {
     if (view == 'list') {
+      this.isListView = true;
       this.currentView.emit({ isListView: true });
     }
     else {
+      this.isListView = false;
       this.currentView.emit({ isListView: false });
     }
   }

@@ -1,5 +1,5 @@
-<ng-container *ngIf="configuration.items == 'object'">
-  <div class="is-flex is-flex-direction-row-reverse toggle-btn-container">
+<ng-container *ngIf="configuration.items == 'object' && kvListItems.controls.length>0">
+  <div class="is-flex toggle-btn-container">
     <app-toggle-switch (currentView)="setCurrentView($event)" />
   </div>
 </ng-container>
