@@ -791,7 +791,7 @@ export class NodeEditorComponent implements OnInit {
       .subscribe((data: any) => {
         this.toastService.success(data.result);
         this.updatedFilterPipeline = [];
-        this.flowEditorService.clearPipelineData();
+        this.flowEditorService.clearEmittedPipelineChanges();
         if (editor) {
           // on reload editor clear the node history
           history?.clear();
@@ -1114,7 +1114,7 @@ export class NodeEditorComponent implements OnInit {
   }
 
   reload() {
-    this.flowEditorService.clearPipelineData();
+    this.flowEditorService.clearEmittedPipelineChanges();
     if (editor) {
       // on reload editor clear the node history
       history?.clear();

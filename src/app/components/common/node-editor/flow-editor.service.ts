@@ -38,7 +38,7 @@ export class FlowEditorService {
     this.pipelineSubject.next(result);
   }
 
-  clearPipelineData(): void {
+  clearEmittedPipelineChanges(): void {
     this.pipelineSubject.next(null);
   }
 
