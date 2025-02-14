@@ -54,11 +54,11 @@
         </tr>
         <tr>
           <td>
-            <a [routerLink]="['/control-dispatcher/acl', acl?.name, 'details']">
+            <a [routerLink]="['/control-dispatcher/acl', acl?.name, 'details']" class="button is-ghost is-text p-0">
               {{acl?.name}}
             </a>
           </td>
-          <td>
+          <td class="pt-3">
             <table class="table is-narrow" *ngIf="acl?.users">
               <tbody>
                 <tr *ngFor="let item of acl?.users">
@@ -73,7 +73,7 @@
               </tbody>
             </table>
           </td>
-          <td>
+          <td class="pt-3">
             <div *ngIf="sharedService.checkAuth()" id="dropdown-{{i}}" class="dropdown is-left is-hoverable">
               <div class="dropdown-trigger">
                 <a class="button is-small context-menu" aria-haspopup="true" aria-controls="dropdown-menu">

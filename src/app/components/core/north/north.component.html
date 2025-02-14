@@ -3,7 +3,8 @@
     <header class="card-header">
       <div id="north-tasks" class="card-header-title">
         North Instances
-        <button *ngIf="!isAlive" (click)="getNorthTasks(true)" class="button is-small" title="Reload" id="refresh-check">
+        <button *ngIf="!isAlive" (click)="getNorthTasks(true)" class="button is-small" title="Reload"
+          id="refresh-check">
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
@@ -40,7 +41,7 @@
               <tbody>
                 <tr *ngFor="let t of tasks" [ngClass]="{'fade': !t.enabled}">
                   <td class="align-content">
-                    <a class="button is-text" (click)="openNorthTaskModal(t)">{{t.name}}</a>
+                    <a class="button is-ghost is-text py-0" (click)="openNorthTaskModal(t)">{{t.name}}</a>
                   </td>
                   <td class="align-content">
                     <span *ngIf="t?.processName === 'north_C'" class="tag is-light is-rounded">Service</span>

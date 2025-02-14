@@ -19,7 +19,7 @@
           <ng-container *ngIf="data.label!=='Filter'; else southServiceTemplate">
             <div class="is-inline-flex">
               <label class="checkbox">
-                <input type="checkbox" [checked]='isEnabled' (click)="toggleEnabled($event.target.checked)"
+                <input type="checkbox" [checked]='isEnabled' (click)="onCheckboxClicked($event)"
                   [disabled]="!rolesService.hasEditPermissions()">
               </label>
               <button class="btn btn-icon pt-0" data-show="quickview" data-target="quickviewDefault"
