@@ -1110,7 +1110,7 @@ export class NodeEditorComponent implements OnInit {
 
   onNotify() {
     this.isAddFilterWizard = false;
-    this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
+    this.flowEditorService.clearEmittedPipelineChanges();
   }
 
   reload() {
