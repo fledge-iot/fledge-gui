@@ -835,9 +835,6 @@ export class NodeEditorComponent implements OnInit {
   }
 
   deleteSelectedEntity() {
-    if (this.selectedConnectionId) {
-      deleteConnection(this.selectedConnectionId);
-    }
     if (this.nodesToDelete.length !== 0) {
       this.onDeleteAction();
     }
@@ -1311,11 +1308,14 @@ export class NodeEditorComponent implements OnInit {
     this.openModal('from-toolbar-dialog');
   }
 
-  callDeleteAction() {
+  async callDeleteAction() {
     const connectionToDelete = this.nodesToDelete.find(node => (node.label === 'Connection'));
     if (connectionToDelete) {
-      deleteConnection(connectionToDelete.id);
+      await deleteConnection(connectionToDelete.id);
       this.nodesToDelete = [];
+      // check if filter pipeline is updated and emit the updated pipeline
+      const pipeline = getUpdatedFilterPipeline();
+      this.flowEditorService.emitPipelineUpdate(pipeline);
     }
     const filterNodeToDelete = this.nodesToDelete.find(node => (node.label !== 'South' && node.label !== 'North' && node.label !== 'Connection'));
     if (filterNodeToDelete) {

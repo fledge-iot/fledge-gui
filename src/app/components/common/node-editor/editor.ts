@@ -541,8 +541,8 @@ export function updateNode(data) {
   });
 }
 
-export function deleteConnection(connectionId) {
-  editor.removeConnection(connectionId);
+export async function deleteConnection(connectionId) {
+  await editor.removeConnection(connectionId);
 }
 
 function rgbToHex(r, g, b) {
@@ -600,12 +600,6 @@ export function undoAction(flowEditorService) {
         area.update('node', node.id);
       }
     }
-    if (node?.label !== 'Filter') {
-      const pipeline = getUpdatedFilterPipeline();
-      if (pipeline?.length > 0) {
-        flowEditorService.emitPipelineUpdate(pipeline);
-      }
-    }
   }, 100);
 
   let historySnapshot = history.getHistorySnapshot();
@@ -613,6 +607,8 @@ export function undoAction(flowEditorService) {
   redoItems.push(historySnapshot[historyLength - 1]);
 
   history.undo().then(() => {
+    const pipeline = getUpdatedFilterPipeline();
+    flowEditorService.emitPipelineUpdate(pipeline);
   });
   flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo() });
 }
@@ -634,6 +630,8 @@ export function redoAction(flowEditorService) {
   }, 100);
   redoItems.pop();
   history.redo().then(() => {
+    const pipeline = getUpdatedFilterPipeline();
+    flowEditorService.emitPipelineUpdate(pipeline);
   });
   flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo() });
 }
