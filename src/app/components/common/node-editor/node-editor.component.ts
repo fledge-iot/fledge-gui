@@ -791,7 +791,6 @@ export class NodeEditorComponent implements OnInit {
       .subscribe((data: any) => {
         this.toastService.success(data.result);
         this.updatedFilterPipeline = [];
-        this.filterPipeline = [];
         this.flowEditorService.clearPipelineData();
         if (editor) {
           // on reload editor clear the node history
