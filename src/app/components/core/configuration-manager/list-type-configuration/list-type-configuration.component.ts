@@ -82,7 +82,6 @@ export class ListTypeConfigurationComponent implements OnInit {
         this.initialProperties.push(objectConfig);
         this.items.push({ status: true });
       }
-      // listItem = new FormControl(objectConfig);
       let groupConfigurations = this.configControlService.createConfigurationBase(objectConfig);
       listItem = this.configControlService.toFormGroup(objectConfig, groupConfigurations);
     }
@@ -152,10 +151,6 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   getChangedConfiguration(index, propertyChangedValues: any) {
     this.listItems.controls[index].patchValue(propertyChangedValues);
-    let listValues = this.listItems.value;
-    listValues = uniqWith(listValues, isEqual);
-    this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(listValues) });
-    this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
   }
 
   formStatus(formState: any, index) {

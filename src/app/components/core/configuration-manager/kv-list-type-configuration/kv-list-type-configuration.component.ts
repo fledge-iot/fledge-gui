@@ -156,8 +156,6 @@ export class KvListTypeConfigurationComponent implements OnInit {
 
   getChangedConfiguration(index: string, propertyChangedValues: any) {
     this.kvListItems.controls[index].controls['value'].patchValue(propertyChangedValues);
-    this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(this.kvListItems.value) });
-    this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
   }
 
   formStatus(formState: any, index) {
