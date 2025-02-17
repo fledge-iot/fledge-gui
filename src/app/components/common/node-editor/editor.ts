@@ -587,7 +587,7 @@ export function applyContentReordering(nodeId: string) {
 }
 
 export function undoAction(flowEditorService) {
-  setTimeout(() => {
+  setTimeout(async () => {
     // To hide the (+) icon on filter node when no connecrtion with that node
     const node = editor.getNodes().find(node => node.label == 'Filter')
     const connections = editor.getConnections();
@@ -596,15 +596,17 @@ export function undoAction(flowEditorService) {
       if (!nodeExistInConnection) {
         const pseudoNodeControl = node.controls.pseudoNodeControl as PseudoNodeControl;
         pseudoNodeControl.pseudoConnection = false;
-        area.update('control', pseudoNodeControl.id);
-        area.update('node', node.id);
+        await area.update('control', pseudoNodeControl.id);
+        await area.update('node', node.id);
       }
     }
   }, 100);
 
   let historySnapshot = history.getHistorySnapshot();
-  let historyLength = historySnapshot.length;
-  redoItems.push(historySnapshot[historyLength - 1]);
+  if (historySnapshot.length > 0) {
+    let historyLength = historySnapshot.length;
+    redoItems.push(historySnapshot[historyLength - 1]);
+  }
 
   history.undo().then(() => {
     const pipeline = getUpdatedFilterPipeline();

@@ -749,9 +749,10 @@ export class NodeEditorComponent implements OnInit {
             // Remove empty arrays or filter that match selectedFilters
             (Array.isArray(filter) && filter.length > 0) ||
             (!Array.isArray(filter) && !this.selectedFilters.includes(filter)));
-
+    this.ngProgress.start();
     this.filterService.updateFilterPipeline({ 'pipeline': filteredPipeline }, this.source)
       .subscribe(() => {
+        this.ngProgress.done();
         this.selectedFilters.forEach((filter, index) => {
           this.filterService.deleteFilter(filter).subscribe((data: any) => {
             if (this.selectedFilters.length === index + 1) {
@@ -760,6 +761,7 @@ export class NodeEditorComponent implements OnInit {
             this.toastService.success(data.result);
           },
             (error) => {
+              this.ngProgress.done();
               if (error.status === 0) {
                 console.log('service down ', error);
               } else {
@@ -781,23 +783,32 @@ export class NodeEditorComponent implements OnInit {
   }
 
   save() {
-    if (this.isPipelineUpdated() && this.isEachFilterConfigured()) {
+    console.log('filter pipeline', this.filterPipeline);
+    console.log('filter updatedFilterPipeline', this.updatedFilterPipeline);
+
+    if (this.isPipelineUpdated()) {
       this.updateFilterPipeline();
     }
   }
 
   updateFilterPipeline() {
+    this.ngProgress.start();
     this.filterService.updateFilterPipeline({ 'pipeline': this.updatedFilterPipeline }, this.source)
       .subscribe((data: any) => {
+        this.ngProgress.done();
         this.toastService.success(data.result);
-        this.updatedFilterPipeline = [];
         this.flowEditorService.clearEmittedPipelineChanges();
         if (editor) {
           // on reload editor clear the node history
           history?.clear();
         }
+        this.updatedFilterPipeline = [];
+        if (this.task || this.service) {
+          this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
+        }
       },
         (error) => {
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -807,29 +818,37 @@ export class NodeEditorComponent implements OnInit {
   }
 
   isPipelineUpdated() {
-    if (this.filterPipeline.length !== this.updatedFilterPipeline.length) {
-      return true;
+    function isNestedArray(pipeline) {
+      return Array.isArray(pipeline) && pipeline.some(item => Array.isArray(item));
     }
-    for (let i = 0; i < this.filterPipeline.length; i++) {
-      if (typeof (this.filterPipeline[i]) !== typeof (this.updatedFilterPipeline[i])) {
-        return true;
-      }
-      if (typeof (this.filterPipeline[i]) === "string") {
-        if (this.filterPipeline[i] !== this.updatedFilterPipeline[i]) {
-          return true;
-        }
-      }
-      else {
-        if (this.filterPipeline[i].length !== this.updatedFilterPipeline[i].length) {
-          return true;
-        }
-        for (let j = 0; j < this.filterPipeline[i].length; j++) {
-          if (this.filterPipeline[i][j] !== this.updatedFilterPipeline[i][j]) {
+
+    function deepCompare(filterPipeline, changedFilterPipeline) {
+      // Check if both are arrays and have the same length
+      if (filterPipeline.length !== changedFilterPipeline.length) return true;
+
+      // Check element by element recursively for deep equality
+      for (let i = 0; i < filterPipeline.length; i++) {
+        if (Array.isArray(filterPipeline[i]) && Array.isArray(changedFilterPipeline[i])) {
+          if (deepCompare(filterPipeline[i], changedFilterPipeline[i])) {
             return true;
           }
+        } else if (filterPipeline[i] !== changedFilterPipeline[i]) {
+          return true;
         }
       }
+      return false;
     }
+
+    // Check for structural differences first
+    if (isNestedArray(this.filterPipeline) !== isNestedArray(this.updatedFilterPipeline)) {
+      return true; // One is nested, the other is not
+    }
+
+    // If structures are the same, check the deep equality of the arrays
+    if (deepCompare(this.filterPipeline, this.updatedFilterPipeline)) {
+      return true; // Arrays differ in structure or content
+    }
+
     return false;
   }
 
@@ -837,24 +856,6 @@ export class NodeEditorComponent implements OnInit {
     if (this.nodesToDelete.length !== 0) {
       this.onDeleteAction();
     }
-  }
-
-  isEachFilterConfigured() {
-    for (let i = 0; i < this.updatedFilterPipeline.length; i++) {
-      if (typeof (this.updatedFilterPipeline[i]) === "string") {
-        if (this.updatedFilterPipeline[i] === "Filter") {
-          console.log("filter configuration not added");
-          return false;
-        }
-      }
-      else {
-        if (this.updatedFilterPipeline[i].indexOf("Filter") !== -1) {
-          console.log("filter configuration not added");
-          return false;
-        }
-      }
-    }
-    return true;
   }
 
   saveConfiguration() {
@@ -1111,6 +1112,7 @@ export class NodeEditorComponent implements OnInit {
   onNotify() {
     this.isAddFilterWizard = false;
     this.flowEditorService.clearEmittedPipelineChanges();
+    this.updatedFilterPipeline = [];
   }
 
   reload() {
@@ -1337,6 +1339,7 @@ export class NodeEditorComponent implements OnInit {
   }
 
   reset() {
+    this.updatedFilterPipeline = [];
     resetNodes(this.flowEditorService);
   }
 
