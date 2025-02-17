@@ -190,19 +190,6 @@ export class ListTypeConfigurationComponent implements OnInit {
     return valueObj;
   }
 
-  toggleCard(i) {
-    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
-    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
-    if (cardBody.classList.contains('is-hidden')) {
-      cardBody.classList.remove('is-hidden');
-      cardHeader.classList.add('is-hidden');
-    }
-    else {
-      cardBody.classList.add('is-hidden');
-      cardHeader.classList.remove('is-hidden');
-    }
-  }
-
   expandListItem(index) {
     setTimeout(() => {
       this.expandCollapseSingleItem(index, true);
