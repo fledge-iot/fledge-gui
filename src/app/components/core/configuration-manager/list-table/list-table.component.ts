@@ -9,6 +9,7 @@ import { FormArray, FormGroup } from '@angular/forms';
   styleUrls: ['./list-table.component.css']
 })
 export class ListTableComponent {
+  @Input() from;
   @Input() configuration;
   @Input() listItemsForm: FormGroup;
   @Output() removeItem = new EventEmitter<any>();
@@ -19,7 +20,10 @@ export class ListTableComponent {
   }
 
   get listItems() {
-    return this.listItemsForm.get('listItems') as FormArray;
+    if (this.from == 'list') {
+      return this.listItemsForm.get('listItems') as FormArray;
+    }
+    return this.listItemsForm.get('kvListItems') as FormArray;
   }
 
   removeListItem(index) {

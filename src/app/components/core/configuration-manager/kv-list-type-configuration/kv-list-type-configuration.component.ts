@@ -6,7 +6,6 @@ import { cloneDeep } from 'lodash';
 import { ConfigurationControlService, RolesService } from '../../../../services';
 import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
 import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
-import { KeyValue } from '@angular/common';
 
 @Component({
   selector: 'app-kv-list-type-configuration',
@@ -28,7 +27,6 @@ export class KvListTypeConfigurationComponent implements OnInit {
   validConfigurationForm = true;
   kvlistValues = {};
   isListView = true;
-  originalOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => { return 0; }
 
   constructor(
     public cdRef: ChangeDetectorRef,

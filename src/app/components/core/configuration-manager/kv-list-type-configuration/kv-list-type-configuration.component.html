@@ -152,46 +152,8 @@
       </ng-template>
     </ng-container>
     <ng-container *ngIf="configuration.items == 'object' && isListView && kvListItems.controls.length>0">
-      <table class="table is-responsive is-hoverable mb-0 form-group">
-        <thead class="sticky-header">
-          <tr>
-            <th *ngIf="rolesService.hasAccessPermission(configuration?.permissions)"></th>
-            <th class="tooltip has-tooltip-multiline has-tooltip-bottom has-tooltip-arrow"
-              [attr.data-tooltip]="configuration.keyDescription">{{configuration.keyName ? configuration.keyName :
-              "Key"}}</th>
-            <th *ngFor="let prop of configuration?.properties | keyvalue: originalOrder;"
-              class="tooltip has-tooltip-multiline has-tooltip-bottom has-tooltip-arrow"
-              [attr.data-tooltip]="prop.value?.description">{{prop.value?.displayName ||
-              prop.key}}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of kvListItems.controls; let i = index;" [formGroupName]="i">
-            <td *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
-              <span class="icon is-small" (click)="removeListItem(i)">
-                <i class="bi bi-xs bi-trash"></i>
-              </span>
-            </td>
-            <td>
-              <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticKeyControl">
-                <input formControlName="key" placeholder="key" class="input is-small is-fullwidth" type="text">
-                <span *ngIf="item?.controls['key']?.invalid" class="help is-danger">
-                  <sup>*</sup>required
-                </span>
-              </ng-container>
-              <ng-template #staticKeyControl>
-                <span class="help">
-                  {{item?.controls['key']?.value}}
-                </span>
-              </ng-template>
-            </td>
-            <td *ngFor="let val of item.controls['value'].controls | keyvalue: originalOrder;">
-              <app-property-configuration [permissions]="configuration?.permissions"
-                [configuration]="configuration.properties[val.key]" [control]="val.value" />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <app-list-table [configuration]="configuration" [listItemsForm]="kvListItemsForm" [from]="'kvlist'"
+        (removeItem)="removeListItem($event)" />
     </ng-container>
     <ng-container *ngIf="configuration.items != 'object'; else objectButtonPanel">
       <ng-container
