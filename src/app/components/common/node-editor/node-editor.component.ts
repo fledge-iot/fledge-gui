@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty } from 'lodash';
 import { EMPTY, Subject, Subscription, forkJoin, interval, of } from 'rxjs';
@@ -125,6 +125,7 @@ export class NodeEditorComponent implements OnInit {
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
+    private cdRf: ChangeDetectorRef,
     private filterService: FilterService,
     private servicesApiService: ServicesApiService,
     private notificationsService: NotificationsService,
@@ -380,6 +381,9 @@ export class NodeEditorComponent implements OnInit {
   }
 
   ngAfterViewInit(): void {
+    this.updatedFilterPipeline = [];
+    this.filterPipeline = [];
+
     const el = this.container.nativeElement;
     if (el) {
       const data = {
@@ -494,6 +498,7 @@ export class NodeEditorComponent implements OnInit {
           });
       }
     }
+    this.cdRf.detectChanges();
   }
 
   updateFilterConfiguration(data: { name: string, state: boolean, category: string }) {
@@ -783,9 +788,6 @@ export class NodeEditorComponent implements OnInit {
   }
 
   save() {
-    console.log('filter pipeline', this.filterPipeline);
-    console.log('filter updatedFilterPipeline', this.updatedFilterPipeline);
-
     if (this.isPipelineUpdated()) {
       this.updateFilterPipeline();
     }
