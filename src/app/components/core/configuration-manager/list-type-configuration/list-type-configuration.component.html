@@ -107,30 +107,8 @@
     </ng-template>
   </ng-container>
   <ng-container *ngIf="configuration.items == 'object' && isListView && listItems.controls?.length>0">
-    <table class="table is-responsive is-hoverable mb-0 form-group">
-      <thead class="sticky-header">
-        <tr>
-          <th *ngIf="rolesService.hasAccessPermission(configuration?.permissions)"></th>
-          <th *ngFor="let prop of configuration?.properties | keyvalue: originalOrder;"
-            class="tooltip has-tooltip-multiline has-tooltip-bottom has-tooltip-arrow"
-            [attr.data-tooltip]="prop.value?.description">{{prop.value?.displayName ||
-            prop.key}}</th>
-        </tr>
-      </thead>
-      <tbody formArrayName="listItems">
-        <tr *ngFor="let item of listItems.controls; let i = index;" [formGroupName]="i">
-          <td *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
-            <span class="icon is-small" (click)="removeListItem(i)">
-              <i class="bi bi-xs bi-trash"></i>
-            </span>
-          </td>
-          <td *ngFor="let val of item.controls | keyvalue: originalOrder;">
-            <app-property-configuration [permissions]="configuration?.permissions"
-              [configuration]="configuration.properties[val.key]" [control]="val.value" />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <app-list-table [configuration]="configuration" [listItemsForm]="listItemsForm"
+      (removeItem)="removeListItem($event)" />
   </ng-container>
   <ng-container *ngIf="configuration.items != 'object'; else objectButtonPanel">
     <ng-container

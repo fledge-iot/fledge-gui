@@ -30,6 +30,7 @@ import { FileImportModalComponent } from './components/common/file-import-modal/
 import { FileExportModalComponent } from './components/common/file-export-modal/file-export-modal.component';
 import { PropertyConfigurationComponent } from './components/core/configuration-manager/property-configuration/property-configuration.component';
 import { ToggleSwitchComponent } from './components/core/configuration-manager/toggle-switch/toggle-switch.component';
+import { ListTableComponent } from './components/core/configuration-manager/list-table/list-table.component';
 
 @NgModule({
   imports: [
@@ -64,7 +65,8 @@ import { ToggleSwitchComponent } from './components/core/configuration-manager/t
     FileImportModalComponent,
     FileExportModalComponent,
     PropertyConfigurationComponent,
-    ToggleSwitchComponent
+    ToggleSwitchComponent,
+    ListTableComponent
   ],
   exports: [
     ConfigurationGroupComponent,
