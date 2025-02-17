@@ -382,8 +382,6 @@ export class NodeEditorComponent implements OnInit {
 
   ngAfterViewInit(): void {
     this.updatedFilterPipeline = [];
-    this.filterPipeline = [];
-
     const el = this.container.nativeElement;
     if (el) {
       const data = {
