@@ -146,9 +146,7 @@ async function handleConnections(node, connection, flowEditorService: FlowEditor
     flowEditorService.emitPipelineUpdate(pipeline);
   }
 
-
-
-  arrange.layout({ applier: animatedApplier });
+  await arrange.layout({ applier: animatedApplier });
 }
 
 function getContextMenuItems(context, flowEditorService) {
@@ -302,7 +300,7 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
       new Connection(connectionEvents, previousNode, lastNode)
     );
     await arrange.layout();
-    AreaExtensions.zoomAt(area, editor.getNodes());
+    await AreaExtensions.zoomAt(area, editor.getNodes());
     history.clear();
     flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo() });
   }
@@ -597,11 +595,11 @@ export async function removeNode(nodeId) {
   }
 }
 
-export function applyContentReordering(nodeId: string) {
+export async function applyContentReordering(nodeId: string) {
   let view = area.nodeViews.get(nodeId);
   let { content } = area.area;
   // Bring selected node in front of other nodes for better visual clarity
-  content.reorder(view.element, null);
+  await content.reorder(view.element, null);
 }
 
 export function undoAction(flowEditorService) {
@@ -634,7 +632,7 @@ export function undoAction(flowEditorService) {
 }
 
 export function redoAction(flowEditorService) {
-  setTimeout(() => {
+  setTimeout(async () => {
     // To hide the (+) icon on filter node when no connecrtion with that node
     const node = editor.getNodes().find(node => node.label == 'Filter')
     const connections = editor.getConnections();
@@ -643,8 +641,8 @@ export function redoAction(flowEditorService) {
       if (nodeExistInConnection) {
         const pseudoNodeControl = node.controls.pseudoNodeControl as PseudoNodeControl;
         pseudoNodeControl.pseudoConnection = true;
-        area.update('control', pseudoNodeControl.id);
-        area.update('node', node.id);
+        await area.update('control', pseudoNodeControl.id);
+        await area.update('node', node.id);
       }
     }
   }, 100);
@@ -656,7 +654,7 @@ export function redoAction(flowEditorService) {
   flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo() });
 }
 
-export function resetNodes(flowEditorService) {
+export async function resetNodes(flowEditorService) {
   // reset canvas to its initial state
   let historySnapshot = history.getHistorySnapshot();
   let historyLength = historySnapshot.length;
@@ -664,7 +662,7 @@ export function resetNodes(flowEditorService) {
     history.undo();
   }
   // reset zoom in/out state
-  AreaExtensions.zoomAt(area, editor.getNodes());
+  await AreaExtensions.zoomAt(area, editor.getNodes());
   flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo() });
 }
 
