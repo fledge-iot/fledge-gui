@@ -356,9 +356,6 @@ export function getUpdatedFilterPipeline() {
   let nodes = editor.getNodes();
   let connections = editor.getConnections();
 
-  console.log('nodes', nodes);
-  console.log('connections', connections);
-
   for (let i = 0; i < nodes.length; i++) {
     if (i == 0) {
       // check if starting node of pipeline i.e. south/storage is connected
@@ -631,7 +628,6 @@ export function undoAction(flowEditorService) {
 
   history.undo().then(() => {
     const pipeline = getUpdatedFilterPipeline();
-    console.log('updated pipeline', pipeline);
     flowEditorService.emitPipelineUpdate(pipeline);
   });
   flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo() });
