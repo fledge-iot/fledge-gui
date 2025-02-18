@@ -32,6 +32,7 @@ import { PropertyConfigurationComponent } from './components/core/configuration-
 import { ToggleSwitchComponent } from './components/core/configuration-manager/toggle-switch/toggle-switch.component';
 import { ListTableComponent } from './components/core/configuration-manager/list-table/list-table.component';
 import { ListCardComponent } from './components/core/configuration-manager/list-card/list-card.component';
+import { KvlistCardComponent } from './components/core/configuration-manager/kvlist-card/kvlist-card.component';
 
 @NgModule({
   imports: [
@@ -68,7 +69,8 @@ import { ListCardComponent } from './components/core/configuration-manager/list-
     PropertyConfigurationComponent,
     ToggleSwitchComponent,
     ListTableComponent,
-    ListCardComponent
+    ListCardComponent,
+    KvlistCardComponent
   ],
   exports: [
     ConfigurationGroupComponent,
