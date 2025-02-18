@@ -46,6 +46,9 @@ export class ListTypeConfigurationComponent implements OnInit {
     }
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
     values = JSON.parse(values) as [];
+    if (this.configuration.listName) {
+      values = values[this.configuration.listName];
+    }
     values.forEach(element => {
       this.initListItem(false, element);
     });
