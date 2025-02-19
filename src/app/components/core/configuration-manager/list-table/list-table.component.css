@@ -4,3 +4,7 @@
   background: white;
   z-index: 10;
 }
+
+table thead th {
+  font-size: 0.825rem !important;
+}
