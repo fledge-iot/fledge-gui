@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+
 
 export interface NodeStatus {
   name: string;
@@ -27,7 +28,19 @@ export class FlowEditorService {
   public checkHistory: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public updateNodeStatusSubject: BehaviorSubject<NodeStatus> = new BehaviorSubject<NodeStatus>({ name: '', newState: false, type: '' });
 
+  private pipelineSubject = new BehaviorSubject<(string | string[])[]>([]);
+  updatedFilterPipelineData$: Observable<(string | string[])[]> = this.pipelineSubject.asObservable();
+
   constructor() { }
+
+  emitPipelineUpdate(result: (string | string[])[]): void {
+    result = result?.filter(f => f != 'Filter');
+    this.pipelineSubject.next(result);
+  }
+
+  clearEmittedPipelineChanges(): void {
+    this.pipelineSubject.next(null);
+  }
 
   public flowEditorControl(visible: boolean) {
     localStorage.setItem('FLOW_EDITOR', JSON.stringify(visible));
