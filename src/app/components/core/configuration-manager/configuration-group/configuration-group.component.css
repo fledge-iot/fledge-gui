@@ -12,8 +12,7 @@
   border-top-right-radius: 0 !important;
   position: relative;
   padding: 1rem 1rem 0 1rem;
-  overflow-y: hidden;
-  overflow-x: auto;
+  overflow: visible;
 }
 
 .custom-quickview-configuration {
