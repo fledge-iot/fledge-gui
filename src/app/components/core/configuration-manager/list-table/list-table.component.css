@@ -22,3 +22,20 @@ tr:hover .delete-icon {
   max-height: 45vh;
   overflow: auto;
 }
+
+.table-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.button-bar {
+  position: absolute;
+  top: 10px;
+  right: 0px;
+  visibility: hidden;
+  z-index: 11;
+}
+
+.table-wrapper:hover .button-bar {
+  visibility: visible;
+}

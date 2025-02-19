@@ -5,7 +5,7 @@
 </ng-container>
 <div [formGroup]="listItemsForm" class="items-container">
   <ng-container *ngIf="configuration.items == 'object' && listItems.controls.length>1">
-    <div class="btn-panel-container is-flex-direction-row-reverse">
+    <div *ngIf="!isListView" class="btn-panel-container is-flex-direction-row-reverse">
       <div class="btn-panel upper-btn-panel">
         <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" [isListView]="isListView"
           (addnewItem)="addListItem(true)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
@@ -64,7 +64,8 @@
   </ng-container>
   <ng-container *ngIf="configuration.items == 'object' && isListView && listItems.controls?.length>0">
     <app-list-table [configuration]="configuration" [listItemsForm]="listItemsForm" [from]="'list'"
-      (removeItem)="removeListItem($event)" />
+      [validConfigurationForm]="validConfigurationForm" (removeItem)="removeListItem($event)"
+      (addItem)="addListItem(true)" (openModalEvent)="openModal()" (exportFile)="openExportFileModal()" />
   </ng-container>
   <ng-container *ngIf="configuration.items != 'object'; else objectButtonPanel">
     <ng-container
