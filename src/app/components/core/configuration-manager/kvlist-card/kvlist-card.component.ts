@@ -53,4 +53,13 @@ export class KvlistCardComponent {
   formStatus(formState) {
     this.formStatusEvent.emit(formState);
   }
+
+  extractItemValue(value) {
+    let itemValue = {};
+    for (let [key, val] of Object.entries(value)) {
+      let itemKey = this.configuration.properties[key]?.displayName || key;
+      itemValue[itemKey] = val;
+    }
+    return itemValue;
+  }
 }
