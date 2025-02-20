@@ -1,4 +1,4 @@
-<fieldset [disabled]="!rolesService.hasAccessPermission(permissions)">
+<fieldset *ngIf="rolesService.hasAccessPermission(permissions); else staticConfig">
   <div [ngSwitch]="configuration.type">
     <input
       *ngSwitchCase="['string','IPv4','IPv6'].includes(configuration.type) ? configuration.type : !configuration.type"
@@ -50,3 +50,13 @@
     </span>
   </div>
 </fieldset>
+<ng-template #staticConfig>
+  <div [ngSwitch]="configuration.type">
+
+    <label *ngSwitchCase="'boolean'" class="checkbox">
+      <input type="checkbox" [checked]="control?.value?.toLowerCase() == 'true'" disabled="true" />
+    </label>
+
+    <span *ngSwitchDefault class="help">{{control.value ? control.value : "None"}}</span>
+  </div>
+</ng-template>
