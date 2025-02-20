@@ -2,10 +2,11 @@ import { BaseSchemes, ClassicPreset, GetSchemes, NodeEditor } from "rete";
 import { AreaPlugin } from "rete-area-plugin";
 import { Position, Size } from "./types";
 import { checkElementIntersectPath } from "./utils";
-import { Filter } from "../filter";
+import { Filter } from "../nodes/filter";
 import { South } from "../nodes/south";
 import { North } from "../nodes/north";
-import { Connection } from "../editor";
+import { Connection } from "../connection";
+
 
 type Schemes = GetSchemes<
   BaseSchemes["Node"] & Size,
@@ -94,7 +95,7 @@ async function removeOldConnection(node, editor) {
       inputConnId = element.id;
     }
   }
-  if(source) {
+  if (source) {
     for (let target of targets) {
       await editor.addConnection(new Connection(connectionEvents, source, target));
     }

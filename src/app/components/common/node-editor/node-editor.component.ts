@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Injector, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { cloneDeep, isEmpty } from 'lodash';
 import { EMPTY, Subject, Subscription, forkJoin, interval, of } from 'rxjs';
@@ -24,7 +24,13 @@ import {
   SharedService,
   ToastService
 } from './../../../services';
-import { createEditor, deleteConnection, getUpdatedFilterPipeline, removeNode, updateFilterNode, updateNode, applyContentReordering, undoAction, redoAction, resetNodes } from './editor';
+import {
+  createEditor, deleteConnection, getUpdatedFilterPipeline,
+  removeNode, updateFilterNode, updateNode, applyContentReordering,
+  undoAction, redoAction, resetNodes,
+  editor,
+  history,
+} from './editor';
 import { FlowEditorService, NodeStatus } from './flow-editor.service';
 
 @Component({
@@ -56,6 +62,7 @@ export class NodeEditorComponent implements OnInit {
   private paramsSubscription: Subscription;
   private nodeClickSubscription: Subscription;
   private nodeDropdownClickSubscription: Subscription;
+  private pipelineSubscription: Subscription;
 
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
@@ -118,6 +125,7 @@ export class NodeEditorComponent implements OnInit {
 
   constructor(public injector: Injector,
     private route: ActivatedRoute,
+    private cdRf: ChangeDetectorRef,
     private filterService: FilterService,
     private servicesApiService: ServicesApiService,
     private notificationsService: NotificationsService,
@@ -164,8 +172,7 @@ export class NodeEditorComponent implements OnInit {
             }
           })
         // Issue may cause by refreshing the page because of old state data, so need to update history state
-        history.replaceState({ shouldSkipCalls: false }, '');
-
+        window.history.replaceState({ shouldSkipCalls: false }, '');
         this.createApiCallStack('notifications');
       }
 
@@ -201,7 +208,15 @@ export class NodeEditorComponent implements OnInit {
     }
   }
 
+
   ngOnInit(): void {
+    this.pipelineSubscription = this.flowEditorService.updatedFilterPipelineData$.subscribe(
+      (pipeline: (string | string[])[]) => {
+        if (pipeline) {
+          this.updatedFilterPipeline = pipeline;
+        }
+      }
+    );
     this.logsSubscription = this.flowEditorService.showLogsInQuickview.subscribe(data => {
       this.showLogs = data.showLogs ? true : false;
       this.notification = data?.notification;
@@ -263,7 +278,7 @@ export class NodeEditorComponent implements OnInit {
       else {
         if (this.isfilterPipelineFetched) {
           let updatedPipeline = getUpdatedFilterPipeline();
-          if (updatedPipeline && updatedPipeline.length > 0) {
+          if (updatedPipeline?.length > 0) {
             this.updatedFilterPipeline = updatedPipeline;
             console.log(this.updatedFilterPipeline);
             this.flowEditorService.pipelineInfo.next(this.updatedFilterPipeline);
@@ -366,6 +381,7 @@ export class NodeEditorComponent implements OnInit {
   }
 
   ngAfterViewInit(): void {
+    this.updatedFilterPipeline = [];
     const el = this.container.nativeElement;
     if (el) {
       const data = {
@@ -480,6 +496,7 @@ export class NodeEditorComponent implements OnInit {
           });
       }
     }
+    this.cdRf.detectChanges();
   }
 
   updateFilterConfiguration(data: { name: string, state: boolean, category: string }) {
@@ -735,9 +752,10 @@ export class NodeEditorComponent implements OnInit {
             // Remove empty arrays or filter that match selectedFilters
             (Array.isArray(filter) && filter.length > 0) ||
             (!Array.isArray(filter) && !this.selectedFilters.includes(filter)));
-
+    this.ngProgress.start();
     this.filterService.updateFilterPipeline({ 'pipeline': filteredPipeline }, this.source)
       .subscribe(() => {
+        this.ngProgress.done();
         this.selectedFilters.forEach((filter, index) => {
           this.filterService.deleteFilter(filter).subscribe((data: any) => {
             if (this.selectedFilters.length === index + 1) {
@@ -746,6 +764,7 @@ export class NodeEditorComponent implements OnInit {
             this.toastService.success(data.result);
           },
             (error) => {
+              this.ngProgress.done();
               if (error.status === 0) {
                 console.log('service down ', error);
               } else {
@@ -767,25 +786,29 @@ export class NodeEditorComponent implements OnInit {
   }
 
   save() {
-    let updatedPipeline = getUpdatedFilterPipeline();
-    if (updatedPipeline && updatedPipeline.length > 0) {
-      this.updatedFilterPipeline = updatedPipeline;
-      if (this.isPipelineUpdated() && this.isEachFilterConfigured()) {
-        this.updateFilterPipeline();
-        console.log(this.updatedFilterPipeline);
-      }
+    if (this.isPipelineUpdated()) {
+      this.updateFilterPipeline();
     }
   }
 
   updateFilterPipeline() {
+    this.ngProgress.start();
     this.filterService.updateFilterPipeline({ 'pipeline': this.updatedFilterPipeline }, this.source)
       .subscribe((data: any) => {
+        this.ngProgress.done();
         this.toastService.success(data.result);
-        setTimeout(() => {
+        this.flowEditorService.clearEmittedPipelineChanges();
+        if (editor) {
+          // on reload editor clear the node history
+          history?.clear();
+        }
+        this.updatedFilterPipeline = [];
+        if (this.task || this.service) {
           this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
-        }, 1000);
+        }
       },
         (error) => {
+          this.ngProgress.done();
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -795,57 +818,44 @@ export class NodeEditorComponent implements OnInit {
   }
 
   isPipelineUpdated() {
-    if (this.filterPipeline.length !== this.updatedFilterPipeline.length) {
-      return true;
+    function isNestedArray(pipeline) {
+      return Array.isArray(pipeline) && pipeline.some(item => Array.isArray(item));
     }
-    for (let i = 0; i < this.filterPipeline.length; i++) {
-      if (typeof (this.filterPipeline[i]) !== typeof (this.updatedFilterPipeline[i])) {
-        return true;
-      }
-      if (typeof (this.filterPipeline[i]) === "string") {
-        if (this.filterPipeline[i] !== this.updatedFilterPipeline[i]) {
-          return true;
-        }
-      }
-      else {
-        if (this.filterPipeline[i].length !== this.updatedFilterPipeline[i].length) {
-          return true;
-        }
-        for (let j = 0; j < this.filterPipeline[i].length; j++) {
-          if (this.filterPipeline[i][j] !== this.updatedFilterPipeline[i][j]) {
+
+    function deepCompare(filterPipeline, changedFilterPipeline) {
+      // Check if both are arrays and have the same length
+      if (filterPipeline.length !== changedFilterPipeline.length) return true;
+
+      // Check element by element recursively for deep equality
+      for (let i = 0; i < filterPipeline.length; i++) {
+        if (Array.isArray(filterPipeline[i]) && Array.isArray(changedFilterPipeline[i])) {
+          if (deepCompare(filterPipeline[i], changedFilterPipeline[i])) {
             return true;
           }
+        } else if (filterPipeline[i] !== changedFilterPipeline[i]) {
+          return true;
         }
       }
+      return false;
     }
+
+    // Check for structural differences first
+    if (isNestedArray(this.filterPipeline) !== isNestedArray(this.updatedFilterPipeline)) {
+      return true; // One is nested, the other is not
+    }
+
+    // If structures are the same, check the deep equality of the arrays
+    if (deepCompare(this.filterPipeline, this.updatedFilterPipeline)) {
+      return true; // Arrays differ in structure or content
+    }
+
     return false;
   }
 
   deleteSelectedEntity() {
-    if (this.selectedConnectionId) {
-      deleteConnection(this.selectedConnectionId);
-    }
     if (this.nodesToDelete.length !== 0) {
       this.onDeleteAction();
     }
-  }
-
-  isEachFilterConfigured() {
-    for (let i = 0; i < this.updatedFilterPipeline.length; i++) {
-      if (typeof (this.updatedFilterPipeline[i]) === "string") {
-        if (this.updatedFilterPipeline[i] === "Filter") {
-          console.log("filter configuration not added");
-          return false;
-        }
-      }
-      else {
-        if (this.updatedFilterPipeline[i].indexOf("Filter") !== -1) {
-          console.log("filter configuration not added");
-          return false;
-        }
-      }
-    }
-    return true;
   }
 
   saveConfiguration() {
@@ -1101,10 +1111,18 @@ export class NodeEditorComponent implements OnInit {
 
   onNotify() {
     this.isAddFilterWizard = false;
-    this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
+    this.flowEditorService.clearEmittedPipelineChanges();
+    this.updatedFilterPipeline = [];
   }
 
   reload() {
+    this.flowEditorService.clearEmittedPipelineChanges();
+    if (editor) {
+      // on reload editor clear the node history
+      history?.clear();
+    }
+    this.filterPipeline = [];
+    this.updatedFilterPipeline = [];
     if (this.task || this.service) {
       this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
       return;
@@ -1291,11 +1309,14 @@ export class NodeEditorComponent implements OnInit {
     this.openModal('from-toolbar-dialog');
   }
 
-  callDeleteAction() {
+  async callDeleteAction() {
     const connectionToDelete = this.nodesToDelete.find(node => (node.label === 'Connection'));
     if (connectionToDelete) {
-      deleteConnection(connectionToDelete.id);
+      await deleteConnection(connectionToDelete.id);
       this.nodesToDelete = [];
+      // check if filter pipeline is updated and emit the updated pipeline
+      const pipeline = getUpdatedFilterPipeline();
+      this.flowEditorService.emitPipelineUpdate(pipeline);
     }
     const filterNodeToDelete = this.nodesToDelete.find(node => (node.label !== 'South' && node.label !== 'North' && node.label !== 'Connection'));
     if (filterNodeToDelete) {
@@ -1318,6 +1339,7 @@ export class NodeEditorComponent implements OnInit {
   }
 
   reset() {
+    this.updatedFilterPipeline = [];
     resetNodes(this.flowEditorService);
   }
 
@@ -1331,6 +1353,7 @@ export class NodeEditorComponent implements OnInit {
 
   ngOnDestroy() {
     this.isAlive = false;
+    this.pipelineSubscription?.unsubscribe();
     this.subscription?.unsubscribe();
     this.filterSubscription?.unsubscribe();
     this.connectionSubscription?.unsubscribe();
@@ -1339,11 +1362,11 @@ export class NodeEditorComponent implements OnInit {
     this.exportReadingSubscription?.unsubscribe();
     this.logsSubscription?.unsubscribe();
     this.nodeClickSubscription?.unsubscribe();
+    this.nodeDropdownClickSubscription?.unsubscribe();
     this.serviceStatusSubscription?.unsubscribe();
-    this.nodeDropdownClickSubscription.unsubscribe();
     if (this.from === 'notifications') {
       this.serviceDetailsSubscription?.unsubscribe();
-      this.paramsSubscription.unsubscribe();
+      this.paramsSubscription?.unsubscribe();
     }
     this.destroy$.next(true);
     this.destroy$.unsubscribe();

@@ -36,7 +36,8 @@
         <i class="far fa-question-circle"></i>
       </span>
     </div>
-    <ng-container *ngIf="source && rolesService.hasEditPermissions() && !isAddFilterWizard">
+    <ng-container
+      *ngIf="source && rolesService.hasEditPermissions() && !isAddFilterWizard && updatedFilterPipeline?.length > 0 && isPipelineUpdated()">
       <div>
         <button class="button is-outlined is-small is-link mb-1" (click)="save()">Save</button>
       </div>
