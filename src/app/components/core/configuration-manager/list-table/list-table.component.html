@@ -1,6 +1,6 @@
 <div class="custom-viewport">
   <div class="table-wrapper">
-    <div class="button-bar">
+    <div *ngIf="listItems.controls?.length>1" class="button-bar">
       <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" [isListView]="true"
         (addnewItem)="addListItem()" (importFile)="openModal()" (exportFile)="openExportFileModal()"
         [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
@@ -15,7 +15,7 @@
               "Key"}}</th>
           </ng-container>
           <th *ngFor="let prop of configuration?.properties | keyvalue: originalOrder;"
-            class="tooltip has-tooltip-multiline has-tooltip-bottom has-tooltip-arrow"
+            class="tooltip has-tooltip-multiline has-tooltip-right has-tooltip-arrow"
             [attr.data-tooltip]="prop.value?.description">{{prop.value?.displayName ||
             prop.key}}</th>
         </tr>
@@ -55,5 +55,9 @@
         </tr>
       </tbody>
     </table>
+    <div class="has-text-centered"
+      *ngIf="!rolesService.hasAccessPermission(configuration?.permissions) && listItems.controls?.length === 0">
+      <small class="no-rec">No Items</small>
+    </div>
   </div>
 </div>

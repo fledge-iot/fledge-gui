@@ -80,7 +80,7 @@
         </ng-container>
       </ng-template>
     </ng-container>
-    <ng-container *ngIf="configuration.items == 'object' && isListView && kvListItems.controls.length>0">
+    <ng-container *ngIf="configuration.items == 'object' && isListView">
       <app-list-table [configuration]="configuration" [listItemsForm]="kvListItemsForm" [from]="'kvlist'"
         [validConfigurationForm]="validConfigurationForm" (removeItem)="removeListItem($event)"
         (addItem)="addListItem(true)" (openModalEvent)="openModal()" (exportFile)="openExportFileModal()" />

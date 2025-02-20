@@ -57,6 +57,8 @@
       <input type="checkbox" [checked]="control?.value?.toLowerCase() == 'true'" disabled="true" />
     </label>
 
-    <span *ngSwitchDefault class="help">{{control.value ? control.value : "None"}}</span>
+    <span *ngSwitchDefault class="help" [ngClass]="{'has-text-grey-light': !control.value}">{{control.value ?
+      control.value :
+      "None"}}</span>
   </div>
 </ng-template>
