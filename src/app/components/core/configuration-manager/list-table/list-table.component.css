@@ -21,7 +21,7 @@ tr:hover .delete-icon {
 .custom-viewport {
   max-width: 65vw;
   max-height: 45vh;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .table-wrapper {
@@ -43,4 +43,8 @@ tr:hover .delete-icon {
 
 .input {
   min-width: 120px;
+}
+
+.scrollable {
+  overflow: auto !important;
 }

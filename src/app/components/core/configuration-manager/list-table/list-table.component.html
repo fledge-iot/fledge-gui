@@ -1,4 +1,4 @@
-<div class="custom-viewport">
+<div class="custom-viewport" [ngClass]="{'scrollable': listItems.controls?.length > 0}">
   <div class="table-wrapper">
     <div *ngIf="listItems.controls?.length>1" class="button-bar">
       <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" [isListView]="true"
@@ -11,11 +11,13 @@
           <th *ngIf="rolesService.hasAccessPermission(configuration?.permissions)"></th>
           <ng-container *ngIf="from=='kvlist'">
             <th class="tooltip has-tooltip-multiline has-tooltip-bottom has-tooltip-arrow"
+              [ngClass]="{'has-tooltip-right':listItems.controls?.length <1}"
               [attr.data-tooltip]="configuration.keyDescription">{{configuration.keyName ? configuration.keyName :
               "Key"}}</th>
           </ng-container>
           <th *ngFor="let prop of configuration?.properties | keyvalue: originalOrder;"
-            class="tooltip has-tooltip-multiline has-tooltip-right has-tooltip-arrow"
+            class="tooltip has-tooltip-multiline has-tooltip-bottom has-tooltip-arrow"
+            [ngClass]="{'has-tooltip-right':listItems.controls?.length <1}"
             [attr.data-tooltip]="prop.value?.description">{{prop.value?.displayName ||
             prop.key}}</th>
         </tr>
