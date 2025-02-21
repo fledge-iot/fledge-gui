@@ -82,7 +82,8 @@
     </ng-container>
     <ng-container *ngIf="showFilterConfiguration">
       <app-configuration-group *ngIf="filterCategory" [category]="filterCategory" [sourceName]="quickviewFilterName"
-        (changedConfigEvent)="getChangedFilterConfig($event)" (formStatusEvent)="validFilterConfigForm = $event">
+        [from]="quickviewFilterName" (changedConfigEvent)="getChangedFilterConfig($event)"
+        (formStatusEvent)="validFilterConfigForm = $event">
       </app-configuration-group>
       <div class="container is-fluid" *ngIf="filterCategory">
         <div class="columns" *ngIf="rolesService.hasEditPermissions()">
