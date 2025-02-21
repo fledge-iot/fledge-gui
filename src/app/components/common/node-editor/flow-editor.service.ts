@@ -48,6 +48,6 @@ export class FlowEditorService {
 
   public getFlowEditorStatus(): boolean {
     const controlStatus: boolean = JSON.parse(localStorage.getItem('FLOW_EDITOR'));
-    return controlStatus ? controlStatus : false;
+    return controlStatus ?? true;
   }
 }

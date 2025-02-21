@@ -49,9 +49,6 @@ export class SettingsComponent implements OnInit {
     this.protocol = this.storageService.getProtocol() != null ? this.storageService.getProtocol() : location.protocol.replace(':', '').trim();
     this.host = this.storageService.getHost() != null ? this.storageService.getHost() : location.hostname;
     this.servicePort = this.storageService.getPort() != null ? this.storageService.getPort() : 8081;
-    if (localStorage.getItem('FLOW_EDITOR') == null) {
-      this.flowEditorService.flowEditorControl(true)
-    }
 
     // Check whether the service is up or not
     this.sharedService.connectionInfo.subscribe(info => {
