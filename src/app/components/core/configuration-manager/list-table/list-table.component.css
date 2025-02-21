@@ -11,6 +11,7 @@ table thead th {
 
 .delete-icon {
   visibility: hidden;
+  cursor: pointer;
 }
 
 tr:hover .delete-icon {
@@ -38,4 +39,8 @@ tr:hover .delete-icon {
 
 .table-wrapper:hover .button-bar {
   visibility: visible;
+}
+
+.input {
+  min-width: 120px;
 }
