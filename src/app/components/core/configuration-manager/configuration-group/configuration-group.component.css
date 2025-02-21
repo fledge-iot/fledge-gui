@@ -13,6 +13,7 @@
   position: relative;
   padding: 1rem 1rem 0 1rem;
   overflow: visible;
+  margin-top: -0.1rem;
 }
 
 .custom-quickview-configuration {
@@ -94,6 +95,11 @@
 .invalid-tab,
 .tabs.is-boxed li.is-active a.invalid-tab {
   border-bottom-color: #f14668 !important;
+}
+
+.tabs .is-active {
+  z-index: 1;
+  position: relative;
 }
 
 .is-small-font {
