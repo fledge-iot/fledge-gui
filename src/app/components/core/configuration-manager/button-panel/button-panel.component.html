@@ -23,7 +23,7 @@
       </span>
     </button>
   </p>
-  <p class="control">
+  <p class="control" *ngIf="!isListView">
     <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Collapse All"
       (click)="collapseAllItems()">
       <span class="icon is-small">
@@ -31,7 +31,7 @@
       </span>
     </button>
   </p>
-  <p class="control">
+  <p class="control" *ngIf="!isListView">
     <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Expand All"
       (click)="expandAllItems()">
       <span class="icon is-small">

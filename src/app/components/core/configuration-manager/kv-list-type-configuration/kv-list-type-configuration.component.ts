@@ -3,7 +3,7 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { filter } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
-import { RolesService } from '../../../../services';
+import { ConfigurationControlService, RolesService } from '../../../../services';
 import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
 import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
 
@@ -26,10 +26,12 @@ export class KvListTypeConfigurationComponent implements OnInit {
   items = [];
   validConfigurationForm = true;
   kvlistValues = {};
+  isListView = true;
 
   constructor(
     public cdRef: ChangeDetectorRef,
     public rolesService: RolesService,
+    public configControlService: ConfigurationControlService,
     private fb: FormBuilder) {
     this.kvListItemsForm = this.fb.group({
       kvListItems: this.fb.array([])
@@ -43,9 +45,6 @@ export class KvListTypeConfigurationComponent implements OnInit {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
     this.onControlValueChanges();
-    if (this.configuration.items == 'object' && this.kvListItems.length == 1) {
-      this.expandListItem(this.kvListItems.length - 1); // Expand the list if only one item is present
-    }
   }
 
   get kvListItems() {
@@ -79,9 +78,11 @@ export class KvListTypeConfigurationComponent implements OnInit {
         this.initialProperties.push(objectConfig);
         this.items.push({ status: true });
       }
+      let groupConfigurations = this.configControlService.createConfigurationBase(objectConfig);
+      let kvListItem = this.configControlService.toFormGroup(objectConfig, groupConfigurations);
       return this.fb.group({
         key: [param?.key, [Validators.required, CustomValidator.nospaceValidator]],
-        value: [objectConfig]
+        value: kvListItem
       });
     }
     return this.fb.group({
@@ -103,7 +104,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
       this.kvListItems.push(this.initListItem(isPrepend, { key: '', value: '' }));
     }
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
-    if (this.configuration.items == 'object') {
+    if (this.configuration.items == 'object' && !this.isListView) {
       // Expand newly added item
       if (isPrepend) {
         this.expandListItem(0);
@@ -126,7 +127,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
       // remove empty, undefined, null values
       data = filter((data), (d: any) => d.key && d.key.trim() !== ''); // remove empty, undefined, null values
       const transformedObject = {};
-      data.forEach(item => {
+      data.forEach((item, index) => {
         // float value conversion
         if (this.configuration?.items == 'float') {
           if (+item.value && Number.isInteger(+item.value)) {
@@ -138,7 +139,11 @@ export class KvListTypeConfigurationComponent implements OnInit {
         }
         let itemValue = item.value;
         if (this.configuration.items == 'object') {
-          itemValue = this.extractKvListValues(item.value);
+          let property = this.initialProperties[index]
+          for (let [key, prop] of Object.entries(property)) {
+            let val = prop as any
+            val.value = itemValue[key];
+          }
         }
         transformedObject[item.key] = itemValue;
       });
@@ -148,18 +153,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
   }
 
   getChangedConfiguration(index: string, propertyChangedValues: any) {
-    const transformedObject = {};
-    for (let [ind, val] of this.kvListItems.value.entries()) {
-      for (let property in val.value) {
-        if (ind == index && property == Object.keys(propertyChangedValues)[0]) {
-          val.value[property].value = Object.values(propertyChangedValues)[0];
-        }
-      }
-      this.kvListItems.value[ind] = val;
-      transformedObject[val.key] = this.extractKvListValues(val.value);
-    }
-    this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(transformedObject) });
-    this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
+    this.kvListItems.controls[index].controls['value'].patchValue(propertyChangedValues);
   }
 
   formStatus(formState: any, index) {
@@ -190,19 +184,6 @@ export class KvListTypeConfigurationComponent implements OnInit {
       }
     }
     return valueObj;
-  }
-
-  toggleCard(i) {
-    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
-    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
-    if (cardBody.classList.contains('is-hidden')) {
-      cardBody.classList.remove('is-hidden');
-      cardHeader.classList.add('is-hidden');
-    }
-    else {
-      cardBody.classList.add('is-hidden');
-      cardHeader.classList.remove('is-hidden');
-    }
   }
 
   expandListItem(index) {
@@ -274,6 +255,13 @@ export class KvListTypeConfigurationComponent implements OnInit {
     const dropdown = document.getElementById('export-dropdown-' + this.configuration?.key);
     if (dropdown && dropdown.classList.contains('is-active')) {
       dropdown.classList.toggle('is-active');
+    }
+  }
+
+  setCurrentView(event) {
+    this.isListView = event.isListView;
+    if (this.kvListItems.length == 1 && !this.isListView) {
+      this.expandListItem(0); // Expand the list if only one item is present
     }
   }
 }

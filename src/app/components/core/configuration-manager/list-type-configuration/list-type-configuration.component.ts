@@ -3,7 +3,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective } fr
 import { filter, uniqWith, isEqual } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
-import { RolesService } from '../../../../services';
+import { ConfigurationControlService, RolesService } from '../../../../services';
 import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
 import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
 
@@ -28,10 +28,12 @@ export class ListTypeConfigurationComponent implements OnInit {
   firstKey: string;
   validConfigurationForm = true;
   listValues;
+  isListView = true;
 
   constructor(
     public cdRef: ChangeDetectorRef,
     public rolesService: RolesService,
+    public configControlService: ConfigurationControlService,
     private fb: FormBuilder) {
     this.listItemsForm = this.fb.group({
       listItems: this.fb.array([])
@@ -53,9 +55,6 @@ export class ListTypeConfigurationComponent implements OnInit {
       this.initListItem(false, element);
     });
     this.onControlValueChanges();
-    if (this.configuration.items == 'object' && this.listItems.length == 1) {
-      this.expandListItem(this.listItems.length - 1); // Expand the list if only one item is present
-    }
   }
 
   get listItems() {
@@ -84,7 +83,8 @@ export class ListTypeConfigurationComponent implements OnInit {
         this.initialProperties.push(objectConfig);
         this.items.push({ status: true });
       }
-      listItem = new FormControl(objectConfig);
+      let groupConfigurations = this.configControlService.createConfigurationBase(objectConfig);
+      listItem = this.configControlService.toFormGroup(objectConfig, groupConfigurations);
     }
     else {
       listItem = new FormControl(v, [CustomValidator.nospaceValidator]);
@@ -106,7 +106,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     }
     this.initListItem(isPrepend);
     this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
-    if (this.configuration.items == 'object') {
+    if (this.configuration.items == 'object' && !this.isListView) {
       // Expand newly added item
       if (isPrepend) {
         this.expandListItem(0);
@@ -137,7 +137,12 @@ export class ListTypeConfigurationComponent implements OnInit {
         });
       }
       if (this.configuration.items == 'object') {
-        value = this.extractListValues(value);
+        for (let [index, property] of this.initialProperties.entries()) {
+          for (let [key, prop] of Object.entries(property)) {
+            let val = prop as any
+            val.value = value?.[index]?.[key];
+          }
+        }
       }
       value = uniqWith(value, isEqual);
       this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(value) });
@@ -145,19 +150,8 @@ export class ListTypeConfigurationComponent implements OnInit {
     })
   }
 
-  getChangedConfiguration(index: string, propertyChangedValues: any) {
-    for (let [ind, val] of this.listItems.value.entries()) {
-      for (let property in val) {
-        if (ind == index && property == Object.keys(propertyChangedValues)[0]) {
-          val[property].value = Object.values(propertyChangedValues)[0];
-        }
-      }
-      this.listItems.value[ind] = val;
-    }
-    let listValues = this.extractListValues(this.listItems.value);
-    listValues = uniqWith(listValues, isEqual);
-    this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(listValues) });
-    this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
+  getChangedConfiguration(index, propertyChangedValues: any) {
+    this.listItems.controls[index].patchValue(propertyChangedValues);
   }
 
   formStatus(formState: any, index) {
@@ -197,19 +191,6 @@ export class ListTypeConfigurationComponent implements OnInit {
       }
     }
     return valueObj;
-  }
-
-  toggleCard(i) {
-    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
-    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
-    if (cardBody.classList.contains('is-hidden')) {
-      cardBody.classList.remove('is-hidden');
-      cardHeader.classList.add('is-hidden');
-    }
-    else {
-      cardBody.classList.add('is-hidden');
-      cardHeader.classList.remove('is-hidden');
-    }
   }
 
   expandListItem(index) {
@@ -280,6 +261,13 @@ export class ListTypeConfigurationComponent implements OnInit {
     const dropdown = document.getElementById('export-dropdown-' + this.configuration?.key);
     if (dropdown && dropdown.classList.contains('is-active')) {
       dropdown.classList.toggle('is-active');
+    }
+  }
+
+  setCurrentView(event) {
+    this.isListView = event.isListView;
+    if (this.listItems.length == 1 && !this.isListView) {
+      this.expandListItem(0); // Expand the list if only one item is present
     }
   }
 }

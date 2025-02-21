@@ -1,10 +1,15 @@
-<div [formGroup]="listItemsForm">
+<ng-container *ngIf="configuration.items == 'object' && listItems.controls.length>0">
+  <div class="is-flex toggle-btn-container">
+    <app-toggle-switch (currentView)="setCurrentView($event)" />
+  </div>
+</ng-container>
+<div [formGroup]="listItemsForm" class="items-container">
   <ng-container *ngIf="configuration.items == 'object' && listItems.controls.length>1">
-    <div class="btn-panel-container is-flex-direction-row-reverse">
+    <div *ngIf="!isListView" class="btn-panel-container is-flex-direction-row-reverse">
       <div class="btn-panel upper-btn-panel">
-        <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" (addnewItem)="addListItem(true)"
-          (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()" (importFile)="openModal()"
-          (exportFile)="openExportFileModal()"
+        <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" [isListView]="isListView"
+          (addnewItem)="addListItem(true)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+          (importFile)="openModal()" (exportFile)="openExportFileModal()"
           [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
       </div>
     </div>
@@ -48,56 +53,19 @@
       </div>
     </ng-container>
     <ng-template #objectTemplate>
-      <div class="card mt-0 card-shadow" [ngClass]="{'error': item.invalid || items[i].status == false}">
-        <header class="card-header has-background-white card-header-shadow is-justify-content-space-between"
-          id="card-header-{{configuration.key}}-{{i}}-{{from}}">
-          <div class="card-header-title">
-            <p class="subtitle is-size-9 mb-0">{{listLabel}}</p>
-          </div>
-          <div class="key-container">
-            <div class="is-flex is-justify-content-center is-align-items-center ml-1">
-              <p class="help has-text-grey">{{item.value[firstKey].value}}</p>
-            </div>
-            <div class="btn-container">
-              <button class="card-header-icon tooltip has-tooltip-multiline has-tooltip-right has-tooltip-arrow"
-                [attr.data-tooltip]="extractSingleListValue(item.value) | json" (click)="toggleCard(i)">
-                <span class="icon is-small">
-                  <i class="bi bi-three-dots bi-sm" aria-hidden="true"></i>
-                </span>
-              </button>
-              <button class="card-header-icon" (click)="toggleCard(i)">
-                <span class="icon is-small toogle-icon" title="Expand">
-                  <i class="fas fa-2xs fa-angle-right" aria-hidden="true"></i>
-                </span>
-              </button>
-            </div>
-          </div>
-        </header>
-        <div class="card-content is-hidden" id="card-content-{{configuration.key}}-{{i}}-{{from}}">
-          <div formArrayName="listItems">
-            <div class="columns mb-0">
-              <div class="column is-10 px-3 py-0">
-                <app-show-configuration [groupConfiguration]="initialProperties[i]"
-                  [fullConfiguration]="initialProperties[i]" (event)="getChangedConfiguration(i, $event)"
-                  (formStatusEvent)="formStatus($event, i)" [from]="from" [group]="group"></app-show-configuration>
-              </div>
-              <div class="column is-1 has-text-right"
-                [ngClass]="{'is-invisible': !rolesService.hasAccessPermission(configuration?.permissions)}">
-                <button class="delete my-3 is-small" (click)="removeListItem(i)"></button>
-              </div>
-              <div class="column is-1 has-text-right">
-                <button class="button is-small my-1 collapse-btn" (click)="toggleCard(i)"
-                  [ngClass]="{'is-hidden':item.invalid || items[i].status == false}">
-                  <span class="icon is-small toogle-icon" title="Collapse">
-                    <i class="fas fa-xs fa-angle-up" aria-hidden="true"></i>
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ng-container *ngIf="!isListView">
+        <app-list-card [configuration]="configuration" [listItemsForm]="listItemsForm"
+          [initialProperties]="initialProperties" [from]="from" [group]="group" [listLabel]="listLabel"
+          [firstKey]="firstKey" [items]="items" [item]="item" [index]="i"
+          (changedConfig)="getChangedConfiguration(i, $event)" (formStatusEvent)="formStatus($event, i)"
+          (removeItem)="removeListItem($event)" />
+      </ng-container>
     </ng-template>
+  </ng-container>
+  <ng-container *ngIf="configuration.items == 'object' && isListView">
+    <app-list-table [configuration]="configuration" [listItemsForm]="listItemsForm" [from]="'list'"
+      [validConfigurationForm]="validConfigurationForm" (removeItem)="removeListItem($event)"
+      (addItem)="addListItem(true)" (openModalEvent)="openModal()" (exportFile)="openExportFileModal()" />
   </ng-container>
   <ng-container *ngIf="configuration.items != 'object'; else objectButtonPanel">
     <ng-container
@@ -157,9 +125,9 @@
     <ng-template #buttonPanelTemplate>
       <div class="btn-panel-container is-flex-direction-row">
         <div class="btn-panel lower-btn-panel">
-          <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" (addnewItem)="addListItem(false)"
-            (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()" (importFile)="openModal()"
-            (exportFile)="openExportFileModal()"
+          <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" [isListView]="isListView"
+            (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+            (importFile)="openModal()" (exportFile)="openExportFileModal()"
             [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
         </div>
       </div>
