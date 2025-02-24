@@ -113,6 +113,36 @@ export class KvListTypeConfigurationComponent implements OnInit {
         this.expandListItem(this.kvListItems.length - 1);
       }
     }
+    if (this.configuration.items == 'object') {
+      if (this.isListView) {
+        if (isPrepend) {
+          this.scrollToRow(0);
+        }
+        else {
+          this.scrollToRow(this.kvListItems.length - 1);
+        }
+      }
+      else {
+        // Expand newly added item
+        if (isPrepend) {
+          this.expandListItem(0);
+        }
+        else {
+          this.expandListItem(this.kvListItems.length - 1);
+        }
+      }
+    }
+  }
+
+  scrollToRow(i) {
+    setTimeout(() => {
+      let row = document.getElementById('table-row-' + this.configuration.key + '-' + i + '-' + this.from);
+      let input: HTMLElement = row.querySelector('.input.is-small');
+      if (input) {
+        input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        input.focus();
+      }
+    }, 1);
   }
 
   removeListItem(index: number) {

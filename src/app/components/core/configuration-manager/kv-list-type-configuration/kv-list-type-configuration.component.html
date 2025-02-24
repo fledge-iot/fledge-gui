@@ -84,8 +84,8 @@
       </ng-container>
     </div>
     <ng-container *ngIf="configuration.items == 'object' && isListView">
-      <app-list-table [configuration]="configuration" [listItemsForm]="kvListItemsForm" [from]="'kvlist'"
-        [validConfigurationForm]="validConfigurationForm" (removeItem)="removeListItem($event)"
+      <app-list-table [configuration]="configuration" [listItemsForm]="kvListItemsForm" [listType]="'kvlist'"
+        [from]="from" [validConfigurationForm]="validConfigurationForm" (removeItem)="removeListItem($event)"
         (addItem)="addListItem(true)" (openModalEvent)="openModal()" (exportFile)="openExportFileModal()" />
     </ng-container>
     <ng-container *ngIf="configuration.items != 'object'; else objectButtonPanel">

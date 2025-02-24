@@ -106,15 +106,36 @@ export class ListTypeConfigurationComponent implements OnInit {
     }
     this.initListItem(isPrepend);
     this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
-    if (this.configuration.items == 'object' && !this.isListView) {
-      // Expand newly added item
-      if (isPrepend) {
-        this.expandListItem(0);
+    if (this.configuration.items == 'object') {
+      if (this.isListView) {
+        if (isPrepend) {
+          this.scrollToRow(0);
+        }
+        else {
+          this.scrollToRow(this.listItems.length - 1);
+        }
       }
       else {
-        this.expandListItem(this.listItems.length - 1);
+        // Expand newly added item
+        if (isPrepend) {
+          this.expandListItem(0);
+        }
+        else {
+          this.expandListItem(this.listItems.length - 1);
+        }
       }
     }
+  }
+
+  scrollToRow(i) {
+    setTimeout(() => {
+      let row = document.getElementById('table-row-' + this.configuration.key + '-' + i + '-' + this.from);
+      let input: HTMLElement = row.querySelector('.input.is-small');
+      if (input) {
+        input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        input.focus();
+      }
+    }, 1);
   }
 
   removeListItem(index: number) {
