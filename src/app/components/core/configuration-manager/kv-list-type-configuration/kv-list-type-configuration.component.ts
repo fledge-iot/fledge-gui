@@ -170,22 +170,6 @@ export class KvListTypeConfigurationComponent implements OnInit {
     this.validConfigurationForm = true;
   }
 
-  extractKvListValues(value) {
-    let valueObj = {};
-    for (let property in value) {
-      if (value[property].hasOwnProperty('value')) {
-        valueObj[property] = value[property].value;
-      }
-      else {
-        valueObj[property] = value[property].default;
-      }
-      if (value[property].type == 'json') {
-        valueObj[property] = JSON.parse(valueObj[property]);
-      }
-    }
-    return valueObj;
-  }
-
   expandListItem(index) {
     setTimeout(() => {
       this.expandCollapseSingleItem(index, true);
@@ -239,7 +223,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
   openExportFileModal() {
     this.hideDropDown();
     for (let [ind, val] of this.kvListItems.value.entries()) {
-      this.kvlistValues[val.key] = this.extractKvListValues(val.value);
+      this.kvlistValues[val.key] = val.value;
     }
     this.fileExportModal.toggleModal(true);
   }

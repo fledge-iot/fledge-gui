@@ -1,6 +1,6 @@
 <div class="custom-viewport" [ngClass]="{'scrollable': listItems.controls?.length > 0}">
   <div class="table-wrapper">
-    <div *ngIf="listItems.controls?.length>1" class="button-bar">
+    <div *ngIf="listItems.controls?.length>0" class="button-bar">
       <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" [isListView]="true"
         (addnewItem)="addListItem()" (importFile)="openModal()" (exportFile)="openExportFileModal()"
         [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />

@@ -168,31 +168,6 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.validConfigurationForm = true;
   }
 
-  extractListValues(value) {
-    let listValues = [];
-    for (let val of value) {
-      let valueObj = this.extractSingleListValue(val);
-      listValues.push(valueObj);
-    }
-    return listValues;
-  }
-
-  extractSingleListValue(val) {
-    let valueObj = {};
-    for (let property in val) {
-      if (val[property].hasOwnProperty('value')) {
-        valueObj[property] = val[property].value;
-      }
-      else {
-        valueObj[property] = val[property].default;
-      }
-      if (val[property].type == 'json') {
-        valueObj[property] = JSON.parse(valueObj[property]);
-      }
-    }
-    return valueObj;
-  }
-
   expandListItem(index) {
     setTimeout(() => {
       this.expandCollapseSingleItem(index, true);
@@ -245,7 +220,7 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   openExportFileModal() {
     this.hideDropDown();
-    this.listValues = this.extractListValues(this.listItems.value);
+    this.listValues = this.listItems.value;
     this.listValues = uniqWith(this.listValues, isEqual);
     this.fileExportModal.toggleModal(true);
   }

@@ -5,7 +5,7 @@
 </ng-container>
 <div [formGroup]="kvListItemsForm" class="items-container">
   <div formArrayName="kvListItems">
-    <ng-container *ngIf="configuration.items == 'object' && kvListItems.controls.length>1">
+    <ng-container *ngIf="configuration.items == 'object' && kvListItems.controls.length>0">
       <div *ngIf="!isListView" class="btn-panel-container is-flex-direction-row-reverse">
         <div class="btn-panel upper-btn-panel">
           <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm" [isListView]="isListView"
@@ -102,7 +102,7 @@
       </ng-container>
     </ng-container>
     <ng-template #objectButtonPanel>
-      <ng-container *ngIf="kvListItems.controls.length<=1; else buttonPanelTemplate">
+      <ng-container *ngIf="kvListItems.controls.length==0; else buttonPanelTemplate">
         <ng-container
           *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
           <div class="field">
@@ -114,7 +114,7 @@
                     <span class="icon is-small mr-0">
                       <i class="bi bi-plus bi-sm"></i>
                     </span>
-                    <span>{{kvListItems.controls.length==0 ? 'Add item' : 'Add new item'}}</span>
+                    <span>Add item</span>
                   </button>
                 </div>
                 <div class="control p-0">
