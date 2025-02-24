@@ -14,54 +14,56 @@
       </div>
     </div>
   </ng-container>
-  <ng-container *ngFor="let item of listItems.controls; let i = index">
-    <ng-container *ngIf="configuration.items != 'object'; else objectTemplate">
-      <div formArrayName="listItems" class="field">
-        <div>
-          <div class="columns is-flex is-vcentered">
-            <div class="column is-11">
-              <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticView">
-                <input *ngIf="configuration.items == 'integer'" class="input is-small" type="text"
-                  formControlName="{{i}}" [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum"
-                  autocomplete="off" appIntegerOnly>
-                <input *ngIf="configuration.items == 'float'" class="input is-small" type="text" formControlName="{{i}}"
-                  [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum" autocomplete="off"
-                  appFloatOnly>
-                <input *ngIf="configuration.items == 'string'" class="input is-small" type="text"
-                  formControlName="{{i}}" [attr.maxLength]="configuration?.length">
-              </ng-container>
-              <ng-template #staticView>
-                <span class="help">
-                  {{listItems?.controls[i]?.value}}
-                </span>
-              </ng-template>
-            </div>
-            <div class="column is-1 has-text-right"
-              *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
-              <button class="delete my-1 is-small" (click)="removeListItem(i)"></button>
+  <div class="custom-viewport" [ngClass]="{'scrollable': listItems.controls?.length > 0}">
+    <ng-container *ngFor="let item of listItems.controls; let i = index">
+      <ng-container *ngIf="configuration.items != 'object'; else objectTemplate">
+        <div formArrayName="listItems" class="field">
+          <div>
+            <div class="columns is-flex is-vcentered">
+              <div class="column is-11">
+                <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticView">
+                  <input *ngIf="configuration.items == 'integer'" class="input is-small" type="text"
+                    formControlName="{{i}}" [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum"
+                    autocomplete="off" appIntegerOnly>
+                  <input *ngIf="configuration.items == 'float'" class="input is-small" type="text"
+                    formControlName="{{i}}" [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum"
+                    autocomplete="off" appFloatOnly>
+                  <input *ngIf="configuration.items == 'string'" class="input is-small" type="text"
+                    formControlName="{{i}}" [attr.maxLength]="configuration?.length">
+                </ng-container>
+                <ng-template #staticView>
+                  <span class="help">
+                    {{listItems?.controls[i]?.value}}
+                  </span>
+                </ng-template>
+              </div>
+              <div class="column is-1 has-text-right"
+                *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
+                <button class="delete my-1 is-small" (click)="removeListItem(i)"></button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div>
-        <span *ngIf="listItems?.controls[i]?.hasError('minValue')" class="help is-danger">
-          <sup>*</sup>Value should not be less than {{configuration?.minimum}}.
-        </span>
-        <span *ngIf="listItems?.controls[i]?.hasError('maxValue')" class="help is-danger">
-          <sup>*</sup>Value should not be greater than {{configuration?.maximum}}.
-        </span>
-      </div>
-    </ng-container>
-    <ng-template #objectTemplate>
-      <ng-container *ngIf="!isListView">
-        <app-list-card [configuration]="configuration" [listItemsForm]="listItemsForm"
-          [initialProperties]="initialProperties" [from]="from" [group]="group" [listLabel]="listLabel"
-          [firstKey]="firstKey" [items]="items" [item]="item" [index]="i"
-          (changedConfig)="getChangedConfiguration(i, $event)" (formStatusEvent)="formStatus($event, i)"
-          (removeItem)="removeListItem($event)" />
+        <div>
+          <span *ngIf="listItems?.controls[i]?.hasError('minValue')" class="help is-danger">
+            <sup>*</sup>Value should not be less than {{configuration?.minimum}}.
+          </span>
+          <span *ngIf="listItems?.controls[i]?.hasError('maxValue')" class="help is-danger">
+            <sup>*</sup>Value should not be greater than {{configuration?.maximum}}.
+          </span>
+        </div>
       </ng-container>
-    </ng-template>
-  </ng-container>
+      <ng-template #objectTemplate>
+        <ng-container *ngIf="!isListView">
+          <app-list-card [configuration]="configuration" [listItemsForm]="listItemsForm"
+            [initialProperties]="initialProperties" [from]="from" [group]="group" [listLabel]="listLabel"
+            [firstKey]="firstKey" [items]="items" [item]="item" [index]="i"
+            (changedConfig)="getChangedConfiguration(i, $event)" (formStatusEvent)="formStatus($event, i)"
+            (removeItem)="removeListItem($event)" />
+        </ng-container>
+      </ng-template>
+    </ng-container>
+  </div>
   <ng-container *ngIf="configuration.items == 'object' && isListView">
     <app-list-table [configuration]="configuration" [listItemsForm]="listItemsForm" [from]="'list'"
       [validConfigurationForm]="validConfigurationForm" (removeItem)="removeListItem($event)"

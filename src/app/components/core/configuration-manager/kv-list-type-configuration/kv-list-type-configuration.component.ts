@@ -172,16 +172,21 @@ export class KvListTypeConfigurationComponent implements OnInit {
 
   expandListItem(index) {
     setTimeout(() => {
-      this.expandCollapseSingleItem(index, true);
+      this.expandCollapseSingleItem(index, true, true);
     }, 1);
   }
 
-  expandCollapseSingleItem(i: number, isExpand: boolean) {
+  expandCollapseSingleItem(i: number, isExpand: boolean, scrollIntoView = false) {
     let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
     let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
     if (isExpand) {
       cardHeader.classList.add('is-hidden');
       cardBody.classList.remove('is-hidden');
+      if (scrollIntoView) {
+        let input: HTMLElement = cardBody.querySelector('.input.is-small');
+        input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        input.focus();
+      }
     }
     else {
       cardHeader.classList.remove('is-hidden');
