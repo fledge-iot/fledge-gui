@@ -90,7 +90,8 @@
                           <i class="bi bi-person-gear bi-xs" aria-hidden="true"></i>
                           Change Role
                         </a>
-                        <a class="dropdown-item" (click)="openUpdateUserModal(user, 'password')">
+                        <a *ngIf="user.accessMethod != 'cert'" class="dropdown-item"
+                          (click)="openUpdateUserModal(user, 'password')">
                           <i class="bi bi-key bi-xs" aria-hidden="true"></i>
                           Reset Password
                         </a>
