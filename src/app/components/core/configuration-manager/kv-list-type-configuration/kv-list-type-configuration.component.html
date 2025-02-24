@@ -15,7 +15,8 @@
         </div>
       </div>
     </ng-container>
-    <div class="custom-viewport" [ngClass]="{'scrollable': kvListItems.controls?.length > 0}">
+    <div
+      [ngClass]="{'custom-viewport': configuration.items == 'object', 'scrollable': (kvListItems.controls?.length > 0 && configuration.items == 'object')}">
       <ng-container *ngFor="let item of kvListItems.controls; let i=index">
         <ng-container *ngIf="configuration.items != 'object'; else objectTemplate">
           <div>

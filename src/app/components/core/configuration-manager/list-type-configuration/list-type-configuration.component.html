@@ -14,7 +14,8 @@
       </div>
     </div>
   </ng-container>
-  <div class="custom-viewport" [ngClass]="{'scrollable': listItems.controls?.length > 0}">
+  <div
+    [ngClass]="{'custom-viewport': configuration.items == 'object', 'scrollable': (listItems.controls?.length > 0 && configuration.items == 'object')}">
     <ng-container *ngFor="let item of listItems.controls; let i = index">
       <ng-container *ngIf="configuration.items != 'object'; else objectTemplate">
         <div formArrayName="listItems" class="field">

@@ -182,8 +182,10 @@ export class ListTypeConfigurationComponent implements OnInit {
       cardBody.classList.remove('is-hidden');
       if (scrollIntoView) {
         let input: HTMLElement = cardBody.querySelector('.input.is-small');
-        input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        input.focus();
+        if (input) {
+          input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          input.focus();
+        }
       }
     }
     else {
