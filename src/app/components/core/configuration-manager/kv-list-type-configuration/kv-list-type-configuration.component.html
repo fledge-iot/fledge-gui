@@ -1,6 +1,6 @@
 <ng-container *ngIf="configuration.items == 'object' && kvListItems.controls.length>0">
   <div class="is-flex toggle-btn-container">
-    <app-toggle-switch (currentView)="setCurrentView($event)" />
+    <app-toggle-switch (currentView)="setCurrentView($event)" [isListView]="isListView" />
   </div>
 </ng-container>
 <div [formGroup]="kvListItemsForm" class="items-container">
