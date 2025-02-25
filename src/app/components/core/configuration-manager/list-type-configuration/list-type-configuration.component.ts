@@ -107,29 +107,19 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.initListItem(isPrepend);
     this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
     if (this.configuration.items == 'object') {
+      const index = isPrepend ? 0 : this.listItems.length - 1;
       if (this.isListView) {
-        if (isPrepend) {
-          this.scrollToRow(0);
-        }
-        else {
-          this.scrollToRow(this.listItems.length - 1);
-        }
-      }
-      else {
+        this.scrollToRow(index);
+      } else {
         // Expand newly added item
-        if (isPrepend) {
-          this.expandListItem(0);
-        }
-        else {
-          this.expandListItem(this.listItems.length - 1);
-        }
+        this.expandListItem(index);
       }
     }
   }
 
   scrollToRow(i) {
     setTimeout(() => {
-      let row = document.getElementById('table-row-' + this.configuration.key + '-' + i + '-' + this.from);
+      let row = document.getElementById(`table-row-${this.configuration.key}-${i}-${this.from}`);
       let input: HTMLElement = row.querySelector('.input.is-small');
       if (input) {
         input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });

@@ -104,39 +104,20 @@ export class KvListTypeConfigurationComponent implements OnInit {
       this.kvListItems.push(this.initListItem(isPrepend, { key: '', value: '' }));
     }
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
-    if (this.configuration.items == 'object' && !this.isListView) {
-      // Expand newly added item
-      if (isPrepend) {
-        this.expandListItem(0);
-      }
-      else {
-        this.expandListItem(this.kvListItems.length - 1);
-      }
-    }
     if (this.configuration.items == 'object') {
+      const index = isPrepend ? 0 : this.kvListItems.length - 1;
       if (this.isListView) {
-        if (isPrepend) {
-          this.scrollToRow(0);
-        }
-        else {
-          this.scrollToRow(this.kvListItems.length - 1);
-        }
-      }
-      else {
+        this.scrollToRow(index);
+      } else {
         // Expand newly added item
-        if (isPrepend) {
-          this.expandListItem(0);
-        }
-        else {
-          this.expandListItem(this.kvListItems.length - 1);
-        }
+        this.expandListItem(index);
       }
     }
   }
 
   scrollToRow(i) {
     setTimeout(() => {
-      let row = document.getElementById('table-row-' + this.configuration.key + '-' + i + '-' + this.from);
+      let row = document.getElementById(`table-row-${this.configuration.key}-${i}-${this.from}`);
       let input: HTMLElement = row.querySelector('.input.is-small');
       if (input) {
         input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
