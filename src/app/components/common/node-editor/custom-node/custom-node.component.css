@@ -230,3 +230,8 @@
 .context-menu-btn:hover {
   background-color: transparent;
 }
+
+.btn-icon:has(.bi-gear-wide-connected):focus {
+  outline: none;
+  box-shadow: none;
+}
