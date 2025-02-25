@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-toggle-switch',
@@ -7,7 +7,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 })
 export class ToggleSwitchComponent {
   @Output() currentView = new EventEmitter<any>();
-  isListView = true;
+  @Input() isListView;
 
   setCurrentView(view: string) {
     if (view == 'list') {

@@ -10,6 +10,7 @@ import { FormArray, FormGroup } from '@angular/forms';
 })
 export class ListTableComponent {
   @Input() from;
+  @Input() listType;
   @Input() configuration;
   @Input() validConfigurationForm;
   @Input() listItemsForm: FormGroup;
@@ -24,7 +25,7 @@ export class ListTableComponent {
   }
 
   get listItems() {
-    if (this.from == 'list') {
+    if (this.listType == 'list') {
       return this.listItemsForm.get('listItems') as FormArray;
     }
     return this.listItemsForm.get('kvListItems') as FormArray;

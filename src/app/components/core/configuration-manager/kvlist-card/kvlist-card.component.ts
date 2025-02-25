@@ -60,6 +60,10 @@ export class KvlistCardComponent {
       let itemKey = this.configuration.properties[key]?.displayName || key;
       itemValue[itemKey] = val;
     }
-    return itemValue;
+    let jsonString = JSON.stringify(itemValue, null, 2) // Format with indentation and newlines
+      .replace(/[{}"]/g, '')  // Remove {, }, and "
+      .replace(/:/g, ': ')     // Add space after :
+      .replace(/,/g, ', ');    // Add space after ,
+    return jsonString;
   }
 }
