@@ -1298,7 +1298,7 @@ export class NodeEditorComponent implements OnInit {
   getServiceStatus() {
     if (this.from == 'south') {
       const service: Service = this.services.find(service => service.name === this.serviceName);
-      return service.status;
+      return service.schedule_enabled;
     } else if (this.from == 'north') {
       const task: NorthTask = this.tasks.find(task => task.name === this.serviceName);
       return task.enabled;
