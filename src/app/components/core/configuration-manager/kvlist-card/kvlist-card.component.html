@@ -1,12 +1,12 @@
 <div class="card mt-0 card-shadow" [ngClass]="{'error': item.invalid || items[i].status == false}" [formGroup]="item">
   <header class="card-header has-background-white card-header-shadow is-justify-content-space-between"
-    id="card-header-{{configuration.key}}-{{i}}-{{from}}">
+    [ngClass]="{'pt-3': i==0}" id="card-header-{{configuration.key}}-{{i}}-{{from}}">
     <div class="card-header-title">
       <p class="subtitle is-size-9">{{kvListItems?.controls[i]?.controls['key'].value}}</p>
     </div>
     <div class="btn-container">
       <button class="card-header-icon tooltip has-tooltip-multiline has-tooltip-right has-tooltip-arrow"
-        [attr.data-tooltip]="extractItemValue(item.value.value) | json" (click)="toggleCard(i)">
+        [attr.data-tooltip]="extractItemValue(item.value.value)" (click)="toggleCard(i)">
         <span class="icon is-small">
           <i class="bi bi-three-dots bi-sm" aria-hidden="true"></i>
         </span>

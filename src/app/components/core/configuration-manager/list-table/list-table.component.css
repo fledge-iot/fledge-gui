@@ -18,12 +18,6 @@ tr:hover .delete-icon {
   visibility: visible;
 }
 
-.custom-viewport {
-  max-width: 65vw;
-  max-height: 45vh;
-  overflow: hidden;
-}
-
 .table-wrapper {
   position: relative;
   display: inline-block;
@@ -43,8 +37,4 @@ tr:hover .delete-icon {
 
 .input {
   min-width: 120px;
-}
-
-.scrollable {
-  overflow: auto !important;
 }

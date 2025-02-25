@@ -106,15 +106,26 @@ export class ListTypeConfigurationComponent implements OnInit {
     }
     this.initListItem(isPrepend);
     this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
-    if (this.configuration.items == 'object' && !this.isListView) {
-      // Expand newly added item
-      if (isPrepend) {
-        this.expandListItem(0);
-      }
-      else {
-        this.expandListItem(this.listItems.length - 1);
+    if (this.configuration.items == 'object') {
+      const index = isPrepend ? 0 : this.listItems.length - 1;
+      if (this.isListView) {
+        this.scrollToRow(index);
+      } else {
+        // Expand newly added item
+        this.expandListItem(index);
       }
     }
+  }
+
+  scrollToRow(i) {
+    setTimeout(() => {
+      let row = document.getElementById(`table-row-${this.configuration.key}-${i}-${this.from}`);
+      let input: HTMLElement = row.querySelector('.input.is-small');
+      if (input) {
+        input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        input.focus();
+      }
+    }, 1);
   }
 
   removeListItem(index: number) {
@@ -168,43 +179,25 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.validConfigurationForm = true;
   }
 
-  extractListValues(value) {
-    let listValues = [];
-    for (let val of value) {
-      let valueObj = this.extractSingleListValue(val);
-      listValues.push(valueObj);
-    }
-    return listValues;
-  }
-
-  extractSingleListValue(val) {
-    let valueObj = {};
-    for (let property in val) {
-      if (val[property].hasOwnProperty('value')) {
-        valueObj[property] = val[property].value;
-      }
-      else {
-        valueObj[property] = val[property].default;
-      }
-      if (val[property].type == 'json') {
-        valueObj[property] = JSON.parse(valueObj[property]);
-      }
-    }
-    return valueObj;
-  }
-
   expandListItem(index) {
     setTimeout(() => {
-      this.expandCollapseSingleItem(index, true);
+      this.expandCollapseSingleItem(index, true, true);
     }, 1);
   }
 
-  expandCollapseSingleItem(i: number, isExpand: boolean) {
+  expandCollapseSingleItem(i: number, isExpand: boolean, scrollIntoView = false) {
     let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
     let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
     if (isExpand) {
       cardHeader.classList.add('is-hidden');
       cardBody.classList.remove('is-hidden');
+      if (scrollIntoView) {
+        let input: HTMLElement = cardBody.querySelector('.input.is-small');
+        if (input) {
+          input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          input.focus();
+        }
+      }
     }
     else {
       cardHeader.classList.remove('is-hidden');
@@ -245,7 +238,7 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   openExportFileModal() {
     this.hideDropDown();
-    this.listValues = this.extractListValues(this.listItems.value);
+    this.listValues = this.listItems.value;
     this.listValues = uniqWith(this.listValues, isEqual);
     this.fileExportModal.toggleModal(true);
   }

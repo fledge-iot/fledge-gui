@@ -104,15 +104,26 @@ export class KvListTypeConfigurationComponent implements OnInit {
       this.kvListItems.push(this.initListItem(isPrepend, { key: '', value: '' }));
     }
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
-    if (this.configuration.items == 'object' && !this.isListView) {
-      // Expand newly added item
-      if (isPrepend) {
-        this.expandListItem(0);
-      }
-      else {
-        this.expandListItem(this.kvListItems.length - 1);
+    if (this.configuration.items == 'object') {
+      const index = isPrepend ? 0 : this.kvListItems.length - 1;
+      if (this.isListView) {
+        this.scrollToRow(index);
+      } else {
+        // Expand newly added item
+        this.expandListItem(index);
       }
     }
+  }
+
+  scrollToRow(i) {
+    setTimeout(() => {
+      let row = document.getElementById(`table-row-${this.configuration.key}-${i}-${this.from}`);
+      let input: HTMLElement = row.querySelector('.input.is-small');
+      if (input) {
+        input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        input.focus();
+      }
+    }, 1);
   }
 
   removeListItem(index: number) {
@@ -170,34 +181,25 @@ export class KvListTypeConfigurationComponent implements OnInit {
     this.validConfigurationForm = true;
   }
 
-  extractKvListValues(value) {
-    let valueObj = {};
-    for (let property in value) {
-      if (value[property].hasOwnProperty('value')) {
-        valueObj[property] = value[property].value;
-      }
-      else {
-        valueObj[property] = value[property].default;
-      }
-      if (value[property].type == 'json') {
-        valueObj[property] = JSON.parse(valueObj[property]);
-      }
-    }
-    return valueObj;
-  }
-
   expandListItem(index) {
     setTimeout(() => {
-      this.expandCollapseSingleItem(index, true);
+      this.expandCollapseSingleItem(index, true, true);
     }, 1);
   }
 
-  expandCollapseSingleItem(i: number, isExpand: boolean) {
+  expandCollapseSingleItem(i: number, isExpand: boolean, scrollIntoView = false) {
     let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
     let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
     if (isExpand) {
       cardHeader.classList.add('is-hidden');
       cardBody.classList.remove('is-hidden');
+      if (scrollIntoView) {
+        let input: HTMLElement = cardBody.querySelector('.input.is-small');
+        if (input) {
+          input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          input.focus();
+        }
+      }
     }
     else {
       cardHeader.classList.remove('is-hidden');
@@ -239,7 +241,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
   openExportFileModal() {
     this.hideDropDown();
     for (let [ind, val] of this.kvListItems.value.entries()) {
-      this.kvlistValues[val.key] = this.extractKvListValues(val.value);
+      this.kvlistValues[val.key] = val.value;
     }
     this.fileExportModal.toggleModal(true);
   }

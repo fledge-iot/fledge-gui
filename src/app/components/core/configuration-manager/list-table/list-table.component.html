@@ -1,6 +1,6 @@
 <div class="custom-viewport" [ngClass]="{'scrollable': listItems.controls?.length > 0}">
   <div class="table-wrapper">
-    <div *ngIf="listItems.controls?.length>1" class="button-bar">
+    <div *ngIf="listItems.controls?.length>0" class="button-bar">
       <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" [isListView]="true"
         (addnewItem)="addListItem()" (importFile)="openModal()" (exportFile)="openExportFileModal()"
         [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
@@ -9,7 +9,7 @@
       <thead class="sticky-header">
         <tr>
           <th *ngIf="rolesService.hasAccessPermission(configuration?.permissions)"></th>
-          <ng-container *ngIf="from=='kvlist'">
+          <ng-container *ngIf="listType=='kvlist'">
             <th class="tooltip has-tooltip-multiline has-tooltip-bottom has-tooltip-arrow"
               [ngClass]="{'has-tooltip-right':listItems.controls?.length <1}"
               [attr.data-tooltip]="configuration.keyDescription">{{configuration.keyName ? configuration.keyName :
@@ -22,14 +22,15 @@
             prop.key}}</th>
         </tr>
       </thead>
-      <tbody [formArrayName]="from=='list'? 'listItems':'kvListItems'">
-        <tr *ngFor="let item of listItems.controls; let i = index;" [formGroupName]="i">
+      <tbody [formArrayName]="listType=='list'? 'listItems':'kvListItems'">
+        <tr *ngFor="let item of listItems.controls; let i = index;" [formGroupName]="i"
+          id="table-row-{{configuration.key}}-{{i}}-{{from}}">
           <td *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
             <span class="icon is-small delete-icon" (click)="removeListItem(i)">
               <i class="bi bi-xs bi-trash"></i>
             </span>
           </td>
-          <ng-container *ngIf="from=='kvlist';else listTemplate">
+          <ng-container *ngIf="listType=='kvlist';else listTemplate">
             <td>
               <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticKeyControl">
                 <input formControlName="key" placeholder="key" class="input is-small is-fullwidth" type="text">
