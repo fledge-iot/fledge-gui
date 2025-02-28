@@ -145,3 +145,11 @@
     max-width: 1110px !important;
   }
 }
+
+.subtab-menu {
+  border-right: 1px solid #dbdbdb;
+}
+
+.custom-width {
+  width: 100%;
+}

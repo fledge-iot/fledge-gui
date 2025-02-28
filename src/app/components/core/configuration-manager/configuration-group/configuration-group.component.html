@@ -149,10 +149,53 @@
       <!-- Advanced and security group configuration -->
       <ng-container *ngFor="let g of dynamicCategoriesGroup">
         <ng-container *ngIf="g.category == category?.name+'Advanced'; else SecurityGroup">
-          <app-show-configuration [hidden]="selectedGroup.key !== g.group.key" [groupConfiguration]="g.config"
-            [group]="g.group.key" [selectedGroup]="selectedGroup.key" [fullConfiguration]="g.config" [from]="from"
-            (event)="getChangedAdvanceConfiguration($event)" (formStatusEvent)="formStatus($event)">
-          </app-show-configuration>
+          <ng-container *ngIf="advancedGroups.length == 0; else tabsTemplate">
+            <app-show-configuration [hidden]="selectedGroup.key !== g.group.key" [groupConfiguration]="g.config"
+              [group]="g.group.key" [selectedGroup]="selectedGroup.key" [fullConfiguration]="g.config" [from]="from"
+              (event)="getChangedAdvanceConfiguration($event)" (formStatusEvent)="formStatus($event)">
+            </app-show-configuration>
+          </ng-container>
+          <ng-template #tabsTemplate>
+            <div class="columns" [hidden]="selectedGroup.key !== g.group.key">
+              <div class="column is-2 subtab-menu">
+                <div class="tabs">
+                  <ul class="is-flex-direction-column">
+                    <li *ngFor="let advancedGroup of advancedGroups" class="custom-width"
+                      [ngClass]="{'is-active': selectedAdvancedGroup.key == advancedGroup.group.key}">
+                      <h6 class="is-6 is-small-font">
+                        <a class="is-justify-content-flex-start pl-1"
+                          (click)="selectAdvancedSubTab(advancedGroup.group)"
+                          [ngClass]="{'invalid-tab': advancedGroup.status == false}">
+                          <span>
+                            {{advancedGroup.group.name}}
+                            <i class="fas fa-xs fa-angle-right" aria-hidden="true"
+                              [ngClass]="{'is-invisible' : selectedAdvancedGroup.key != advancedGroup.group.key}"></i>
+                          </span>
+                        </a>
+                      </h6>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="column is-10">
+                <ng-container *ngFor="let advancedGroup of advancedGroups">
+                  <app-show-configuration *ngIf="!['list', 'kvlist'].includes(advancedGroup?.type)"
+                    [hidden]="selectedAdvancedGroup?.key !== advancedGroup?.group.key"
+                    [groupConfiguration]="advancedGroup?.config" [group]="advancedGroup?.group.key"
+                    [selectedGroup]="selectedAdvancedGroup?.key" [fullConfiguration]="advancedGroup?.config"
+                    [from]="from" (event)="getChangedAdvanceConfiguration($event)"
+                    (formStatusEvent)="formStatus($event)">
+                  </app-show-configuration>
+                  <app-list-type-configuration *ngIf="advancedGroup?.type == 'list'"
+                    [hidden]="selectedAdvancedGroup?.key !== advancedGroup?.group.key"
+                    [configuration]="advancedGroup?.config" [group]="advancedGroup?.group.key" [from]="from"
+                    [categoryName]="advancedGroup?.category" (changedConfig)="getChangedAdvanceConfiguration($event)"
+                    (formStatusEvent)="formStatus($event)">
+                  </app-list-type-configuration>
+                </ng-container>
+              </div>
+            </div>
+          </ng-template>
         </ng-container>
         <ng-template #SecurityGroup>
           <ng-container *ngIf="g.category == category?.name+'Security'; else pluginGroup">

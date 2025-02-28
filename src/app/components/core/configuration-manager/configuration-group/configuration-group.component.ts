@@ -27,6 +27,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   @ViewChild(TabNavigationComponent) tabNavigationComponent: TabNavigationComponent;
 
   selectedGroup = { key: 'Basic', name: 'Basic' };
+  selectedAdvancedGroup = { key: 'Advanced', name: 'Advanced' };
   groups = [];
   tabs: TabHeader;
 
@@ -39,6 +40,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   changedAdvanceConfiguration: any;
   changedSecurityConfiguration: any;
   dynamicCategoriesGroup = [];
+  advancedGroups = [];
   groupTabs = [];
 
   constructor(
@@ -128,15 +130,15 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     })
 
     if (modelConfig.length > 0) {
-      this.buildGroupOfItems(modelConfig);
+      this.buildGroupOfItems(this.groups, this.category, modelConfig);
     }
 
     if (listConfig.length > 0) {
-      this.buildGroupOfItems(listConfig);
+      this.buildGroupOfItems(this.groups, this.category, listConfig);
     }
 
     if (kvlistConfig.length > 0) {
-      this.buildGroupOfItems(kvlistConfig);
+      this.buildGroupOfItems(this.groups, this.category, kvlistConfig);
     }
 
     // merge configuration of same group
@@ -181,20 +183,20 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     this.selectedGroup = this.groups[0]?.group;
   }
 
-  buildGroupOfItems(configItems) {
+  buildGroupOfItems(groups, category, configItems) {
     configItems?.forEach(config => {
       if (config.readonly != 'true') {
         if (!config.hasOwnProperty('value')) {
           config.value = config.default;
         }
-        let isGroupNameExist = this.groups.some(obj => Object.values(obj.group).includes(config.displayName ? config.displayName : config.key));
+        let isGroupNameExist = groups.some(obj => Object.values(obj.group).includes(config.displayName ? config.displayName : config.key));
         let group = { key: config.key, name: config.displayName ? config.displayName : config.key, description: config.description };
         if (isGroupNameExist) {
           // If same group exist, create new group with coonfig key and the description of the configuration
           group = { key: config.key, name: config.key, description: config.description }
         }
 
-        this.groups.push({ category: this.category.name ? this.category.name : this.category.key, group, config: config, type: config.type, key: config.key, ...(config.order && { order: config.order }) });
+        groups.push({ category: category.name ? category.name : category.key, group, config: config, type: config.type, key: config.key, ...(config.order && { order: config.order }) });
       }
     });
 
@@ -211,6 +213,12 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     if (this.tabNavigationComponent) {
       const tabIndex = this.groupTabs.findIndex(t => t.key === this.selectedGroup.key);
       this.tabNavigationComponent.setTab(tabIndex);
+    }
+  }
+
+  selectAdvancedSubTab(tab) {
+    if (tab.key !== this.selectedAdvancedGroup.key) {
+      this.selectedAdvancedGroup = tab;
     }
   }
 
@@ -272,6 +280,33 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         (data: any) => {
           if (category.key == `${this.categoryKey}Advanced`) {
             this.advanceConfiguration = { key: category.key, config: cloneDeep(data) };
+            let listConfig = [];
+            let kvlistConfig = [];
+            Object.keys(this.advanceConfiguration.config).map(k => {
+              this.advanceConfiguration.config[k].key = k;
+              if (this.advanceConfiguration.config[k].type == 'list') {
+                listConfig.push(this.advanceConfiguration.config[k]);
+              }
+              else if (this.advanceConfiguration.config[k].type == 'kvlist') {
+                kvlistConfig.push(this.advanceConfiguration.config[k]);
+              }
+            })
+
+            if (listConfig.length > 0 || kvlistConfig.length > 0) {
+              data = Object.fromEntries(
+                Object.entries(data).filter(([_, value]: [string, any]) => !['list', 'kvlist'].includes(value.type))
+              );
+              this.advancedGroups.push({ category: category.key, group: category.group, config: data });
+              this.selectedAdvancedGroup = this.advancedGroups[0]?.group;
+
+              if (listConfig.length > 0) {
+                this.buildGroupOfItems(this.advancedGroups, category, listConfig);
+              }
+
+              if (kvlistConfig.length > 0) {
+                this.buildGroupOfItems(this.advancedGroups, category, kvlistConfig);
+              }
+            }
           }
           if (category.key == `${this.categoryKey}Security`) {
             this.securityConfiguration = { key: category.key, config: cloneDeep(data) };
