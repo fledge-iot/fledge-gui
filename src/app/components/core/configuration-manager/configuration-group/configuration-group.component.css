@@ -107,6 +107,11 @@
   font-weight: 500;
 }
 
+.is-extra-small-font {
+  font-size: 0.8rem !important;
+  font-weight: 500;
+}
+
 .toogle-icon {
   display: inline-flex;
   height: 1.2em;

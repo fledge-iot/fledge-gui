@@ -162,12 +162,14 @@
                   <ul class="is-flex-direction-column">
                     <li *ngFor="let advancedGroup of advancedGroups" class="custom-width"
                       [ngClass]="{'is-active': selectedAdvancedGroup.key == advancedGroup.group.key}">
-                      <h6 class="is-6 is-small-font">
-                        <a class="is-justify-content-flex-start pl-1"
+                      <h6 class="is-6 is-extra-small-font">
+                        <a class="is-justify-content-space-between px-1"
                           (click)="selectAdvancedSubTab(advancedGroup.group)"
                           [ngClass]="{'invalid-tab': advancedGroup.status == false}">
                           <span>
                             {{advancedGroup.group.name}}
+                          </span>
+                          <span>
                             <i class="fas fa-xs fa-angle-right" aria-hidden="true"
                               [ngClass]="{'is-invisible' : selectedAdvancedGroup.key != advancedGroup.group.key}"></i>
                           </span>
