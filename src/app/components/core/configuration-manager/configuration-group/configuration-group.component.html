@@ -194,6 +194,12 @@
                     [categoryName]="advancedGroup?.category" (changedConfig)="getChangedAdvanceConfiguration($event)"
                     (formStatusEvent)="formStatus($event)">
                   </app-list-type-configuration>
+                  <app-kv-list-type-configuration *ngIf="advancedGroup?.type == 'kvlist'"
+                    [hidden]="selectedAdvancedGroup?.key !== advancedGroup?.group.key"
+                    [configuration]="advancedGroup?.config" [group]="advancedGroup?.group.key" [from]="from"
+                    [categoryName]="advancedGroup?.category" (changedConfig)="getChangedAdvanceConfiguration($event)"
+                    (formStatusEvent)="formStatus($event)">
+                  </app-kv-list-type-configuration>
                 </ng-container>
               </div>
             </div>
