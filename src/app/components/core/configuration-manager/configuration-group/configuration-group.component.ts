@@ -28,6 +28,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
   selectedGroup = { key: 'Basic', name: 'Basic' };
   selectedAdvancedGroup = { key: 'Advanced', name: 'Advanced' };
+  selectedSecurityGroup = { key: 'Security', name: 'Security' };
   groups = [];
   tabs: TabHeader;
 
@@ -41,6 +42,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   changedSecurityConfiguration: any;
   dynamicCategoriesGroup = [];
   advancedGroups = [];
+  securityGroups = [];
   groupTabs = [];
 
   constructor(
@@ -222,6 +224,12 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     }
   }
 
+  selectSecuritySubTab(tab) {
+    if (tab.key !== this.selectedSecurityGroup.key) {
+      this.selectedSecurityGroup = tab;
+    }
+  }
+
   getGroups() {
     this.groupTabs = [...this.groups.map(g => g.group), ...this.dynamicCategoriesGroup.map(g => g.group),];
     if (this.developerFeaturesService.getDeveloperFeatureControl() && this.pages.includes(this.from)) {
@@ -280,36 +288,11 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         (data: any) => {
           if (category.key == `${this.categoryKey}Advanced`) {
             this.advanceConfiguration = { key: category.key, config: cloneDeep(data) };
-            let listConfig = [];
-            let kvlistConfig = [];
-            Object.keys(this.advanceConfiguration.config).map(k => {
-              this.advanceConfiguration.config[k].key = k;
-              if (this.advanceConfiguration.config[k].type == 'list') {
-                listConfig.push(this.advanceConfiguration.config[k]);
-              }
-              else if (this.advanceConfiguration.config[k].type == 'kvlist') {
-                kvlistConfig.push(this.advanceConfiguration.config[k]);
-              }
-            })
-
-            if (listConfig.length > 0 || kvlistConfig.length > 0) {
-              data = Object.fromEntries(
-                Object.entries(data).filter(([_, value]: [string, any]) => !['list', 'kvlist'].includes(value.type))
-              );
-              this.advancedGroups.push({ category: category.key, group: category.group, config: data });
-              this.selectedAdvancedGroup = this.advancedGroups[0]?.group;
-
-              if (listConfig.length > 0) {
-                this.buildGroupOfItems(this.advancedGroups, category, listConfig);
-              }
-
-              if (kvlistConfig.length > 0) {
-                this.buildGroupOfItems(this.advancedGroups, category, kvlistConfig);
-              }
-            }
+            this.processCategoryConfig(this.advanceConfiguration, category, data, this.advancedGroups, 'selectedAdvancedGroup');
           }
           if (category.key == `${this.categoryKey}Security`) {
             this.securityConfiguration = { key: category.key, config: cloneDeep(data) };
+            this.processCategoryConfig(this.securityConfiguration, category, data, this.securityGroups, 'selectedSecurityGroup');
           }
           this.upsertAdvanceConfiguration(this.dynamicCategoriesGroup, { category: category.key, group: category.group, config: data });
           // check overflow after loading advanced & security group
@@ -326,6 +309,35 @@ export class ConfigurationGroupComponent implements AfterViewInit {
           }
         }
       );
+  }
+
+  processCategoryConfig(configuration, category, data, groupStore, selectedGroupKey) {
+    let listConfig = [];
+    let kvlistConfig = [];
+
+    Object.keys(configuration.config).forEach(k => {
+      configuration.config[k].key = k;
+      if (configuration.config[k].type === 'list') {
+        listConfig.push(configuration.config[k]);
+      } else if (configuration.config[k].type === 'kvlist') {
+        kvlistConfig.push(configuration.config[k]);
+      }
+    });
+
+    if (listConfig.length > 0 || kvlistConfig.length > 0) {
+      data = Object.fromEntries(
+        Object.entries(data).filter(([_, value]: [string, any]) => !['list', 'kvlist'].includes(value.type))
+      );
+      groupStore.push({ category: category.key, group: category.group, config: data });
+      this[selectedGroupKey] = groupStore[0]?.group;
+
+      if (listConfig.length > 0) {
+        this.buildGroupOfItems(groupStore, category, listConfig);
+      }
+      if (kvlistConfig.length > 0) {
+        this.buildGroupOfItems(groupStore, category, kvlistConfig);
+      }
+    }
   }
 
   /**
