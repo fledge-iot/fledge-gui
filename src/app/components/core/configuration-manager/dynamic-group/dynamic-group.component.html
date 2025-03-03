@@ -1,0 +1,50 @@
+<ng-container *ngIf="categoryGroups.length == 0; else tabsTemplate">
+  <app-show-configuration [hidden]="selectedGroup.key !== g.group.key" [groupConfiguration]="g.config"
+    [group]="g.group.key" [selectedGroup]="selectedGroup.key" [fullConfiguration]="g.config" [from]="from"
+    (event)="getChangedConfig($event)" (formStatusEvent)="formStatus($event)">
+  </app-show-configuration>
+</ng-container>
+<ng-template #tabsTemplate>
+  <div class="columns" [hidden]="selectedGroup.key !== g.group.key">
+    <div class="column is-2 subtab-menu">
+      <div class="tabs">
+        <ul class="is-flex-direction-column">
+          <li *ngFor="let categoryGroup of categoryGroups" class="custom-width"
+            [ngClass]="{'is-active': selectedCategoryGroup.key == categoryGroup.group.key}">
+            <h6 class="is-6 is-extra-small-font">
+              <a class="is-justify-content-space-between px-1" (click)="selectTab(categoryGroup.group)"
+                [ngClass]="{'invalid-tab': categoryGroup.status == false}">
+                <span>
+                  {{categoryGroup.group.name}}
+                </span>
+                <span>
+                  <i class="fas fa-xs fa-angle-right" aria-hidden="true"></i>
+                </span>
+              </a>
+            </h6>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="column is-10">
+      <ng-container *ngFor="let categoryGroup of categoryGroups">
+        <app-show-configuration *ngIf="!['list', 'kvlist'].includes(categoryGroup?.type)"
+          [hidden]="selectedCategoryGroup?.key !== categoryGroup?.group.key"
+          [groupConfiguration]="categoryGroup?.config" [group]="categoryGroup?.group.key"
+          [selectedGroup]="selectedCategoryGroup?.key" [fullConfiguration]="categoryGroup?.config" [from]="from"
+          (event)="getChangedConfig($event)" (formStatusEvent)="formStatus($event)">
+        </app-show-configuration>
+        <app-list-type-configuration *ngIf="categoryGroup?.type == 'list'"
+          [hidden]="selectedCategoryGroup?.key !== categoryGroup?.group.key" [configuration]="categoryGroup?.config"
+          [group]="categoryGroup?.group.key" [from]="from" [categoryName]="categoryGroup?.category"
+          (changedConfig)="getChangedConfig($event)" (formStatusEvent)="formStatus($event)">
+        </app-list-type-configuration>
+        <app-kv-list-type-configuration *ngIf="categoryGroup?.type == 'kvlist'"
+          [hidden]="selectedCategoryGroup?.key !== categoryGroup?.group.key" [configuration]="categoryGroup?.config"
+          [group]="categoryGroup?.group.key" [from]="from" [categoryName]="categoryGroup?.category"
+          (changedConfig)="getChangedConfig($event)" (formStatusEvent)="formStatus($event)">
+        </app-kv-list-type-configuration>
+      </ng-container>
+    </div>
+  </div>
+</ng-template>

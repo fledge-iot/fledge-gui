@@ -107,10 +107,6 @@
   font-weight: 500;
 }
 
-.is-extra-small-font {
-  font-size: 0.85rem !important;
-}
-
 .toogle-icon {
   display: inline-flex;
   height: 1.2em;
@@ -148,12 +144,4 @@
   .custom-max-width {
     max-width: 1110px !important;
   }
-}
-
-.subtab-menu {
-  border-right: 1px solid #dbdbdb;
-}
-
-.custom-width {
-  width: 100%;
 }
