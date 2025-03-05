@@ -1123,11 +1123,7 @@ export class NodeEditorComponent implements OnInit {
     }
     this.filterPipeline = [];
     this.updatedFilterPipeline = [];
-    if (this.task || this.service) {
-      this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
-      return;
-    }
-    this.router.navigate(['/flow/editor', this.from]);
+    this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
   }
 
   selectAsset(event) {
