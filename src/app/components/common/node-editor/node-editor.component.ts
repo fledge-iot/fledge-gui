@@ -839,6 +839,10 @@ export class NodeEditorComponent implements OnInit {
       return false;
     }
 
+    if (editor.getNodes().some(n => n.label === 'Filter')) {
+      return false;
+    }
+
     // Check for structural differences first
     if (isNestedArray(this.filterPipeline) !== isNestedArray(this.updatedFilterPipeline)) {
       return true; // One is nested, the other is not
