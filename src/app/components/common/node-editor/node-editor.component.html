@@ -48,7 +48,7 @@
       (serviceConfigureModal)="openServiceConfigureModal()" (refreshService)="refreshServiceInfo()">
     </app-service-warning>
   </ng-container>
-  <ng-container *ngIf="!isAddFilterWizard">
+  <div [hidden]="isAddFilterWizard">
     <app-toolbar *ngIf="source && rolesService.hasEditPermissions()" class="is-inline-block pr-2"
       (reloadData)="reload()" (resetNodes)="reset()" (undo)="callUndoAction()" (redo)="callRedoAction()"
       [historyData]="historyData" (delete)="onDeleteAction()" [isDeleteDisabled]="nodesToDelete.length == 0">
@@ -58,7 +58,7 @@
       #rete>
     </div>
     <div class="dock"></div>
-  </ng-container>
+  </div>
   <ng-contafiner *ngIf="source && isAddFilterWizard">
     <div class="box animated slideInRight">
       <app-add-filter-wizard (notify)="onNotify($event)" [serviceName]="source" [from]="from"></app-add-filter-wizard>
