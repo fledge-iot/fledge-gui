@@ -1,11 +1,11 @@
 <ng-container *ngIf="categoryGroups.length == 0; else tabsTemplate">
-  <app-show-configuration [hidden]="selectedGroup.key !== g.group.key" [groupConfiguration]="g.config"
-    [group]="g.group.key" [selectedGroup]="selectedGroup.key" [fullConfiguration]="g.config" [from]="from"
+  <app-show-configuration [hidden]="selectedGroup.key !== group.group.key" [groupConfiguration]="group.config"
+    [group]="group.group.key" [selectedGroup]="selectedGroup.key" [fullConfiguration]="group.config" [from]="from"
     (event)="getChangedConfig($event)" (formStatusEvent)="formStatus($event)">
   </app-show-configuration>
 </ng-container>
 <ng-template #tabsTemplate>
-  <div class="columns" [hidden]="selectedGroup.key !== g.group.key">
+  <div class="columns" [hidden]="selectedGroup.key !== group.group.key">
     <div class="column is-2 subtab-menu">
       <div class="tabs">
         <ul class="is-flex-direction-column">

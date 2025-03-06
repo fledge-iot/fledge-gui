@@ -9,7 +9,7 @@ export class DynamicGroupComponent {
   @Input() categoryGroups: any[] = [];
   @Input() selectedGroup: any;
   @Input() selectedCategoryGroup: any;
-  @Input() g: any;
+  @Input() group: any;
   @Input() from: any;
   @Output() getChangedConfiguration = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
