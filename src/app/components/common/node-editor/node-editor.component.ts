@@ -839,6 +839,10 @@ export class NodeEditorComponent implements OnInit {
       return false;
     }
 
+    if (editor.getNodes().some(n => n.label === 'Filter')) {
+      return false;
+    }
+
     // Check for structural differences first
     if (isNestedArray(this.filterPipeline) !== isNestedArray(this.updatedFilterPipeline)) {
       return true; // One is nested, the other is not
@@ -1123,11 +1127,7 @@ export class NodeEditorComponent implements OnInit {
     }
     this.filterPipeline = [];
     this.updatedFilterPipeline = [];
-    if (this.task || this.service) {
-      this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
-      return;
-    }
-    this.router.navigate(['/flow/editor', this.from]);
+    this.router.navigate(['/flow/editor', this.from, this.source, 'details']);
   }
 
   selectAsset(event) {
