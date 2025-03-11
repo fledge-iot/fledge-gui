@@ -288,10 +288,12 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         (data: any) => {
           if (category.key == `${this.categoryKey}Advanced`) {
             this.advanceConfiguration = { key: category.key, config: cloneDeep(data) };
+            this.advancedGroups = [];
             this.processCategoryConfig(this.advanceConfiguration, category, data, this.advancedGroups, 'selectedAdvancedGroup');
           }
           if (category.key == `${this.categoryKey}Security`) {
             this.securityConfiguration = { key: category.key, config: cloneDeep(data) };
+            this.securityGroups = [];
             this.processCategoryConfig(this.securityConfiguration, category, data, this.securityGroups, 'selectedSecurityGroup');
           }
           this.upsertAdvanceConfiguration(this.dynamicCategoriesGroup, { category: category.key, group: category.group, config: data });
