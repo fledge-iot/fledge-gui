@@ -27,6 +27,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   @ViewChild(TabNavigationComponent) tabNavigationComponent: TabNavigationComponent;
 
   selectedGroup = { key: 'Basic', name: 'Basic' };
+  selectedAdvancedGroup = { key: 'Advanced', name: 'Advanced' };
+  selectedSecurityGroup = { key: 'Security', name: 'Security' };
   groups = [];
   tabs: TabHeader;
 
@@ -39,6 +41,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   changedAdvanceConfiguration: any;
   changedSecurityConfiguration: any;
   dynamicCategoriesGroup = [];
+  advancedGroups = [];
+  securityGroups = [];
   groupTabs = [];
 
   constructor(
@@ -128,15 +132,15 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     })
 
     if (modelConfig.length > 0) {
-      this.buildGroupOfItems(modelConfig);
+      this.buildGroupOfItems(this.groups, this.category, modelConfig);
     }
 
     if (listConfig.length > 0) {
-      this.buildGroupOfItems(listConfig);
+      this.buildGroupOfItems(this.groups, this.category, listConfig);
     }
 
     if (kvlistConfig.length > 0) {
-      this.buildGroupOfItems(kvlistConfig);
+      this.buildGroupOfItems(this.groups, this.category, kvlistConfig);
     }
 
     // merge configuration of same group
@@ -181,20 +185,20 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     this.selectedGroup = this.groups[0]?.group;
   }
 
-  buildGroupOfItems(configItems) {
+  buildGroupOfItems(groups, category, configItems) {
     configItems?.forEach(config => {
       if (config.readonly != 'true') {
         if (!config.hasOwnProperty('value')) {
           config.value = config.default;
         }
-        let isGroupNameExist = this.groups.some(obj => Object.values(obj.group).includes(config.displayName ? config.displayName : config.key));
+        let isGroupNameExist = groups.some(obj => Object.values(obj.group).includes(config.displayName ? config.displayName : config.key));
         let group = { key: config.key, name: config.displayName ? config.displayName : config.key, description: config.description };
         if (isGroupNameExist) {
           // If same group exist, create new group with coonfig key and the description of the configuration
           group = { key: config.key, name: config.key, description: config.description }
         }
 
-        this.groups.push({ category: this.category.name ? this.category.name : this.category.key, group, config: config, type: config.type, key: config.key, ...(config.order && { order: config.order }) });
+        groups.push({ category: category.name ? category.name : category.key, group, config: config, type: config.type, key: config.key, ...(config.order && { order: config.order }) });
       }
     });
 
@@ -211,6 +215,18 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     if (this.tabNavigationComponent) {
       const tabIndex = this.groupTabs.findIndex(t => t.key === this.selectedGroup.key);
       this.tabNavigationComponent.setTab(tabIndex);
+    }
+  }
+
+  selectAdvancedSubTab(tab) {
+    if (tab.key !== this.selectedAdvancedGroup.key) {
+      this.selectedAdvancedGroup = tab;
+    }
+  }
+
+  selectSecuritySubTab(tab) {
+    if (tab.key !== this.selectedSecurityGroup.key) {
+      this.selectedSecurityGroup = tab;
     }
   }
 
@@ -272,9 +288,13 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         (data: any) => {
           if (category.key == `${this.categoryKey}Advanced`) {
             this.advanceConfiguration = { key: category.key, config: cloneDeep(data) };
+            this.advancedGroups = [];
+            this.processCategoryConfig(this.advanceConfiguration, category, data, this.advancedGroups, 'selectedAdvancedGroup');
           }
           if (category.key == `${this.categoryKey}Security`) {
             this.securityConfiguration = { key: category.key, config: cloneDeep(data) };
+            this.securityGroups = [];
+            this.processCategoryConfig(this.securityConfiguration, category, data, this.securityGroups, 'selectedSecurityGroup');
           }
           this.upsertAdvanceConfiguration(this.dynamicCategoriesGroup, { category: category.key, group: category.group, config: data });
           // check overflow after loading advanced & security group
@@ -291,6 +311,35 @@ export class ConfigurationGroupComponent implements AfterViewInit {
           }
         }
       );
+  }
+
+  processCategoryConfig(configuration, category, data, groupStore, selectedGroupKey) {
+    let listConfig = [];
+    let kvlistConfig = [];
+
+    Object.keys(configuration.config).forEach(k => {
+      configuration.config[k].key = k;
+      if (configuration.config[k].type === 'list') {
+        listConfig.push(configuration.config[k]);
+      } else if (configuration.config[k].type === 'kvlist') {
+        kvlistConfig.push(configuration.config[k]);
+      }
+    });
+
+    if (listConfig.length > 0 || kvlistConfig.length > 0) {
+      data = Object.fromEntries(
+        Object.entries(data).filter(([_, value]: [string, any]) => !['list', 'kvlist'].includes(value.type))
+      );
+      groupStore.push({ category: category.key, group: category.group, config: data });
+      this[selectedGroupKey] = groupStore[0]?.group;
+
+      if (listConfig.length > 0) {
+        this.buildGroupOfItems(groupStore, category, listConfig);
+      }
+      if (kvlistConfig.length > 0) {
+        this.buildGroupOfItems(groupStore, category, kvlistConfig);
+      }
+    }
   }
 
   /**
