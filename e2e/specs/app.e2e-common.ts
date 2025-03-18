@@ -14,6 +14,10 @@ describe('Fledge gui', () => {
 
   beforeEach(() => {
     skipLogin.setUpInstance();
+    if (environment.AUTH_OPTIONAL === false) {
+      nonAdminLogin.login();
+    }
+    // required?
     skipLogin.navigateToHome();
   });
 
