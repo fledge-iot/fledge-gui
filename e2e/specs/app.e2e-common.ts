@@ -17,6 +17,7 @@ describe('Fledge gui', () => {
     skipLogin.navigateToHome();
   });
 
+  // TODO: Remove if else
   if (environment.AUTH_OPTIONAL === true) {
     it('Should Display Nav Title and App Status',
       {

@@ -1,6 +1,7 @@
 import { SouthPage } from '../po/south.page'
 import { Filters } from '../po/app.filters'
 import { SkipLogin } from 'e2e/po/app.skip'
+import { NonAdminLogin } from '../po/app.non-admin';
 
 describe('Fledge South Page tests', () => {
   const southPage = new SouthPage()
@@ -13,6 +14,9 @@ describe('Fledge South Page tests', () => {
   });
 
   it('Should display south service page', () => {
+    let nonAdminLogin: NonAdminLogin;
+    nonAdminLogin.login();
+
     southPage.navToSouthPage()
     southPage.getSouthPageTitle().then(title =>{
       expect(title.trim()).to.equal('South Services')
