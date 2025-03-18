@@ -7,6 +7,7 @@ describe('Fledge South Page tests', () => {
   const southPage = new SouthPage()
   const filters = new Filters()
   const skipLogin = new SkipLogin();
+  const nonAdminLogin = new NonAdminLogin();
 
   beforeEach(() => {
     skipLogin.setUpInstance();
@@ -14,7 +15,6 @@ describe('Fledge South Page tests', () => {
   });
 
   it('Should display south service page', () => {
-    let nonAdminLogin: NonAdminLogin;
     nonAdminLogin.login();
 
     southPage.navToSouthPage()
