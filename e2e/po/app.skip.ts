@@ -202,7 +202,7 @@ export class SkipLogin {
   }
 
   clickRequestBackup() {
-    cy.get('#dropdown-menu3 .dropdown-content #create-backup').click()
+    cy.get('#dropdown-menu3 .dropdown-content #create-backup').first().click()
     // wait
     cy.wait(15000)
     cy.get('#dropdown-menu3').invoke('hide')
@@ -233,7 +233,7 @@ export class SkipLogin {
 
   deleteBackup() {
     cy.get('app-backup-restore table tbody tr:nth-child(1) div.is-hoverable').invoke('addClass', 'is-active')
-    cy.get('#dropdown-menu > div > a:nth-child(1)').click()
+    cy.get('#delete-backup').click()
     cy.wait(2000).get('#modal-box button.button.is-small.is-danger').should('be.visible')
     cy.get('#modal-box button.button.is-small.is-danger').click()
     cy.wait(3000).get('app-backup-restore .no-rec').should('be.visible')

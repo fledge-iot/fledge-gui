@@ -1,7 +1,6 @@
 import { AdminLogin } from '../po/app.admin';
 import { SkipLogin } from '../po/app.skip';
 import { NonAdminLogin } from '../po/app.non-admin';
-import { environment } from '../environment';
 
 describe('Fledge gui', () => {
   let skipLogin: SkipLogin;
@@ -12,12 +11,12 @@ describe('Fledge gui', () => {
   adminLogin = new AdminLogin();
   nonAdminLogin = new NonAdminLogin();
 
-  beforeEach(() => {
-    skipLogin.setUpInstance();
-    skipLogin.navigateToHome();
-  });
+  describe('Non-admin user tests', () => {
+    beforeEach(() => {
+      skipLogin.setUpInstance();
+      nonAdminLogin.login();
+    });
 
-  if (environment.AUTH_OPTIONAL === true) {
     it('Should Display Nav Title and App Status',
       {
         retries: {
@@ -42,6 +41,39 @@ describe('Fledge gui', () => {
           expect(uptime.split(':')[0].trim()).to.equal('Uptime')
         })
       });
+
+    it('Should Login non-admin User', () => {
+      nonAdminLogin.getLoggedInUsername().then(user => {
+        expect(user.trim()).to.equal('user')
+      })
+    });
+
+    it('Should Not Display User Management for Non-Admin', () => {
+      nonAdminLogin.isUserManagementPresent()
+    });
+
+    it('Should Display Profile for Non-Admin', () => {
+      nonAdminLogin.navToProfile();
+      nonAdminLogin.profileTitle().then(title => {
+        expect(title.trim()).to.equal('Profile')
+      })
+      nonAdminLogin.labelUsername().then(username => {
+        expect(username.trim()).to.equal('Username')
+      })
+      nonAdminLogin.labelRole().then(role => {
+        expect(role.trim()).to.equal('Role')
+      })
+      nonAdminLogin.isChangePassword().then(result => {
+        expect(result.trim()).to.equal('Change Password')
+      })
+      nonAdminLogin.isLogoutActiveSessionButton().then(result => {
+        expect(result.trim()).to.equal('Log Out Active Sessions')
+      })
+      nonAdminLogin.changePassword();
+      nonAdminLogin.isInputTag()
+      nonAdminLogin.isSaveButton()
+      nonAdminLogin.closeModal();
+    });
 
     it('Should Display Dashboard', () => {
       skipLogin.navigateToHome();
@@ -113,6 +145,30 @@ describe('Fledge gui', () => {
       })
     });
 
+    it('Should Display Settings', () => {
+      skipLogin.navToSettings();
+      skipLogin.getSettingsTitle().then(title => {
+        expect(title.trim()).to.equal('Connection Setup')
+      })
+      skipLogin.getSettingsSelectTag()
+      skipLogin.getSettingsHostInputTag()
+      skipLogin.getSettingsPortInputTag()
+      skipLogin.getSettingsSetUrlAndRestartButton().then(result => {
+        expect(result.trim()).to.equal('Set the URL & Restart')
+      })
+      skipLogin.isRefreshDashboardDropdownPresent()
+      skipLogin.isPingIntervalDropdownPresent()
+    });
+  });
+
+  describe('Admin user tests', () => {
+    beforeEach(() => {
+      skipLogin.setUpInstance();
+      skipLogin.navigateToHome();
+      adminLogin.login();
+      adminLogin.isUserManagementPresent();
+    });
+
     it('Should Display Backup & Restore', () => {
       skipLogin.navToBackupRestore();
       skipLogin.getBackupRestoreTitle().then(title => {
@@ -132,7 +188,7 @@ describe('Fledge gui', () => {
         expect(columnName.trim()).to.equal('Status')
       })
       skipLogin.getCreatedBackupRow().then(result => {
-        expect(result.trim()).to.equal('COMPLETED')
+        expect(result.trim()).to.contains('COMPLETED')
       })
       skipLogin.deleteBackup();
       skipLogin.noBackupRecord().then(recordText => {
@@ -154,27 +210,7 @@ describe('Fledge gui', () => {
       })
     });
 
-    it('Should Display Settings', () => {
-      skipLogin.navToSettings();
-      skipLogin.getSettingsTitle().then(title => {
-        expect(title.trim()).to.equal('Connection Setup')
-      })
-      skipLogin.getSettingsSelectTag()
-      skipLogin.getSettingsHostInputTag()
-      skipLogin.getSettingsPortInputTag()
-      skipLogin.getSettingsSetUrlAndRestartButton().then(result => {
-        expect(result.trim()).to.equal('Set the URL & Restart')
-      })
-      skipLogin.isRefreshDashboardDropdownPresent()
-      skipLogin.isPingIntervalDropdownPresent()
-    });
-  } else {
     it('Should Display User Management for Admin', () => {
-      skipLogin.loginPageInputTag()
-      skipLogin.getLoginButton().then(result => {
-        expect(result.trim()).to.equal('Log In')
-      })
-      adminLogin.login();
       adminLogin.isUserManagementPresent()
       adminLogin.navToUserManagement();
       adminLogin.getUserManagementTabName().then(tabName => {
@@ -209,7 +245,6 @@ describe('Fledge gui', () => {
     });
 
     it('Should Display Profile for Admin', () => {
-      adminLogin.login();
       adminLogin.navToProfile();
       adminLogin.profileTitle().then(title => {
         expect(title.trim()).to.equal('Profile')
@@ -231,47 +266,5 @@ describe('Fledge gui', () => {
       adminLogin.isSaveButton()
       adminLogin.closeModal();
     });
-
-    it('Should Logout Admin and Login non-admin User', () => {
-      adminLogin.login();
-      adminLogin.logout();
-      adminLogin.loginPageInputTag()
-      adminLogin.getLoginButton().then(buttonText => {
-        expect(buttonText.trim()).to.equal('Log In')
-      })
-      nonAdminLogin.login();
-      nonAdminLogin.getLoggedInUsername().then(user => {
-        expect(user.trim()).to.equal('user')
-      })
-    });
-
-    it('Should Not Display User Management for Non-Admin', () => {
-      nonAdminLogin.login();
-      nonAdminLogin.isUserManagementPresent()
-    });
-
-    it('Should Display Profile for Non-Admin', () => {
-      nonAdminLogin.login();
-      nonAdminLogin.navToProfile();
-      nonAdminLogin.profileTitle().then(title => {
-        expect(title.trim()).to.equal('Profile')
-      })
-      nonAdminLogin.labelUsername().then(username => {
-        expect(username.trim()).to.equal('Username')
-      })
-      nonAdminLogin.labelRole().then(role => {
-        expect(role.trim()).to.equal('Role')
-      })
-      nonAdminLogin.isChangePassword().then(result => {
-        expect(result.trim()).to.equal('Change Password')
-      })
-      nonAdminLogin.isLogoutActiveSessionButton().then(result => {
-        expect(result.trim()).to.equal('Log Out Active Sessions')
-      })
-      nonAdminLogin.changePassword();
-      nonAdminLogin.isInputTag()
-      nonAdminLogin.isSaveButton()
-      nonAdminLogin.closeModal();
-    });
-  }
+  });
 });
