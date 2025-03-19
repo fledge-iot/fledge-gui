@@ -90,7 +90,7 @@
                   </div>
                   <div class="dropdown-menu" id="dropdown-menu" role="menu">
                     <div class="dropdown-content">
-                      <a *ngIf="backup.status != 'RUNNING'" class="dropdown-item" id="delete-backup"
+                      <a *ngIf="backup.status != 'RUNNING'" class="dropdown-item"
                         (click)="openModal('delete-backup-dialog', backup)">
                         Delete
                       </a>
