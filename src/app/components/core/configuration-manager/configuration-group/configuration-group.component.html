@@ -149,17 +149,17 @@
       <!-- Advanced and security group configuration -->
       <ng-container *ngFor="let g of dynamicCategoriesGroup">
         <ng-container *ngIf="g.category == category?.name+'Advanced'; else SecurityGroup">
-          <app-show-configuration [hidden]="selectedGroup.key !== g.group.key" [groupConfiguration]="g.config"
-            [group]="g.group.key" [selectedGroup]="selectedGroup.key" [fullConfiguration]="g.config" [from]="from"
-            (event)="getChangedAdvanceConfiguration($event)" (formStatusEvent)="formStatus($event)">
-          </app-show-configuration>
+          <app-dynamic-group [categoryGroups]="advancedGroups" [selectedGroup]="selectedGroup"
+            [selectedCategoryGroup]="selectedAdvancedGroup" [group]="g" [from]="from"
+            (getChangedConfiguration)="getChangedAdvanceConfiguration($event)" (formStatus)="formStatus($event)"
+            (selectSubTab)="selectAdvancedSubTab($event)" />
         </ng-container>
         <ng-template #SecurityGroup>
           <ng-container *ngIf="g.category == category?.name+'Security'; else pluginGroup">
-            <app-show-configuration [hidden]="selectedGroup.key !== g.group.key" [groupConfiguration]="g.config"
-              [group]="g.group.key" [selectedGroup]="selectedGroup.key" [fullConfiguration]="g.config" [from]="from"
-              (event)="getChangedSecurityConfiguration($event)" (formStatusEvent)="formStatus($event)">
-            </app-show-configuration>
+            <app-dynamic-group [categoryGroups]="securityGroups" [selectedGroup]="selectedGroup"
+              [selectedCategoryGroup]="selectedSecurityGroup" [group]="g" [from]="from"
+              (getChangedConfiguration)="getChangedSecurityConfiguration($event)" (formStatus)="formStatus($event)"
+              (selectSubTab)="selectSecuritySubTab($event)" />
           </ng-container>
         </ng-template>
       </ng-container>
