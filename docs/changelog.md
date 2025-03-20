@@ -2,6 +2,8 @@
 
 ### Added
 
+- [FOGL-9300]: The ability to import list content from CSV and JSON files has been added for all configuration items that have object type list or kvlist. [#484](https://github.com/fledge-iot/fledge-gui/pull/484)
+- [FOGL-9270]: A separate tabular view added to see all properties of object type list or kvlist in a single glance. [#492](https://github.com/fledge-iot/fledge-gui/pull/492)
 - [FOGL-9408]: A confirmation dialog has been added to disable the flow for services to prevent accidental disabling of the services [#493](https://github.com/fledge-iot/fledge-gui/pull/493)
 
 ### Changed
@@ -12,13 +14,6 @@
 - [FOGL-8975]: The configuration tab has been improved to include navigation buttons to easily move between tabs [#468](https://github.com/fledge-iot/fledge-gui/pull/468)
 - [FOGL-9480]: The layout of the south service in the tabular view has been improved [#494](https://github.com/fledge-iot/fledge-gui/pull/494)
 - [FOGL-9492]: Performance improvements have been made to the plugin configuration user interface within the flow editor [#498](https://github.com/fledge-iot/fledge-gui/pull/498)
-
-### Others
-
-List/Kvlist improvements:
-
-- The ability to import list content from CSV and JSON files has been added for all configuration items that have object type list or kvlist.
-- A separate tabular view added to see all properties of object type list or kvlist in a single glance.
 
 ## v2.6.0 [2024-10-24]
 
