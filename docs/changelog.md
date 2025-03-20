@@ -1,3 +1,18 @@
+## v3.0.0 [2025-03-13]
+
+### Added
+- [FOGL-9300]: The ability to import list content from CSV and JSON files has been added for all configuration items that have lists of items. This impacts plugins like fledge-south-s2opcua [#484](https://github.com/fledge-iot/fledge-gui/pull/484)
+- [FOGL-9408]: A confirmation dialog has been added to the disable flow for services to prevent accidental disabling of the services [#493](https://github.com/fledge-iot/fledge-gui/pull/493)
+
+### Chnaged
+
+- [FOGL-9472]: The appearance of the add filter user interface in the flow based editor has been improved [#486](https://github.com/fledge-iot/fledge-gui/pull/486)
+- [FOGL-9508]: The look and feel of the south and north menu items has been improved with more intuitive icons [#491](https://github.com/fledge-iot/fledge-gui/pull/491)
+- [FOGL-9512]: The default user interface for new installations has been changed to be the flow based editor rather than the tabular view of data pipelines. The user can still chooses either view via the Settings menu option [#495](https://github.com/fledge-iot/fledge-gui/pull/495)
+- [FOGL-8975]: The configuration tab has been improved to include navigation buttons to easily move between tabs [#468](https://github.com/fledge-iot/fledge-gui/pull/468)
+- [FOGL-9480]: The layout of the south service in the tabular view has been improved [#494](https://github.com/fledge-iot/fledge-gui/pull/494)
+- [FOGL-9492]: Performance improvements have been made to the plugin configuration user interface within the flow editor [#498](https://github.com/fledge-iot/fledge-gui/pull/498)
+
 ## v2.6.0 [2024-10-24]
 
 ### Added
