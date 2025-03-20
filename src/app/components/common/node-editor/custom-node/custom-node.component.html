@@ -1,6 +1,6 @@
 <div [ngClass]="{'selected-node': data.selected && this.source && data.label !=='Filter'}" class="node-container"
   (mousedown)="onNodeClick()" *ngIf="data.label!=='Storage'; else storageTemplate">
-  <ng-container *ngIf="data.label!==''; else addServiceTemplate">
+  <ng-container *ngIf="data.label!=''; else addServiceTemplate">
     <div class="title" data-testid="title">
       <div class="is-flex is-justify-content-space-between is-align-items-baseline">
         <div class="is-inline-flex is-align-items-baseline">
@@ -9,9 +9,10 @@
             <i class="fa fa-2xs fa-circle child-icon"></i>
           </span>
           <span *ngIf="!source; else serviceNameTemplate" class="service-name"
-            (click)="openServiceDetails()">{{data.controls?.nameControl?.name}}</span>
+            (click)="openServiceDetails()">{{data.controls?.nameControl?.name | centerTruncate:[16]}}</span>
           <ng-template #serviceNameTemplate>
-            <span [ngClass]="{'is-size-5': data?.pseudoNode}">{{data.controls?.nameControl?.name}}</span>
+            <span [ngClass]="{'is-size-5': data?.pseudoNode}">{{data.controls?.nameControl?.name |
+              centerTruncate:[16]}}</span>
           </ng-template>
           <span *ngIf="task.execution === 'task'" class="help has-text-grey-light">&nbsp;Task</span>
         </div>
