@@ -14,6 +14,7 @@ describe('Fledge gui', () => {
   describe('Non-admin user tests', () => {
     beforeEach(() => {
       skipLogin.setUpInstance();
+      skipLogin.navigateToHome();
       nonAdminLogin.login();
     });
 

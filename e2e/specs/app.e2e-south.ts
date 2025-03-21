@@ -11,6 +11,7 @@ describe('Fledge South Page tests', () => {
 
   beforeEach(() => {
     skipLogin.setUpInstance();
+    skipLogin.navigateToHome();
     nonAdminLogin.login();
   });
 
