@@ -21,14 +21,20 @@
         <li>
           <a class="sidemenu-link" id="south" routerLinkActive="is-active"
             [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/south']: ['/south']">
-            <span class="menu-text"><i class="bi bi-pc-display-horizontal bi-xs sidebar-icon"></i></span>
+            <span class="menu-text">
+              <img src="assets/icons/svg/south-icon.svg" id="south-icon" />
+            </span>
             <span class="sidemenu-text">South</span>
           </a>
         </li>
         <li>
           <a class="sidemenu-link" id="north" routerLinkActive="is-active"
             [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/north']: ['/north']">
-            <span><i class="bi bi-cloud-upload bi-sm"></i></span>
+            <span class="menu-text">
+              <svg id="north-icon">
+                <use xlink:href="assets/icons/svg/north-icon.svg#north-icon" />
+              </svg>
+            </span>
             <span class="sidemenu-text">North</span>
           </a>
         </li>

@@ -4,7 +4,7 @@
       <div class="dropdown is-hoverable is-pulled-left">
         <div class="dropdown-trigger">
           <a class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu">
-            <span>{{selectedPlugin}}</span>
+            <span>{{pluginName}}</span>
             <span class="icon is-small">
               <i class="fa fa-angle-down" aria-hidden="true"></i>
             </span>
@@ -52,7 +52,7 @@
     <div class="column" *ngIf="plugins.length === 0">
       <div class="has-text-centered">
         <small class="no-rec">
-          No persisting data plugins found.
+          No persisted data found.
         </small>
       </div>
     </div>

@@ -1,9 +1,11 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective } from '@angular/forms';
 import { filter, uniqWith, isEqual } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
-import { RolesService } from '../../../../services';
+import { ConfigurationControlService, RolesService } from '../../../../services';
+import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
+import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
 
 @Component({
   selector: 'app-list-type-configuration',
@@ -12,20 +14,26 @@ import { RolesService } from '../../../../services';
 })
 export class ListTypeConfigurationComponent implements OnInit {
   @Input() configuration;
+  @Input() categoryName;
   @Input() group: string = '';
   @Input() from = '';
   @Output() changedConfig = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
+  @ViewChild(FileImportModalComponent, { static: true }) fileImportModal: FileImportModalComponent;
+  @ViewChild(FileExportModalComponent, { static: true }) fileExportModal: FileExportModalComponent;
   listItemsForm: FormGroup;
   initialProperties = [];
   items = [];
   listLabel: string;
   firstKey: string;
   validConfigurationForm = true;
+  listValues;
+  isListView = true;
 
   constructor(
     public cdRef: ChangeDetectorRef,
     public rolesService: RolesService,
+    public configControlService: ConfigurationControlService,
     private fb: FormBuilder) {
     this.listItemsForm = this.fb.group({
       listItems: this.fb.array([])
@@ -33,20 +41,20 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   ngOnInit() {
-    if(this.configuration.items == 'object'){
+    if (this.configuration.items == 'object') {
       this.firstKey = Object.keys(this.configuration.properties)[0];
       // Show first property label as list card header
       this.listLabel = this.configuration.properties[this.firstKey].displayName ? this.configuration.properties[this.firstKey].displayName : this.firstKey;
     }
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
     values = JSON.parse(values) as [];
+    if (this.configuration.listName) {
+      values = values[this.configuration.listName];
+    }
     values.forEach(element => {
       this.initListItem(false, element);
     });
     this.onControlValueChanges();
-    if(this.configuration.items == 'object' && this.listItems.length == 1){
-      this.expandListItem(this.listItems.length-1); // Expand the list if only one item is present
-    }
   }
 
   get listItems() {
@@ -67,23 +75,24 @@ export class ListTypeConfigurationComponent implements OnInit {
           objectConfig[key].permissions = this.configuration.permissions;
         }
       }
-      if(isPrepend) {
+      if (isPrepend) {
         this.initialProperties.unshift(objectConfig);
-        this.items.unshift({status : true});
+        this.items.unshift({ status: true });
       }
-      else{
+      else {
         this.initialProperties.push(objectConfig);
-        this.items.push({status : true});
+        this.items.push({ status: true });
       }
-      listItem = new FormControl(objectConfig);
+      let groupConfigurations = this.configControlService.createConfigurationBase(objectConfig);
+      listItem = this.configControlService.toFormGroup(objectConfig, groupConfigurations);
     }
     else {
       listItem = new FormControl(v, [CustomValidator.nospaceValidator]);
     }
-    if(isPrepend) {
+    if (isPrepend) {
       this.listItems.insert(0, listItem);
     }
-    else{
+    else {
       this.listItems.push(listItem);
     }
     this.cdRef.detectChanges();
@@ -97,15 +106,26 @@ export class ListTypeConfigurationComponent implements OnInit {
     }
     this.initListItem(isPrepend);
     this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
-    if(this.configuration.items == 'object'){
-      // Expand newly added item
-      if(isPrepend){
-        this.expandListItem(0);
-      }
-      else{
-        this.expandListItem(this.listItems.length-1);
+    if (this.configuration.items == 'object') {
+      const index = isPrepend ? 0 : this.listItems.length - 1;
+      if (this.isListView) {
+        this.scrollToRow(index);
+      } else {
+        // Expand newly added item
+        this.expandListItem(index);
       }
     }
+  }
+
+  scrollToRow(i) {
+    setTimeout(() => {
+      let row = document.getElementById(`table-row-${this.configuration.key}-${i}-${this.from}`);
+      let input: HTMLElement = row.querySelector('.input.is-small');
+      if (input) {
+        input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        input.focus();
+      }
+    }, 1);
   }
 
   removeListItem(index: number) {
@@ -128,7 +148,12 @@ export class ListTypeConfigurationComponent implements OnInit {
         });
       }
       if (this.configuration.items == 'object') {
-        value = this.extractListValues(value);
+        for (let [index, property] of this.initialProperties.entries()) {
+          for (let [key, prop] of Object.entries(property)) {
+            let val = prop as any
+            val.value = value?.[index]?.[key];
+          }
+        }
       }
       value = uniqWith(value, isEqual);
       this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(value) });
@@ -136,19 +161,8 @@ export class ListTypeConfigurationComponent implements OnInit {
     })
   }
 
-  getChangedConfiguration(index: string, propertyChangedValues: any) {
-    for (let [ind, val] of this.listItems.value.entries()) {
-      for (let property in val) {
-        if (ind == index && property == Object.keys(propertyChangedValues)[0]) {
-          val[property].value = Object.values(propertyChangedValues)[0];
-        }
-      }
-      this.listItems.value[ind] = val;
-    }
-    let listValues = this.extractListValues(this.listItems.value);
-    listValues = uniqWith(listValues, isEqual);
-    this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(listValues) });
-    this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
+  getChangedConfiguration(index, propertyChangedValues: any) {
+    this.listItems.controls[index].patchValue(propertyChangedValues);
   }
 
   formStatus(formState: any, index) {
@@ -165,72 +179,88 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.validConfigurationForm = true;
   }
 
-  extractListValues(value) {
-    let listValues = [];
-    for (let val of value) {
-      let valueObj = this.extractSingleListValue(val);
-      listValues.push(valueObj);
-    }
-    return listValues;
-  }
-
-  extractSingleListValue(val) {
-    let valueObj = {};
-    for (let property in val) {
-      if (val[property].hasOwnProperty('value')) {
-        valueObj[property] = val[property].value;
-      }
-      else {
-        valueObj[property] = val[property].default;
-      }
-      if (val[property].type == 'json') {
-        valueObj[property] = JSON.parse(valueObj[property]);
-      }
-    }
-    return valueObj;
-  }
-
-  toggleCard(index) {
-    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
-    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
-    if(cardBody.classList.contains('is-hidden')){
-      cardBody.classList.remove('is-hidden');
-      cardHeader.classList.add('is-hidden');
-    }
-    else{
-      cardBody.classList.add('is-hidden');
-      cardHeader.classList.remove('is-hidden');
-    }
-  }
-
   expandListItem(index) {
     setTimeout(() => {
-      this.expandCollapseSingleItem(index, true);
+      this.expandCollapseSingleItem(index, true, true);
     }, 1);
   }
 
-  expandCollapseSingleItem(index: number, isExpand: boolean) {
-    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
-    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
-    if(isExpand) {
+  expandCollapseSingleItem(i: number, isExpand: boolean, scrollIntoView = false) {
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
+    if (isExpand) {
       cardHeader.classList.add('is-hidden');
       cardBody.classList.remove('is-hidden');
+      if (scrollIntoView) {
+        let input: HTMLElement = cardBody.querySelector('.input.is-small');
+        if (input) {
+          input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          input.focus();
+        }
+      }
     }
-    else{
+    else {
       cardHeader.classList.remove('is-hidden');
       cardBody.classList.add('is-hidden');
     }
   }
 
   expandAllItems() {
-    for(let i=0; i<this.listItems.length; i++){
+    for (let i = 0; i < this.listItems.length; i++) {
       this.expandCollapseSingleItem(i, true);
     }
   }
-  
+
   collapseAllItems() {
-    for(let i=0; i<this.listItems.length; i++){
+    for (let i = 0; i < this.listItems.length; i++) {
       this.expandCollapseSingleItem(i, false);
+    }
+  }
+
+  appendFileData(event) {
+    event.fileData.forEach(element => {
+      this.initListItem(false, element);
+    });
+  }
+
+  overrideFileData(event) {
+    this.listItems.clear();
+    this.initialProperties = [];
+    event.fileData.forEach(element => {
+      this.initListItem(false, element);
+    });
+  }
+
+  openModal() {
+    this.hideDropDown();
+    this.fileImportModal.toggleModal(true);
+  }
+
+  openExportFileModal() {
+    this.hideDropDown();
+    this.listValues = this.listItems.value;
+    this.listValues = uniqWith(this.listValues, isEqual);
+    this.fileExportModal.toggleModal(true);
+  }
+
+  toggleDropdown() {
+    const dropDown = document.getElementById('export-dropdown-' + this.configuration?.key);
+    if (dropDown) {
+      dropDown.classList.toggle('is-active');
+    }
+  }
+
+  hideDropDown() {
+    const dropdown = document.getElementById('export-dropdown-' + this.configuration?.key);
+    if (dropdown && dropdown.classList.contains('is-active')) {
+      dropdown.classList.toggle('is-active');
+    }
+  }
+
+  setCurrentView(event) {
+    this.isListView = event.isListView;
+    if (this.listItems.length == 1 && !this.isListView) {
+      this.expandListItem(0); // Expand the list if only one item is present
     }
   }
 }

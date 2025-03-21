@@ -1,0 +1,19 @@
+<div class="field has-addons">
+  <p class="control">
+    <button class="button is-small tooltip has-tooltip-right has-tooltip-arrow toggle-btn"
+      [attr.data-tooltip]="isListView ? null : 'Tabular view'" (click)="setCurrentView('list')" [disabled]="isListView">
+      <span class="icon is-small">
+        <i class="bi bi-xs bi-list-task"></i>
+      </span>
+    </button>
+  </p>
+  <p class="control">
+    <button class="button is-small tooltip has-tooltip-right has-tooltip-arrow toggle-btn"
+      [attr.data-tooltip]="isListView ? 'Detailed view' : null" (click)="setCurrentView('detail')"
+      [disabled]="!isListView">
+      <span class="icon is-small">
+        <i class="bi bi-xs bi-view-list"></i>
+      </span>
+    </button>
+  </p>
+</div>

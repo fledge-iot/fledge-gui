@@ -56,6 +56,7 @@ export class AddFilterWizardComponent implements OnInit {
   updatedFilterPipeline: any;
 
   public reenableButton = new EventEmitter<boolean>(false);
+  isTabsNavVisible = false;
 
   constructor(private formBuilder: UntypedFormBuilder,
     private filterService: FilterService,
@@ -156,9 +157,8 @@ export class AddFilterWizardComponent implements OnInit {
 
     const nextContent = <HTMLElement>document.getElementById('c-' + sId);
     if (nextContent != null) {
-      nextContent.setAttribute('class', 'box step-content is-active');
+      nextContent.setAttribute('class', 'box step-content is-shadowless is-active');
     }
-
     const nxtButton = <HTMLButtonElement>document.getElementById('next');
     const previousButton = <HTMLButtonElement>document.getElementById('previous');
     switch (+id) {
@@ -226,13 +226,13 @@ export class AddFilterWizardComponent implements OnInit {
         if (pluginInstalled) {
           this.getConfiguration(formValues['name'].trim(), pluginValue);
         }
-
         nxtButton.textContent = 'Done';
         previousButton.textContent = 'Previous';
         this.reenableButton.emit(false);
         if (!this.validChildConfigurationForm) {
           nxtButton.disabled = true;
         }
+        this.isTabsNavVisible = true;
         break;
       case 2:
         this.addFilter();
@@ -260,7 +260,7 @@ export class AddFilterWizardComponent implements OnInit {
 
     const nextContent = <HTMLElement>document.getElementById('c-' + sId);
     if (nextContent != null) {
-      nextContent.setAttribute('class', 'box step-content is-active');
+      nextContent.setAttribute('class', 'box step-content is-shadowless is-active');
     }
   }
 

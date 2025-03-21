@@ -5,7 +5,7 @@
 :host ::ng-deep ng-select .ng-dropdown-panel {
     z-index: 40 !important;
 }
-  
+
 :host ::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items {
     max-height: 200px !important;
 }
@@ -13,6 +13,10 @@
 :host ::ng-deep ng-select .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-disabled {
     color: #848181 !important;
     font-size: 0.80rem !important;
+}
+
+:host ::ng-deep ng-select {
+    font-size: 0.9rem !important;
 }
 
 .modal-card {

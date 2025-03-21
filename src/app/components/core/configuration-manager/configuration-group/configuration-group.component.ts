@@ -17,6 +17,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   @Input() serviceStatus = false;
   @Input() from: string;
   @Input() sourceName: string;
+  @Input() recalculateTabsOverflow: boolean;
+  @Input() isFilterList: boolean;
 
   @Output() changedConfigEvent = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<boolean>();
@@ -48,9 +50,22 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     private cdrf: ChangeDetectorRef
   ) { }
 
+
   ngAfterViewInit() {
-    const groupNavContents = document.getElementById("groupNavContents");
-    this.tabs = new TabHeader(groupNavContents);
+    if (this.from && this.from.includes("control-pipeline")) {
+      const element = document.getElementById(this.from);
+      if (element) {
+        const currentMaxWidthValue = parseFloat(window.getComputedStyle(element).maxWidth);
+
+        // Set the new max-width (65% of the current max-width)
+        element.style.maxWidth = currentMaxWidthValue * 0.65 + 'px';
+      }
+    }
+    const idSuffix = this.from + '_' + this.sourceName;
+    const groupNavContents = document.getElementById("nav_contents_" + idSuffix);
+    const groupNavigation = document.getElementById("group_navigation_" + idSuffix);
+    this.tabs = new TabHeader(groupNavContents, groupNavigation);
+
     window.addEventListener('resize', () => {
       this.tabs.setOverFlow();
     })
@@ -70,6 +85,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   ngOnChanges() {
     this.categeryConfiguration();
     this.getChildConfigData();
+    if ((this.isFilterList && this.recalculateTabsOverflow !== undefined) || this.recalculateTabsOverflow) {
+      this.tabs.setOverFlow();
+    }
   }
 
   public updateCategroyConfig(config) {
@@ -93,7 +111,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
       const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic";
-      return { category: this.category.name, group: { key: g, name: g }, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })), type: g }
+      return { category: this.category.name ? this.category.name : this.category.key, group: { key: g, name: g }, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })), type: g }
     }).value();
 
     Object.keys(this.category.config).map(k => {
@@ -165,7 +183,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
   buildGroupOfItems(configItems) {
     configItems?.forEach(config => {
-      if(config.readonly != 'true'){
+      if (config.readonly != 'true') {
         if (!config.hasOwnProperty('value')) {
           config.value = config.default;
         }
@@ -175,8 +193,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
           // If same group exist, create new group with coonfig key and the description of the configuration
           group = { key: config.key, name: config.key, description: config.description }
         }
-  
-        this.groups.push({ category: this.category.name, group, config: config, type: config.type, key: config.key, ...(config.order && { order: config.order }) });
+
+        this.groups.push({ category: this.category.name ? this.category.name : this.category.key, group, config: config, type: config.type, key: config.key, ...(config.order && { order: config.order }) });
       }
     });
 

@@ -4,12 +4,14 @@ import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import {
-  ConfigurationService, RolesService,
-  SchedulesService, ToastService
+  RolesService
 } from "./../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
 import { Subject, Subscription } from "rxjs";
+
+import { canUndo, canRedo } from './../editor';
+import { DialogService } from '../../confirmation-dialog/dialog.service';
 
 @Component({
   selector: 'app-custom-node',
@@ -70,19 +72,20 @@ export class CustomNodeComponent implements OnChanges {
   pluginVersion = '';
   timeoutId;
 
+  previousState: boolean;  // To store previous state of checkbox
+  serviceStatusSubscription: Subscription;
+
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
   }
 
   constructor(private cdr: ChangeDetectorRef,
-    private schedulesService: SchedulesService,
     private docService: DocService,
     private router: Router,
     private route: ActivatedRoute,
     public flowEditorService: FlowEditorService,
-    private configService: ConfigurationService,
-    private toastService: ToastService,
     public rolesService: RolesService,
+    private dialogService: DialogService,
     private elRef: ElementRef) {
     this.route.params.subscribe(params => {
       this.from = params.from;
@@ -100,9 +103,14 @@ export class CustomNodeComponent implements OnChanges {
     });
   }
 
+  openModal(id: string) {
+    this.dialogService.open(id);
+  }
+
   ngOnChanges(): void {
     this.nodeId = this.data.id;
     if (this.data.label === 'South' || this.data.label === 'North') {
+      this.setSetectedNodeColor('#C781BB');
       if (this.source !== '') {
         this.isServiceNode = true;
         this.elRef.nativeElement.style.borderColor = this.data.label === 'South' ? "#B6D7A8" : '#C781BB'
@@ -165,6 +173,7 @@ export class CustomNodeComponent implements OnChanges {
     }
 
     if (!this.nodeTypes.includes(this.data?.label) && !isEmpty(this.data.controls)) {
+      this.setSetectedNodeColor('#F9CB9C');
       if (this.filter.name == this.data.label) {
         this.filter.enabled = this.data?.controls?.enabledControl['enabled'];
         if (this.filter.enabled === 'true') {
@@ -173,6 +182,9 @@ export class CustomNodeComponent implements OnChanges {
           this.isEnabled = false;
         }
       }
+    }
+    if (this.source && !this.data.selected) {
+      this.flowEditorService.nodeClick.next(this.data);
     }
 
     const labels = ['AddService', 'AddTask'];
@@ -186,6 +198,16 @@ export class CustomNodeComponent implements OnChanges {
     this.cdr.detectChanges();
     requestAnimationFrame(() => this.rendered());
     this.seed++; // force render sockets
+    this.flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo(false) });
+  }
+
+  setSetectedNodeColor(colorCode) {
+    if (this.elRef.nativeElement.children.length !== 0 && this.elRef.nativeElement.children[0].classList.contains('selected-node')) {
+      let boxShadowValue = this.data.label === "South" ? "0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px #B6D7A8" : "0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px" + colorCode;
+      this.elRef.nativeElement.style.boxShadow = boxShadowValue;
+    } else {
+      this.elRef.nativeElement.style.removeProperty('box-shadow');
+    }
   }
 
   sortByIndex<
@@ -196,6 +218,13 @@ export class CustomNodeComponent implements OnChanges {
     const bi = b.value.index || 0;
 
     return ai - bi;
+  }
+
+  onNodeClick() {
+    if (this.source) {
+      this.data['isFilterNode'] = this.isFilterNode;
+      this.flowEditorService.nodeClick.next(this.data);
+    }
   }
 
   addService() {
@@ -225,49 +254,6 @@ export class CustomNodeComponent implements OnChanges {
 
   navToSouthPage() {
     this.router.navigate(['/south']);
-  }
-
-  toggleEnabled(isEnabled) {
-    this.isEnabled = isEnabled;
-    if (this.isServiceNode) {
-      if (this.isEnabled) {
-        this.enableSchedule(this.service.name);
-      }
-      else {
-        this.disableSchedule(this.service.name);
-      }
-    }
-    if (this.isFilterNode) {
-      this.updateFilterConfiguration();
-    }
-  }
-
-  public disableSchedule(serviceName) {
-    this.schedulesService.disableScheduleByName(serviceName)
-      .subscribe((data: any) => {
-        this.toastService.success(data.message);
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.toastService.error(error.statusText);
-          }
-        });
-  }
-
-  public enableSchedule(serviceName) {
-    this.schedulesService.enableScheduleByName(serviceName)
-      .subscribe((data: any) => {
-        this.toastService.success(data.message);
-      },
-        error => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.toastService.error(error.statusText);
-          }
-        });
   }
 
   goToLink() {
@@ -303,6 +289,34 @@ export class CustomNodeComponent implements OnChanges {
     }
   }
 
+  onCheckboxClicked(event: Event) {
+    const checkbox = event.target as HTMLInputElement;
+    const newCheckedState = checkbox.checked;
+    // Store the previous state
+    this.previousState = this.isEnabled;
+    this.openStatusConfirmationDialog(newCheckedState);
+    checkbox.checked = this.previousState;
+  }
+
+  openStatusConfirmationDialog(status: boolean) {
+    let nodeName = null;
+    let type = null;
+    let oldState = false;
+    let category = '';
+    if (this.isServiceNode) {
+      nodeName = this.service?.name;
+    } else if (this.isFilterNode) {
+      nodeName = this.filter?.name;
+      category = `${this.source}_${this.filter.name}`;
+      type = 'filter';
+      oldState = (this.filter.enabled == 'true');
+    }
+    if (nodeName) {
+      this.flowEditorService.updateNodeStatusSubject.next({ name: nodeName, newState: status, type, oldState, category });
+      this.openModal('service-status-dialog');
+    }
+  }
+
   openTaskSchedule() {
     this.flowEditorService.showItemsInQuickview.next({ showTaskSchedule: true, serviceName: this.service.name });
   }
@@ -313,28 +327,6 @@ export class CustomNodeComponent implements OnChanges {
 
   navToAddServicePage() {
     this.router.navigate(['/flow/editor', this.from, 'add'], { queryParams: { source: 'flowEditor' } });
-  }
-
-  updateFilterConfiguration() {
-    let catName = `${this.source}_${this.filter.name}`;
-    this.configService.
-      updateBulkConfiguration(catName, { enable: String(this.isEnabled) })
-      .subscribe(() => {
-        this.data.controls.enabledControl['enabled'] = JSON.stringify(this.isEnabled);
-        if (this.isEnabled) {
-          this.toastService.success(`${this.filter.name} filter enabled`);
-        }
-        else {
-          this.toastService.success(`${this.filter.name} filter disabled`);
-        }
-      },
-        (error) => {
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.toastService.error(error.statusText);
-          }
-        });
   }
 
   removeFilter() {
@@ -351,11 +343,12 @@ export class CustomNodeComponent implements OnChanges {
 
   openDropdown() {
     this.timeoutId = setTimeout(() => {
-      this.flowEditorService.nodeClick.next({ nodeId: this.nodeId });
+      this.flowEditorService.nodeDropdownClick.next({ nodeId: this.nodeId });
       const dropDown = document.querySelector('#nodeDropdown-' + this.nodeId);
       dropDown.classList.add('is-active');
     }, 250);
   }
+
 
   closeDropdown() {
     clearTimeout(this.timeoutId);
@@ -367,7 +360,6 @@ export class CustomNodeComponent implements OnChanges {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    // this.addFilterSubscription?.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }

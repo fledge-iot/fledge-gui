@@ -26,11 +26,6 @@
           </li>
         </ul>
       </nav>
-      <ng-container *ngIf="!isAddFilterWizard">
-        <button type="button" (click)="reload()" class="button is-small" title="Reload" id="refresh-check">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
-        </button>
-      </ng-container>
     </div>
     <div *ngIf="serviceInfo.isEnabled && serviceInfo.isInstalled && from === 'notifications'">
       <app-service-config (serviceConfigureModal)="openServiceConfigureModal()" [from]="'flow-editor'">
@@ -41,8 +36,11 @@
         <i class="far fa-question-circle"></i>
       </span>
     </div>
-    <ng-container *ngIf="source && rolesService.hasEditPermissions() && !isAddFilterWizard">
-      <button class="button is-small is-link mb-1" (click)="save()">Save</button>
+    <ng-container
+      *ngIf="source && rolesService.hasEditPermissions() && !isAddFilterWizard && updatedFilterPipeline?.length > 0 && isPipelineUpdated()">
+      <div>
+        <button class="button is-outlined is-small is-link mb-1" (click)="save()">Save</button>
+      </div>
     </ng-container>
   </div>
   <ng-container *ngIf="from === 'notifications'">
@@ -50,11 +48,17 @@
       (serviceConfigureModal)="openServiceConfigureModal()" (refreshService)="refreshServiceInfo()">
     </app-service-warning>
   </ng-container>
-  <ng-container *ngIf="!isAddFilterWizard">
-    <div class="rete" [ngClass]="{'expanded-width': isSidebarCollapsed, 'collapsed-width': !isSidebarCollapsed}" #rete>
+  <div [hidden]="isAddFilterWizard">
+    <app-toolbar *ngIf="source && rolesService.hasEditPermissions()" class="is-inline-block pr-2"
+      (reloadData)="reload()" (resetNodes)="reset()" (undo)="callUndoAction()" (redo)="callRedoAction()"
+      [historyData]="historyData" (delete)="onDeleteAction()" [isDeleteDisabled]="nodesToDelete.length == 0">
+    </app-toolbar>
+    <div class="rete"
+      [ngClass]="{'expanded-width': isSidebarCollapsed, 'collapsed-width': !isSidebarCollapsed, 'custom-margin': source && rolesService.hasEditPermissions()}"
+      #rete>
     </div>
     <div class="dock"></div>
-  </ng-container>
+  </div>
   <ng-contafiner *ngIf="source && isAddFilterWizard">
     <div class="box animated slideInRight">
       <app-add-filter-wizard (notify)="onNotify($event)" [serviceName]="source" [from]="from"></app-add-filter-wizard>
@@ -78,7 +82,8 @@
     </ng-container>
     <ng-container *ngIf="showFilterConfiguration">
       <app-configuration-group *ngIf="filterCategory" [category]="filterCategory" [sourceName]="quickviewFilterName"
-        (changedConfigEvent)="getChangedFilterConfig($event)" (formStatusEvent)="validFilterConfigForm = $event">
+        [from]="quickviewFilterName" (changedConfigEvent)="getChangedFilterConfig($event)"
+        (formStatusEvent)="validFilterConfigForm = $event">
       </app-configuration-group>
       <div class="container is-fluid" *ngIf="filterCategory">
         <div class="columns" *ngIf="rolesService.hasEditPermissions()">
@@ -204,15 +209,73 @@
 
 <app-confirmation-dialog id="state-change-dialog">
   <header class="modal-card-head">
-    <span class="modal-card-title is-size-6">{{btnText}} Instance</span>
+    <span class="modal-card-title is-size-6">{{dialogServiceName}}</span>
     <button class="delete" aria-label="close" (click)="closeModal('state-change-dialog')"></button>
   </header>
   <section class="modal-card-body">
-    Are you sure, You want to {{btnText.toLowerCase()}} the notification instance {{dialogServiceName}}?
+    Are you sure, you want to {{btnText.toLowerCase()}} the <b>{{dialogServiceName}}</b> notification instance?
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('state-change-dialog')">Cancel</button>
-    <button class="button is-small" [ngClass]="{'is-danger': btnText === 'Disable', 'is-info': btnText === 'Enable'}"
+    <button class="button is-small is-outlined is-info" [appDisableUntilResponse]="reenableButton"
       (click)="toggleState(btnText)">{{btnText}}</button>
+  </footer>
+</app-confirmation-dialog>
+
+<app-confirmation-dialog id="service-status-dialog">
+  <header class="modal-card-head">
+    <span class="modal-card-title is-size-6">
+      {{ service?.name || task?.name || filter?.name }}
+    </span>
+    <button type="button" aria-label="close" class="delete" (click)="closeModal('service-status-dialog')"></button>
+  </header>
+
+  <section class="modal-card-body">
+    <span *ngIf="service">
+      Are you sure, you want to {{ service.schedule_enabled ? 'disable' : 'enable' }} the <b>{{ service.name }}</b>
+      service?
+    </span>
+    <span *ngIf="task">
+      Are you sure, you want to {{ task.enabled ? 'disable' : 'enable' }} the <b>{{ task.name }}</b>
+      {{ task.execution === 'service' ? 'service' : 'task' }}?
+    </span>
+    <span *ngIf="filter">
+      Are you sure, you want to {{ filter.oldState ? 'disable' : 'enable' }} the <b>{{ filter.name }}</b> filter?
+    </span>
+  </section>
+
+  <footer class="modal-card-foot">
+    <button type="button" class="button is-small" (click)="closeModal('service-status-dialog')">Cancel</button>
+    <button *ngIf="service || task" type="button" class="button is-small is-outlined is-info"
+      [appDisableUntilResponse]="reenableButton" (click)="toggleServiceState({
+        name: service?.name || task?.name,
+        state: !(service?.schedule_enabled || task?.enabled)
+      })">
+      {{ (service?.schedule_enabled || task?.enabled) ? 'Disable' : 'Enable' }}
+    </button>
+
+    <button *ngIf="filter" type="button" class="button is-small is-outlined is-info"
+      [appDisableUntilResponse]="reenableButton" (click)="updateFilterConfiguration({
+        name: filter.name,
+        state: filter.newState,
+        category: filter.category
+      })">
+      {{ filter.oldState ? 'Disable' : 'Enable' }}
+    </button>
+  </footer>
+</app-confirmation-dialog>
+
+
+<app-confirmation-dialog id="from-toolbar-dialog">
+  <header class="modal-card-head">
+    <span class="modal-card-title is-size-6">Delete</span>
+    <button class="delete" aria-label="close" (click)="closeModal('from-toolbar-dialog')"></button>
+  </header>
+  <section class="modal-card-body">
+    Are you sure, You want to delete the selected nodes/connection?
+  </section>
+  <footer class="modal-card-foot">
+    <button class="button is-small" (click)="closeModal('from-toolbar-dialog')">Cancel</button>
+    <button class="button is-small is-danger" (click)="callDeleteAction()">Delete</button>
   </footer>
 </app-confirmation-dialog>

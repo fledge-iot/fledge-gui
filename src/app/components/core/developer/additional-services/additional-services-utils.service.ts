@@ -69,12 +69,8 @@ export class AdditionalServicesUtils {
     private alertService: AlertService) {
   }
   public getAllServiceStatus(autoRefresh: boolean, from: string) {
-    // There are two more additional services exist in the FogLAMP. Get the current service name (Fledge/FogLAMP) and show resepected services detail accordingly
-    const currentService = JSON.parse(sessionStorage.getItem('SERVICE_NAME'));
-    let expectedExternalServiceType = ['Notification', 'Dispatcher'];
-    if (currentService === 'FogLAMP') {
-      expectedExternalServiceType = ['Notification', 'Management', 'Dispatcher', 'BucketStorage'];
-    }
+    // NOTE: Open source additional services are notification and dispatcher only so there will be some extra API calls
+    let expectedExternalServiceType = ['Notification', 'Management', 'Dispatcher', 'BucketStorage'];
 
     if (from !== 'additional-services') {
       this.expectedServices = this.allExpectedServices.filter((s => (s.process === from)));
@@ -90,9 +86,19 @@ export class AdditionalServicesUtils {
             servicesRegistry = data.services.filter((s => (s.type.toLowerCase() === from)));
           }
           this.servicesRegistry = servicesRegistry;
-
-          this.sharedService.allServicesInfo.next(this.servicesRegistry);
           const matchedServices = this.servicesRegistry.filter((svc) => this.expectedServices.some(es => es.type == svc.type));
+
+          if (autoRefresh) {
+            this.installedServicePkgs.forEach(function (s) {
+              const matchedService = matchedServices.find((svc) => svc.type === s.type);
+              if (matchedService) {
+                s.state = matchedService.status;
+              }
+            });
+            this.sharedService.installedServicePkgs.next({ installed: this.installedServicePkgs, availableToInstall: this.availableServicePkgs });
+            return;
+          }
+
           if (this.servicesRegistry?.length === this.expectedServices.length) {
             this.availableServicePkgs = [];
             let serviceTypes = [];
@@ -111,11 +117,14 @@ export class AdditionalServicesUtils {
         });
   }
 
-  public checkSchedules(from: string) {
+  public checkSchedules(from: string): Promise<any> {
     this.ngProgress.start();
-    this.schedulesService.getSchedules().
-      subscribe((data: Schedule) => {
+    return this.schedulesService.getSchedules().toPromise().then(
+      (data: Schedule) => {
         this.servicesSchedules = data['schedules'].filter((sch) => this.expectedServices.some(es => es.schedule_process == sch.processName));
+        if (from === 'failedOrUnresponsiveSvc') {
+          return;
+        }
         this.pollingScheduleID = data['schedules'].find(s => s.processName === 'manage')?.id;
 
         // If schedule of all services available then no need to make other API calls
@@ -132,17 +141,17 @@ export class AdditionalServicesUtils {
           this.checkInstalledServices(from);
         }
       },
-        (error) => {
-          this.ngProgress.done();
-          if (error.status === 0) {
-            console.log('service down ', error);
-          } else {
-            this.alertService.error(error.statusText);
-          }
-        });
+      (error) => {
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText);
+        }
+      });
   }
 
-  public showInstalledAndAddedServices(services, from: string) {
+  async showInstalledAndAddedServices(services, from: string) {
     let svcs = services.filter(
       (s) => !["south", "north", "storage"].includes(s)
     );
@@ -171,7 +180,6 @@ export class AdditionalServicesUtils {
         replacement.name = foundService.name;
         replacement.added = true;
         replacement.state = foundService.status;
-        replacement.enabled = foundService.enabled;
         atIndex = idx;
       }
       if (atIndex != -1) {
@@ -186,7 +194,13 @@ export class AdditionalServicesUtils {
       const service = { name: '', added: false, isEnabled: false, isInstalled: false, process: from };
       const serviceDetail = this.installedServicePkgs.find(s => ['bucket', 'dispatcher', 'notification', 'management'].includes(s.process));
       if (serviceDetail) {
-        service.isEnabled = !["shutdown", "disabled", "installed"].includes(serviceDetail.state);
+        // To get the schedule status on individual service pages, if service is 'failed' or 'unresponsive'
+        if (['failed', 'unresponsive'].includes(serviceDetail.state.toLowerCase())) {
+          await this.checkSchedules('failedOrUnresponsiveSvc');
+          service.isEnabled = this.servicesSchedules.find(sch => sch.name === serviceDetail.name)?.enabled;
+        } else {
+          service.isEnabled = ["running", "true"].includes(serviceDetail.state);
+        }
         service.isInstalled = true;
         service.added = serviceDetail?.added;
         service.name = serviceDetail?.name;
@@ -249,9 +263,9 @@ export class AdditionalServicesUtils {
       });
   }
 
-  enableService(serviceName) {
+  enableService(serviceName): Promise<any> {
     this.ngProgress.start();
-    this.schedulesService.enableScheduleByName(serviceName).subscribe(
+    return this.schedulesService.enableScheduleByName(serviceName).toPromise().then(
       (data) => {
         this.ngProgress.done();
         this.alertService.success(data["message"], true);
@@ -263,13 +277,14 @@ export class AdditionalServicesUtils {
         } else {
           this.alertService.error(error.statusText);
         }
+        throw error;
       }
     );
   }
 
-  disableService(serviceName) {
+  disableService(serviceName): Promise<any> {
     this.ngProgress.start();
-    this.schedulesService.disableScheduleByName(serviceName).subscribe(
+    return this.schedulesService.disableScheduleByName(serviceName).toPromise().then(
       (data) => {
         this.ngProgress.done();
         this.alertService.success(data["message"], true);
@@ -281,6 +296,7 @@ export class AdditionalServicesUtils {
         } else {
           this.alertService.error(error.statusText);
         }
+        throw error;
       }
     );
   }

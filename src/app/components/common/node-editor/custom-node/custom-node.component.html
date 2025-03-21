@@ -1,4 +1,5 @@
-<div class="node-container" *ngIf="data.label!=='Storage'; else storageTemplate">
+<div [ngClass]="{'selected-node': data.selected && this.source && data.label !=='Filter'}" class="node-container"
+  (mousedown)="onNodeClick()" *ngIf="data.label!=='Storage'; else storageTemplate">
   <ng-container *ngIf="data.label!==''; else addServiceTemplate">
     <div class="title" data-testid="title">
       <div class="is-flex is-justify-content-space-between is-align-items-baseline">
@@ -18,7 +19,7 @@
           <ng-container *ngIf="data.label!=='Filter'; else southServiceTemplate">
             <div class="is-inline-flex">
               <label class="checkbox">
-                <input type="checkbox" [checked]='isEnabled' (click)="toggleEnabled($event.target.checked)"
+                <input type="checkbox" [checked]='isEnabled' (click)="onCheckboxClicked($event)"
                   [disabled]="!rolesService.hasEditPermissions()">
               </label>
               <button class="btn btn-icon pt-0" data-show="quickview" data-target="quickviewDefault"
@@ -141,7 +142,7 @@
           <div id="nodeDropdown-{{nodeId}}" class="dropdown" *ngIf="!source || rolesService.hasEditPermissions()"
             (mouseenter)="openDropdown()" (mouseleave)="closeDropdown()">
             <div class="dropdown-trigger">
-              <button class="button is-white is-small pt-0 pb-0 dropdown-button" aria-haspopup="true"
+              <button class="button is-white is-small pt-0 pb-0 dropdown-button context-menu-btn" aria-haspopup="true"
                 aria-controls="dropdown-menu3">
                 <span class="icon is-small">
                   <i class="fas fa-ellipsis-v fa-xs fa-fw" aria-hidden="true"></i>

@@ -175,3 +175,8 @@
 .description-text {
   max-width: 7rem !important;
 }
+
+.btn-icon:has(.bi-gear-wide-connected):focus {
+  outline: none;
+  box-shadow: none;
+}

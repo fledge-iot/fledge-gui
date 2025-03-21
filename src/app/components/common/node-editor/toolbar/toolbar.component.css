@@ -1,0 +1,61 @@
+.canvas-toolbar {
+    position: absolute;
+    right: 42%;
+    transition: transform .3s ease-in-out;
+    z-index: 30;
+}
+
+.box button {
+    vertical-align: middle;
+    background: none;
+    border: none;
+    font-size: 1rem;
+}
+
+.box button:hover {
+    background-color: whitesmoke;
+}
+
+button,
+hr {
+    vertical-align: middle;
+}
+
+hr {
+    background: darkgrey;
+    border: 0;
+    display: inline-block;
+    height: 0.8rem;
+    width: 1px;
+    opacity: 0.4;
+}
+
+.box {
+    border: 1px solid lightgray;
+}
+
+.custom-tooltip {
+    position: relative;
+}
+
+.custom-tooltip .tooltiptext {
+    visibility: hidden;
+    background: rgba(74, 74, 74, .9);
+    border-color: transparent transparent rgba(74, 74, 74, .9);
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 5px 8px;
+    position: absolute;
+    z-index: 1000;
+    top: auto;
+    bottom: -52px;
+    right: auto;
+    left: -50%;
+    margin: auto auto -5px -5px;
+    font-size: 0.9rem;
+}
+
+.custom-tooltip:hover .tooltiptext {
+    visibility: visible;
+}

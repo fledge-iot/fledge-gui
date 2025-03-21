@@ -13,6 +13,7 @@
   position: relative;
   padding: 1rem 1rem 0 1rem;
   overflow: visible;
+  margin-top: -0.1rem;
 }
 
 .custom-quickview-configuration {
@@ -51,7 +52,7 @@
   position: relative;
 }
 
-.groupNav_contents {
+.nav {
   display: flex;
   float: left;
   padding-right: 20px;
@@ -96,6 +97,11 @@
   border-bottom-color: #f14668 !important;
 }
 
+.tabs .is-active {
+  z-index: 1;
+  position: relative;
+}
+
 .is-small-font {
   font-size: 0.9rem !important;
   font-weight: 500;
@@ -132,4 +138,10 @@
 .card-header-title,
 .card-content {
   padding: 0.5rem 1rem !important;
+}
+
+@media (min-width: 1550px) {
+  .custom-max-width {
+    max-width: 1110px !important;
+  }
 }

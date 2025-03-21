@@ -1,5 +1,5 @@
 <div class="container is-fluid">
-  <div class="steps">
+  <div class="steps steps-sm">
     <div class="step-item is-active is-success" id="1">
       <div class="step-marker">1</div>
       <div class="step-details">
@@ -18,10 +18,11 @@
         <p>Done</p>
       </div>
     </div>
-    <div class="steps-content">
+    <div class="steps-content mb-0 desc-text">
       <form [formGroup]="taskForm" validate>
         <div class="box step-content is-active" id="c-1">
-          <span *ngIf="plugin" class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
+          <span *ngIf="plugin"
+            class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
             data-tooltip="Help" (click)="goToLink()">
             <i class="far fa-question-circle"></i>
           </span>
@@ -83,8 +84,9 @@
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <input class="input" type="text" placeholder="name" formControlName="name" title="No single quotes and double quotes!"
-                  [pattern]="QUOTATION_VALIDATION_PATTERN" autocomplete="off" required>
+                  <input class="input is-small" type="text" placeholder="name" formControlName="name"
+                    title="No single quotes and double quotes!" [pattern]="QUOTATION_VALIDATION_PATTERN"
+                    autocomplete="off" required>
                   <span *ngIf="taskForm.controls['name'].hasError('required') && taskForm.controls['name'].touched"
                     class="help is-danger">
                     <sup>*</sup>North instance name is required.
@@ -109,7 +111,8 @@
           <div *ngIf="plugins.length > 0 && isService === false" class="field is-horizontal form-group">
             <div class="field-label is-normal">
               <label class="label">Repeat Interval
-                <span class="tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Repeat every n (0-365) days/HH:mm:ss hours">
+                <span class="tooltip has-tooltip-right has-tooltip-arrow"
+                  data-tooltip="Repeat every n (0-365) days/HH:mm:ss hours">
                   <i class="far fa-xs fa-question-circle"></i>
                 </span>
               </label>
@@ -119,15 +122,15 @@
                 <div class="control">
                   <div class="columns is-mobile">
                     <div class="column">
-                      <input class="input" type='number' appNumberOnly min="0" max="365" placeholder="days"
-                        formControlName="repeatDays">
+                      <input class="input is-small" appIntegerOnly min="0" max="365" placeholder="days"
+                        autocomplete="off" formControlName="repeatDays">
                       <span *ngIf="repeatDays.errors?.required || repeatDays.errors?.min || repeatDays.errors?.max"
                         class="help is-danger">
                         <sup>*</sup>Repeat days must be in range 0 - 365.
                       </span>
                     </div>
                     <div class="column">
-                      <input class="input" type='text' placeholder="HH:mm:ss" formControlName="repeatTime"
+                      <input class="input is-small" type='text' placeholder="HH:mm:ss" formControlName="repeatTime"
                         mask='00:00:00' (input)="setRepeatIntervalValue($event)" [pattern]='regExp'>
 
                       <span *ngIf="repeatTime.errors?.required || repeatTime.errors?.pattern" class="help is-danger">
@@ -143,9 +146,10 @@
         <div class="box step-content" id="c-2">
           <app-configuration-group *ngIf="configurationData" [category]="configurationData"
             (changedConfigEvent)="getChangedConfig($event)" [from]="'add-task-form'"
-            (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
+            [recalculateTabsOverflow]="isTabsNavVisible" (formStatusEvent)="validConfigurationForm = $event">
+          </app-configuration-group>
         </div>
-        <div class="box step-content" id="c-3">    
+        <div class="box step-content" id="c-3">
           <div class="column">
             <div class="config-div">
               <div class="field is-horizontal">
@@ -168,11 +172,12 @@
     </div>
     <div class="steps-actions">
       <div class="steps-action">
-        <button (click)="movePrevious()" data-nav="previous" class="button" id="previous">Cancel</button>
+        <button (click)="movePrevious()" data-nav="previous" class="button is-small" id="previous">Cancel</button>
       </div>
       <div class="steps-action">
-        <button (click)="moveNext()" data-nav="next" class="button is-link" id="next"
-          [disabled]="taskForm.invalid || !validConfigurationForm" [appDisableUntilResponse]="reenableButton">Next</button>
+        <button (click)="moveNext()" data-nav="next" class="button is-link is-small" id="next"
+          [disabled]="taskForm.invalid || !validConfigurationForm"
+          [appDisableUntilResponse]="reenableButton">Next</button>
       </div>
     </div>
   </div>

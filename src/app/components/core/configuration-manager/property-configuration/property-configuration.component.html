@@ -1,0 +1,64 @@
+<fieldset *ngIf="rolesService.hasAccessPermission(permissions); else staticConfig">
+  <div [ngSwitch]="configuration.type">
+    <input
+      *ngSwitchCase="['string','IPv4','IPv6'].includes(configuration.type) ? configuration.type : !configuration.type"
+      [formControl]="control" type="text" class="input is-fullwidth is-small" [maxLength]="configuration.length" />
+    <div *ngSwitchCase="'enumeration'" class="select is-small">
+      <select [formControl]="control">
+        <option *ngFor="let opt of configuration.options" [value]="opt">{{opt}}</option>
+      </select>
+    </div>
+
+    <label *ngSwitchCase="'boolean'" class="checkbox">
+      <input [formControl]="control" type="checkbox" [checked]="control?.value?.toLowerCase() == 'true'" />
+    </label>
+
+    <input *ngSwitchCase="'integer'" [formControl]="control" class="input is-fullwidth is-small"
+      [minValue]="configuration.minimum" autocomplete="off" [maxValue]="configuration.maximum" appIntegerOnly />
+
+    <input *ngSwitchCase="'float'" [formControl]="control" class="input is-fullwidth is-small"
+      [minValue]="configuration.minimum" autocomplete="off" [maxValue]="configuration.maximum" appFloatOnly />
+
+    <div class="field has-addons " *ngSwitchCase="'password'">
+      <div class="control">
+        <input #pwd class="input is-fullwidth is-small" [formControl]="control" [type]="configuration.type"
+          placeholder="password" [attr.maxLength]="configuration?.length" trim="blur" />
+      </div>
+      <div class="control">
+        <button type="button" class="button is-small" (click)="togglePassword(pwd)"
+          [disabled]="control?.status === 'DISABLED'">
+          <span class="icon is-small">
+            <i class="{{pwd.type === 'password'? 'fa fa-sm fa-eye-slash' : 'fa fa-sm fa-eye'}}"></i>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <input *ngSwitchCase="'URL'" [formControl]="control" type="url" class="input is-fullwidth is-small" />
+
+    <span *ngIf="control?.hasError('required')" class="help is-danger">
+      <sup>*</sup>required
+    </span>
+    <span *ngIf="control?.hasError('minValue')" class="help is-danger">
+      <sup>*</sup>Value should not be less than {{configuration.minimum}}.
+    </span>
+    <span *ngIf="control?.hasError('maxValue')" class="help is-danger">
+      <sup>*</sup>Value should not be greater than {{configuration.maximum}}.
+    </span>
+    <span *ngIf="control?.hasError('maxLength')" class="help is-danger">
+      <sup>*</sup>*Value should not be more than {{configuration.length}} characters.
+    </span>
+  </div>
+</fieldset>
+<ng-template #staticConfig>
+  <div [ngSwitch]="configuration.type">
+
+    <label *ngSwitchCase="'boolean'" class="checkbox">
+      <input type="checkbox" [checked]="control?.value?.toLowerCase() == 'true'" disabled="true" />
+    </label>
+
+    <span *ngSwitchDefault class="help" [ngClass]="{'has-text-grey-light': !control.value}">{{control.value ?
+      control.value :
+      "None"}}</span>
+  </div>
+</ng-template>
