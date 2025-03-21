@@ -5,7 +5,7 @@
         <ul>
           <li *ngIf="from=='south'">
             <a *ngIf="source" [routerLink]="['/flow/editor/south']">South</a>
-            <span *ngIf="!source">South</span>
+            <span *ngIf="!source" id="south-service">South</span>
           </li>
           <li *ngIf="from=='north'">
             <a *ngIf="source" [routerLink]="['/flow/editor/north']">North</a>
