@@ -73,7 +73,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let backup of backupData">
+              <tr *ngFor="let backup of backupData; let i = index">
                 <td class="align-content">
                   <small>{{ backup.date | dateparser:"YYYY-MM-DD HH:mm:ss"}}</small>
                 </td>
@@ -89,7 +89,7 @@
                     </a>
                   </div>
                   <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                    <div class="dropdown-content">
+                    <div class="dropdown-content" id="dropdown-content-{{i}}">
                       <a *ngIf="backup.status != 'RUNNING'" class="dropdown-item"
                         (click)="openModal('delete-backup-dialog', backup)">
                         Delete
