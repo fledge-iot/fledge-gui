@@ -2,10 +2,12 @@
   <ng-container *ngIf="data.label==='Notification'; else addNotificationTemplate">
     <div class="title" data-testid="title">
       <div class="is-flex is-justify-content-space-between is-align-items-baseline">
-        <div class="is-inline-flex is-align-items-baseline">    
-          <i [ngClass]="notification.enable ? 'bulb-on': 'has-text-grey-light'" class="fa-regular fa-lightbulb icon-rule pr-1"></i>
+        <div class="is-inline-flex is-align-items-baseline">
+          <i [ngClass]="notification.enable ? 'bulb-on': 'has-text-grey-light'"
+            class="fa-regular fa-lightbulb icon-rule pr-1"></i>
           <span class="description-text">
-            <span [title]="data.controls?.nameControl?.name">{{data.controls?.nameControl?.name}}</span>
+            <span [title]="data.controls?.nameControl?.name">{{data.controls?.nameControl?.name |
+              truncateMiddleOfText}}</span>
             <p class="onhover-text">
               <span class="help-text pt-1" [hidden]="!showPluginName">{{notification.rule}}</span>
             </p>
@@ -13,7 +15,8 @@
         </div>
         <div class="is-inline-flex">
           <label class="checkbox">
-            <input type="checkbox" [checked]="notification.enable" (click)="toggleState($event)" [disabled]="!rolesService.hasEditPermissions()"/>
+            <input type="checkbox" [checked]="notification.enable" (click)="toggleState($event)"
+              [disabled]="!rolesService.hasEditPermissions()" />
           </label>
           <button class="btn btn-icon pt-0" data-show="quickview" data-target="quickviewDefault" data-toggle="quickview"
             (click)="showConfigurationInQuickview()">
@@ -27,14 +30,16 @@
     <div class="columns is-centered">
       <div class="column is-half">
         <span>
-          <i class="is-custom-center bi bi-lightning-charge bi-lg no-hover" [ngClass]="notification.isDeliveryEnabled === 'true' ? 'has-text-info': 'has-text-grey-light'"></i>
+          <i class="is-custom-center bi bi-lightning-charge bi-lg no-hover"
+            [ngClass]="notification.isDeliveryEnabled === 'true' ? 'has-text-info': 'has-text-grey-light'"></i>
         </span>
       </div>
     </div>
     <div class="columns mb-0 is-centered">
       <div class="column is-half">
         <span class="is-hovered has-text-grey-light">
-          <span class="is-custom-center onhover-text help-text" [hidden]="!showPluginName">{{notification.channel}}</span>
+          <span class="is-custom-center onhover-text help-text"
+            [hidden]="!showPluginName">{{notification.channel}}</span>
         </span>
       </div>
     </div>
@@ -48,7 +53,7 @@
           class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon ml-3"
           data-tooltip="Show logs" data-show="quickview" data-target="quickviewDefault" (click)="showLogsInQuickview()">
           <i class="bi bi-file-earmark-text bi-xs"></i>
-        </span>     
+        </span>
       </div>
       <div class="is-custom-center">
         <span class="help-text">{{notification.notificationType | titlecase}}</span>
@@ -79,9 +84,11 @@
     </div>
   </ng-container>
   <ng-template #addNotificationTemplate>
-    <div class="add-notification" [ngClass]="{'disabled-node': !rolesService.hasEditPermissions() || !notification.isServiceEnabled}">
-      <span class="has-tooltip-bottom has-tooltip-arrow tooltip" [ngClass]="rolesService.hasEditPermissions() && notification.isServiceEnabled ? 'is-hovered': 'disabled'" data-tooltip="Add Notification Instance"
-        (click)="navToAddNotificationPage()">
+    <div class="add-notification"
+      [ngClass]="{'disabled-node': !rolesService.hasEditPermissions() || !notification.isServiceEnabled}">
+      <span class="has-tooltip-bottom has-tooltip-arrow tooltip"
+        [ngClass]="rolesService.hasEditPermissions() && notification.isServiceEnabled ? 'is-hovered': 'disabled'"
+        data-tooltip="Add Notification Instance" (click)="navToAddNotificationPage()">
         <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
       </span>
     </div>

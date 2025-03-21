@@ -9,10 +9,12 @@
             <i class="fa fa-2xs fa-circle child-icon"></i>
           </span>
           <span *ngIf="!source; else serviceNameTemplate" class="service-name"
-            (click)="openServiceDetails()">{{data.controls?.nameControl?.name | centerTruncate:[16]}}</span>
+            [title]="data.controls?.nameControl?.name" (click)="openServiceDetails()">{{data.controls?.nameControl?.name
+            | truncateMiddleOfText}}</span>
           <ng-template #serviceNameTemplate>
-            <span [ngClass]="{'is-size-5': data?.pseudoNode}">{{data.controls?.nameControl?.name |
-              centerTruncate:[16]}}</span>
+            <span [ngClass]="{'is-size-5': data?.pseudoNode}"
+              [title]="data.controls?.nameControl?.name">{{data.controls?.nameControl?.name |
+              truncateMiddleOfText}}</span>
           </ng-template>
           <span *ngIf="task.execution === 'task'" class="help has-text-grey-light">&nbsp;Task</span>
         </div>
