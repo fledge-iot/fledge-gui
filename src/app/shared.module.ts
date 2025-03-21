@@ -33,6 +33,7 @@ import { ToggleSwitchComponent } from './components/core/configuration-manager/t
 import { ListTableComponent } from './components/core/configuration-manager/list-table/list-table.component';
 import { ListCardComponent } from './components/core/configuration-manager/list-card/list-card.component';
 import { KvlistCardComponent } from './components/core/configuration-manager/kvlist-card/kvlist-card.component';
+import { DynamicGroupComponent } from './components/core/configuration-manager/dynamic-group/dynamic-group.component';
 
 @NgModule({
   imports: [
@@ -70,7 +71,8 @@ import { KvlistCardComponent } from './components/core/configuration-manager/kvl
     ToggleSwitchComponent,
     ListTableComponent,
     ListCardComponent,
-    KvlistCardComponent
+    KvlistCardComponent,
+    DynamicGroupComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -86,7 +88,8 @@ import { KvlistCardComponent } from './components/core/configuration-manager/kvl
     AddTaskWizardComponent,
     TaskScheduleComponent,
     ServiceWarningComponent,
-    ServiceConfigComponent
+    ServiceConfigComponent,
+    DynamicGroupComponent
   ]
 })
 export class SharedModule { }
