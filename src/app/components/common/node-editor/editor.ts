@@ -80,8 +80,8 @@ export async function createEditor(
   setupPresets(render, data);
   const selector = createSelector(area, flowEditorService);
   connectionEvents = setupConnectionEvents(selector);
-  setupInsertableNodes(flowEditorService);
-  configureEditor(connectionEvents, render, flowEditorService);
+  setupInsertableNodes(flowEditorService, alertService);
+  configureEditor(connectionEvents, render, flowEditorService, alertService);
   applyCustomSettings(socket, data, flowEditorService, rolesService, alertService);
 }
 
@@ -105,12 +105,12 @@ function setupPlugins(injector: Injector) {
   return render;
 }
 
-function setupInsertableNodes(flowEditorService: FlowEditorService) {
+function setupInsertableNodes(flowEditorService: FlowEditorService, alertService: AlertService) {
   insertableNodes(area, {
     async createConnections(node, connection) {
       handleConnections(node, connection, flowEditorService);
     }
-  });
+  }, alertService);
 }
 
 async function removeDuplicateConnections() {
@@ -198,9 +198,9 @@ function setupConnectionEvents(selector) {
   };
 }
 
-function configureEditor(connectionEvents, render, flowEditorService: FlowEditorService) {
+function configureEditor(connectionEvents, render, flowEditorService: FlowEditorService, alertService: AlertService) {
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
-  connection.addPreset(() => new Connector(connectionEvents, flowEditorService));
+  connection.addPreset(() => new Connector(connectionEvents, flowEditorService, alertService));
   arrange.addPreset(ArrangePresets.classic.setup());
   render.addPreset(Presets.contextMenu.setup());
   dock.addPreset(DockPresets.classic.setup({ area, size: 70, scale: 0.6 }));
@@ -250,6 +250,7 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
   area: AreaPlugin<Schemes, AreaExtra>,
   data: any,
   flowEditorService) {
+
   if (data.source) {
     const db = new Storage(socket);
     const plugin = data.from == 'south' ? new South(socket, data.service) : new North(socket, data.task);
@@ -327,7 +328,6 @@ async function nodesGrid(area: AreaPlugin<Schemes,
   socket: ClassicPreset.Socket,
   from: string, flowEditorService, isServiceAvailable = null) {
   const service = from == 'south' ? new AddService() : from == 'north' ? new AddTask() : new AddNotification(isServiceAvailable);
-
   await editor.addNode(service);
   await area.translate(service.id, { x: 0, y: 0 });
 
@@ -353,7 +353,6 @@ async function nodesGrid(area: AreaPlugin<Schemes,
 export function getUpdatedFilterPipeline() {
   let nodes = editor.getNodes();
   let connections = editor.getConnections();
-
   for (let i = 0; i < nodes.length; i++) {
     if (i == 0) {
       // check if starting node of pipeline i.e. south/storage is connected
@@ -383,6 +382,7 @@ export function getUpdatedFilterPipeline() {
     let connlist = connections.filter(c => c.source === sourceNode.id);
     if (connlist.length === 1) {
       let filterNode = editor.getNode(connlist[0].target);
+
       // do not push storage or north node in the filter pipeline
       if (filterNode.label !== "Storage" && filterNode.label != 'North') {
         if (existsInPipeline(updatedFilterPipeline, filterNode.label)) {

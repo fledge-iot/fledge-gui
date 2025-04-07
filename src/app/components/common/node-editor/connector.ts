@@ -6,18 +6,18 @@ import { Filter, PseudoNodeControl } from './nodes/filter';
 import { South } from './nodes/south';
 import { North } from './nodes/north';
 import { Storage } from './nodes/storage';
+import { AlertService } from '../../../../app/services';
 
 type ClassicScheme = GetSchemes<ClassicPreset.Node, ClassicPreset.Connection<ClassicPreset.Node, ClassicPreset.Node> & { isLoop?: boolean }>
 
 export class Connector<S extends ClassicScheme, K extends any[]> extends BidirectFlow<S, K> {
-  constructor(props: { click: (data: S['Connection']) => void, remove: (data: S['Connection']) => void }, flowEditorService: FlowEditorService) {
+  constructor(props: { click: (data: S['Connection']) => void, remove: (data: S['Connection']) => void }, flowEditorService: FlowEditorService, alertService: AlertService) {
     super({
       makeConnection<K extends any[]>(initial: SocketData, socket: SocketData, context: Context<S, K>) {
         // Avoid self loop of node connection
         if (initial.nodeId === socket.nodeId) {
           return;
         }
-
         const connectionExist = context.editor.getConnections().find(conn => (conn.source == initial.nodeId && conn.target == socket.nodeId));
         if (connectionExist) {
           return;
@@ -29,7 +29,6 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
         const nodes = context.editor.getNodes();
         const isSouthSide = nodes.find(node => node.label == 'South');
         const isNorthSide = nodes.find(node => node.label == 'North');
-
         const invalidConnections = [
           { from: Storage, to: South, condition: true },
           { from: North, to: Storage, condition: true },
@@ -59,6 +58,7 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
         if (typeof updatedPipeline == 'object') {
           exists = contains(toNode.label, updatedPipeline);
           if (exists) {
+            alertService.error('Joining branches in a pipeline from the same source within the same service is not allowed due to asset name and timestamp conflicts.', true);
             return;
           }
         }
