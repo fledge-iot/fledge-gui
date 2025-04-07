@@ -67,15 +67,16 @@ export function insertableNodes<S extends Schemes>(
       if (view && node.label !== "South" && node.label !== "Storage" && node.label !== "North") {
         const intersectedConnections = checkIntersection(view.position, node, cons);
 
-        // Get intersected connections with same target
+        // Utility function to check if two connections have the same target
+        const hasSameTarget = (conn1, conn2) => conn1.target === conn2.target;
+
+        // Get intersected connections with the same target
         const intersectedConnectionsWithSameTarget = intersectedConnections.filter(id => {
           const conn = editor.getConnection(id);
+
+          // Check if any other connection has the same target
           return intersectedConnections.some(otherId => {
-            if (id !== otherId) {
-              const otherConn = editor.getConnection(otherId);
-              return conn.target === otherConn.target;
-            }
-            return false;
+            return id !== otherId && hasSameTarget(conn, editor.getConnection(otherId));
           });
         });
 
