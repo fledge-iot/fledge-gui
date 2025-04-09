@@ -403,7 +403,6 @@ export function getUpdatedFilterPipeline(alertService = null) {
         if (branch) {
           if (branch.length === 0) {
             alertService.error('Joining branches in a pipeline is not supported', true);
-            console.log("invalid pipeline");
             return [];
           }
           updatedFilterPipeline.push(branch);

@@ -58,7 +58,7 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
         if (typeof updatedPipeline == 'object') {
           exists = contains(toNode.label, updatedPipeline);
           if (exists) {
-            alertService.error('Joining branches in a pipeline from the same source within the same service is not allowed due to asset name and timestamp conflicts.', true);
+            alertService.error('Joining branches in a pipeline is not supported', true);
             return;
           }
         }
