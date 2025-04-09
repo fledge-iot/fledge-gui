@@ -108,7 +108,7 @@ function setupPlugins(injector: Injector) {
 function setupInsertableNodes(flowEditorService: FlowEditorService, alertService: AlertService) {
   insertableNodes(area, {
     async createConnections(node, connection) {
-      handleConnections(node, connection, flowEditorService);
+      handleConnections(node, connection, flowEditorService, alertService);
     }
   }, alertService);
 }
@@ -128,7 +128,7 @@ async function removeDuplicateConnections() {
 }
 
 
-async function handleConnections(node, connection, flowEditorService: FlowEditorService) {
+async function handleConnections(node, connection, flowEditorService: FlowEditorService, alertService: AlertService) {
   if (!isEmpty(node.inputs) && !isEmpty(node.outputs) && node?.label === 'Filter') {
     const pseudoNodeControl = node.controls.pseudoNodeControl as PseudoNodeControl;
     pseudoNodeControl.pseudoConnection = true;
@@ -142,7 +142,7 @@ async function handleConnections(node, connection, flowEditorService: FlowEditor
   await removeDuplicateConnections();
 
   if (node?.label !== 'Filter') {
-    const pipeline = getUpdatedFilterPipeline();
+    const pipeline = getUpdatedFilterPipeline(alertService);
     flowEditorService.emitPipelineUpdate(pipeline);
   }
 
@@ -350,7 +350,7 @@ async function nodesGrid(area: AreaPlugin<Schemes,
   flowEditorService.checkHistory.next({ showUndo: canUndo(), showRedo: canRedo() });
 }
 
-export function getUpdatedFilterPipeline() {
+export function getUpdatedFilterPipeline(alertService = null) {
   let nodes = editor.getNodes();
   let connections = editor.getConnections();
   for (let i = 0; i < nodes.length; i++) {
@@ -402,6 +402,7 @@ export function getUpdatedFilterPipeline() {
         // check if it is a slave branch
         if (branch) {
           if (branch.length === 0) {
+            alertService.error('Joining branches in a pipeline is not supported', true);
             console.log("invalid pipeline");
             return [];
           }

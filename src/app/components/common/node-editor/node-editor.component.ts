@@ -277,7 +277,7 @@ export class NodeEditorComponent implements OnInit {
       }
       else {
         if (this.isfilterPipelineFetched) {
-          let updatedPipeline = getUpdatedFilterPipeline();
+          let updatedPipeline = getUpdatedFilterPipeline(this.alertService);
           if (updatedPipeline?.length > 0) {
             this.updatedFilterPipeline = updatedPipeline;
             console.log(this.updatedFilterPipeline);
@@ -1315,7 +1315,7 @@ export class NodeEditorComponent implements OnInit {
       await deleteConnection(connectionToDelete.id);
       this.nodesToDelete = [];
       // check if filter pipeline is updated and emit the updated pipeline
-      const pipeline = getUpdatedFilterPipeline();
+      const pipeline = getUpdatedFilterPipeline(this.alertService);
       this.flowEditorService.emitPipelineUpdate(pipeline);
     }
     const filterNodeToDelete = this.nodesToDelete.find(node => (node.label !== 'South' && node.label !== 'North' && node.label !== 'Connection'));

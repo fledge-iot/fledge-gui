@@ -53,7 +53,7 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
         }
 
         // Avoid connection loop in pipeline
-        const updatedPipeline = getUpdatedFilterPipeline();
+        const updatedPipeline = getUpdatedFilterPipeline(alertService);
         let exists = false;
         if (typeof updatedPipeline == 'object') {
           exists = contains(toNode.label, updatedPipeline);
@@ -94,7 +94,7 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
               pseudoNodeControl.pseudoConnection = true;
             }
           }
-          const changedPipeline = getUpdatedFilterPipeline();
+          const changedPipeline = getUpdatedFilterPipeline(alertService);
           flowEditorService.emitPipelineUpdate(changedPipeline);
         }, 0);
 

@@ -80,7 +80,7 @@ export function insertableNodes<S extends Schemes>(
           });
         });
 
-        if (intersectedConnectionsWithSameTarget.length > 1) {
+        if (intersectedConnectionsWithSameTarget.length > 1 && node.label === "Filter") {
           alertService.error('Joining branches in a pipeline is not supported', true);
           return context;
         }
