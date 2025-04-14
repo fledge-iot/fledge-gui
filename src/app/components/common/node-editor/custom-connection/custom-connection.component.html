@@ -2,10 +2,8 @@
   <path [attr.d]="path" class="hover-path"></path>
   <path [attr.d]="path" #svgpath [class]="{ selected: data.selected }" />
 </svg>
-<!-- Show label on the connection line -->
-<!-- <span (pointerdown)="$event.stopPropagation()" class="connection-status label has-text-success" [style]="{
-    left: point.x + 'px',
-    top: point.y + 'px',
-  }">
-  <i class="bi bi-vinyl"></i>
-</span> -->
+<!-- Show ban icon on the connection wire, if egress/ingress disabled -->
+<span [style.left.px]="point.x" [style.top.px]="point.y" (pointerdown)="$event.stopPropagation()"
+  class="connection-status label has-text-success">
+  <i class="bi bi-ban"></i>
+</span>

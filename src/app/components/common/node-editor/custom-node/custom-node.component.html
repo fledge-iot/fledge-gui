@@ -21,6 +21,11 @@
         <div class="is-inline-flex">
           <ng-container *ngIf="data.label!=='Filter'; else southServiceTemplate">
             <div class="is-inline-flex">
+              <span *ngIf="isServiceNode && data?.debug?.debugger === 'Attached'"
+                class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-left help-icon mr-1"
+                data-tooltip="Debugger Attached">
+                <i class="bi bi-bug bi-sm debug"></i>
+              </span>
               <label class="checkbox">
                 <input type="checkbox" [checked]='isEnabled' (click)="onCheckboxClicked($event)"
                   [disabled]="!rolesService.hasEditPermissions()">

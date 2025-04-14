@@ -111,12 +111,15 @@ export class CustomNodeComponent implements OnChanges {
     this.nodeId = this.data.id;
     if (this.data.label === 'South' || this.data.label === 'North') {
       this.setSetectedNodeColor('#C781BB');
+      this.data['debug'] = this.data.controls.debugControl['debug'];
+
       if (this.source !== '') {
         this.isServiceNode = true;
         this.elRef.nativeElement.style.borderColor = this.data.label === 'South' ? "#B6D7A8" : '#C781BB'
         this.isServiceNode = true;
         if (this.from == 'north') {
           if (!isEmpty(this.data.controls)) {
+
             this.task.name = this.service.name = this.data.controls.nameControl['name'];
             this.task.plugin = this.service.pluginName = this.data.controls.pluginControl['plugin'];
             this.task.sent = this.service.readingCount = this.data.controls.sentReadingControl['sent'];

@@ -8,7 +8,8 @@ import {
   NameControl,
   PluginControl,
   PluginVersionControl,
-  StatusControl
+  StatusControl,
+  DebugControl
 } from "../controls/common-custom-control";
 
 export class South extends ClassicPreset.Node {
@@ -31,6 +32,7 @@ export class South extends ClassicPreset.Node {
       const readingCountControl = new ReadingControl(readingCount);
       const assetCountControl = new AssetControl(assetCount);
       const pluginVersion = new PluginVersionControl(service.plugin.version);
+      const debug = new DebugControl(service.debug);
 
       this.addControl('nameControl', nameControl);
       this.addControl('pluginControl', pluginControl);
@@ -38,6 +40,7 @@ export class South extends ClassicPreset.Node {
       this.addControl('assetCountControl', assetCountControl);
       this.addControl('statusControl', statusControl);
       this.addControl('enabledControl', enabledControl);
+      this.addControl('debugControl', debug);
       this.addControl('pluginVersionControl', pluginVersion);
     }
     this.addOutput("port", new ClassicPreset.Output(socket));

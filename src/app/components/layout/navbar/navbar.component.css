@@ -1,10 +1,10 @@
 .navbar-brand {
-          align-items: center;
+  align-items: center;
 }
 
 .navbar-item {
-          display: flex;
-          padding: 0.25rem .75rem;
+  display: flex;
+  padding: 0.25rem .75rem;
 }
 
 .user-dropdown {
@@ -15,40 +15,40 @@
 .navbar-menu,
 .navbar-start,
 .navbar-end {
-          align-items: center;
-          display: flex;
-          padding: 0;
+  align-items: center;
+  display: flex;
+  padding: 0;
 }
 
 @media screen and (max-width: 1023px) {
-          .navbar-menu.is-active {
-                    display: flex !important;
-                    padding: 0;
-          }
+  .navbar-menu.is-active {
+    display: flex !important;
+    padding: 0;
+  }
 }
 
 .navbar-menu {
-          flex-grow: 1;
-          flex-shrink: 0;
-          overflow: visible !important;
+  flex-grow: 1;
+  flex-shrink: 0;
+  overflow: visible !important;
 }
 
 .navbar-start {
-          justify-content: flex-start;
-          margin-right: auto;
+  justify-content: flex-start;
+  margin-right: auto;
 }
 
 .navbar-end {
-          justify-content: flex-end;
-          margin-left: auto;
+  justify-content: flex-end;
+  margin-left: auto;
 }
 
 .bi-power {
-          color: rgb(178, 34, 34);
+  color: rgb(178, 34, 34);
 }
 
 #restart i {
-          color: rgb(178, 34, 34);
+  color: rgb(178, 34, 34);
 }
 
 #hover-link {
@@ -68,7 +68,7 @@
 }
 
 .dropdown-item.user-content {
-  width:100%;
+  width: 100%;
 }
 
 .navbar-link:not(.is-arrowless)::after {
@@ -94,18 +94,32 @@
   opacity: .95;
   background-color: whitesmoke;
   pointer-events: none;
- }
+}
 
- .help {
+.help {
   margin-top: 0px;
   font-size: 0.6rem;
- }
+}
 
- .ghost {
-  color:  #4a4a4a;
+.ghost {
+  color: #4a4a4a;
   text-decoration: underline;
- }
+}
 
- .ghost:hover {
+.ghost:hover {
   color: #485fc7;
- }
+}
+
+.status-icon {
+  position: relative;
+  display: inline-block;
+}
+
+.overlay-icon {
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 0.4rem);
+  transform: translate(-50%, -50%);
+  color: #ff0000;
+  font-size: 0.95em;
+}

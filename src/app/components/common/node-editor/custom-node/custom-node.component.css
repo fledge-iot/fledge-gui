@@ -235,3 +235,7 @@
   outline: none;
   box-shadow: none;
 }
+
+:host:has(.debug) {
+  background-color: #FFF3E7;
+}

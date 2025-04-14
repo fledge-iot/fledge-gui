@@ -4,7 +4,8 @@ import {
   NameControl,
   PluginControl,
   PluginVersionControl,
-  StatusControl
+  StatusControl,
+  DebugControl
 } from "../controls/common-custom-control";
 import { ExecutionControl, SentReadingsControl } from "../controls/north-custom-control";
 
@@ -24,7 +25,7 @@ export class North extends ClassicPreset.Node {
       const execution = new ExecutionControl(task?.execution);
       const enabled = new EnabledControl(task.enabled);
       const pluginVersion = new PluginVersionControl(task.plugin.version);
-
+      const debug = new DebugControl(task.debug);
       this.addControl('nameControl', name);
       this.addControl('pluginControl', plugin);
       this.addControl('statusControl', status);
@@ -32,6 +33,7 @@ export class North extends ClassicPreset.Node {
       this.addControl('sentReadingControl', sentReading);
       this.addControl('enabledControl', enabled);
       this.addControl('pluginVersionControl', pluginVersion);
+      this.addControl('debugControl', debug);
     }
   }
 }

@@ -7,7 +7,7 @@ export class Connection<A extends Node, B extends Node> extends ClassicPreset.Co
   selected?: boolean
   click: (data: Connection<A, B>) => void
   remove: (data: Connection<A, B>) => void
-  curve?: CurveFactory
+  curve?: CurveFactory;
 
   constructor(events: { click: (data: Connection<A, B>) => void, remove: (data: Connection<A, B>) => void }, source: A, target: B, public isLoop?: boolean) {
     super(source, 'port', target, 'port')
