@@ -236,6 +236,29 @@
   box-shadow: none;
 }
 
-:host:has(.debug) {
-  background-color: #FFF3E7;
+.icon.status-icon {
+  position: absolute;
+  top: 16%;
+  left: 6%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  font-size: 1.1em;
+}
+
+.egress-isolated {
+  position: absolute;
+  top: 45%;
+  left: 48%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  font-size: xx-large !important;
+}
+
+.ingress-isolated {
+  position: absolute;
+  top: 45%;
+  left: 44%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  font-size: xx-large !important;
 }

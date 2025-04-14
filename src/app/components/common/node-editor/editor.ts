@@ -251,7 +251,7 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
   data: any,
   flowEditorService) {
   if (data.source) {
-    const db = new Storage(socket);
+    const db = new Storage(socket, data);
     const plugin = data.from == 'south' ? new South(socket, data.service) : new North(socket, data.task);
     //  FIX ME: Array index based change
     if (data.from == 'south') {

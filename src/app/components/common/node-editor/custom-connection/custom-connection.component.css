@@ -20,7 +20,7 @@ svg path.selected {
   stroke: transparent !important;
 }
 
-.connection-status {
+/* .connection-status {
   position: absolute;
   transform: translate(-50%, -50%);
   border: 0px;
@@ -36,4 +36,4 @@ svg path.selected {
 .connection-status .bi-ban {
   font-size: 0.8em;
   color: #ff0000;
-}
+} */

@@ -28,13 +28,13 @@ export class CustomConnectionComponent {
   @ViewChild('svgpath', { static: true }) pathRef: ElementRef<SVGPathElement>;
 
   // code block to show icon on the connection line
-  get point() {
-    if (!this.pathRef) return { x: 0, y: 0 }
-    const path = this.pathRef.nativeElement
-    if (path.getTotalLength() != 0) {
-      const point = path?.getPointAtLength(path.getTotalLength() / 2)
-      return point;
-    }
-    return { x: 0, y: 0 }
-  }
+  // get point() {
+  //   if (!this.pathRef) return { x: 0, y: 0 }
+  //   const path = this.pathRef.nativeElement
+  //   if (path.getTotalLength() != 0) {
+  //     const point = path?.getPointAtLength(path.getTotalLength() / 2)
+  //     return point;
+  //   }
+  //   return { x: 0, y: 0 }
+  // }
 }

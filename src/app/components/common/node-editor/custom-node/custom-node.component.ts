@@ -110,8 +110,8 @@ export class CustomNodeComponent implements OnChanges {
   ngOnChanges(): void {
     this.nodeId = this.data.id;
     if (this.data.label === 'South' || this.data.label === 'North') {
-      this.setSetectedNodeColor('#C781BB');
       this.data['debug'] = this.data.controls.debugControl['debug'];
+      this.setSetectedNodeColor('#C781BB');
 
       if (this.source !== '') {
         this.isServiceNode = true;
@@ -196,6 +196,9 @@ export class CustomNodeComponent implements OnChanges {
     }
 
     if (this.data.label === 'Storage') {
+      if (this.from == 'south') {
+        this.data['debug'] = this.data?.controls?.debugControl['debug'];
+      }
       this.elRef.nativeElement.style.borderColor = "#999999";
     }
     this.cdr.detectChanges();

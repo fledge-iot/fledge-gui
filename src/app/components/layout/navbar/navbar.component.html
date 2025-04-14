@@ -82,12 +82,13 @@
                     <table>
                       <tr *ngFor="let s of servicesRecord">
                         <td class="has-text-left">
-                          <span class="icon status-icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
+                          <!-- <span class="icon status-icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
                             <i class="bi bi-circle-fill child-icon"></i>
-                            <i *ngIf="s?.debug?.ingress === 'Suspended' || s?.debug?.egress === 'Isolated'"
+                            <i *ngIf="s?.debug?.ingress === 'Suspended'"
                               class="bi bi-ban overlay-icon"></i>
-                          </span>
+                          </span> -->
                           {{s.name}}&nbsp;
+
 
                         </td>
 
@@ -183,17 +184,17 @@
                       <table>
                         <tr *ngFor="let s of servicesRecord">
                           <td class="has-text-left">
-                            <span class="icon status-icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
+                            <!-- <span class="icon status-icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
                               <i class="bi bi-circle-fill child-icon"></i>
                               <i *ngIf="s?.debug?.ingress === 'Suspended' || s?.debug?.egress === 'Isolated'"
                                 class="bi bi-ban overlay-icon"></i>
-                            </span>
-                            {{s.name.length <= 18 ? s.name : s.name.substr(0,18) + '..' }}&nbsp; <span
+                            </span> -->
+                            {{s.name.length <= 18 ? s.name : s.name.substr(0,18) + '..' }}&nbsp; <!-- <span
                               *ngIf="s?.debug?.debugger === 'Attached'"
                               class="icon is-small has-tooltip-top has-tooltip-arrow tooltip help-icon"
                               data-tooltip="Debugger Attached">
                               <i class="bi bi-bug bi-sm debug"></i>
-                              </span>
+                              </span> -->
                           </td>
                           <td>
                             <b>{{s.status}}</b>
@@ -260,18 +261,30 @@
                         <table>
                           <tr *ngFor="let s of servicesRecord">
                             <td class="has-text-left">
-                              <span class="icon status-icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
+                              <span class="icon status-icon" [ngClass]="applyServiceStatusCustomCss(s.status)"
+                                class="has-tooltip-arrow tooltip is-hovered" data-tooltip="Ingest Suspended">
                                 <i class="bi bi-circle-fill child-icon"></i>
-                                <i *ngIf="s?.debug?.ingress === 'Suspended' || s?.debug?.egress === 'Isolated'"
-                                  class="bi bi-ban overlay-icon"></i>
+                                <i *ngIf="s?.debug?.ingress === 'Suspended'" class="bi bi-ban overlay-icon"></i>
                               </span>
                               <ng-container
                                 *ngIf="servicesToShow.includes(s.type.toLowerCase()); else elseServiceTemplate">
-                                <a class="ghost" (click)="navToServiceConfiguration(s)">{{s.name}}
+                                <a class="ghost" (click)="navToServiceConfiguration(s)">
+                                  {{s.name}}
                                 </a>
                               </ng-container>
+                              <ng-container *ngIf="s?.debug?.egress === 'Isolated'">
+                                <span *ngIf="s.type == 'Southbound'" class="has-tooltip-arrow tooltip is-hovered"
+                                  data-tooltip="Storage Isolated">
+                                  <i class="bi bi-database-slash"></i>
+                                </span>
+                                <span *ngIf="s.type == 'Northbound'" class="has-tooltip-arrow tooltip is-hovered"
+                                  data-tooltip="Egress Isolated">
+                                  <i class="bi bi-cloud-slash"></i>
+                                </span>
+                              </ng-container>
                               <ng-template #elseServiceTemplate>
-                                <span>{{s.name}}
+                                <span>
+                                  {{s.name}}
                                 </span>
                               </ng-template>
                             <td>
@@ -284,14 +297,14 @@
                               </ng-container>
                             </td>
                             <td>
-                              <b>{{s.status}}</b>
-                            </td>
-                            <td>
-                              <span *ngIf="s?.debug?.debugger === 'Attached'"
-                                class="icon is-small has-tooltip-top has-tooltip-arrow tooltip help-icon"
-                                data-tooltip="Debugger Attached">
-                                <i class="bi bi-bug bi-sm debug"></i>
-                              </span>
+                              <div class="is-flex justify-content-between px-1">
+                                <span><b>{{s.status}}</b></span>
+                                <span *ngIf="s?.debug?.debugger === 'Attached'"
+                                  class="icon is-small has-tooltip-top has-tooltip-arrow tooltip help-icon"
+                                  data-tooltip="Debugger Attached">
+                                  <i class="bi bi-bug bi-sm debug"></i>
+                                </span>
+                              </div>
                             </td>
                           </tr>
                         </table>

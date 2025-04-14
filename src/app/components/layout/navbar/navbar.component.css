@@ -118,8 +118,8 @@
 .overlay-icon {
   position: absolute;
   top: 50%;
-  left: calc(50% - 0.4rem);
+  left: 26%;
   transform: translate(-50%, -50%);
-  color: #ff0000;
-  font-size: 0.95em;
+  color: gray;
+  font-size: 1.1em;
 }
