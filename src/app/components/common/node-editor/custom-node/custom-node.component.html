@@ -26,7 +26,8 @@
         <div class="is-inline-flex">
           <ng-container *ngIf="data.label!=='Filter'; else southServiceTemplate">
             <div class="is-inline-flex">
-              <span *ngIf="isServiceNode && data?.debug?.debugger === 'Attached'"
+              <span *ngIf="isServiceNode && data?.debug?.debugger === 'Attached'" (click)="openDebugPage()"
+                [attr.data-show]="'quickview'" [attr.data-target]="'quickviewDefault'"
                 class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-left help-icon mr-1"
                 data-tooltip="Debugger Attached">
                 <i class="bi bi-bug bi-sm debug"></i>
@@ -176,6 +177,27 @@
             </div>
             <div class="dropdown-menu" id="dropdown-menu3" role="menu">
               <div class="dropdown-content">
+                <div class="dropdown-item has-submenu" *ngIf="['south', 'north'].includes(data.type)">
+                  <span class="is-flex-grow-3">Debugger</span>
+                  <span class="icon is-small is-pulled-right m-0">
+                    <i class="fas fa-xs fa-chevron-right" aria-hidden="true"></i>
+                  </span>
+                  <!-- Submenu -->
+                  <div class="submenu-div">
+                    <div class="submenu-list">
+                      <div *ngIf="data?.debug?.debugger !== 'Attached'">
+                        <a class="submenu-text" (click)="toggleDebuggerState('attach')">Attach</a>
+                      </div>
+                      <div *ngIf="data?.debug?.debugger === 'Attached'">
+                        <a class="submenu-text" (click)="toggleDebuggerState('detach')">Detach</a>
+                      </div>
+                      <div>
+                        <a class="submenu-text" (click)="openDebugPage()" [attr.data-show]="'quickview'"
+                          [attr.data-target]="'quickviewDefault'">Show</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <ng-container *ngIf="!source">
                   <a class="dropdown-item" (click)="openServiceDetails()">
                     <span>Details</span>

@@ -13,6 +13,7 @@ export class QuickviewComponent implements OnInit {
   @ViewChild('quickView') quickView;
   @ViewChild('quickViewBlock') quickViewBlock;
   @Input() showReadings: boolean;
+  @Input() isDebuggerPage = false;
   @Input() showLogs: boolean;
 
   @ContentChild('notificationLogs', { static: false }) notificationLogsComponent;
@@ -39,9 +40,12 @@ export class QuickviewComponent implements OnInit {
   }
 
   ngOnChanges() {
+    if (this.isDebuggerPage) {
+      this.quickView.nativeElement.style.width = '35%';
+      return;
+    }
     if (this.showReadings) {
       this.quickView.nativeElement.style.width = '35%';
-      this.quickViewBlock.nativeElement.style.width = '80%';
       return;
     }
     if (this.quickView) {

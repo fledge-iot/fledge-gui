@@ -16,6 +16,7 @@ export class South extends ClassicPreset.Node {
   height = 94;
   width = 198;
   parent?: string;
+  type? = "south";
 
   constructor(socket: ClassicPreset.Socket, service) {
     super("South");

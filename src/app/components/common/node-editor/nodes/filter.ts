@@ -13,6 +13,7 @@ export class Filter extends ClassicPreset.Node {
   width = 198;
   parent?: string;
   pseudoNode?: boolean;
+  type? = "filter";
 
   constructor(socket: ClassicPreset.Socket, filter, pseudoNode: boolean) {
     super("Filter");

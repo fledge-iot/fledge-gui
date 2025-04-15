@@ -63,10 +63,14 @@ export class NodeEditorComponent implements OnInit {
   private nodeClickSubscription: Subscription;
   private nodeDropdownClickSubscription: Subscription;
   private pipelineSubscription: Subscription;
+  private debuggerStateSubscription: Subscription;
 
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
   showLogs: boolean = false;
+  debugger: any = {};
+  debuggerPage = false;
+
   showNotificationConfiguration = false;
   showTaskSchedule = false;
   showReadings = false;
@@ -217,6 +221,15 @@ export class NodeEditorComponent implements OnInit {
         }
       }
     );
+
+    this.debuggerStateSubscription = this.flowEditorService.openDebuggerInQuickview.subscribe(data => {
+      console.log('data', data);
+      this.debuggerPage = data.openDebuggerPage;
+      this.debugger = { debug: data.debugger, serviceName: data.serviceName };
+    });
+
+
+
     this.logsSubscription = this.flowEditorService.showLogsInQuickview.subscribe(data => {
       this.showLogs = data.showLogs ? true : false;
       this.notification = data?.notification;

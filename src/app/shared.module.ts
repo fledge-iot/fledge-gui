@@ -34,6 +34,7 @@ import { ListTableComponent } from './components/core/configuration-manager/list
 import { ListCardComponent } from './components/core/configuration-manager/list-card/list-card.component';
 import { KvlistCardComponent } from './components/core/configuration-manager/kvlist-card/kvlist-card.component';
 import { DynamicGroupComponent } from './components/core/configuration-manager/dynamic-group/dynamic-group.component';
+import { DebuggerComponent } from './components/core/debugger/debugger.component';
 
 @NgModule({
   imports: [
@@ -72,7 +73,8 @@ import { DynamicGroupComponent } from './components/core/configuration-manager/d
     ListTableComponent,
     ListCardComponent,
     KvlistCardComponent,
-    DynamicGroupComponent
+    DynamicGroupComponent,
+    DebuggerComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -89,7 +91,8 @@ import { DynamicGroupComponent } from './components/core/configuration-manager/d
     TaskScheduleComponent,
     ServiceWarningComponent,
     ServiceConfigComponent,
-    DynamicGroupComponent
+    DynamicGroupComponent,
+    DebuggerComponent
   ]
 })
 export class SharedModule { }

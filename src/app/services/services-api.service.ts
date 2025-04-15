@@ -119,4 +119,23 @@ export class ServicesApiService {
       map(response => response),
       catchError(error => throwError(error)));
   }
+
+  manageServiceDebuggerState(name: string, action: string, payload = {}) {
+    let params = new HttpParams().set('action', action);
+    return this.http.put(`${this.GET_SERVICES_URL}/${encodeURIComponent(name)}/debug`, payload, { params }).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  setBufferSize(name: string, payload = {}) {
+    return this.http.put(`${this.GET_SERVICES_URL}/${encodeURIComponent(name)}/debug?action=buffer`, payload).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  setStepSize(name: string, payload = {}) {
+    return this.http.put(`${this.GET_SERVICES_URL}/${encodeURIComponent(name)}/debug?action=step`, payload).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
 }

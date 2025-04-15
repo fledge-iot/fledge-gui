@@ -4,7 +4,10 @@ import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import {
-  RolesService
+  AlertService,
+  ProgressBarService,
+  RolesService,
+  ServicesApiService
 } from "./../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
@@ -86,6 +89,9 @@ export class CustomNodeComponent implements OnChanges {
     public flowEditorService: FlowEditorService,
     public rolesService: RolesService,
     private dialogService: DialogService,
+    private alertService: AlertService,
+    private ngProgress: ProgressBarService,
+    private southService: ServicesApiService,
     private elRef: ElementRef) {
     this.route.params.subscribe(params => {
       this.from = params.from;
@@ -108,6 +114,7 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   ngOnChanges(): void {
+    console.log(this.data);
     this.nodeId = this.data.id;
     if (this.data.label === 'South' || this.data.label === 'North') {
       this.data['debug'] = this.data.controls.debugControl['debug'];
@@ -233,6 +240,25 @@ export class CustomNodeComponent implements OnChanges {
     }
   }
 
+  toggleDebuggerState(action: string) {
+    this.ngProgress.start();
+    const name = this.data.controls.nameControl['name'];
+    this.southService.manageServiceDebuggerState(name, action)
+      .subscribe((res) => {
+        this.ngProgress.done();
+        this.alertService.success(res['message'], true);
+        this.data['debug'].debugger = action === 'attach' ? 'Attached' : 'Detached';
+        console.log(this.data);
+      }, error => {
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText, true);
+        }
+      });
+  }
+
   addService() {
     this.router.navigate(['flow/editor', this.from, 'add'], { queryParams: { source: 'flowEditor' } });
   }
@@ -244,6 +270,11 @@ export class CustomNodeComponent implements OnChanges {
     else {
       this.flowEditorService.showItemsInQuickview.next({ showFilterConfiguration: true, serviceName: this.source, filterName: this.filter.name });
     }
+  }
+
+  openDebugPage() {
+    this.flowEditorService.openDebuggerInQuickview.next({ openDebuggerPage: true, debugger: this.data['debug'], serviceName: this.service.name });
+
   }
 
   showLogsInQuickview() {

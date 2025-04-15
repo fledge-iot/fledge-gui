@@ -1,0 +1,109 @@
+<div class="my-5 mx-3">
+  <div class="is-flex is-align-items-center is-justify-content-space-between mb-3">
+    <span>
+      <i class="bi bi-bug bi-sm debug p-1"></i>
+      <strong>Debugger</strong>
+    </span>
+    <a class="icon has-text-grey">
+      <i class="bi bi-question-circle bi-xs"></i>
+    </a>
+  </div>
+
+  <div class="field ml-1">
+    <label class="checkbox">
+      <input type="checkbox" (change)="toggleDebuggerState()" [checked]="debuggerData?.debug?.debugger == 'Attached'">
+      Attach
+    </label>
+  </div>
+
+  <div class="buttons mt-3 mb-4">
+    <button class="button is-small is-light is-rounded" (click)="toggleIngressState()">
+      <ng-container *ngIf="debuggerData.debug.ingress == 'Running'">
+        <span class="icon is-small">
+          <i class="bi bi-pause-circle"></i>
+        </span>
+        <span>Suspend Ingress</span>
+      </ng-container>
+      <ng-container *ngIf="debuggerData.debug.ingress == 'Suspended'">
+        <span class="icon is-small">
+          <i class="bi bi-play-circle"></i>
+        </span>
+        <span>Resume Ingress</span>
+      </ng-container>
+    </button>
+
+    <button class="button is-small is-light is-rounded" (click)="toggleEgressState()">
+      <ng-container *ngIf="from=='south'">
+        <ng-container *ngIf="debuggerData.debug.egress == 'Storage'">
+          <span class="icon is-small">
+            <i class="bi bi-database"></i>
+          </span>
+          <span>Isolate Storage</span>
+        </ng-container>
+        <ng-container *ngIf="debuggerData.debug.egress == 'Isolated'">
+          <span class="icon is-small">
+            <i class="bi bi-database-slash"></i>
+          </span>
+          <span>Store</span>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="from=='north'">
+        <ng-container *ngIf="debuggerData.debug.egress == 'Storage'">
+          <span class="icon is-small">
+            <i class="bi bi-cloud-arrow-up"></i>
+          </span>
+          <span>Isolate Sending</span>
+        </ng-container>
+        <ng-container *ngIf="debuggerData.debug.egress == 'Isolated'">
+          <span class="icon is-small">
+            <i class="bi bi-cloud-slash"></i>
+          </span>
+          <span>Sent</span>
+        </ng-container>
+      </ng-container>
+    </button>
+  </div>
+
+  <hr>
+
+  <form [formGroup]="formGroup">
+    <div class="columns is-mobile mb-3">
+      <div class="column">
+        <label class="label is-small">Buffer</label>
+        <input class="input is-small" type="text" formControlName="buffer" appIntegerOnly>
+      </div>
+      <div class="column">
+        <label class="label is-small">Step</label>
+        <input class="input is-small" type="text" formControlName="step" appIntegerOnly>
+      </div>
+    </div>
+  </form>
+
+  <div class="buttons are-small">
+    <button class="button is-small is-info is-light" (click)="replayBuffer()">Replay Buffer</button>
+    <!-- <button class="button is-small is-info is-light">Show Buffered</button> -->
+  </div>
+
+  <hr>
+
+  <!-- Collapsible Section -->
+  <div class="mt-3">
+    <button class="button is-small is-light" onclick="toggleDebuggerDetails()">
+      ▼ Show Buffered
+    </button>
+    <div id="debuggerDetails" class="mt-2" style="display: none;">
+      <div class="field">
+        <div class="control">
+          <div class="select is-small">
+            <select>
+              <option>Branch</option>
+              <option>Writer</option>
+              <option>All</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <pre class="has-background-light p-2 mt-2">Debug output here...</pre>
+    </div>
+  </div>
+</div>
