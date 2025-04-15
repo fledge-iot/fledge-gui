@@ -402,7 +402,7 @@ export function getUpdatedFilterPipeline() {
         // check if it is a slave branch
         if (branch) {
           if (branch.length === 0) {
-            return [];
+            return ['no_branch'];
           }
           updatedFilterPipeline.push(branch);
         }

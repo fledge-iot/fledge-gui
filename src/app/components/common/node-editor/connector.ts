@@ -1,7 +1,7 @@
 import { FlowEditorService } from './flow-editor.service';
 import { ClassicPreset, GetSchemes, getUID } from 'rete';
 import { BidirectFlow, Context, SocketData } from 'rete-connection-plugin';
-import { getUpdatedFilterPipeline } from './editor';
+import { getUpdatedFilterPipeline, deleteConnection } from './editor';
 import { Filter, PseudoNodeControl } from './nodes/filter';
 import { South } from './nodes/south';
 import { North } from './nodes/north';
@@ -25,7 +25,6 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
 
         const fromNode = context.editor.getNode(initial.nodeId);
         const toNode = context.editor.getNode(socket.nodeId);
-
         const nodes = context.editor.getNodes();
         const isSouthSide = nodes.find(node => node.label == 'South');
         const isNorthSide = nodes.find(node => node.label == 'North');
@@ -35,13 +34,7 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
           { from: Filter, to: South, condition: true },
           { from: North, to: Filter, condition: true },
           { from: Storage, to: Filter, condition: isSouthSide },
-          { from: Filter, to: Storage, condition: isNorthSide },
-          {
-            from: Filter, to: Filter, condition: () => {
-              const updatedPipeline = getUpdatedFilterPipeline();
-              return contains(toNode.label, updatedPipeline);
-            }
-          }
+          { from: Filter, to: Storage, condition: isNorthSide }
         ];
 
         // Check if connection is invalid
@@ -54,7 +47,7 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
         };
 
         if (isInvalidConnection(fromNode, toNode)) {
-          alertService.error('Joining branches in a pipeline is not supported', true);
+          console.log('Invalid connection');
           return;
         }
         // Avoid connection loop in pipeline
@@ -68,9 +61,10 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
           }
         }
 
+        const connectionId = getUID();
         context.editor.addConnection(
           {
-            id: getUID(),
+            id: connectionId,
             source: initial.nodeId,
             sourceOutput: initial.key,
             target: socket.nodeId,
@@ -100,10 +94,12 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
             }
           }
           const changedPipeline = getUpdatedFilterPipeline();
+          if (changedPipeline.length === 1 && changedPipeline[0] === 'no_branch') {
+            deleteConnection(connectionId);
+            alertService.error('Joining branches in a pipeline is not supported', true);
+          }
           flowEditorService.emitPipelineUpdate(changedPipeline);
         }, 0);
-
-
         return true;
       }
     })
