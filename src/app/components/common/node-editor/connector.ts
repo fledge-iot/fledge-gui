@@ -35,7 +35,13 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
           { from: Filter, to: South, condition: true },
           { from: North, to: Filter, condition: true },
           { from: Storage, to: Filter, condition: isSouthSide },
-          { from: Filter, to: Storage, condition: isNorthSide }
+          { from: Filter, to: Storage, condition: isNorthSide },
+          {
+            from: Filter, to: Filter, condition: () => {
+              const updatedPipeline = getUpdatedFilterPipeline();
+              return contains(toNode.label, updatedPipeline);
+            }
+          }
         ];
 
         // Check if connection is invalid
@@ -48,12 +54,11 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
         };
 
         if (isInvalidConnection(fromNode, toNode)) {
-          console.log('Invalid connection');
+          alertService.error('Joining branches in a pipeline is not supported', true);
           return;
         }
-
         // Avoid connection loop in pipeline
-        const updatedPipeline = getUpdatedFilterPipeline(alertService);
+        const updatedPipeline = getUpdatedFilterPipeline();
         let exists = false;
         if (typeof updatedPipeline == 'object') {
           exists = contains(toNode.label, updatedPipeline);
@@ -94,7 +99,7 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
               pseudoNodeControl.pseudoConnection = true;
             }
           }
-          const changedPipeline = getUpdatedFilterPipeline(alertService);
+          const changedPipeline = getUpdatedFilterPipeline();
           flowEditorService.emitPipelineUpdate(changedPipeline);
         }, 0);
 
@@ -104,7 +109,6 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
     })
   }
 }
-
 
 export function contains(item: any, pipeline: any[]): boolean {
   // check element in filter pipeline
