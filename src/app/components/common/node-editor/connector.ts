@@ -94,7 +94,7 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
             }
           }
           const changedPipeline = getUpdatedFilterPipeline();
-          if (changedPipeline.length === 1 && changedPipeline[0] === 'no_branch') {
+          if (changedPipeline === null) {
             deleteConnection(connectionId);
             alertService.error('Joining branches in a pipeline is not supported', true);
           }
