@@ -1133,6 +1133,10 @@ export class NodeEditorComponent implements OnInit {
     this.updatedFilterPipeline = [];
   }
 
+  debugService() {
+    this.flowEditorService.openDebuggerInQuickview.next({ openDebuggerPage: true, debugger: this.service.debug, serviceName: this.service.name });
+  }
+
   reload() {
     this.flowEditorService.clearEmittedPipelineChanges();
     if (editor) {

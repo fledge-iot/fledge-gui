@@ -138,4 +138,10 @@ export class ServicesApiService {
       map(response => response),
       catchError(error => throwError(error)));
   }
+
+  getBufferedData(name: string) {
+    return this.http.get(`${this.GET_SERVICES_URL}/${encodeURIComponent(name)}/debug?action=buffer`).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
 }

@@ -51,7 +51,8 @@
   <div [hidden]="isAddFilterWizard">
     <app-toolbar *ngIf="source && rolesService.hasEditPermissions()" class="is-inline-block pr-2"
       (reloadData)="reload()" (resetNodes)="reset()" (undo)="callUndoAction()" (redo)="callRedoAction()"
-      [historyData]="historyData" (delete)="onDeleteAction()" [isDeleteDisabled]="nodesToDelete.length == 0">
+      [debuggerState]="service?.debug?.debugger" [historyData]="historyData" (delete)="onDeleteAction()"
+      [isDeleteDisabled]="nodesToDelete.length == 0" (debug)="debugService()">
     </app-toolbar>
     <div class="rete"
       [ngClass]="{'expanded-width': isSidebarCollapsed, 'collapsed-width': !isSidebarCollapsed, 'custom-margin': source && rolesService.hasEditPermissions()}"

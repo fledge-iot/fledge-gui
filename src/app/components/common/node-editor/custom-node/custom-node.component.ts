@@ -274,7 +274,6 @@ export class CustomNodeComponent implements OnChanges {
 
   openDebugPage() {
     this.flowEditorService.openDebuggerInQuickview.next({ openDebuggerPage: true, debugger: this.data['debug'], serviceName: this.service.name });
-
   }
 
   showLogsInQuickview() {

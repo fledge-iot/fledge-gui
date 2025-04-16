@@ -13,6 +13,17 @@ export class ToolbarComponent {
   @Output() undo = new EventEmitter<Object>();
   @Output() redo = new EventEmitter<Object>();
   @Output() delete = new EventEmitter<Object>();
+  @Output() debug = new EventEmitter<boolean>();
+  @Input() debuggerState: string;
+
+  ngOnInit() {
+
+
+  }
+
+  ngOnChanges() {
+    console.log(this.debuggerState);
+  }
 
   reload() {
     this.reloadData.emit(true);
@@ -32,5 +43,9 @@ export class ToolbarComponent {
 
   deleteAction() {
     this.delete.emit(true);
+  }
+
+  debugService() {
+    this.debug.emit(true);
   }
 }

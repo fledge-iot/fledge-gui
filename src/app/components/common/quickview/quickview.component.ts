@@ -40,7 +40,7 @@ export class QuickviewComponent implements OnInit {
   }
 
   ngOnChanges() {
-    if (this.isDebuggerPage) {
+    if (this.isDebuggerPage && this.quickView) {
       this.quickView.nativeElement.style.width = '35%';
       return;
     }
@@ -65,6 +65,7 @@ export class QuickviewComponent implements OnInit {
   onCloseQuickview() {
     this.quickView.nativeElement.classList.remove('is-active');
     this.flowEditorService.showLogsInQuickview.next({ showLogs: false });
+    this.flowEditorService.openDebuggerInQuickview.next({ openDebuggerPage: false });
     if (this.notificationLogsComponent) {
       this.notificationLogsComponent.ngOnDestroy();
     }

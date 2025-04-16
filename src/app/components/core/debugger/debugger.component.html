@@ -1,11 +1,11 @@
 <div class="my-5 mx-3">
-  <div class="is-flex is-align-items-center is-justify-content-space-between mb-3">
+  <div class="is-flex is-align-items-center is-justify-content-space-between mb-5">
     <span>
-      <i class="bi bi-bug bi-sm debug p-1"></i>
+      <i class="bi bi-bug bi-sm p-1"></i>
       <strong>Debugger</strong>
     </span>
     <a class="icon has-text-grey">
-      <i class="bi bi-question-circle bi-xs"></i>
+      <i class="bi bi-question-circle"></i>
     </a>
   </div>
 
@@ -15,95 +15,124 @@
       Attach
     </label>
   </div>
-
-  <div class="buttons mt-3 mb-4">
-    <button class="button is-small is-light is-rounded" (click)="toggleIngressState()">
-      <ng-container *ngIf="debuggerData.debug.ingress == 'Running'">
-        <span class="icon is-small">
-          <i class="bi bi-pause-circle"></i>
-        </span>
-        <span>Suspend Ingress</span>
-      </ng-container>
-      <ng-container *ngIf="debuggerData.debug.ingress == 'Suspended'">
-        <span class="icon is-small">
-          <i class="bi bi-play-circle"></i>
-        </span>
-        <span>Resume Ingress</span>
-      </ng-container>
-    </button>
-
-    <button class="button is-small is-light is-rounded" (click)="toggleEgressState()">
-      <ng-container *ngIf="from=='south'">
-        <ng-container *ngIf="debuggerData.debug.egress == 'Storage'">
-          <span class="icon is-small">
-            <i class="bi bi-database"></i>
-          </span>
-          <span>Isolate Storage</span>
-        </ng-container>
-        <ng-container *ngIf="debuggerData.debug.egress == 'Isolated'">
-          <span class="icon is-small">
-            <i class="bi bi-database-slash"></i>
-          </span>
-          <span>Store</span>
-        </ng-container>
-      </ng-container>
-      <ng-container *ngIf="from=='north'">
-        <ng-container *ngIf="debuggerData.debug.egress == 'Storage'">
-          <span class="icon is-small">
-            <i class="bi bi-cloud-arrow-up"></i>
-          </span>
-          <span>Isolate Sending</span>
-        </ng-container>
-        <ng-container *ngIf="debuggerData.debug.egress == 'Isolated'">
-          <span class="icon is-small">
-            <i class="bi bi-cloud-slash"></i>
-          </span>
-          <span>Sent</span>
-        </ng-container>
-      </ng-container>
-    </button>
-  </div>
-
   <hr>
+  <ng-container *ngIf="debuggerData?.debug?.debugger == 'Attached'">
+    <div class="buttons mt-3 mb-4">
+      <button class="button is-small is-link is-outlined" (click)="toggleIngressState()">
+        <ng-container *ngIf="debuggerData.debug.ingress == 'Running'">
+          <span class="icon is-small">
+            <i class="bi bi-pause-circle"></i>
+          </span>
+          <span>Suspend Ingress</span>
+        </ng-container>
+        <ng-container *ngIf="debuggerData.debug.ingress == 'Suspended'">
+          <span class="icon is-small">
+            <i class="bi bi-play-circle"></i>
+          </span>
+          <span>Resume Ingress</span>
+        </ng-container>
+      </button>
 
-  <form [formGroup]="formGroup">
-    <div class="columns is-mobile mb-3">
-      <div class="column">
-        <label class="label is-small">Buffer</label>
-        <input class="input is-small" type="text" formControlName="buffer" appIntegerOnly>
-      </div>
-      <div class="column">
-        <label class="label is-small">Step</label>
-        <input class="input is-small" type="text" formControlName="step" appIntegerOnly>
-      </div>
+      <button class="button is-small is-link is-outlined" (click)="toggleEgressState()">
+        <ng-container *ngIf="from=='south'">
+          <ng-container *ngIf="debuggerData.debug.egress == 'Storage'">
+            <span class="icon is-small">
+              <i class="bi bi-database"></i>
+            </span>
+            <span>Isolate Storage</span>
+          </ng-container>
+          <ng-container *ngIf="debuggerData.debug.egress == 'Isolated'">
+            <span class="icon is-small">
+              <i class="bi bi-database-slash"></i>
+            </span>
+            <span>Store</span>
+          </ng-container>
+        </ng-container>
+        <ng-container *ngIf="from=='north'">
+          <ng-container *ngIf="debuggerData.debug.egress == 'Storage'">
+            <span class="icon is-small">
+              <i class="bi bi-cloud-arrow-up"></i>
+            </span>
+            <span>Isolate Sending</span>
+          </ng-container>
+          <ng-container *ngIf="debuggerData.debug.egress == 'Isolated'">
+            <span class="icon is-small">
+              <i class="bi bi-cloud-slash"></i>
+            </span>
+            <span>Send</span>
+          </ng-container>
+        </ng-container>
+      </button>
     </div>
-  </form>
 
-  <div class="buttons are-small">
-    <button class="button is-small is-info is-light" (click)="replayBuffer()">Replay Buffer</button>
-    <!-- <button class="button is-small is-info is-light">Show Buffered</button> -->
-  </div>
+    <hr>
 
-  <hr>
-
-  <!-- Collapsible Section -->
-  <div class="mt-3">
-    <button class="button is-small is-light" onclick="toggleDebuggerDetails()">
-      ▼ Show Buffered
-    </button>
-    <div id="debuggerDetails" class="mt-2" style="display: none;">
-      <div class="field">
-        <div class="control">
-          <div class="select is-small">
-            <select>
-              <option>Branch</option>
-              <option>Writer</option>
-              <option>All</option>
-            </select>
-          </div>
+    <form [formGroup]="formGroup">
+      <div class="columns is-mobile mb-3">
+        <div class="column">
+          <label class="label is-small">
+            Buffer <i class="bi bi-xs bi-info-circle info-icon" aria-hidden="true"
+              title="Set the number of readings to hold in each buffer, passing an integer argument"></i></label>
+          <input class="input is-small" type="text" formControlName="buffer" appIntegerOnly>
+          <p class="is-size-7 has-text-grey mt-1" *ngIf="bufferStatus === 'saving'">Saving...</p>
+          <p class="is-size-7 has-text-success mt-1" *ngIf="bufferStatus === 'saved'">Saved!</p>
+        </div>
+        <div class="column">
+          <label class="label is-small">Step <i class="bi bi-xs bi-info-circle info-icon" aria-hidden="true"
+              title="Allow readings to flow into the pipeline. Passed an optional number of readings to ingest; default to 1 if omitted"></i></label>
+          <input class="input is-small" type="text" formControlName="step" appIntegerOnly>
+          <p class="is-size-7 has-text-grey mt-1" *ngIf="stepStatus === 'saving'">Saving...</p>
+          <p class="is-size-7 has-text-success mt-1" *ngIf="stepStatus === 'saved'">Saved!</p>
         </div>
       </div>
-      <pre class="has-background-light p-2 mt-2">Debug output here...</pre>
+    </form>
+
+    <div class="buttons are-small">
+      <button class="button is-small is-link is-outlined" (click)="replayBuffer()">Replay Buffer</button>
+      <button *ngIf="this.accordionItems.length > 0" class="button is-small is-ghost" (click)="viewBufferData()">View
+        Buffered</button>
     </div>
-  </div>
+
+    <ng-container *ngIf="bufferDataExist">
+      <div class="tabs">
+        <ul>
+          <li *ngFor="let tab of tabs; let i = index" [class.is-active]="activeTabIndex === i">
+            <a (click)="activeTabIndex = i">{{ tab }}</a>
+          </li>
+        </ul>
+      </div>
+      <ul class="menu-list">
+        <li *ngFor="let item of getItemsForActiveTab(); let i = index">
+          <div class="is-flex is-justify-content-space-between is-align-items-center py-2 px-3 has-background-light"
+            (click)="toggleItem(i)" style="cursor: pointer;">
+            <span><small>{{ item.name }}</small></span>
+            <span class="icon is-small">
+              <i class="bi bi-sm" [ngClass]="{ 'bi-chevron-down': !item.isOpen, 'bi-chevron-up': item.isOpen }"></i>
+            </span>
+          </div>
+
+          <ul *ngIf="item.isOpen" class="ml-4 mt-2">
+            <li *ngIf="item.readings?.length > 0; else noData">
+              <div class="scrollable-readings">
+                <div *ngFor="let reading of item.readings" class="mb-3">
+                  <p><small>Asset:&nbsp;{{ reading.asset_code }}</small></p>
+                  <p><small>Timestamp:&nbsp;{{ reading.ts }}</small></p>
+                  <p><small>User Timestamp:&nbsp;{{ reading.user_ts }}</small></p>
+                  <ul>
+                    <li *ngFor="let key of getReadingKeys(reading.reading)">
+                      <span><small>{{ key }}: {{ reading.reading[key] }}</small></span>
+                    </li>
+                  </ul>
+                  <hr>
+                </div>
+              </div>
+            </li>
+            <ng-template #noData>
+              <li><span class="help has-text-grey-light">No readings available.</span></li>
+            </ng-template>
+          </ul>
+        </li>
+      </ul>
+    </ng-container>
+  </ng-container>
 </div>
