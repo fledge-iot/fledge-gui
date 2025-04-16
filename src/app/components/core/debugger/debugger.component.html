@@ -88,7 +88,9 @@
     </form>
 
     <div class="buttons are-small">
-      <button class="button is-small is-link is-outlined" (click)="replayBuffer()">Replay Buffer</button>
+      <button class="button is-small is-link is-outlined" (click)="replayBuffer()">
+        <span class="icon is-small"><i class="bi bi-arrow-clockwise"></i> </span><span>Replay Buffer</span>
+      </button>
       <button *ngIf="this.accordionItems.length > 0" class="button is-small is-ghost" (click)="viewBufferData()">View
         Buffered</button>
     </div>
