@@ -118,11 +118,6 @@
   padding: 0px 4px 4px 4px;
 }
 
-.reading-details {
-  display: flex;
-  justify-content: center;
-}
-
 .reading {
   font-size: 14px;
   visibility: hidden;
