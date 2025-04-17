@@ -96,45 +96,64 @@
     </div>
 
     <ng-container *ngIf="bufferDataExist">
-      <div class="tabs">
-        <ul>
-          <li *ngFor="let tab of tabs; let i = index" [class.is-active]="activeTabIndex === i">
-            <a (click)="activeTabIndex = i">{{ tab }}</a>
+      <div class="is-flex is-justify-content-space-between is-align-items-center">
+        <!-- Tabs -->
+        <div class="tabs is-flex-grow-1">
+          <ul class="mb-0">
+            <li *ngFor="let tab of tabs; let i = index" [class.is-active]="activeTabIndex === i">
+              <a (click)="activeTabIndex = i">{{ tab }}</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Toggle icon outside .tabs -->
+        <div class="ml-3 pr-4 is-flex is-align-items-center">
+          <a class="icon is-clickable has-text-grey" (click)="toggleJsonView()"
+            [title]="showRawJson ? 'Switch to Detailed View' : 'Switch to JSON View'">
+            <i class="bi" [ngClass]="showRawJson ? 'bi-list' : 'bi-code-slash'"></i>
+          </a>
+        </div>
+      </div>
+
+      <ng-container *ngIf="showRawJson">
+        <div class="scrollable-json">
+          <pre><code>{{ getFilteredJsonForActiveTab() | json }}</code></pre>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="!showRawJson">
+        <ul class="menu-list">
+          <li *ngFor="let item of getItemsForActiveTab(); let i = index">
+            <div class="is-flex is-justify-content-space-between is-align-items-center py-2 px-3 has-background-light"
+              (click)="toggleItem(i)" style="cursor: pointer;">
+              <span><small>{{ item.name }}</small></span>
+              <span class="icon is-small">
+                <i class="bi bi-xs" [ngClass]="{ 'bi-chevron-down': !item.isOpen, 'bi-chevron-up': item.isOpen }"></i>
+              </span>
+            </div>
+
+            <ul *ngIf="item.isOpen" class="ml-4 mt-2">
+              <li *ngIf="item.readings?.length > 0; else noData">
+                <div class="scrollable-readings">
+                  <div *ngFor="let reading of item.readings" class="mb-3">
+                    <p><small>Asset:&nbsp;{{ reading.asset_code }}</small></p>
+                    <p><small>Timestamp:&nbsp;{{ reading.ts }}</small></p>
+                    <p><small>User Timestamp:&nbsp;{{ reading.user_ts }}</small></p>
+                    <ul>
+                      <li *ngFor="let key of getReadingKeys(reading.reading)">
+                        <span><small>{{ key }}: {{ reading.reading[key] }}</small></span>
+                      </li>
+                    </ul>
+                    <hr>
+                  </div>
+                </div>
+              </li>
+              <ng-template #noData>
+                <li><span class="help has-text-grey-light">No readings available.</span></li>
+              </ng-template>
+            </ul>
           </li>
         </ul>
-      </div>
-      <ul class="menu-list">
-        <li *ngFor="let item of getItemsForActiveTab(); let i = index">
-          <div class="is-flex is-justify-content-space-between is-align-items-center py-2 px-3 has-background-light"
-            (click)="toggleItem(i)" style="cursor: pointer;">
-            <span><small>{{ item.name }}</small></span>
-            <span class="icon is-small">
-              <i class="bi bi-sm" [ngClass]="{ 'bi-chevron-down': !item.isOpen, 'bi-chevron-up': item.isOpen }"></i>
-            </span>
-          </div>
-
-          <ul *ngIf="item.isOpen" class="ml-4 mt-2">
-            <li *ngIf="item.readings?.length > 0; else noData">
-              <div class="scrollable-readings">
-                <div *ngFor="let reading of item.readings" class="mb-3">
-                  <p><small>Asset:&nbsp;{{ reading.asset_code }}</small></p>
-                  <p><small>Timestamp:&nbsp;{{ reading.ts }}</small></p>
-                  <p><small>User Timestamp:&nbsp;{{ reading.user_ts }}</small></p>
-                  <ul>
-                    <li *ngFor="let key of getReadingKeys(reading.reading)">
-                      <span><small>{{ key }}: {{ reading.reading[key] }}</small></span>
-                    </li>
-                  </ul>
-                  <hr>
-                </div>
-              </div>
-            </li>
-            <ng-template #noData>
-              <li><span class="help has-text-grey-light">No readings available.</span></li>
-            </ng-template>
-          </ul>
-        </li>
-      </ul>
+      </ng-container>
     </ng-container>
   </ng-container>
 </div>

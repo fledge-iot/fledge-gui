@@ -14,6 +14,8 @@ export class DebuggerComponent {
   @Input() serviceName: string;
   @Input() from: string;
 
+  showRawJson = false;
+
   bufferDataExist = false;
 
   formGroup: FormGroup;
@@ -22,6 +24,13 @@ export class DebuggerComponent {
   activeTabIndex = 0;
 
   tabs = ['All', 'Branches', 'Writer'];
+
+  tabNameMap: { [key: string]: string } = {
+    'All': 'All',
+    'Branches': 'Branch',
+    'Writer': 'Writer'
+    // Add more mappings here if needed
+  };
 
   accordionItems: any[] = [];
 
@@ -85,6 +94,10 @@ export class DebuggerComponent {
 
   ngAfterViewInit() {
     this.getBufferData();
+  }
+
+  toggleJsonView() {
+    this.showRawJson = !this.showRawJson;
   }
 
   toggleDebuggerState() {
@@ -257,6 +270,27 @@ export class DebuggerComponent {
       this.bufferDataExist = false;
     }
   }
+
+  getFilteredJsonForActiveTab(): any {
+    const currentTab = this.tabs[this.activeTabIndex];
+    const filterName = this.tabNameMap[currentTab];
+
+    if (!filterName || filterName === 'All') {
+      return this.tabData;
+    }
+
+    // Flatten and filter
+    const flatData = this.tabData?.flatMap((entry: any) =>
+      Array.isArray(entry) ? entry : [entry]
+    );
+
+    const filtered = flatData.filter((item: any) =>
+      item.name?.toLowerCase() === filterName.toLowerCase()
+    );
+
+    return { data: filtered };
+  }
+
 
 }
 

@@ -297,13 +297,15 @@
                               </ng-container>
                             </td>
                             <td>
-                              <div class="is-flex justify-content-between px-1">
-                                <span><b>{{s.status}}</b></span>
-                                <span *ngIf="s?.debug?.debugger === 'Attached'"
-                                  class="icon is-small has-tooltip-top has-tooltip-arrow tooltip help-icon"
-                                  data-tooltip="Debugger Attached">
-                                  <i class="bi bi-bug bi-sm debug"></i>
-                                </span>
+                              <div class="is-flex px-1">
+                                <div class="is-flex is-align-items-center">
+                                  <span><b>{{s.status}}</b></span>
+                                  <span *ngIf="s?.debug?.debugger === 'Attached'"
+                                    class="icon is-small has-tooltip-top has-tooltip-arrow tooltip help-icon is-align-items-baseline"
+                                    data-tooltip="Debugger Attached">
+                                    <i class="bi bi-bug bi-sm debug"></i>
+                                  </span>
+                                </div>
                               </div>
                             </td>
                           </tr>
