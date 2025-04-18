@@ -1,4 +1,4 @@
-import { Component, Input, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { AlertService, ProgressBarService, ServicesApiService } from '../../../services';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { debounceTime, delay, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
@@ -14,6 +14,8 @@ export class DebuggerComponent {
   @Input() debuggerData: { debug: Debug, serviceName: string };
   @Input() serviceName: string;
   @Input() from: string;
+
+  @Output() debuggerDataChange = new EventEmitter<{ debug: Debug, serviceName: string }>();
 
   showRawJson = false;
 
@@ -90,13 +92,20 @@ export class DebuggerComponent {
     }
   }
 
-  showTooltip() {
-    if (this.debuggerData.debug.egress == 'Isolated' && this.from == 'south') {
-      return 'Egress data is isolated and not sent to storage.';
-    } else if (this.debuggerData.debug.ingress == 'Suspended' && this.from == 'south') {
-      return 'Ingestion at south from storage is currently paused.';
+  showIngestDataTooltip() {
+    if (this.debuggerData.debug.ingress == 'Suspended' && this.from == 'south') {
+      return 'This will pause ingesting at South.';
+    } else if (this.debuggerData.debug.ingress == 'Suspended' && this.from == 'north') {
+      return 'This will pause loading data in pipeline from storage.';
     }
-    //  debuggerData.debug.ingress == 'Suspended' && from == 'south' ? 'Ingestion at south from storage is currently paused.' : 'Ingesting data'
+  }
+
+  showEgressDataTooltip() {
+    if (this.debuggerData.debug.egress == 'Isolated' && this.from == 'south') {
+      return 'This will stop writing readings to Storage.';
+    } else if (this.debuggerData.debug.egress == 'Isolated' && this.from == 'north') {
+      return 'This will stop sending data upstream.';
+    }
   }
 
   toggleJsonView() {
@@ -115,29 +124,11 @@ export class DebuggerComponent {
     const action = this.debuggerData.debug.debugger === 'Attached' ? 'detach' : 'attach';
     this.southService.manageServiceDebuggerState(name, action)
       .subscribe((res) => {
-        if (action === 'attach') {
-          this.debuggerData.debug.debugger = 'Attached';
-        } else {
-          this.debuggerData.debug.debugger = 'Detached';
-        }
         this.ngProgress.done();
         this.alertService.success(res['message'], true);
-        if (action === 'attach') {
-          setTimeout(() => {
-            this.getService();
-          }, 2000);
-        } else {
-          setTimeout(() => {
-            this.showLoading = false;
-            this.debuggerData = {
-              debug: {
-                debugger: '',
-                ingress: '',
-                egress: ''
-              }, serviceName: this.serviceName
-            }
-          }, 2000)
-        }
+        setTimeout(() => {
+          this.getService();
+        }, 2000)
       }, error => {
         this.showLoading = false;
         this.ngProgress.done();
@@ -351,6 +342,7 @@ export class DebuggerComponent {
         this.showLoading = false;
         const service = res['services'].find((service: any) => service.name === this.debuggerData.serviceName);
         this.debuggerData = { debug: service.debug, serviceName: service.name };
+        this.debuggerDataChange.emit(this.debuggerData);
         console.log(this.debuggerData);
       }, error => {
         this.showLoading = false;

@@ -26,17 +26,19 @@
         <div class="is-inline-flex">
           <ng-container *ngIf="data.label!=='Filter'; else southServiceTemplate">
             <div class="is-inline-flex">
-              <span *ngIf="isServiceNode && data?.debug?.debugger === 'Attached'" (click)="openDebugPage()"
-                [attr.data-show]="'quickview'" [attr.data-target]="'quickviewDefault'"
-                class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-left help-icon mr-1"
-                data-tooltip="Debugger Attached">
-                <i class="bi bi-bug bi-sm debug"></i>
-              </span>
+              <button *ngIf="isServiceNode && data?.debug?.debugger === 'Attached'" (click)="openDebugPage()"
+                class="btn is-small btn-icon" [attr.data-show]="'quickview'" [attr.data-toggle]="quickview"
+                [attr.data-target]="'quickviewDefault'">
+                <span class="icon is-small  has-tooltip-left has-tooltip-arrow tooltip is-hovered"
+                  data-tooltip="Debugger Attached">
+                  <i class="bi bi-bug bi-sm debug"></i>
+                </span>
+              </button>
               <label class="checkbox">
                 <input type="checkbox" [checked]='isEnabled' (click)="onCheckboxClicked($event)"
                   [disabled]="!rolesService.hasEditPermissions()">
               </label>
-              <button class="btn btn-icon pt-0" data-show="quickview" data-target="quickviewDefault"
+              <button class="btn btn-icon is-small" data-show="quickview" data-target="quickviewDefault"
                 data-toggle="quickview" (click)="showConfigurationInQuickview()">
                 <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Configuration">
                   <i class="bi bi-gear-wide-connected bi-sm"></i>
@@ -87,7 +89,7 @@
           <div *ngIf="data.debug?.egress === 'Isolated' && !this.source"
             class="mx-2 has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered"
             data-tooltip="Egress Isolated">
-            <i class="bi bi-sm bi-database-slash"></i>
+            <i class="bi bi-sm bi-database"></i>
           </div>
         </div>
       </ng-container>

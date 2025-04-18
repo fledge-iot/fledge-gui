@@ -69,7 +69,8 @@
   <!-- Quick View -->
   <app-quickview [showReadings]="showReadings" [showLogs]="showLogs" [isDebuggerPage]="debuggerPage">
     <ng-container *ngIf="debuggerPage">
-      <app-debugger [debuggerData]="debugger" [from]="from" [serviceName]="debugger?.serviceName"></app-debugger>
+      <app-debugger [debuggerData]="debugger" [from]="from" [serviceName]="debugger?.serviceName"
+        (debuggerDataChange)="updateDebuggerState($event)"></app-debugger>
     </ng-container>
     <ng-container *ngIf="showPluginConfiguration">
       <app-configuration-group *ngIf="category" [category]="category" [from]="'south'" [sourceName]="serviceName"

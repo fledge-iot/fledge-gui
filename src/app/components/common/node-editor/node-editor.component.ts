@@ -591,6 +591,13 @@ export class NodeEditorComponent implements OnInit {
         });
   }
 
+  updateDebuggerState(debuggerInfo: {}) {
+    console.log(debuggerInfo);
+    console.log(this.debugger);
+    this.debugger = debuggerInfo;
+    console.log(this.debuggerPage);
+  }
+
   getSouthservices(caching: boolean) {
     this.servicesApiService.getSouthServices(caching)
       .pipe(takeUntil(this.destroy$))

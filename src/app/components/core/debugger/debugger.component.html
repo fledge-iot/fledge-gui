@@ -1,4 +1,4 @@
-<div class="my-5 mx-3">
+<div class="my-5 mx-5">
   <div class="is-flex is-align-items-center mb-5">
     <span class="icon">
       <i class="bi bi-bug bi-sm p-1"></i>
@@ -22,9 +22,9 @@
   <hr>
   <ng-container *ngIf="!showLoading;else loadingDebugger">
     <ng-container *ngIf="debuggerData?.debug?.debugger == 'Attached'">
-      <div class="buttons mt-3 mb-4">
+      <div class="buttons mt-3 mb-4" *ngIf="from == 'south'">
         <span class="tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline mx-2"
-          [attr.data-tooltip]="showTooltip()">
+          [attr.data-tooltip]="showIngestDataTooltip()">
           <button class="button is-small is-link is-outlined" (click)="toggleIngressState()">
             <ng-container *ngIf="debuggerData.debug.ingress == 'Running'">
               <span class="icon is-small">
@@ -41,24 +41,48 @@
           </button>
         </span>
 
-        <span class="tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline"
-          [attr.data-tooltip]="debuggerData.debug.egress == 'Isolated' && from == 'south' ? 'Writing readings to storage is currently stopped.': 'Writing readings to storage.'">
+        <span class="tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline mx-2"
+          [attr.data-tooltip]="showEgressDataTooltip()">
           <button class="button is-small is-link is-outlined" (click)="toggleEgressState()">
-            <ng-container *ngIf="from=='south'">
-              <ng-container *ngIf="debuggerData.debug.egress == 'Storage'">
-                <span class="icon is-small">
-                  <i class="bi bi-database"></i>
-                </span>
-                <span>Isolate Storage</span>
-              </ng-container>
-              <ng-container *ngIf="debuggerData.debug.egress == 'Isolated'">
-                <span class="icon is-small">
-                  <i class="bi bi-database-slash"></i>
-                </span>
-                <span>Store</span>
-              </ng-container>
+            <ng-container *ngIf="debuggerData.debug.egress == 'Storage'">
+              <span class="icon is-small">
+                <i class="bi bi-database-slash"></i>
+              </span>
+              <span>Isolate Storage</span>
             </ng-container>
-            <ng-container *ngIf="from=='north'">
+            <ng-container *ngIf="debuggerData.debug.egress == 'Isolated'">
+              <span class="icon is-small">
+                <i class="bi bi-database"></i>
+              </span>
+              <span>Store</span>
+            </ng-container>
+          </button>
+        </span>
+      </div>
+
+      <div class="buttons mt-3 mb-4" *ngIf="from == 'north'">
+        <span class="tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline mx-2"
+          [attr.data-tooltip]="showIngestDataTooltip()">
+          <button class="button is-small is-link is-outlined" (click)="toggleIngressState()">
+            <ng-container *ngIf="debuggerData.debug.ingress == 'Running'">
+              <span class="icon is-small">
+                <i class="bi bi-pause-circle"></i>
+              </span>
+              <span>Suspend Ingress</span>
+            </ng-container>
+            <ng-container *ngIf="debuggerData.debug.ingress == 'Suspended'">
+              <span class="icon is-small">
+                <i class="bi bi-play-circle"></i>
+              </span>
+              <span>Resume Ingress</span>
+            </ng-container>
+          </button>
+        </span>
+
+        <span class="tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline mx-2"
+          [attr.data-tooltip]="showEgressDataTooltip()">
+          <button class="button is-small is-link is-outlined" (click)="toggleEgressState()">
+            <ng-container>
               <ng-container *ngIf="debuggerData.debug.egress == 'Storage'">
                 <span class="icon is-small">
                   <i class="bi bi-cloud-arrow-up"></i>
