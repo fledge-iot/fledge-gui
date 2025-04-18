@@ -30,16 +30,25 @@
             <table class="table is-fullwidth scroll is-responsive is-hoverable">
               <thead>
                 <tr>
+                  <th *ngIf="tasks | hasAttachedDebugger"></th>
                   <th>Name</th>
                   <th></th>
                   <th>Status</th>
                   <th>Plugin</th>
                   <th>Version</th>
+                  <th *ngIf="tasks | hasAttachedDebugger"></th>
                   <th>Sent</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let t of tasks" [ngClass]="{'fade': !t.enabled}">
+                  <td class="is-vcentered pr-0" *ngIf="tasks | hasAttachedDebugger">
+                    <div class="is-flex is-align-items-center py-0">
+                      <span *ngIf="t?.debug?.debugger === 'Attached'" class="icon is-small">
+                        <i class="bi bi-bug bi-sm debug"></i>
+                      </span>
+                    </div>
+                  </td>
                   <td class="align-content">
                     <a class="button is-ghost is-text py-0" (click)="openNorthTaskModal(t)">{{t.name}}</a>
                   </td>
@@ -47,14 +56,28 @@
                     <span *ngIf="t?.processName === 'north_C'" class="tag is-light is-rounded">Service</span>
                   </td>
                   <td>
-                    <span *ngIf="t.enabled == true" class="tag is-light is-success">enabled</span>
-                    <span *ngIf="t.enabled == false" class="tag is-light">disabled</span>
+                    <div class="tags has-addons">
+                      <span *ngIf="t.enabled == true" class="tag is-light is-success">enabled</span>
+                      <span *ngIf="t.enabled == false" class="tag is-light">disabled</span>
+                      <span *ngIf="t?.debug?.ingress === 'Suspended'"
+                        class="tag px-1 tooltip has-tooltip-right has-tooltip-arrow"
+                        [attr.data-tooltip]="'This will pause loading data in pipeline from storage.'">
+                        <i class="bi bi-ban overlay-icon"></i>
+                      </span>
+                    </div>
                   </td>
                   <td>
                     <small>{{t?.plugin?.name}}</small>
                   </td>
                   <td>
                     <small>{{t?.plugin?.version}}</small>
+                  </td>
+                  <td class="align-content content-pad" *ngIf="tasks | hasAttachedDebugger">
+                    <span *ngIf="t?.debug?.egress == 'Isolated'"
+                      class="icon is-small tooltip has-tooltip-right has-tooltip-arrow"
+                      [attr.data-tooltip]="'This will stop sending data upstream.'">
+                      <i class="bi bi-cloud-slash"></i>
+                    </span>
                   </td>
                   <td>
                     <small *ngIf="t.sent >= '0'" class="level-right">{{t.sent | number}}</small>

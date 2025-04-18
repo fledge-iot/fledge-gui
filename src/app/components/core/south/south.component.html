@@ -31,10 +31,12 @@
               cellspacing="0">
               <thead>
                 <tr>
+                  <th class="align-th" *ngIf="southboundServices | hasAttachedDebugger"></th>
                   <th class="align-th">Name</th>
                   <th class="align-th">Status</th>
                   <th class="align-th">Plugin</th>
                   <th class="align-th">Version</th>
+                  <th class="align-th" *ngIf="southboundServices | hasAttachedDebugger"></th>
                   <th class="align-th">
                     <table class="table is-responsive">
                       <tr>
@@ -50,9 +52,18 @@
               <tbody>
                 <tr *ngFor="let svc of southboundServices" [ngClass]="{'fade': (svc.schedule_enabled === false)}"
                   class="parent">
+                  <td class="is-vcentered pr-0" *ngIf="southboundServices | hasAttachedDebugger">
+                    <div class="is-flex is-align-items-center py-0">
+                      <span *ngIf="svc?.debug?.debugger === 'Attached'" class="icon is-small">
+                        <i class="bi bi-bug bi-sm debug"></i>
+                      </span>
+                    </div>
+                  </td>
                   <td class="align-content">
-                    <a class="button is-ghost is-text py-0 service-name"
-                      (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
+                    <div class="is-flex is-align-items-center">
+                      <a class="button is-ghost is-text py-0 service-name"
+                        (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
+                    </div>
                   </td>
                   <td class="align-content content-pad">
                     <div class="tags has-addons">
@@ -64,6 +75,11 @@
                         <span *ngIf="svc.status == 'failed'" class="tag is-light is-danger">{{svc.status}}</span>
                         <span *ngIf="svc.status == 'unresponsive'" class="tag is-light is-warning">{{svc.status}}</span>
                       </ng-container>
+                      <span *ngIf="svc?.debug?.ingress === 'Suspended'"
+                        class="tag px-1 tooltip has-tooltip-right has-tooltip-arrow"
+                        [attr.data-tooltip]="'This will pause ingesting at South.'">
+                        <i class="bi bi-ban overlay-icon"></i>
+                      </span>
                     </div>
                   </td>
                   <td class="align-content content-pad">
@@ -71,6 +87,13 @@
                   </td>
                   <td class="align-content content-pad">
                     <small>{{svc?.plugin?.version}}</small>
+                  </td>
+                  <td class="align-content content-pad" *ngIf="southboundServices | hasAttachedDebugger">
+                    <span *ngIf="svc.debug.egress == 'Isolated'"
+                      class="icon is-small tooltip has-tooltip-right has-tooltip-arrow"
+                      [attr.data-tooltip]="'This will stop writing readings to Storage.'">
+                      <i class="bi bi-database-slash"></i>
+                    </span>
                   </td>
                   <td class="align-content pt-2">
                     <table class="table is-narrow is-responsive" [ngClass]="{'is-borderless': !svc.expanded}">
