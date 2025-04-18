@@ -21,3 +21,7 @@
   padding-right: 0.5rem;
   margin-right: -0.5rem;
 }
+
+.tooltip.has-tooltip-multiline::before {
+  min-width: 16rem !important;
+}

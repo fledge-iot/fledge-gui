@@ -35,7 +35,6 @@ export class ServicesApiService {
       catchError(error => throwError(error)));
   }
 
-
   /**
   *  POST  | /fledge/service
   */

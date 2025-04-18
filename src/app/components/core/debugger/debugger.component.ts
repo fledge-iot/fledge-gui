@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 import { AlertService, ProgressBarService, ServicesApiService } from '../../../services';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
+import { debounceTime, delay, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { Debug } from '../south/south-service';
+import { DocService } from '../../../services/doc.service';
 
 @Component({
   selector: 'app-debugger',
@@ -17,6 +18,8 @@ export class DebuggerComponent {
   showRawJson = false;
 
   bufferDataExist = false;
+
+  showLoading = false;
 
   formGroup: FormGroup;
 
@@ -44,6 +47,7 @@ export class DebuggerComponent {
     private southService: ServicesApiService,
     private ngProgress: ProgressBarService,
     private alertService: AlertService,
+    private docService: DocService,
     private fb: FormBuilder
   ) { }
 
@@ -71,36 +75,41 @@ export class DebuggerComponent {
           console.error('Buffer save failed:', err);
         }
       });
-
-    // Step field changes
-    this.formGroup.get('step')!.valueChanges
-      .pipe(
-        tap(() => this.stepStatus = 'saving'),
-        debounceTime(2000),
-        distinctUntilChanged(),
-        switchMap(value => this.southService.setStepSize(this.debuggerData.serviceName, { steps: +value }))
-      )
-      .subscribe({
-        next: () => {
-          this.stepStatus = 'saved';
-          setTimeout(() => this.stepStatus = 'idle', 2000);
-        },
-        error: err => {
-          this.stepStatus = 'idle';
-          console.error('Step save failed:', err);
-        }
-      });
   }
 
   ngAfterViewInit() {
     this.getBufferData();
   }
 
+  ngOnChanges(chages: SimpleChanges) {
+    if (chages['debuggerData']?.currentValue) {
+      this.debuggerData = chages['debuggerData'].currentValue;
+    }
+    if (chages['serviceName']?.currentValue) {
+      this.serviceName = chages['serviceName'].currentValue;
+    }
+  }
+
+  showTooltip() {
+    if (this.debuggerData.debug.egress == 'Isolated' && this.from == 'south') {
+      return 'Egress data is isolated and not sent to storage.';
+    } else if (this.debuggerData.debug.ingress == 'Suspended' && this.from == 'south') {
+      return 'Ingestion at south from storage is currently paused.';
+    }
+    //  debuggerData.debug.ingress == 'Suspended' && from == 'south' ? 'Ingestion at south from storage is currently paused.' : 'Ingesting data'
+  }
+
   toggleJsonView() {
     this.showRawJson = !this.showRawJson;
   }
 
+  openReadtheDocs() {
+    const slug = 'debugging-tracing-pipelines';
+    this.docService.openDocsLink(slug);
+  }
+
   toggleDebuggerState() {
+    this.showLoading = true;
     this.ngProgress.start();
     const name = this.debuggerData.serviceName;
     const action = this.debuggerData.debug.debugger === 'Attached' ? 'detach' : 'attach';
@@ -113,7 +122,24 @@ export class DebuggerComponent {
         }
         this.ngProgress.done();
         this.alertService.success(res['message'], true);
+        if (action === 'attach') {
+          setTimeout(() => {
+            this.getService();
+          }, 2000);
+        } else {
+          setTimeout(() => {
+            this.showLoading = false;
+            this.debuggerData = {
+              debug: {
+                debugger: '',
+                ingress: '',
+                egress: ''
+              }, serviceName: this.serviceName
+            }
+          }, 2000)
+        }
       }, error => {
+        this.showLoading = false;
         this.ngProgress.done();
         if (error.status === 0) {
           console.log('service down ', error);
@@ -214,7 +240,7 @@ export class DebuggerComponent {
         this.tabData = res['data'];
         this.ngProgress.done();
         const flatList: any[] = [];
-        this.tabData.forEach(item => {
+        this.tabData?.forEach(item => {
           if (Array.isArray(item)) {
             item.forEach(child => flatList.push(child));
           } else {
@@ -288,9 +314,52 @@ export class DebuggerComponent {
       item.name?.toLowerCase() === filterName.toLowerCase()
     );
 
-    return { data: filtered };
+    return filtered;
   }
 
+  executeStepSize() {
+    // Step field changes
+    const steps = this.formGroup.get('step')?.value;
+    if (steps) {
+      this.stepStatus = 'saving';
+      const start = Date.now();
+      this.southService.setStepSize(this.debuggerData.serviceName, { steps: +steps })
+        .subscribe({
+          next: () => {
+            const elapsed = Date.now() - start;
+            const minDisplayTime = 1000;
+            const delay = Math.max(minDisplayTime - elapsed, 0);
+            // some delay to ensure the success message is shown for at least 1 second
+            setTimeout(() => {
+              this.stepStatus = 'saved';
+              setTimeout(() => this.stepStatus = 'idle', 3000);
+            }, delay);
+          },
+          error: err => {
+            this.stepStatus = 'idle';
+            console.error('Step save failed:', err);
+          }
+        });
+    }
+  }
 
+  getService() {
+    this.southService.getSouthServices(true)
+      .pipe(delay(3000))
+      .subscribe((res) => {
+        console.log(res);
+        this.showLoading = false;
+        const service = res['services'].find((service: any) => service.name === this.debuggerData.serviceName);
+        this.debuggerData = { debug: service.debug, serviceName: service.name };
+        console.log(this.debuggerData);
+      }, error => {
+        this.showLoading = false;
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText, true);
+        }
+      });
+  }
 }
 

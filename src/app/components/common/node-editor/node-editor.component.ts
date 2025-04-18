@@ -223,11 +223,15 @@ export class NodeEditorComponent implements OnInit {
     );
 
     this.debuggerStateSubscription = this.flowEditorService.openDebuggerInQuickview.subscribe(data => {
-      console.log('data', data);
       this.debuggerPage = data.openDebuggerPage;
       this.debugger = { debug: data.debugger, serviceName: data.serviceName };
+      this.showNotificationConfiguration = false;
+      this.showPluginConfiguration = false;
+      this.showFilterConfiguration = false;
+      this.showTaskSchedule = false;
+      this.showReadings = false;
+      this.showLogs = false;
     });
-
 
 
     this.logsSubscription = this.flowEditorService.showLogsInQuickview.subscribe(data => {
@@ -239,7 +243,9 @@ export class NodeEditorComponent implements OnInit {
       this.showFilterConfiguration = false;
       this.showTaskSchedule = false;
       this.showReadings = false;
+      this.debuggerPage = false;
     });
+
     this.subscription = this.flowEditorService.showItemsInQuickview.pipe(skip(1)).subscribe(data => {
       if (this.from === 'notifications') {
         this.showLogs = false;
@@ -259,6 +265,7 @@ export class NodeEditorComponent implements OnInit {
       this.showReadings = data.showReadings ? true : false;
       this.serviceName = data?.serviceName;
       this.showLogs = false;
+      this.debuggerPage = false;
 
       if (this.showPluginConfiguration || this.showNotificationConfiguration) {
         this.getCategory();
@@ -1371,6 +1378,7 @@ export class NodeEditorComponent implements OnInit {
 
   ngOnDestroy() {
     this.isAlive = false;
+    this.debuggerStateSubscription?.unsubscribe();
     this.pipelineSubscription?.unsubscribe();
     this.subscription?.unsubscribe();
     this.filterSubscription?.unsubscribe();
