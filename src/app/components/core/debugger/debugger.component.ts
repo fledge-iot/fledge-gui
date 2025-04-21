@@ -94,18 +94,30 @@ export class DebuggerComponent {
   }
 
   showIngestDataTooltip() {
-    if (this.debuggerData.debug.ingress == 'Suspended' && this.from == 'south') {
-      return 'This will pause ingesting at South.';
-    } else if (this.debuggerData.debug.ingress == 'Suspended' && this.from == 'north') {
-      return 'This will pause loading data in pipeline from storage.';
+    if (this.from == 'south') {
+      if (this.debuggerData.debug.ingress == 'Suspended') {
+        return 'Ingestion is currently paused.';
+      }
+      return 'Clicking this will pause ingesting at South.';
+    } else { // From North
+      if (this.debuggerData.debug.ingress == 'Suspended') {
+        return 'Loading data in pipeline from storage is currently paused.';
+      }
+      return 'This will pause loading data in pipeline from storage.'
     }
   }
 
   showEgressDataTooltip() {
-    if (this.debuggerData.debug.egress == 'Isolated' && this.from == 'south') {
-      return 'This will stop writing readings to Storage.';
-    } else if (this.debuggerData.debug.egress == 'Isolated' && this.from == 'north') {
-      return 'This will stop sending data upstream.';
+    if (this.from == 'south') {
+      if (this.debuggerData.debug.egress == 'Isolated') {
+        return 'Writing readings to storage is currently stopped.';
+      }
+      return 'Clicking this will stop writing readings to storage.';
+    } else { // From North
+      if (this.debuggerData.debug.egress == 'Isolated') {
+        return 'Sending data upstream is currently stopped.';
+      }
+      return 'Clicking this will stop sending data upstream.';
     }
   }
 
@@ -385,8 +397,9 @@ export class DebuggerComponent {
 
 
   getService() {
+    const type = this.from === 'south' ? 'Southbound' : 'Northbound';
     this.ngProgress.start();
-    this.southService.getSouthServices(true)
+    this.southService.getServiceByType(type)
       .pipe(delay(3000))
       .subscribe((res) => {
         console.log(res);

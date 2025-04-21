@@ -181,7 +181,8 @@
             </div>
             <div class="dropdown-menu" id="dropdown-menu3" role="menu">
               <div class="dropdown-content">
-                <div class="dropdown-item has-submenu" *ngIf="['south', 'north'].includes(data.type)">
+                <div class="dropdown-item has-submenu"
+                  *ngIf="data.type == 'south' || (data.type == 'north' && task.execution !== 'task') ">
                   <span class="is-flex-grow-3">Debugger</span>
                   <span class="icon is-small is-pulled-right m-0">
                     <i class="fas fa-xs fa-chevron-right" aria-hidden="true"></i>
