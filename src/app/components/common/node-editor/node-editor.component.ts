@@ -280,7 +280,6 @@ export class NodeEditorComponent implements OnInit {
           let updatedPipeline = getUpdatedFilterPipeline();
           if (updatedPipeline?.length > 0) {
             this.updatedFilterPipeline = updatedPipeline;
-            console.log(this.updatedFilterPipeline);
             this.flowEditorService.pipelineInfo.next(this.updatedFilterPipeline);
             this.isAddFilterWizard = true;
           }
