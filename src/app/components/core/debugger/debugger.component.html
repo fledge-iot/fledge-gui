@@ -1,16 +1,23 @@
 <div class="my-5 mx-5">
   <div class="is-flex is-align-items-center mb-5">
-    <span class="icon">
-      <i class="bi bi-bug bi-sm p-1"></i>
-    </span>
-    <span class="is-flex-grow-1">
-      <strong>Debugger</strong>
-    </span>
-    <a class="icon has-text-grey" (click)="openReadtheDocs()">
+    <div class="is-flex-grow-1">
       <span class="icon">
-        <i class="bi bi-sm bi-question-circle"></i>
+        <i class="bi bi-bug bi-sm"></i>
       </span>
-    </a>
+      <span>
+        <strong>Debugger</strong>
+      </span>
+      <button type="button" (click)="getService()" title="Reload" class="button is-small ml-1" id="refresh-check">
+        <i class="bi bi-md bi-arrow-repeat"></i>
+      </button>
+    </div>
+    <div>
+      <a class="icon has-text-grey" (click)="openReadtheDocs()">
+        <span class="icon">
+          <i class="bi bi-sm bi-question-circle"></i>
+        </span>
+      </a>
+    </div>
   </div>
 
   <div class="field ml-1">
@@ -224,7 +231,7 @@
       <span class="icon is-large has-text-grey">
         <i class="bi bi-arrow-repeat fa-spin" style="font-size: 2rem;"></i>
       </span>
-      <p class="mt-2 has-text-grey">Waiting for debugger to {{debuggerData?.debug?.debugger == 'Attached'?
+      <p class="mt-2 has-text-grey">Waiting for debugger to {{debuggerData?.debug?.debugger !== 'Attached'?
         'attach...':'detach..'}}</p>
     </div>
   </ng-template>

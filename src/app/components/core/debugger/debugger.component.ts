@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { AlertService, ProgressBarService, ServicesApiService } from '../../../services';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { debounceTime, delay, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
+import { catchError, debounceTime, delay, distinctUntilChanged, switchMap, take, tap } from 'rxjs/operators';
 import { Debug } from '../south/south-service';
 import { DocService } from '../../../services/doc.service';
+import { interval, of } from 'rxjs';
 
 @Component({
   selector: 'app-debugger',
@@ -121,14 +122,17 @@ export class DebuggerComponent {
     this.showLoading = true;
     this.ngProgress.start();
     const name = this.debuggerData.serviceName;
-    const action = this.debuggerData.debug.debugger === 'Attached' ? 'detach' : 'attach';
+    const previousState = this.debuggerData.debug.debugger;
+    const expectedState = previousState === 'Attached' ? 'Detached' : 'Attached';
+    const action = previousState === 'Attached' ? 'detach' : 'attach';
+
     this.southService.manageServiceDebuggerState(name, action)
       .subscribe((res) => {
         this.ngProgress.done();
         this.alertService.success(res['message'], true);
-        setTimeout(() => {
-          this.getService();
-        }, 2000)
+
+        // Retry to fetch the service and verify the new debugger state
+        this.getDebuggerStateChanges(expectedState);
       }, error => {
         this.showLoading = false;
         this.ngProgress.done();
@@ -334,7 +338,54 @@ export class DebuggerComponent {
     }
   }
 
+  getDebuggerStateChanges(expectedState: string) {
+    const maxRetries = 3;
+    let attempt = 0;
+    const poll$ = interval(2000).pipe( // poll every 2 seconds
+      take(maxRetries),
+      switchMap(() => {
+        attempt++;
+        console.log(`Polling attempt ${attempt}`);
+        return this.southService.getSouthServices(true).pipe(
+          catchError(err => {
+            this.showLoading = false;
+            console.error(`Error on attempt ${attempt}:`, err);
+            return of(null); // swallow error and continue polling
+          })
+        );
+      })
+    );
+
+    const subscription = poll$.subscribe((res: any) => {
+      if (!res) return;
+
+      const service = res['services'].find((s: any) => s.name === this.debuggerData.serviceName);
+      const currentState = service?.debug?.debugger;
+
+      console.log(`Debugger state on attempt ${attempt}: ${currentState}`);
+
+      if (currentState === expectedState) {
+        // Success: update and stop polling
+        this.debuggerData = { debug: service.debug, serviceName: service.name };
+        this.debuggerDataChange.emit(this.debuggerData);
+        this.showLoading = false;
+        subscription.unsubscribe();
+        console.log('Debugger state updated successfully');
+        this.alertService.success(`Debugger ${service.debug.debugger.toLowerCase()} successfully.`, true);
+      }
+
+      if (attempt > maxRetries) {
+        // Max retries hit
+        this.showLoading = false;
+        this.alertService.error('Debugger state failed to update. Please refresh.', true);
+        subscription.unsubscribe();
+      }
+    });
+  }
+
+
   getService() {
+    this.ngProgress.start();
     this.southService.getSouthServices(true)
       .pipe(delay(3000))
       .subscribe((res) => {
@@ -343,9 +394,10 @@ export class DebuggerComponent {
         const service = res['services'].find((service: any) => service.name === this.debuggerData.serviceName);
         this.debuggerData = { debug: service.debug, serviceName: service.name };
         this.debuggerDataChange.emit(this.debuggerData);
-        console.log(this.debuggerData);
+        this.ngProgress.done();
       }, error => {
         this.showLoading = false;
+        this.ngProgress.done();
         if (error.status === 0) {
           console.log('service down ', error);
         } else {
