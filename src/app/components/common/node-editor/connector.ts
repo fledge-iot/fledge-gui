@@ -53,7 +53,7 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
         // Avoid connection loop in pipeline
         const updatedPipeline = getUpdatedFilterPipeline();
         let exists = false;
-        if (typeof updatedPipeline == 'object') {
+        if (updatedPipeline && typeof updatedPipeline == 'object') {
           exists = contains(toNode.label, updatedPipeline);
           if (exists) {
             alertService.error('Joining branches in a pipeline is not supported', true);
