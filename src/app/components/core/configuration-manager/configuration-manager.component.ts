@@ -26,6 +26,7 @@ export class ConfigurationManagerComponent implements OnInit {
   @ViewChild(TreeComponent, { static: true }) private tree: TreeComponent;
   changedConfig: any;
   categoryDataCopy: any;
+  isFormValueChanged = false;
 
   public reenableButton = new EventEmitter<boolean>(false);
 
@@ -168,6 +169,7 @@ export class ConfigurationManagerComponent implements OnInit {
   getChangedConfig(changedConfiguration: any, category: any) {
     const cat = this.categoryDataCopy.find(cat => cat.key === category.key);
     this.changedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, cat);
+    this.isFormValueChanged = !isEmpty(this.changedConfig);
   }
 
   save(catName: string, catDesc: string) {
@@ -250,9 +252,5 @@ export class ConfigurationManagerComponent implements OnInit {
    */
   public uploadScript(categoryName: string, files: any[]) {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
-  }
-
-  checkFormState() {
-    return isEmpty(this.changedConfig);
   }
 }
