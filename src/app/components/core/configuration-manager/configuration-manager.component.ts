@@ -51,7 +51,7 @@ export class ConfigurationManagerComponent implements OnInit {
         (data: any) => {
           this.categoryData = data.categories;
           const excludeCategories = this.scheduleNames.concat(["SOUTH", "NORTH", "NOTIFICATIONS"]);
-          
+
           // filter south, north, notification, management, bucket, dispatcher categories
           this.categoryData = this.categoryData.filter((n: any) => {
             return !excludeCategories.includes(n.key.toUpperCase());
@@ -250,5 +250,9 @@ export class ConfigurationManagerComponent implements OnInit {
    */
   public uploadScript(categoryName: string, files: any[]) {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
+  }
+
+  checkFormState() {
+    return isEmpty(this.changedConfig);
   }
 }
