@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
   isServiceRunning = true;
   modalWindow: HTMLElement | null;
 
-  isSidemenuCollapsed = false;
+  isSidemenuCollapsed = true;
 
   private destroySubject: Subject<void> = new Subject();
 
