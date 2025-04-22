@@ -20,7 +20,7 @@
     </div>
   </div>
 
-  <div class="field ml-1">
+  <div class="field ml-1" *ngIf="rolesService.hasEditPermissions()">
     <label class="checkbox">
       <input type="checkbox" (change)="toggleDebuggerState()" [checked]="debuggerData?.debug?.debugger == 'Attached'">
       Attach
@@ -32,7 +32,8 @@
       <div class="buttons mt-3 mb-4" *ngIf="from == 'south'">
         <span class="tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline mx-2"
           [attr.data-tooltip]="showIngestDataTooltip()">
-          <button class="button is-small is-link is-outlined" (click)="toggleIngressState()">
+          <button [disabled]="!rolesService.hasEditPermissions()" class="button is-small is-link is-outlined"
+            (click)="toggleIngressState()">
             <ng-container *ngIf="debuggerData.debug.ingress == 'Running'">
               <span class="icon is-small">
                 <i class="bi bi-pause-circle"></i>
@@ -50,7 +51,8 @@
 
         <span class="tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline mx-2"
           [attr.data-tooltip]="showEgressDataTooltip()">
-          <button class="button is-small is-link is-outlined" (click)="toggleEgressState()">
+          <button [disabled]="!rolesService.hasEditPermissions()" class="button is-small is-link is-outlined"
+            (click)="toggleEgressState()">
             <ng-container *ngIf="debuggerData.debug.egress == 'Storage'">
               <span class="icon is-small">
                 <i class="bi bi-database-slash"></i>
@@ -70,7 +72,8 @@
       <div class="buttons mt-3 mb-4" *ngIf="from == 'north'">
         <span class="tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline mx-2"
           [attr.data-tooltip]="showIngestDataTooltip()">
-          <button class="button is-small is-link is-outlined" (click)="toggleIngressState()">
+          <button [disabled]="!rolesService.hasEditPermissions()" class="button is-small is-link is-outlined"
+            (click)="toggleIngressState()">
             <ng-container *ngIf="debuggerData.debug.ingress == 'Running'">
               <span class="icon is-small">
                 <i class="bi bi-pause-circle"></i>
@@ -88,7 +91,8 @@
 
         <span class="tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline mx-2"
           [attr.data-tooltip]="showEgressDataTooltip()">
-          <button class="button is-small is-link is-outlined" (click)="toggleEgressState()">
+          <button [disabled]="!rolesService.hasEditPermissions()" class="button is-small is-link is-outlined"
+            (click)="toggleEgressState()">
             <ng-container>
               <ng-container *ngIf="debuggerData.debug.egress == 'Storage'">
                 <span class="icon is-small">
@@ -109,7 +113,7 @@
 
       <hr>
 
-      <form [formGroup]="formGroup">
+      <form [formGroup]="formGroup" *ngIf="rolesService.hasEditPermissions()">
         <div class="columns is-mobile mb-3">
           <div class="column">
             <label class="label is-small">
@@ -150,7 +154,7 @@
         </div>
       </form>
 
-      <div class="buttons are-small">
+      <div class="buttons are-small" *ngIf="rolesService.hasEditPermissions()">
         <span class="tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline"
           data-tooltip="It is also probably sensible to isolate the pipeline to prevent readings with the same timestamp as readings already sent upstream to be sent again">
           <button [disabled]="debuggerData.debug.ingress !== 'Suspended'" class="button is-small is-link is-outlined"

@@ -491,8 +491,6 @@ export class NodeEditorComponent implements OnInit {
               }
             });
             this.initialApiCallsStack = [];
-            console.log('data22', data)
-
             if (this.filterConfigApiCallsStack.length > 0) {
               forkJoin(this.filterConfigApiCallsStack).subscribe((result) => {
                 result.forEach((r: any) => {

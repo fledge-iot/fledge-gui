@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
-import { AlertService, ProgressBarService, ServicesApiService } from '../../../services';
+import { AlertService, ProgressBarService, RolesService, ServicesApiService } from '../../../services';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { catchError, debounceTime, delay, distinctUntilChanged, switchMap, take, tap } from 'rxjs/operators';
 import { Debug } from '../south/south-service';
@@ -47,10 +47,11 @@ export class DebuggerComponent {
   writerItems: any[] = [];
 
   constructor(
-    private southService: ServicesApiService,
+    private serviceApi: ServicesApiService,
     private ngProgress: ProgressBarService,
     private alertService: AlertService,
     private docService: DocService,
+    public rolesService: RolesService,
     private fb: FormBuilder
   ) { }
 
@@ -66,7 +67,7 @@ export class DebuggerComponent {
         tap(() => this.bufferStatus = 'saving'),
         debounceTime(2000),
         distinctUntilChanged(),
-        switchMap(value => this.southService.setBufferSize(this.debuggerData.serviceName, { size: +value }))
+        switchMap(value => this.serviceApi.setBufferSize(this.debuggerData.serviceName, { size: +value }))
       )
       .subscribe({
         next: () => {
@@ -81,7 +82,9 @@ export class DebuggerComponent {
   }
 
   ngAfterViewInit() {
-    this.getBufferData();
+    if (this.rolesService.hasEditPermissions()) {
+      this.getBufferData();
+    }
   }
 
   ngOnChanges(chages: SimpleChanges) {
@@ -138,7 +141,7 @@ export class DebuggerComponent {
     const expectedState = previousState === 'Attached' ? 'Detached' : 'Attached';
     const action = previousState === 'Attached' ? 'detach' : 'attach';
 
-    this.southService.manageServiceDebuggerState(name, action)
+    this.serviceApi.manageServiceDebuggerState(name, action)
       .subscribe((res) => {
         this.ngProgress.done();
         this.alertService.success(res['message'], true);
@@ -166,7 +169,7 @@ export class DebuggerComponent {
     } else {
       payload = { state: 'store' }
     }
-    this.southService.manageServiceDebuggerState(name, action, payload)
+    this.serviceApi.manageServiceDebuggerState(name, action, payload)
       .subscribe((res) => {
         this.debuggerData.debug.egress = payload['state'] === 'discard' ? 'Isolated' : 'Storage';
         this.ngProgress.done();
@@ -192,7 +195,7 @@ export class DebuggerComponent {
       payload = { state: 'suspend' }
     }
 
-    this.southService.manageServiceDebuggerState(name, action, payload)
+    this.serviceApi.manageServiceDebuggerState(name, action, payload)
       .subscribe((res) => {
         this.debuggerData.debug.ingress = payload['state'] === 'resume' ? 'Running' : 'Suspended';
         this.ngProgress.done();
@@ -211,7 +214,7 @@ export class DebuggerComponent {
     this.ngProgress.start();
     const name = this.debuggerData.serviceName;
     let action = 'replay';
-    this.southService.manageServiceDebuggerState(name, action)
+    this.serviceApi.manageServiceDebuggerState(name, action)
       .subscribe((res) => {
         this.ngProgress.done();
         this.alertService.success(res['message'], true);
@@ -242,7 +245,7 @@ export class DebuggerComponent {
   getBufferData() {
     this.ngProgress.start();
     const name = this.debuggerData.serviceName;
-    this.southService.getBufferedData(name)
+    this.serviceApi.getBufferedData(name)
       .subscribe((res) => {
         this.tabData = res['data'];
         this.ngProgress.done();
@@ -330,7 +333,7 @@ export class DebuggerComponent {
     if (steps) {
       this.stepStatus = 'saving';
       const start = Date.now();
-      this.southService.setStepSize(this.debuggerData.serviceName, { steps: +steps })
+      this.serviceApi.setStepSize(this.debuggerData.serviceName, { steps: +steps })
         .subscribe({
           next: () => {
             const elapsed = Date.now() - start;
@@ -358,7 +361,9 @@ export class DebuggerComponent {
       switchMap(() => {
         attempt++;
         console.log(`Polling attempt ${attempt}`);
-        return this.southService.getSouthServices(true).pipe(
+
+        const type = this.from === 'south' ? 'Southbound' : 'Northbound';
+        return this.serviceApi.getServiceByType(type).pipe(
           catchError(err => {
             this.showLoading = false;
             console.error(`Error on attempt ${attempt}:`, err);
@@ -370,7 +375,6 @@ export class DebuggerComponent {
 
     const subscription = poll$.subscribe((res: any) => {
       if (!res) return;
-
       const service = res['services'].find((s: any) => s.name === this.debuggerData.serviceName);
       const currentState = service?.debug?.debugger;
 
@@ -399,7 +403,7 @@ export class DebuggerComponent {
   getService() {
     const type = this.from === 'south' ? 'Southbound' : 'Northbound';
     this.ngProgress.start();
-    this.southService.getServiceByType(type)
+    this.serviceApi.getServiceByType(type)
       .pipe(delay(3000))
       .subscribe((res) => {
         console.log(res);
