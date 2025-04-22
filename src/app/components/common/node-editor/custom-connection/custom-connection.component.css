@@ -19,21 +19,3 @@ svg path.selected {
   stroke-width: 14px !important;
   stroke: transparent !important;
 }
-
-/* .connection-status {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  border: 0px;
-  width: auto;
-  height: auto;
-  cursor: pointer;
-  z-index: 10;
-  background: white;
-  border-radius: 50%;
-  padding: 0.5px;
-}
-
-.connection-status .bi-ban {
-  font-size: 0.8em;
-  color: #ff0000;
-} */

@@ -252,7 +252,7 @@
     </ng-container>
     <div class="is-pulled-center has-text-grey"
       [ngClass]="{'north-storage-icon': from=='north', 'south-storage-icon':from=='south'}">
-      <span class="icon egress-isolated" *ngIf="data?.debug?.egress === 'Isolated' &&  from=='south'">
+      <span class="icon ban-icon" *ngIf="data?.debug?.egress === 'Isolated' &&  from=='south'">
         <i class="bi bi-ban"></i>
       </span>
       <i class="bi bi-database bi-xl no-hover"></i>

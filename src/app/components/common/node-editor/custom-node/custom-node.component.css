@@ -240,19 +240,10 @@
   font-size: 1.1em;
 }
 
-.egress-isolated {
+.ban-icon {
   position: absolute;
   top: 45%;
   left: 48%;
-  transform: translate(-50%, -50%);
-  color: gray;
-  font-size: xx-large !important;
-}
-
-.ingress-isolated {
-  position: absolute;
-  top: 45%;
-  left: 44%;
   transform: translate(-50%, -50%);
   color: gray;
   font-size: xx-large !important;
