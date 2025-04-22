@@ -16,14 +16,7 @@ export class ToolbarComponent {
   @Output() debug = new EventEmitter<boolean>();
   @Input() debuggerState: string;
 
-  ngOnInit() {
-
-
-  }
-
-  ngOnChanges() {
-    console.log(this.debuggerState);
-  }
+  ngOnInit() { }
 
   reload() {
     this.reloadData.emit(true);
