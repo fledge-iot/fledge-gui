@@ -6,6 +6,7 @@ import { Filter } from "../nodes/filter";
 import { South } from "../nodes/south";
 import { North } from "../nodes/north";
 import { Connection } from "../connection";
+import { AlertService } from '../../../../../app/services';
 
 
 type Schemes = GetSchemes<
@@ -49,7 +50,8 @@ export const connectionEvents = {
 
 export function insertableNodes<S extends Schemes>(
   area: AreaPlugin<S, any>,
-  props: Props<S>
+  props: Props<S>,
+  alertService: AlertService
 ) {
   area.addPipe(async (context) => {
     if (!(context && typeof context === 'object' && 'type' in context)) return context;
@@ -62,9 +64,27 @@ export function insertableNodes<S extends Schemes>(
         ([id, view]) => [id, view.element] as const
       );
 
-
       if (view && node.label !== "South" && node.label !== "Storage" && node.label !== "North") {
         const intersectedConnections = checkIntersection(view.position, node, cons);
+
+        // Utility function to check if two connections have the same target
+        const hasSameTarget = (conn1, conn2) => conn1.target === conn2.target;
+
+        // Get intersected connections with the same target
+        const intersectedConnectionsWithSameTarget = intersectedConnections.filter(id => {
+          const conn = editor.getConnection(id);
+
+          // Check if any other connection has the same target
+          return intersectedConnections.some(otherId => {
+            return id !== otherId && hasSameTarget(conn, editor.getConnection(otherId));
+          });
+        });
+
+        if (intersectedConnectionsWithSameTarget.length > 1 && node.label === "Filter") {
+          alertService.error('Joining branches in a pipeline is not supported', true);
+          return context;
+        }
+
         for (let id of intersectedConnections) {
           const exist = editor.getConnection(id);
           if (exist && (exist.source !== node.id && exist.target !== node.id)) {
