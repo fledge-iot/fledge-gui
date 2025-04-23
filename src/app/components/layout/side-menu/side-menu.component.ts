@@ -32,7 +32,7 @@ export class SideMenuComponent implements OnInit {
   private destroySubject: Subject<void> = new Subject();
   viewPort: any = '';
 
-  isSidemenuCollapsed = false;
+  isSidemenuCollapsed = true;
 
   toggleSideMenu() {
     this.toggle.next('toggleSidebar');

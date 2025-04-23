@@ -1,4 +1,4 @@
-<aside class="menu" [ngClass]="{'submenu-div is-relative': viewPort == 'desktop'}"
+<aside class="menu collapsed" [ngClass]="{'submenu-div is-relative': viewPort == 'desktop'}"
   [id]="viewPort !== 'desktop' ? 'mobile-sidemenu' : 'sidemenu'">
   <ul class="menu-list">
     <section [ngClass]="{'disabled':  !isServiceRunning}" (click)="toggleSideMenu(); $event.preventDefault()">
