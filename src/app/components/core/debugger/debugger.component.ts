@@ -12,7 +12,7 @@ import { interval, of } from 'rxjs';
   styleUrls: ['./debugger.component.css']
 })
 export class DebuggerComponent {
-  @Input() debuggerData: { debug: Debug, serviceName: string };
+  @Input() debuggerData: { debug: Debug, serviceName: string, node?: string };
   @Input() serviceName: string;
   @Input() from: string;
 
@@ -45,6 +45,9 @@ export class DebuggerComponent {
 
   branchItems: any[] = [];
   writerItems: any[] = [];
+
+  node: string;
+  nodeReadings: {};
 
   constructor(
     private serviceApi: ServicesApiService,
@@ -81,11 +84,6 @@ export class DebuggerComponent {
       });
   }
 
-  ngAfterViewInit() {
-    if (this.rolesService.hasEditPermissions()) {
-      this.getBufferData();
-    }
-  }
 
   ngOnChanges(chages: SimpleChanges) {
     if (chages['debuggerData']?.currentValue) {
@@ -93,6 +91,13 @@ export class DebuggerComponent {
     }
     if (chages['serviceName']?.currentValue) {
       this.serviceName = chages['serviceName'].currentValue;
+    }
+
+    if (chages['debuggerData']?.currentValue?.node !== chages['debuggerData']?.previousValue?.node) {
+      this.node = chages['debuggerData']?.currentValue?.node;
+      if (this.rolesService.hasEditPermissions()) {
+        this.getBufferData();
+      }
     }
   }
 
@@ -264,13 +269,30 @@ export class DebuggerComponent {
           isOpen: false
         }));
 
-        this.branchItems = this.accordionItems.filter(item =>
-          item.name?.toLowerCase().includes('branch')
-        );
+        if (this.serviceName == this.node) {
+          this.branchItems = this.accordionItems.filter(item =>
+            item.name?.toLowerCase().includes('branch')
+          );
+        }
+
+        if (this.node) {
+          this.nodeReadings = this.accordionItems.find(item =>
+            item.name?.toLowerCase().includes(this.node)
+          );
+          if (this.serviceName == this.node) {
+            this.nodeReadings = this.accordionItems.find(item =>
+              item.name?.toLowerCase().includes('branch')
+            );
+          }
+        }
 
         this.writerItems = this.accordionItems.filter(item =>
           item.name?.toLowerCase().includes('writer')
         );
+
+        if (this.from == 'debugger-readings') {
+          this.viewBufferData();
+        }
       }, error => {
         this.ngProgress.done();
         if (error.status === 0) {
@@ -327,7 +349,7 @@ export class DebuggerComponent {
     return filtered;
   }
 
-  executeStepSize() {
+  setSteps() {
     // Step field changes
     const steps = this.formGroup.get('step')?.value;
     if (steps) {

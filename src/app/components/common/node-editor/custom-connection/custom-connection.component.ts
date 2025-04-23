@@ -1,6 +1,7 @@
 import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 import { ClassicPreset } from 'rete';
 import { Position } from '../types';
+import { SharedService } from '../../../../services';
 
 type Connection = ClassicPreset.Connection<
   ClassicPreset.Node,
@@ -26,4 +27,11 @@ export class CustomConnectionComponent {
   @ViewChild('menu') menu!: ElementRef;
   @ViewChild('svg') connection!: ElementRef<SVGAElement>;
   @ViewChild('svgpath', { static: true }) pathRef: ElementRef<SVGPathElement>;
+
+  constructor(private sharedService: SharedService) { }
+
+  showDebuggerReadings() {
+    const nodeId = this.data.source;
+    this.sharedService.bufferReadings.next({ show: true, nodeId });
+  }
 }

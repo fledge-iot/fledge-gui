@@ -35,6 +35,8 @@ import { ListCardComponent } from './components/core/configuration-manager/list-
 import { KvlistCardComponent } from './components/core/configuration-manager/kvlist-card/kvlist-card.component';
 import { DynamicGroupComponent } from './components/core/configuration-manager/dynamic-group/dynamic-group.component';
 import { DebuggerComponent } from './components/core/debugger/debugger.component';
+import { DebuggerReadingsComponent } from './components/core/debugger/debugger-readings/debugger-readings.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   imports: [
@@ -45,6 +47,7 @@ import { DebuggerComponent } from './components/core/debugger/debugger.component
     DirectivesModule,
     NgSelectModule,
     ReactiveFormsModule,
+    DragDropModule,
     StaticConfigurationComponent
   ],
   declarations: [
@@ -74,7 +77,8 @@ import { DebuggerComponent } from './components/core/debugger/debugger.component
     ListCardComponent,
     KvlistCardComponent,
     DynamicGroupComponent,
-    DebuggerComponent
+    DebuggerComponent,
+    DebuggerReadingsComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -92,7 +96,8 @@ import { DebuggerComponent } from './components/core/debugger/debugger.component
     ServiceWarningComponent,
     ServiceConfigComponent,
     DynamicGroupComponent,
-    DebuggerComponent
+    DebuggerComponent,
+    DebuggerReadingsComponent
   ]
 })
 export class SharedModule { }

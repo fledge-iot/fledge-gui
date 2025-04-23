@@ -32,6 +32,7 @@ import {
   history,
 } from './editor';
 import { FlowEditorService, NodeStatus } from './flow-editor.service';
+import { DebuggerReadingsComponent } from '../../core/debugger/debugger-readings/debugger-readings.component';
 
 @Component({
   selector: 'app-node-editor',
@@ -42,6 +43,7 @@ export class NodeEditorComponent implements OnInit {
   @ViewChild(ServiceWarningComponent, { static: true }) notificationServiceWarningComponent: ServiceWarningComponent;
   @ViewChild(ServiceConfigComponent, { static: true }) notificationServiceConfigComponent: ServiceConfigComponent;
   @ViewChild("rete") container!: ElementRef;
+  @ViewChild(DebuggerReadingsComponent, { static: false }) debuggerReadingsComp: DebuggerReadingsComponent;
 
   public source = '';
   public from = '';
@@ -396,6 +398,21 @@ export class NodeEditorComponent implements OnInit {
     })
     this.flowEditorService.checkHistory.subscribe(data => {
       this.historyData = data;
+    });
+
+    this.sharedService.bufferReadings.subscribe((data: any) => {
+      if (data.show && this.debuggerReadingsComp) {
+        this.debuggerReadingsComp.serviceName = this.service.name;
+        this.debugger = { debug: this.service.debug, serviceName: this.service.name };
+        const node = editor.getNode(data.nodeId)?.controls.nameControl['name'];
+        this.debuggerReadingsComp.debuggerData = { debug: this.debugger, serviceName: this.service.name, node: node };
+        this.debuggerReadingsComp.toggleModal(true);
+      }
+      this.debuggerPage = false;
+      this.showPluginConfiguration = false;
+      this.showFilterConfiguration = false;
+      this.showTaskSchedule = false;
+      this.showNotificationConfiguration = false;
     });
   }
 

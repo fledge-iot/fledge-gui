@@ -1,0 +1,53 @@
+/* .menu-list>li {
+  border-bottom: 1px solid #ddd;
+}
+
+.scrollable-readings {
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  margin-right: -0.5rem;
+}
+
+.scrollable-json {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  margin-right: -0.5rem;
+}
+
+.buffer-reading-card {
+  width: fit-content !important;
+} */
+
+.modal.is-lightweight {
+  position: absolute;
+  z-index: 1050;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* Keep it above other UI elements */
+  background: transparent;
+  pointer-events: none;
+  /* Allow clicks to pass through */
+}
+
+.modal.is-lightweight.is-active {
+  display: block;
+  pointer-events: none;
+}
+
+.modal.is-lightweight .modal-card {
+  pointer-events: auto;
+  width: fit-content;
+  max-height: 250px;
+  overflow: auto;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.scrollable-json {
+  max-height: 250px;
+  overflow-y: auto;
+}

@@ -83,6 +83,22 @@ export async function createEditor(
   setupInsertableNodes(flowEditorService, alertService);
   configureEditor(connectionEvents, render, flowEditorService, alertService);
   applyCustomSettings(socket, data, flowEditorService, rolesService, alertService);
+  area.addPipe((context) => {
+    if (context.type === 'nodetranslated') {
+      const node: Node = editor.getNode(context.data.id);
+      const nodeConnections = editor.getConnections().filter(conn => conn.source == node.id || conn.target == node.id);
+      // Defer icon position update to the next paint frame
+      requestAnimationFrame(() => {
+        nodeConnections.forEach(conn => {
+          const element = area.connectionViews.get(conn.id)?.element;
+          if (element) {
+            updateConnectionIconPosition(conn.id, element);
+          }
+        });
+      });
+    }
+    return context;
+  });
 }
 
 function initializeEditor(container: HTMLElement) {
@@ -196,6 +212,19 @@ function setupConnectionEvents(selector) {
     click: (data: Schemes['Connection']) => selector.selectConnection(data),
     remove: (data: Schemes['Connection']) => editor.removeConnection(data.id)
   };
+}
+
+function updateConnectionIconPosition(id: string, element: HTMLElement) {
+  const path = element.querySelector<SVGPathElement>('.node-connection');
+  const icon = element.querySelector<HTMLElement>(`#${CSS.escape(id)}`);
+  if (!path?.getTotalLength || !icon) return;
+
+  const length = path.getTotalLength();
+  if (length === 0) return;
+
+  const mid = path.getPointAtLength(length / 2);
+  icon.style.left = `${mid.x}px`;
+  icon.style.top = `${mid.y}px`;
 }
 
 function configureEditor(connectionEvents, render, flowEditorService: FlowEditorService, alertService: AlertService) {

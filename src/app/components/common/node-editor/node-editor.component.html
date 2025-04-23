@@ -165,6 +165,9 @@
   </app-quickview>
 </div>
 
+<debugger-readings #debuggerReadingsComp *ngIf="service" [serviceName]="service.name" [from]="from"
+  [serviceName]="debugger?.serviceName"></debugger-readings>
+
 <app-confirmation-dialog id="delete-service-dialog" *ngIf="rolesService.hasEditPermissions()">
   <header class="modal-card-head">
     <span class="modal-card-title is-size-6">

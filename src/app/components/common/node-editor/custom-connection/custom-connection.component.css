@@ -19,3 +19,13 @@ svg path.selected {
   stroke-width: 14px !important;
   stroke: transparent !important;
 }
+
+.connection-status {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  border: 0px;
+  opacity: 1;
+  width: auto;
+  height: auto;
+  cursor: pointer;
+}

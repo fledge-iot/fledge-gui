@@ -10,7 +10,7 @@ export class Storage extends ClassicPreset.Node {
   constructor(socket: ClassicPreset.Socket, data) {
     super("Storage");
     console.log(data);
-    if (data.from == 'south') {
+    if (data.from == 'south' && data?.service?.debug) {
       const debug = new DebugControl(data.service.debug);
       this.addControl('debugControl', debug);
     }

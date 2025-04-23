@@ -25,3 +25,17 @@
 .tooltip.has-tooltip-multiline::before {
   min-width: 16rem !important;
 }
+
+.quoted-block {
+  border-left: 1px solid #ccc;
+  padding-left: 10px;
+  margin: 8px 0;
+  color: #333;
+  font-style: normal;
+}
+
+.scrollable-readings,
+.scrollable-json {
+  font-size: 13px;
+  line-height: 1.5;
+}
