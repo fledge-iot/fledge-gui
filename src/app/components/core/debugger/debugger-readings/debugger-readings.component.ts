@@ -39,6 +39,7 @@ export class DebuggerReadingsComponent {
       modalName.classList.add('is-active');
       return;
     }
+    this.showRawJson = false;
     modalName.classList.remove('is-active');
     window.removeEventListener('keydown', this.handleEscapeKey);
   }

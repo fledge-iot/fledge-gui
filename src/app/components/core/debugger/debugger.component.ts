@@ -41,15 +41,10 @@ export class DebuggerComponent {
 
   @Input() showRawJson: boolean = false;
   @Output() toggleJson = new EventEmitter<void>();
-
-
-
   @Output() debuggerDataChange = new EventEmitter<{ debug: Debug, serviceName: string }>();
 
 
-
   bufferDataExist = false;
-
   showLoading = false;
 
   formGroup: FormGroup;
@@ -76,6 +71,7 @@ export class DebuggerComponent {
 
   node: string;
   nodeReadings: any;
+  sanitizedNodeReadings: any;
 
   constructor(
     private serviceApi: ServicesApiService,
@@ -112,7 +108,6 @@ export class DebuggerComponent {
       });
   }
 
-
   ngOnChanges(chages: SimpleChanges) {
     if (chages['debuggerData']?.currentValue) {
       this.debuggerData = chages['debuggerData'].currentValue;
@@ -128,7 +123,6 @@ export class DebuggerComponent {
       }
     }
   }
-
 
   showIngestDataTooltip() {
     if (this.from == 'south') {
@@ -165,6 +159,16 @@ export class DebuggerComponent {
 
   toggleReading(index: number): void {
     this.nodeReadings.readings[index].isOpen = !this.nodeReadings.readings[index].isOpen;
+  }
+
+  setNodeReadings(data: any): void {
+    this.nodeReadings = data;
+
+    // Strip `isOpen` key from each reading
+    this.sanitizedNodeReadings = {
+      ...data,
+      readings: data.readings.map(({ isOpen, ...rest }) => rest)
+    };
   }
 
   openReadtheDocs() {
@@ -321,6 +325,7 @@ export class DebuggerComponent {
           if (this.nodeReadings?.readings) {
             this.nodeReadings.readings.forEach(read => read.isOpen = false);
           }
+          this.setNodeReadings(this.nodeReadings);
         }
 
         this.writerItems = this.accordionItems.filter(item =>

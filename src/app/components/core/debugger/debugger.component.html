@@ -6,7 +6,7 @@
         <div class="flex-grow-1">
           <ng-container *ngIf="showRawJson">
             <div class="scrollable-json">
-              <pre><code>{{ nodeReadings | json }}</code></pre>
+              <pre><code>{{ sanitizedNodeReadings | json }}</code></pre>
             </div>
           </ng-container>
           <ng-container *ngIf="!showRawJson">
