@@ -11,26 +11,33 @@
           </ng-container>
           <ng-container *ngIf="!showRawJson">
             <div class="scrollable-readings">
-              <div *ngFor="let read of nodeReadings.readings" class="mb-1">
-                <p><small>Asset:&nbsp;{{ read.asset_code }}</small></p>
-                <p><small>Timestamp:&nbsp;{{ read.ts }}</small></p>
-                <p><small>User Timestamp:&nbsp;{{ read.user_ts }}</small></p>
-                <ul>
-                  <li *ngFor="let data of read.reading | keyvalue">
-                    <div class="quoted-block"><small>{{ data.key }}: {{ data.value }}</small></div>
-                  </li>
-                </ul>
-                <hr class="m-2">
+              <div *ngFor="let read of nodeReadings.readings; let i = index" class="mb-1">
+                <div
+                  class="is-flex is-justify-content-space-between is-align-items-center has-background-light px-2 py-1"
+                  (click)="toggleReading(i)" style="cursor: pointer;">
+                  <p class="mb-0">
+                    <small><strong>{{ read.asset_code }}</strong> — {{ read.ts }}</small>
+                  </p>
+                  <span class="icon is-small">
+                    <i class="bi bi-xs"
+                      [ngClass]="{ 'bi-chevron-down': !read.isOpen, 'bi-chevron-up': read.isOpen }"></i>
+                  </span>
+                </div>
+
+                <div [@expandCollapse]="read.isOpen ? 'expanded' : 'collapsed' " class="pl-2 pr-2 pt-0 pb-0"
+                  style="overflow: hidden;">
+                  <p><small>Asset:&nbsp;{{ read.asset_code }}</small></p>
+                  <p><small>Timestamp:&nbsp;{{ read.ts }}</small></p>
+                  <p><small>User Timestamp:&nbsp;{{ read.user_ts }}</small></p>
+                  <ul>
+                    <li *ngFor="let data of read.reading | keyvalue">
+                      <div class="quoted-block"><small>{{ data.key }}: {{ data.value }}</small></div>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </ng-container>
-        </div>
-        <!-- Toggle icon on the left -->
-        <div class="mt-1">
-          <a class="icon is-clickable has-text-grey" (click)="toggleJsonView()"
-            [title]="showRawJson ? 'Switch to Detailed View' : 'Switch to JSON View'">
-            <i class="bi" [ngClass]="showRawJson ? 'bi-list-nested' : 'bi-filetype-json'"></i>
-          </a>
         </div>
       </div>
     </ng-container>

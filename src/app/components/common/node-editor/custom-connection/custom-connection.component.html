@@ -7,7 +7,6 @@
 <ng-container *ngIf="data">
   <span [id]="data.id" tabindex="0" (pointerdown)="$event.stopPropagation()" (click)="showDebuggerReadings()"
     class="connection-status label has-text-info-darker" appPopover>
-    <i class="fa fa-sm fa-bolt"></i>
-    <!-- <i class="bi bi-lightning"></i> -->
+    <i class="bi bi-sm bi-lightning-charge"></i>
   </span>
 </ng-container>

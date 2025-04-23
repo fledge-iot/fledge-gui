@@ -4,11 +4,18 @@
       <span class="modal-card-title is-size-6">
         <small> {{debuggerData?.node}} Buffer Data </small>
       </span>
+      <div class="mx-1">
+        <a class="icon is-clickable has-text-grey" (click)="toggleJsonView()"
+          [title]="showRawJson ? 'Switch to Detailed View' : 'Switch to JSON View'">
+          <i class="bi" [ngClass]="showRawJson ? 'bi-list-nested' : 'bi-filetype-json'"></i>
+        </a>
+      </div>
       <button class="delete is-small" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body m-0 p-0">
-      <app-debugger *ngIf="debuggerData?.debug" [debuggerData]="debuggerData" from="debugger-readings"
-        [serviceName]="debuggerData.serviceName"></app-debugger>
+      <app-debugger *ngIf="debuggerData?.debug" [debuggerData]="debuggerData" [from]="'debugger-readings'"
+        [serviceName]="debuggerData.serviceName" [showRawJson]="showRawJson" (toggleJson)="toggleJsonView()">
+      </app-debugger>
     </section>
   </div>
 </div>

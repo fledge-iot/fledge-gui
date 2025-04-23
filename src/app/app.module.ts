@@ -3,6 +3,8 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgProgressModule } from 'ngx-progressbar';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 import { AppComponent } from './app.component';
 import { routing } from './app.routing';
@@ -91,7 +93,8 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     DashboardModule,
     DirectivesModule,
     SystemAlertModule,
-    LogsModule
+    LogsModule,
+    BrowserAnimationsModule,
   ],
   declarations: [
     AppComponent,

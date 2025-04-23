@@ -10,8 +10,6 @@
   max-height: 250px;
   /* adjust as needed */
   overflow-y: auto;
-  padding-right: 0.5rem;
-  margin-right: -0.5rem;
 }
 
 .scrollable-json {

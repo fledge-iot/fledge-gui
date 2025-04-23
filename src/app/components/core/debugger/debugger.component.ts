@@ -5,20 +5,48 @@ import { catchError, debounceTime, delay, distinctUntilChanged, switchMap, take,
 import { Debug } from '../south/south-service';
 import { DocService } from '../../../services/doc.service';
 import { interval, of } from 'rxjs';
+import {
+  trigger,
+  state,
+  style,
+  transition,
+  animate
+} from '@angular/animations';
+
 
 @Component({
   selector: 'app-debugger',
   templateUrl: './debugger.component.html',
-  styleUrls: ['./debugger.component.css']
+  styleUrls: ['./debugger.component.css'],
+  animations: [
+    trigger('expandCollapse', [
+      state('expanded', style({
+        height: '*',
+        opacity: 1
+      })),
+      state('collapsed', style({
+        height: '0px',
+        opacity: 0
+      })),
+      transition('expanded <=> collapsed', [
+        animate('300ms ease-in-out')
+      ])
+    ])
+  ]
 })
 export class DebuggerComponent {
   @Input() debuggerData: { debug: Debug, serviceName: string, node?: string };
   @Input() serviceName: string;
   @Input() from: string;
 
+  @Input() showRawJson: boolean = false;
+  @Output() toggleJson = new EventEmitter<void>();
+
+
+
   @Output() debuggerDataChange = new EventEmitter<{ debug: Debug, serviceName: string }>();
 
-  showRawJson = false;
+
 
   bufferDataExist = false;
 
@@ -47,7 +75,7 @@ export class DebuggerComponent {
   writerItems: any[] = [];
 
   node: string;
-  nodeReadings: {};
+  nodeReadings: any;
 
   constructor(
     private serviceApi: ServicesApiService,
@@ -101,6 +129,7 @@ export class DebuggerComponent {
     }
   }
 
+
   showIngestDataTooltip() {
     if (this.from == 'south') {
       if (this.debuggerData.debug.ingress == 'Suspended') {
@@ -131,6 +160,11 @@ export class DebuggerComponent {
 
   toggleJsonView() {
     this.showRawJson = !this.showRawJson;
+    this.toggleJson.emit();
+  }
+
+  toggleReading(index: number): void {
+    this.nodeReadings.readings[index].isOpen = !this.nodeReadings.readings[index].isOpen;
   }
 
   openReadtheDocs() {
@@ -283,6 +317,9 @@ export class DebuggerComponent {
             this.nodeReadings = this.accordionItems.find(item =>
               item.name?.toLowerCase().includes('branch')
             );
+          }
+          if (this.nodeReadings?.readings) {
+            this.nodeReadings.readings.forEach(read => read.isOpen = false);
           }
         }
 

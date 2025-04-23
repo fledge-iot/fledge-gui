@@ -8,21 +8,22 @@ import { Debug } from '../../south/south-service';
 })
 export class DebuggerReadingsComponent {
   @Input() serviceName = '';
+  @Input() debuggerData: { debug: Debug, serviceName: string, node?: string };
+  @Input() node: string;
+
   bufferData;
-
   activeTabIndex = 0;
-
   accordionItems: any[] = [];
   branchItems: any[];
   writerItems: any[];
   bufferDataExist = false;
-
-  @Input() debuggerData: { debug: Debug, serviceName: string, node?: string };
-
-  @Input() node: string;
+  showRawJson = false;
 
   constructor() { }
 
+  toggleJsonView() {
+    this.showRawJson = !this.showRawJson;
+  }
 
   // Use arrow function to retain `this` context
   handleEscapeKey = (event: KeyboardEvent) => {
