@@ -1,23 +1,5 @@
-:host {
-  display: block;
-}
-
 .menu-list>li {
   border-bottom: 1px solid #ddd;
-}
-
-.scrollable-readings {
-  max-height: 250px;
-  /* adjust as needed */
-  overflow-y: auto;
-}
-
-.scrollable-json {
-  max-height: 400px;
-  /* adjust as needed */
-  overflow-y: auto;
-  padding-right: 0.5rem;
-  margin-right: -0.5rem;
 }
 
 .tooltip.has-tooltip-multiline::before {
@@ -34,6 +16,7 @@
 
 .scrollable-readings,
 .scrollable-json {
+  max-height: 250px;
   font-size: 13px;
   line-height: 1.5;
 }

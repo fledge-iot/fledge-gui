@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { AlertService, ProgressBarService, RolesService, ServicesApiService } from '../../../services';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -12,7 +13,6 @@ import {
   transition,
   animate
 } from '@angular/animations';
-
 
 @Component({
   selector: 'app-debugger',
@@ -42,7 +42,6 @@ export class DebuggerComponent {
   @Input() showRawJson: boolean = false;
   @Output() toggleJson = new EventEmitter<void>();
   @Output() debuggerDataChange = new EventEmitter<{ debug: Debug, serviceName: string }>();
-
 
   bufferDataExist = false;
   showLoading = false;
@@ -108,19 +107,23 @@ export class DebuggerComponent {
       });
   }
 
-  ngOnChanges(chages: SimpleChanges) {
-    if (chages['debuggerData']?.currentValue) {
-      this.debuggerData = chages['debuggerData'].currentValue;
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['debuggerData']?.currentValue) {
+      this.debuggerData = changes['debuggerData'].currentValue;
     }
-    if (chages['serviceName']?.currentValue) {
-      this.serviceName = chages['serviceName'].currentValue;
+    if (changes['serviceName']?.currentValue) {
+      this.serviceName = changes['serviceName'].currentValue;
     }
 
-    if (chages['debuggerData']?.currentValue?.node !== chages['debuggerData']?.previousValue?.node) {
-      this.node = chages['debuggerData']?.currentValue?.node;
+    if (changes['debuggerData']?.currentValue?.node !== changes['debuggerData']?.previousValue?.node) {
+      this.node = changes['debuggerData']?.currentValue?.node;
       if (this.rolesService.hasEditPermissions()) {
         this.getBufferData();
       }
+    }
+
+    if (changes['showRawJson']?.currentValue && !isEmpty(this.nodeReadings)) {
+      this.setNodeReadings(this.nodeReadings);
     }
   }
 
@@ -162,11 +165,10 @@ export class DebuggerComponent {
   }
 
   setNodeReadings(data: any): void {
-    this.nodeReadings = data;
-
     // Strip `isOpen` key from each reading
+    const { isOpen, ...restData } = data;
     this.sanitizedNodeReadings = {
-      ...data,
+      ...restData,
       readings: data.readings.map(({ isOpen, ...rest }) => rest)
     };
   }
@@ -325,7 +327,6 @@ export class DebuggerComponent {
           if (this.nodeReadings?.readings) {
             this.nodeReadings.readings.forEach(read => read.isOpen = false);
           }
-          this.setNodeReadings(this.nodeReadings);
         }
 
         this.writerItems = this.accordionItems.filter(item =>
