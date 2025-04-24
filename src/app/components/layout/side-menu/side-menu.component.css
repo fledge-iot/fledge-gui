@@ -8,6 +8,11 @@
   padding-bottom: 4rem;
 }
 
+#sidemenu {
+  width: 222px;
+  transition: all 0.3s ease-in-out;
+}
+
 .menu-toogle-icon {
   display: inline-flex;
   height: 0.8em;
@@ -99,6 +104,7 @@ svg#north-icon {
   #sidemenu.collapsed {
     overflow: visible;
     width: 6.5rem !important;
+    transition: all 0.3s ease-in-out;
   }
 
   #sidemenu.collapsed .sidemenu-link {

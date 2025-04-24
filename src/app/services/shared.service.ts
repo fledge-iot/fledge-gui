@@ -14,7 +14,7 @@ export class SharedService {
   public connectionInfo: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public loginScreenSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public installedServicePkgs: BehaviorSubject<any> = new BehaviorSubject<any>(false);
-  public isSidebarCollapsed: BehaviorSubject<any> = new BehaviorSubject<any>(false);
+  public isSidebarCollapsed: BehaviorSubject<any> = new BehaviorSubject<any>(true);
   public bufferReadings: BehaviorSubject<any> = new BehaviorSubject<any>({});
 
   public checkAuth() {
