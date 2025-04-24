@@ -26,9 +26,8 @@
         <div class="is-inline-flex">
           <ng-container *ngIf="data.label!=='Filter'; else southServiceTemplate">
             <div class="is-inline-flex">
-              <button *ngIf="isServiceNode && data?.debug?.debugger === 'Attached'" (click)="openDebugPage()"
-                class="btn is-small btn-icon" [attr.data-show]="'quickview'" [attr.data-toggle]="quickview"
-                [attr.data-target]="'quickviewDefault'">
+              <button *ngIf="isServiceNode && debuggerAttached" (click)="openDebugPage()" class="btn is-small btn-icon"
+                [attr.data-show]="'quickview'" [attr.data-toggle]="quickview" [attr.data-target]="'quickviewDefault'">
                 <span class="icon is-small  has-tooltip-left has-tooltip-arrow tooltip is-hovered"
                   data-tooltip="Debugger Attached">
                   <i class="bi bi-bug bi-sm debug"></i>
@@ -191,11 +190,9 @@
                     <!-- Submenu -->
                     <div class="submenu-div">
                       <div class="submenu-list">
-                        <div *ngIf="data?.debug?.debugger !== 'Attached'">
-                          <a class="submenu-text" (click)="toggleDebuggerState('attach')">Attach</a>
-                        </div>
-                        <div *ngIf="data?.debug?.debugger === 'Attached'">
-                          <a class="submenu-text" (click)="toggleDebuggerState('detach')">Detach</a>
+                        <div>
+                          <a class="submenu-text" (click)="toggleDebuggerState()">
+                            {{data?.debug?.debugger === 'Attached'? 'Detach':'Attach'}}</a>
                         </div>
                         <div>
                           <a class="submenu-text" (click)="openDebugPage()" [attr.data-show]="'quickview'"

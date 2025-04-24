@@ -7,14 +7,16 @@ import {
   AlertService,
   ProgressBarService,
   RolesService,
-  ServicesApiService
+  ServicesApiService,
+  SharedService
 } from "./../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
-import { Subject, Subscription } from "rxjs";
+import { interval, of, Subject, Subscription } from "rxjs";
 
 import { canUndo, canRedo } from './../editor';
 import { DialogService } from '../../confirmation-dialog/dialog.service';
+import { catchError, switchMap, take, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-custom-node',
@@ -77,6 +79,7 @@ export class CustomNodeComponent implements OnChanges {
 
   previousState: boolean;  // To store previous state of checkbox
   serviceStatusSubscription: Subscription;
+  debuggerAttached = false;
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -88,10 +91,11 @@ export class CustomNodeComponent implements OnChanges {
     private route: ActivatedRoute,
     public flowEditorService: FlowEditorService,
     public rolesService: RolesService,
+    private sharedService: SharedService,
     private dialogService: DialogService,
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
-    private southService: ServicesApiService,
+    private serviceApi: ServicesApiService,
     private elRef: ElementRef) {
     this.route.params.subscribe(params => {
       this.from = params.from;
@@ -107,6 +111,12 @@ export class CustomNodeComponent implements OnChanges {
         this.router.navigated = false;
       }
     });
+
+    this.sharedService.debuggerStateSubject
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((debuggerAttached: boolean) => {
+        this.debuggerAttached = debuggerAttached;
+      });
   }
 
   openModal(id: string) {
@@ -116,9 +126,11 @@ export class CustomNodeComponent implements OnChanges {
   ngOnChanges(): void {
     this.nodeId = this.data.id;
     if (this.data.label === 'South' || this.data.label === 'North') {
-      this.data['debug'] = this.data.controls.debugControl['debug'];
       this.setSetectedNodeColor('#C781BB');
-
+      this.data['debug'] = this.data?.controls?.debugControl['debug'];
+      const debuggerAttached = this.data['debug']?.debugger == 'Attached';
+      console.log(debuggerAttached);
+      this.sharedService.debuggerStateSubject.next(debuggerAttached)
       if (this.source !== '') {
         this.isServiceNode = true;
         this.elRef.nativeElement.style.borderColor = this.data.label === 'South' ? "#B6D7A8" : '#C781BB'
@@ -239,15 +251,22 @@ export class CustomNodeComponent implements OnChanges {
     }
   }
 
-  toggleDebuggerState(action: string) {
+  toggleDebuggerState() {
     this.ngProgress.start();
     const name = this.data.controls.nameControl['name'];
-    this.southService.manageServiceDebuggerState(name, action)
+    const previousState = this.data['debug'].debugger;
+    const expectedState = previousState === 'Attached' ? 'Detached' : 'Attached';
+    const action = previousState === 'Attached' ? 'detach' : 'attach';
+    console.log('previousState', previousState);
+    console.log('expectedState', expectedState);
+
+    this.serviceApi.manageServiceDebuggerState(name, action)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((res) => {
         this.ngProgress.done();
         this.alertService.success(res['message'], true);
-        this.data['debug'].debugger = action === 'attach' ? 'Attached' : 'Detached';
-        console.log(this.data);
+        // Retry to fetch the service and verify the new debugger state
+        this.getDebuggerStateChanges(expectedState);
       }, error => {
         this.ngProgress.done();
         if (error.status === 0) {
@@ -256,6 +275,51 @@ export class CustomNodeComponent implements OnChanges {
           this.alertService.error(error.statusText, true);
         }
       });
+  }
+
+  getDebuggerStateChanges(expectedState: string) {
+    const maxRetries = 3;
+    let attempt = 0;
+    const poll$ = interval(2000).pipe( // poll every 2 seconds
+      take(maxRetries),
+      switchMap(() => {
+        attempt++;
+        console.log(`Polling attempt ${attempt}`);
+        const type = this.from === 'south' ? 'Southbound' : 'Northbound';
+        return this.serviceApi.getServiceByType(type).pipe(
+          catchError(err => {
+            console.error(`Error on attempt ${attempt}:`, err);
+            return of(null); // swallow error and continue polling
+          })
+        );
+      })
+    );
+
+    const subscription = poll$.subscribe((res: any) => {
+      if (!res) return;
+      const name = this.data.controls.nameControl['name'];
+      const service = res['services'].find((s: any) => s.name === name);
+      const currentState = service?.debug?.debugger;
+      console.log(`Debugger state on attempt ${attempt}: ${currentState}`);
+
+      if (currentState === expectedState) {
+        const debuggerAttached = expectedState == 'Attached';
+        this.data['debug'] = { ...service.debug };
+        this.data.controls.debugControl['debug'] = { ...service.debug };
+        this.sharedService.debuggerStateSubject.next(debuggerAttached)
+        this.cdr.detectChanges();
+        // Success: update and stop polling
+        subscription.unsubscribe();
+        console.log('Debugger state updated successfully');
+        this.alertService.success(`Debugger ${service.debug.debugger.toLowerCase()} successfully.`, true);
+      }
+
+      if (attempt > maxRetries) {
+        // Max retries hit
+        this.alertService.error('Debugger state failed to update. Please refresh.', true);
+        subscription.unsubscribe();
+      }
+    });
   }
 
   addService() {

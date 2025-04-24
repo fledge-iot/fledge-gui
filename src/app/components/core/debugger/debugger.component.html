@@ -24,8 +24,7 @@
                   </span>
                 </div>
 
-                <div [@expandCollapse]="read.isOpen ? 'expanded' : 'collapsed' " class="pl-2 pr-2 pt-0 pb-0"
-                  style="overflow: hidden;">
+                <div *ngIf="read.isOpen" class="pl-2 pr-2 pt-0 pb-0" style="overflow: hidden;">
                   <p><small>Asset:&nbsp;{{ read.asset_code }}</small></p>
                   <p><small>Timestamp:&nbsp;{{ read.ts }}</small></p>
                   <p><small>User Timestamp:&nbsp;{{ read.user_ts }}</small></p>

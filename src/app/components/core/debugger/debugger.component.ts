@@ -1,38 +1,16 @@
 import { isEmpty } from 'lodash';
 import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
-import { AlertService, ProgressBarService, RolesService, ServicesApiService } from '../../../services';
+import { AlertService, ProgressBarService, RolesService, ServicesApiService, SharedService } from '../../../services';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { catchError, debounceTime, delay, distinctUntilChanged, switchMap, take, tap } from 'rxjs/operators';
+import { catchError, debounceTime, delay, distinctUntilChanged, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 import { Debug } from '../south/south-service';
 import { DocService } from '../../../services/doc.service';
-import { interval, of } from 'rxjs';
-import {
-  trigger,
-  state,
-  style,
-  transition,
-  animate
-} from '@angular/animations';
+import { interval, of, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-debugger',
   templateUrl: './debugger.component.html',
-  styleUrls: ['./debugger.component.css'],
-  animations: [
-    trigger('expandCollapse', [
-      state('expanded', style({
-        height: '*',
-        opacity: 1
-      })),
-      state('collapsed', style({
-        height: '0px',
-        opacity: 0
-      })),
-      transition('expanded <=> collapsed', [
-        animate('300ms ease-in-out')
-      ])
-    ])
-  ]
+  styleUrls: ['./debugger.component.css']
 })
 export class DebuggerComponent {
   @Input() debuggerData: { debug: Debug, serviceName: string, node?: string };
@@ -42,6 +20,9 @@ export class DebuggerComponent {
   @Input() showRawJson: boolean = false;
   @Output() toggleJson = new EventEmitter<void>();
   @Output() debuggerDataChange = new EventEmitter<{ debug: Debug, serviceName: string }>();
+
+  public isAlive: boolean;
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   bufferDataExist = false;
   showLoading = false;
@@ -77,19 +58,21 @@ export class DebuggerComponent {
     private ngProgress: ProgressBarService,
     private alertService: AlertService,
     private docService: DocService,
+    private sharedService: SharedService,
     public rolesService: RolesService,
     private fb: FormBuilder
   ) { }
 
   ngOnInit() {
     this.formGroup = this.fb.group({
-      buffer: [''],
-      step: ['']
+      buffer: [1],
+      step: [1]
     });
 
     // Buffer field changes
     this.formGroup.get('buffer')!.valueChanges
       .pipe(
+        takeUntil(this.destroy$),
         tap(() => this.bufferStatus = 'saving'),
         debounceTime(2000),
         distinctUntilChanged(),
@@ -187,6 +170,7 @@ export class DebuggerComponent {
     const action = previousState === 'Attached' ? 'detach' : 'attach';
 
     this.serviceApi.manageServiceDebuggerState(name, action)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((res) => {
         this.ngProgress.done();
         this.alertService.success(res['message'], true);
@@ -215,6 +199,7 @@ export class DebuggerComponent {
       payload = { state: 'store' }
     }
     this.serviceApi.manageServiceDebuggerState(name, action, payload)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((res) => {
         this.debuggerData.debug.egress = payload['state'] === 'discard' ? 'Isolated' : 'Storage';
         this.ngProgress.done();
@@ -241,6 +226,7 @@ export class DebuggerComponent {
     }
 
     this.serviceApi.manageServiceDebuggerState(name, action, payload)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((res) => {
         this.debuggerData.debug.ingress = payload['state'] === 'resume' ? 'Running' : 'Suspended';
         this.ngProgress.done();
@@ -260,6 +246,7 @@ export class DebuggerComponent {
     const name = this.debuggerData.serviceName;
     let action = 'replay';
     this.serviceApi.manageServiceDebuggerState(name, action)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((res) => {
         this.ngProgress.done();
         this.alertService.success(res['message'], true);
@@ -291,6 +278,7 @@ export class DebuggerComponent {
     this.ngProgress.start();
     const name = this.debuggerData.serviceName;
     this.serviceApi.getBufferedData(name)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((res) => {
         this.tabData = res['data'];
         this.ngProgress.done();
@@ -399,6 +387,7 @@ export class DebuggerComponent {
       this.stepStatus = 'saving';
       const start = Date.now();
       this.serviceApi.setStepSize(this.debuggerData.serviceName, { steps: +steps })
+        .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
             const elapsed = Date.now() - start;
@@ -438,30 +427,33 @@ export class DebuggerComponent {
       })
     );
 
-    const subscription = poll$.subscribe((res: any) => {
-      if (!res) return;
-      const service = res['services'].find((s: any) => s.name === this.debuggerData.serviceName);
-      const currentState = service?.debug?.debugger;
+    const subscription = poll$
+      .subscribe((res: any) => {
+        if (!res) return;
+        const service = res['services'].find((s: any) => s.name === this.debuggerData.serviceName);
+        const currentState = service?.debug?.debugger;
 
-      console.log(`Debugger state on attempt ${attempt}: ${currentState}`);
+        console.log(`Debugger state on attempt ${attempt}: ${currentState}`);
 
-      if (currentState === expectedState) {
-        // Success: update and stop polling
-        this.debuggerData = { debug: service.debug, serviceName: service.name };
-        this.debuggerDataChange.emit(this.debuggerData);
-        this.showLoading = false;
-        subscription.unsubscribe();
-        console.log('Debugger state updated successfully');
-        this.alertService.success(`Debugger ${service.debug.debugger.toLowerCase()} successfully.`, true);
-      }
+        if (currentState === expectedState) {
+          const debuggerAttached = expectedState == 'Attached';
+          this.sharedService.debuggerStateSubject.next(debuggerAttached)
+          // Success: update and stop polling
+          this.debuggerData = { debug: service.debug, serviceName: service.name };
+          this.debuggerDataChange.emit(this.debuggerData);
+          this.showLoading = false;
+          subscription.unsubscribe();
+          console.log('Debugger state updated successfully');
+          this.alertService.success(`Debugger ${service.debug.debugger.toLowerCase()} successfully.`, true);
+        }
 
-      if (attempt > maxRetries) {
-        // Max retries hit
-        this.showLoading = false;
-        this.alertService.error('Debugger state failed to update. Please refresh.', true);
-        subscription.unsubscribe();
-      }
-    });
+        if (attempt > maxRetries) {
+          // Max retries hit
+          this.showLoading = false;
+          this.alertService.error('Debugger state failed to update. Please refresh.', true);
+          subscription.unsubscribe();
+        }
+      });
   }
 
 
@@ -469,7 +461,7 @@ export class DebuggerComponent {
     const type = this.from === 'south' ? 'Southbound' : 'Northbound';
     this.ngProgress.start();
     this.serviceApi.getServiceByType(type)
-      .pipe(delay(3000))
+      .pipe(delay(3000), takeUntil(this.destroy$))
       .subscribe((res) => {
         console.log(res);
         this.showLoading = false;
@@ -486,6 +478,12 @@ export class DebuggerComponent {
           this.alertService.error(error.statusText, true);
         }
       });
+  }
+
+  public ngOnDestroy(): void {
+    this.isAlive = false;
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }
 

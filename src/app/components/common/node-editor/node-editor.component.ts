@@ -400,20 +400,23 @@ export class NodeEditorComponent implements OnInit {
       this.historyData = data;
     });
 
-    this.sharedService.bufferReadings.subscribe((data: any) => {
-      if (data.show && this.debuggerReadingsComp) {
-        this.debuggerReadingsComp.serviceName = this.service.name;
-        this.debugger = { debug: this.service.debug, serviceName: this.service.name };
-        const node = editor.getNode(data.nodeId)?.controls.nameControl['name'];
-        this.debuggerReadingsComp.debuggerData = { debug: this.debugger, serviceName: this.service.name, node: node };
-        this.debuggerReadingsComp.toggleModal(true);
-      }
-      this.debuggerPage = false;
-      this.showPluginConfiguration = false;
-      this.showFilterConfiguration = false;
-      this.showTaskSchedule = false;
-      this.showNotificationConfiguration = false;
-    });
+
+    this.sharedService.bufferReadings
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: any) => {
+        if (data?.show && this.debuggerReadingsComp) {
+          this.debuggerReadingsComp.serviceName = this.service.name;
+          this.debugger = { debug: this.service.debug, serviceName: this.service.name };
+          const node = editor.getNode(data.nodeId)?.controls.nameControl['name'];
+          this.debuggerReadingsComp.debuggerData = { debug: this.debugger, serviceName: this.service.name, node: node };
+          this.debuggerReadingsComp.toggleModal(true);
+        }
+        this.debuggerPage = false;
+        this.showPluginConfiguration = false;
+        this.showFilterConfiguration = false;
+        this.showTaskSchedule = false;
+        this.showNotificationConfiguration = false;
+      });
   }
 
   ngAfterViewInit(): void {
@@ -605,11 +608,13 @@ export class NodeEditorComponent implements OnInit {
         });
   }
 
-  updateDebuggerState(debuggerInfo: {}) {
+  updateDebuggerState(debuggerInfo: any) {
     console.log(debuggerInfo);
     console.log(this.debugger);
     this.debugger = debuggerInfo;
     console.log(this.debuggerPage);
+    const debuggerAttached = debuggerInfo.debug.debugger == 'Attached';
+    this.sharedService.debuggerStateSubject.next(debuggerAttached);
   }
 
   getSouthservices(caching: boolean) {

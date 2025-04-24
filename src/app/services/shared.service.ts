@@ -15,7 +15,9 @@ export class SharedService {
   public loginScreenSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public installedServicePkgs: BehaviorSubject<any> = new BehaviorSubject<any>(false);
   public isSidebarCollapsed: BehaviorSubject<any> = new BehaviorSubject<any>(true);
-  public bufferReadings: BehaviorSubject<any> = new BehaviorSubject<any>({});
+  public bufferReadings: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  public debuggerStateSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
 
   public checkAuth() {
     const auth = !JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'));
