@@ -11,12 +11,14 @@ import {
   StatusControl,
   DebugControl
 } from "../controls/common-custom-control";
+import { Debug } from "../../../../components/core/south/south-service";
 
 export class South extends ClassicPreset.Node {
   height = 94;
   width = 198;
   parent?: string;
   type? = "south";
+  debug?: Debug;
 
   constructor(socket: ClassicPreset.Socket, service) {
     super("South");
@@ -33,7 +35,6 @@ export class South extends ClassicPreset.Node {
       const readingCountControl = new ReadingControl(readingCount);
       const assetCountControl = new AssetControl(assetCount);
       const pluginVersion = new PluginVersionControl(service.plugin.version);
-      const debug = new DebugControl(service.debug);
 
       this.addControl('nameControl', nameControl);
       this.addControl('pluginControl', pluginControl);
@@ -41,8 +42,13 @@ export class South extends ClassicPreset.Node {
       this.addControl('assetCountControl', assetCountControl);
       this.addControl('statusControl', statusControl);
       this.addControl('enabledControl', enabledControl);
-      this.addControl('debugControl', debug);
       this.addControl('pluginVersionControl', pluginVersion);
+
+      if (service?.debug) {
+        const debug = new DebugControl(service.debug);
+        this.addControl('debugControl', debug);
+        this.debug = service.debug;
+      }
     }
     this.addOutput("port", new ClassicPreset.Output(socket));
   }

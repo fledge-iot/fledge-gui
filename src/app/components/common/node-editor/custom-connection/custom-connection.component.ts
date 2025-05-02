@@ -12,6 +12,7 @@ type Connection = ClassicPreset.Connection<
 > & {
   selected?: boolean,
   isLoop?: boolean
+  isDebug?: boolean;
   click: (c: Connection) => void
   remove: (c: Connection) => void
 }
@@ -41,15 +42,13 @@ export class CustomConnectionComponent {
   ngAfterViewInit() {
     this.sharedService.debuggerStateSubject
       .pipe(takeUntil(this.destroy$))
-      .subscribe((debuggerAttached: boolean) => {
-        if (debuggerAttached !== this.debuggerAttached) {
-          this.debuggerAttached = debuggerAttached;
-          setTimeout(() => {
-            if (this.debuggerAttached) {
-              this.updateConnectionIconPosition();
-            }
-          });
-        }
+      .subscribe((debuggerData: any) => {
+        this.data.isDebug = debuggerData?.debug?.debugger == 'Attached';
+        setTimeout(() => {
+          if (this.data.isDebug) {
+            this.updateConnectionIconPosition();
+          }
+        });
       });
   }
 

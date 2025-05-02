@@ -613,8 +613,8 @@ export class NodeEditorComponent implements OnInit {
     console.log(this.debugger);
     this.debugger = debuggerInfo;
     console.log(this.debuggerPage);
-    const debuggerAttached = debuggerInfo.debug.debugger == 'Attached';
-    this.sharedService.debuggerStateSubject.next(debuggerAttached);
+    const name = debuggerInfo.servicneName;
+    this.sharedService.debuggerStateSubject.next({ service: name, debug: debuggerInfo.debug });
   }
 
   getSouthservices(caching: boolean) {

@@ -1,6 +1,5 @@
 import { isEmpty } from 'lodash';
 import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef } from "@angular/core";
-import { ClassicPreset } from "rete";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import {
@@ -17,6 +16,7 @@ import { interval, of, Subject, Subscription } from "rxjs";
 import { canUndo, canRedo } from './../editor';
 import { DialogService } from '../../confirmation-dialog/dialog.service';
 import { catchError, switchMap, take, takeUntil } from 'rxjs/operators';
+import { Filter, North, Notification, South, Storage } from '../nodes';
 
 @Component({
   selector: 'app-custom-node',
@@ -28,7 +28,7 @@ import { catchError, switchMap, take, takeUntil } from 'rxjs/operators';
 })
 export class CustomNodeComponent implements OnChanges {
 
-  @Input() data!: ClassicPreset.Node;
+  @Input() data!: South | Filter | North | Notification | Storage;
   @Input() emit!: (data: any) => void;
   @Input() rendered!: () => void;
 
@@ -78,8 +78,6 @@ export class CustomNodeComponent implements OnChanges {
   timeoutId;
 
   previousState: boolean;  // To store previous state of checkbox
-  serviceStatusSubscription: Subscription;
-  debuggerAttached = false;
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -111,12 +109,6 @@ export class CustomNodeComponent implements OnChanges {
         this.router.navigated = false;
       }
     });
-
-    this.sharedService.debuggerStateSubject
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((debuggerAttached: boolean) => {
-        this.debuggerAttached = debuggerAttached;
-      });
   }
 
   openModal(id: string) {
@@ -127,17 +119,11 @@ export class CustomNodeComponent implements OnChanges {
     this.nodeId = this.data.id;
     if (this.data.label === 'South' || this.data.label === 'North') {
       this.setSetectedNodeColor('#C781BB');
-      this.data['debug'] = this.data?.controls?.debugControl['debug'];
-      const debuggerAttached = this.data['debug']?.debugger == 'Attached';
-      console.log(debuggerAttached);
-      this.sharedService.debuggerStateSubject.next(debuggerAttached)
       if (this.source !== '') {
-        this.isServiceNode = true;
         this.elRef.nativeElement.style.borderColor = this.data.label === 'South' ? "#B6D7A8" : '#C781BB'
         this.isServiceNode = true;
         if (this.from == 'north') {
           if (!isEmpty(this.data.controls)) {
-
             this.task.name = this.service.name = this.data.controls.nameControl['name'];
             this.task.plugin = this.service.pluginName = this.data.controls.pluginControl['plugin'];
             this.task.sent = this.service.readingCount = this.data.controls.sentReadingControl['sent'];
@@ -215,7 +201,7 @@ export class CustomNodeComponent implements OnChanges {
 
     if (this.data.label === 'Storage') {
       if (this.from == 'south') {
-        this.data['debug'] = this.data?.controls?.debugControl['debug'];
+        this.data.debug = this.data?.controls?.debugControl['debug'];
       }
       this.elRef.nativeElement.style.borderColor = "#999999";
     }
@@ -254,10 +240,10 @@ export class CustomNodeComponent implements OnChanges {
   toggleDebuggerState() {
     this.ngProgress.start();
     const name = this.data.controls.nameControl['name'];
-    const previousState = this.data['debug'].debugger;
-    const expectedState = previousState === 'Attached' ? 'Detached' : 'Attached';
-    const action = previousState === 'Attached' ? 'detach' : 'attach';
-    console.log('previousState', previousState);
+    const previousDebugState = this.data.debug.debugger;
+    const expectedState = previousDebugState === 'Attached' ? 'Detached' : 'Attached';
+    const action = previousDebugState === 'Attached' ? 'detach' : 'attach';
+    console.log('previousDebugState', previousDebugState);
     console.log('expectedState', expectedState);
 
     this.serviceApi.manageServiceDebuggerState(name, action)
@@ -303,10 +289,10 @@ export class CustomNodeComponent implements OnChanges {
       console.log(`Debugger state on attempt ${attempt}: ${currentState}`);
 
       if (currentState === expectedState) {
-        const debuggerAttached = expectedState == 'Attached';
-        this.data['debug'] = { ...service.debug };
+        this.data.debug = { ...service.debug };
         this.data.controls.debugControl['debug'] = { ...service.debug };
-        this.sharedService.debuggerStateSubject.next(debuggerAttached)
+        const name = this.data.controls.nameControl['name'];
+        this.sharedService.debuggerStateSubject.next({ service: name, debug: this.data.debug });
         this.cdr.detectChanges();
         // Success: update and stop polling
         subscription.unsubscribe();

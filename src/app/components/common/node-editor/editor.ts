@@ -534,7 +534,7 @@ export function updateNode(data) {
           let readingCount = service.assets.reduce((total, asset) => {
             return total + asset.count;
           }, 0)
-
+          node.debug = service?.debug;
           assetControls.count = assetCount;
           readingControl.count = readingCount;
           enabledControl.enabled = service.schedule_enabled;

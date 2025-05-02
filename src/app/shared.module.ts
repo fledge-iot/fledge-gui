@@ -37,6 +37,7 @@ import { DynamicGroupComponent } from './components/core/configuration-manager/d
 import { DebuggerComponent } from './components/core/debugger/debugger.component';
 import { DebuggerReadingsComponent } from './components/core/debugger/debugger-readings/debugger-readings.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { BufferActionButtonsComponent } from './components/core/debugger/buffer-action-buttons/buffer-action-buttons.component';
 
 @NgModule({
   imports: [
@@ -78,7 +79,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     KvlistCardComponent,
     DynamicGroupComponent,
     DebuggerComponent,
-    DebuggerReadingsComponent
+    DebuggerReadingsComponent,
+    BufferActionButtonsComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -97,7 +99,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     ServiceConfigComponent,
     DynamicGroupComponent,
     DebuggerComponent,
-    DebuggerReadingsComponent
+    DebuggerReadingsComponent,
+    BufferActionButtonsComponent
   ]
 })
 export class SharedModule { }

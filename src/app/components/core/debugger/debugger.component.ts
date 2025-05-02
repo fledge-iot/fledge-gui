@@ -436,8 +436,6 @@ export class DebuggerComponent {
         console.log(`Debugger state on attempt ${attempt}: ${currentState}`);
 
         if (currentState === expectedState) {
-          const debuggerAttached = expectedState == 'Attached';
-          this.sharedService.debuggerStateSubject.next(debuggerAttached)
           // Success: update and stop polling
           this.debuggerData = { debug: service.debug, serviceName: service.name };
           this.debuggerDataChange.emit(this.debuggerData);

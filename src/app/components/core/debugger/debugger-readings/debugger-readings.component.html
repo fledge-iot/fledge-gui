@@ -12,10 +12,14 @@
       </div>
       <button class="delete is-small" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
+
     <section class="modal-card-body m-0 p-0">
       <app-debugger *ngIf="debuggerData?.debug" [debuggerData]="debuggerData" [from]="'debugger-readings'"
         [serviceName]="debuggerData.serviceName" [showRawJson]="showRawJson" (toggleJson)="toggleJsonView()">
       </app-debugger>
     </section>
+    <footer class="modal-card-foot p-2 is-justify-content-flex-end">
+      <buffer-action-buttons></buffer-action-buttons>
+    </footer>
   </div>
 </div>

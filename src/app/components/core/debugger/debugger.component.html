@@ -42,7 +42,7 @@
     </ng-container>
 
     <!-- Handle no readings available -->
-    <ng-container *ngIf="bufferDataExist && (!nodeReadings?.readings || nodeReadings.readings.length === 0)">
+    <ng-container *ngIf="!bufferDataExist || nodeReadings?.readings?.length === 0">
       <span class="help has-text-grey-light">No readings available.</span>
     </ng-container>
   </ng-container>
