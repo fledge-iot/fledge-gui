@@ -4,7 +4,7 @@ import { Position } from '../types';
 import { SharedService } from '../../../../services';
 import { area } from '../editor';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 
 type Connection = ClassicPreset.Connection<
   ClassicPreset.Node,
@@ -12,7 +12,7 @@ type Connection = ClassicPreset.Connection<
 > & {
   selected?: boolean,
   isLoop?: boolean
-  isDebug?: boolean;
+  debuggerAttached?: boolean;
   click: (c: Connection) => void
   remove: (c: Connection) => void
 }
@@ -35,20 +35,22 @@ export class CustomConnectionComponent {
   @ViewChild('svg') connection!: ElementRef<SVGAElement>;
   @ViewChild('svgpath', { static: true }) pathRef: ElementRef<SVGPathElement>;
 
-  debuggerAttached = false;
-
   constructor(private sharedService: SharedService) { }
 
   ngAfterViewInit() {
     this.sharedService.debuggerStateSubject
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((debuggerData: any) => {
-        this.data.isDebug = debuggerData?.debug?.debugger == 'Attached';
-        setTimeout(() => {
-          if (this.data.isDebug) {
+      .pipe(
+        takeUntil(this.destroy$),
+        map((debuggerData: any) => debuggerData?.debug?.debugger === 'Attached'),
+        distinctUntilChanged()
+      )
+      .subscribe((isAttached: boolean) => {
+        this.data.debuggerAttached = isAttached;
+        if (isAttached) {
+          setTimeout(() => {
             this.updateConnectionIconPosition();
-          }
-        });
+          });
+        }
       });
   }
 

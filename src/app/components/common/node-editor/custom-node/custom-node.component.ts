@@ -120,6 +120,8 @@ export class CustomNodeComponent implements OnChanges {
     if (this.data.label === 'South' || this.data.label === 'North') {
       this.setSetectedNodeColor('#C781BB');
       if (this.source !== '') {
+        // emit debug state
+        this.sharedService.debuggerStateSubject.next({ service: this.source, debug: this.data.debug });
         this.elRef.nativeElement.style.borderColor = this.data.label === 'South' ? "#B6D7A8" : '#C781BB'
         this.isServiceNode = true;
         if (this.from == 'north') {
