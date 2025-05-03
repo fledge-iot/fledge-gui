@@ -718,3 +718,7 @@ function getSecondLastActionName() {
   }
   return actionName;
 }
+
+export function getNodeView(nodeId) {
+  return area.nodeViews.get(nodeId);
+}

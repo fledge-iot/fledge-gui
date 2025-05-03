@@ -30,6 +30,7 @@ import {
   undoAction, redoAction, resetNodes,
   editor,
   history,
+  getNodeView,
 } from './editor';
 import { FlowEditorService, NodeStatus } from './flow-editor.service';
 import { DebuggerReadingsComponent } from '../../core/debugger/debugger-readings/debugger-readings.component';
@@ -350,6 +351,10 @@ export class NodeEditorComponent implements OnInit {
         this.nodesToDelete.push({ id: data.id, 'label': 'Connection' });
       }
       if (data.label !== 'Storage' && data.label !== 'Filter') {
+        if (!(data.source && data.target)) {
+          let view = getNodeView(data.id);
+          data['dragStartPosition'] = view?.position;
+        }
         if (data.selected && !this.nodesToDelete?.some(node => (node.id == data.id))) {
           if (data.isFilterNode) {
             if (!this.selectedFilters.some(filter => filter === data.label)) {

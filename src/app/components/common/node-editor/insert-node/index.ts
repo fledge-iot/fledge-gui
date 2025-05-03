@@ -65,32 +65,35 @@ export function insertableNodes<S extends Schemes>(
       );
 
       if (view && node.label !== "South" && node.label !== "Storage" && node.label !== "North") {
-        const intersectedConnections = checkIntersection(view.position, node, cons);
+        const isNodeMoved = view.position.x !== context.data.dragStartPosition?.x || view.position.y !== context.data.dragStartPosition?.y;
+        if (isNodeMoved) {
+          const intersectedConnections = checkIntersection(view.position, node, cons);
 
-        // Utility function to check if two connections have the same target
-        const hasSameTarget = (conn1, conn2) => conn1.target === conn2.target;
+          // Utility function to check if two connections have the same target
+          const hasSameTarget = (conn1, conn2) => conn1.target === conn2.target;
 
-        // Get intersected connections with the same target
-        const intersectedConnectionsWithSameTarget = intersectedConnections.filter(id => {
-          const conn = editor.getConnection(id);
+          // Get intersected connections with the same target
+          const intersectedConnectionsWithSameTarget = intersectedConnections.filter(id => {
+            const conn = editor.getConnection(id);
 
-          // Check if any other connection has the same target
-          return intersectedConnections.some(otherId => {
-            return id !== otherId && hasSameTarget(conn, editor.getConnection(otherId));
+            // Check if any other connection has the same target
+            return intersectedConnections.some(otherId => {
+              return id !== otherId && hasSameTarget(conn, editor.getConnection(otherId));
+            });
           });
-        });
 
-        if (intersectedConnectionsWithSameTarget.length > 1 && node.label === "Filter") {
-          alertService.error('Joining branches in a pipeline is not supported', true);
-          return context;
-        }
+          if (intersectedConnectionsWithSameTarget.length > 1 && node.label === "Filter") {
+            alertService.error('Joining branches in a pipeline is not supported', true);
+            return context;
+          }
 
-        for (let id of intersectedConnections) {
-          const exist = editor.getConnection(id);
-          if (exist && (exist.source !== node.id && exist.target !== node.id)) {
-            removeOldConnection(node, editor);
-            await editor.removeConnection(id);
-            await props.createConnections(node, exist);
+          for (let id of intersectedConnections) {
+            const exist = editor.getConnection(id);
+            if (exist && (exist.source !== node.id && exist.target !== node.id)) {
+              removeOldConnection(node, editor);
+              await editor.removeConnection(id);
+              await props.createConnections(node, exist);
+            }
           }
         }
       }
