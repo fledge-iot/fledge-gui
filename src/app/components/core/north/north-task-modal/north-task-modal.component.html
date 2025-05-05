@@ -118,7 +118,7 @@
             <div class="column btn-container" *ngIf="rolesService.hasEditPermissions()">
               <div class="field is-grouped is-pulled-right">
                 <p class="control">
-                  <button class="button is-small" [routerLink]="['/north']">Cancel</button>
+                  <button class="button is-small" [routerLink]="['/north']" (click)="clearConfigTab()">Cancel</button>
                 </p>
                 <p class="control">
                   <button [disabled]="checkFormState()" class="button is-small is-link" (click)="save()"

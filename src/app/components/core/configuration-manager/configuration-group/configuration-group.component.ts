@@ -70,6 +70,15 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     const groupNavigation = document.getElementById("group_navigation_" + idSuffix);
     this.tabs = new TabHeader(groupNavContents, groupNavigation);
 
+    const savedTabKey = sessionStorage.getItem('SELECTED_CONFIG_TAB');
+    if (savedTabKey && this.groups.some(g => g.group.key === savedTabKey)) {
+      this.selectedGroup = this.groups.find(g => g.group.key === savedTabKey).group;
+      if (this.tabNavigationComponent) {
+        const tabIndex = this.groupTabs.findIndex(t => t.key === this.selectedGroup.key);
+        this.tabNavigationComponent.setTab(tabIndex);
+      }
+    }
+
     window.addEventListener('resize', () => {
       this.tabs.setOverFlow();
     })
@@ -181,8 +190,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
 
     this.getGroups();
-    // set initial group
-    this.selectedGroup = this.groups[0]?.group;
   }
 
   buildGroupOfItems(groups, category, configItems) {
@@ -211,6 +218,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   selectTab(tab) {
     if (tab.key !== this.selectedGroup.key) {
       this.selectedGroup = tab;
+      // Store the selected tab key
+      sessionStorage.setItem('SELECTED_CONFIG_TAB', tab.key);
     }
     if (this.tabNavigationComponent) {
       const tabIndex = this.groupTabs.findIndex(t => t.key === this.selectedGroup.key);

@@ -59,6 +59,7 @@ export class QuickviewComponent implements OnInit {
   }
 
   onCloseQuickview() {
+    sessionStorage.removeItem('SELECTED_CONFIG_TAB');
     this.quickView.nativeElement.classList.remove('is-active');
     this.flowEditorService.showLogsInQuickview.next({ showLogs: false });
     if (this.notificationLogsComponent) {

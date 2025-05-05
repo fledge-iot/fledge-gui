@@ -103,6 +103,7 @@ export class SouthServiceModalComponent implements OnInit {
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
     if (!alertModal.classList.contains('is-active')) {
+      sessionStorage.removeItem('SELECTED_CONFIG_TAB');
       this.navToSouthPage();
     }
   }
@@ -488,6 +489,7 @@ export class SouthServiceModalComponent implements OnInit {
       this.filtersListComponent.update();
       this.unsavedChangesInFilterForm = false;
       if (this.apiCallsStack.length == 0) {
+        sessionStorage.removeItem('SELECTED_CONFIG_TAB');
         this.navToSouthPage();
       }
     }
@@ -506,6 +508,7 @@ export class SouthServiceModalComponent implements OnInit {
             }
           } else {
             this.response.handleResponseMessage(r.type);
+            sessionStorage.removeItem('SELECTED_CONFIG_TAB');
           }
         });
         this.notify.emit();
@@ -520,6 +523,7 @@ export class SouthServiceModalComponent implements OnInit {
   }
 
   navToSouth() {
+    sessionStorage.removeItem('SELECTED_CONFIG_TAB');
     if (this.source === 'flowEditor') {
       this.router.navigate(['/flow/editor', 'south', this.serviceName, 'details'])
     }

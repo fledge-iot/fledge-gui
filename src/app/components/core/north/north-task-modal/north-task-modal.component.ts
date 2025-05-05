@@ -94,11 +94,12 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         this.getNorthTasks(true)
       }
     })
-   }
+  }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
     if (!alertModal.classList.contains('is-active')) {
+      this.clearConfigTab();
       this.navToNorthPage();
     }
   }
@@ -458,6 +459,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
             }
           } else {
             this.response.handleResponseMessage(r.type);
+            this.clearConfigTab();
           }
         });
         this.notify.emit();
@@ -496,11 +498,11 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     return noChange;
   }
 
-  navToNorthPage(){
+  navToNorthPage() {
     this.router.navigate(['/north']);
   }
 
-  getNorthTasks(caching: boolean){
+  getNorthTasks(caching: boolean) {
     this.northService.getNorthTasks(caching)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
@@ -517,5 +519,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  clearConfigTab() {
+    sessionStorage.removeItem('SELECTED_CONFIG_TAB');
   }
 }
