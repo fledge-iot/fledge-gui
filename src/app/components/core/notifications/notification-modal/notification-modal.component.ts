@@ -12,6 +12,7 @@ import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { catchError } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
+import { StorageService } from '../../../../services/storage.service';
 
 @Component({
   selector: 'app-notification-modal',
@@ -48,7 +49,8 @@ export class NotificationModalComponent implements OnInit {
     private docService: DocService,
     private fileUploaderService: FileUploaderService,
     private configurationControlService: ConfigurationControlService,
-    public rolesService: RolesService) { }
+    public rolesService: RolesService,
+    private storageService: StorageService) { }
 
   ngOnInit() { }
 
@@ -84,7 +86,7 @@ export class NotificationModalComponent implements OnInit {
     this.ruleConfiguration = null;
     this.deliveryConfiguration = null;
     modalWindow.classList.remove('is-active');
-    sessionStorage.removeItem('SELECTED_CONFIG_TAB');
+    this.storageService.removeActiveTab('ACTIVE_CONFIG_TAB');
   }
 
   public getRuleConfiguration(): void {

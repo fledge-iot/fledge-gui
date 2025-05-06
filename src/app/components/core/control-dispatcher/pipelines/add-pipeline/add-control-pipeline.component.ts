@@ -21,6 +21,7 @@ import { DocService } from '../../../../../services/doc.service';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../../utils';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import { FilterListComponent } from '../../../filter/filter-list/filter-list.component';
+import { StorageService } from '../../../../../services/storage.service';
 
 export interface ControlPipeline {
   id?: number
@@ -94,7 +95,8 @@ export class AddControlPipelineComponent implements OnInit {
     private docService: DocService,
     private filterService: FilterService,
     private router: Router,
-    private toast: ToastService) {
+    private toast: ToastService,
+    private storageService: StorageService) {
   }
 
   canDeactivate(): Observable<boolean> | boolean {
@@ -434,10 +436,10 @@ export class AddControlPipelineComponent implements OnInit {
           const SortedSouthboundSvc = southboundSvc.sort((a, b) => a.name.localeCompare(b.name));
           const SortedNorthboundSvc = northboundSvc.sort((a, b) => a.name.localeCompare(b.name));
           if (direction === 'source') {
-	    /** The source of a control pipeline can only be north services and not south */
+            /** The source of a control pipeline can only be north services and not south */
             this.sourceNameList = SortedNorthboundSvc;
           } else {
-	    /** The destiantion of a control pipeline can only be south services and not north */
+            /** The destiantion of a control pipeline can only be south services and not north */
             this.destinationNameList = SortedSouthboundSvc;
           }
         },
@@ -626,6 +628,7 @@ export class AddControlPipelineComponent implements OnInit {
     // small delay to effect backend changes before moving to list page
     setTimeout(() => {
       this.unsavedChangesInFilterForm = false;
+      this.storageService.removeActiveTab('ACTIVE_CONFIG_TAB');
       this.router.navigate(['control-dispatcher/pipelines']);
     }, 1000);
   }

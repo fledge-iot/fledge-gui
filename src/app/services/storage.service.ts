@@ -38,4 +38,16 @@ export class StorageService {
   getPort() {
     return localStorage.getItem('CONNECTED_PORT');
   }
+
+  setActiveTab(key: string, value: string): void {
+    sessionStorage.setItem(key, value);
+  }
+
+  getActiveTab(key: string): string | null {
+    return sessionStorage.getItem(key);
+  }
+
+  removeActiveTab(key: string): void {
+    sessionStorage.removeItem(key);
+  }
 }

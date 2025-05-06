@@ -1,6 +1,6 @@
 import {
   ChangeDetectorRef,
-  Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild
+  Component, EventEmitter, HostListener, OnInit, Output, ViewChild
 } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { cloneDeep, isEmpty } from 'lodash';
@@ -26,6 +26,7 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { catchError, map, takeUntil } from 'rxjs/operators';
 import { Service } from '../south-service';
 import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
+import { StorageService } from '../../../../services/storage.service';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -86,7 +87,8 @@ export class SouthServiceModalComponent implements OnInit {
     private response: ResponseHandler,
     private toastService: ToastService,
     private activatedRoute: ActivatedRoute,
-    public cDRef: ChangeDetectorRef) {
+    public cDRef: ChangeDetectorRef,
+    private storageService: StorageService) {
     this.activatedRoute.paramMap.subscribe(params => {
       this.serviceName = params.get('name');
       if (this.serviceName) {
@@ -103,7 +105,7 @@ export class SouthServiceModalComponent implements OnInit {
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
     if (!alertModal.classList.contains('is-active')) {
-      sessionStorage.removeItem('SELECTED_CONFIG_TAB');
+      this.storageService.removeActiveTab('ACTIVE_CONFIG_TAB');
       this.navToSouthPage();
     }
   }
@@ -489,7 +491,7 @@ export class SouthServiceModalComponent implements OnInit {
       this.filtersListComponent.update();
       this.unsavedChangesInFilterForm = false;
       if (this.apiCallsStack.length == 0) {
-        sessionStorage.removeItem('SELECTED_CONFIG_TAB');
+        this.storageService.removeActiveTab('ACTIVE_CONFIG_TAB');
         this.navToSouthPage();
       }
     }
@@ -508,7 +510,7 @@ export class SouthServiceModalComponent implements OnInit {
             }
           } else {
             this.response.handleResponseMessage(r.type);
-            sessionStorage.removeItem('SELECTED_CONFIG_TAB');
+            this.storageService.removeActiveTab('ACTIVE_CONFIG_TAB');
           }
         });
         this.notify.emit();
@@ -523,7 +525,7 @@ export class SouthServiceModalComponent implements OnInit {
   }
 
   navToSouth() {
-    sessionStorage.removeItem('SELECTED_CONFIG_TAB');
+    this.storageService.removeActiveTab('ACTIVE_CONFIG_TAB');
     if (this.source === 'flowEditor') {
       this.router.navigate(['/flow/editor', 'south', this.serviceName, 'details'])
     }

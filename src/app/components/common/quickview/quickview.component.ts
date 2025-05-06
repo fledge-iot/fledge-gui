@@ -1,5 +1,6 @@
 import { Component, HostListener, Input, OnInit, ViewChild, ContentChild } from '@angular/core';
 import { FlowEditorService } from './../node-editor/flow-editor.service';
+import { StorageService } from '../../../services/storage.service';
 
 declare const bulmaQuickview: any;
 
@@ -20,6 +21,7 @@ export class QuickviewComponent implements OnInit {
 
   constructor(
     public flowEditorService: FlowEditorService,
+    private storageService: StorageService
   ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -59,7 +61,7 @@ export class QuickviewComponent implements OnInit {
   }
 
   onCloseQuickview() {
-    sessionStorage.removeItem('SELECTED_CONFIG_TAB');
+    this.storageService.removeActiveTab('ACTIVE_CONFIG_TAB');
     this.quickView.nativeElement.classList.remove('is-active');
     this.flowEditorService.showLogsInQuickview.next({ showLogs: false });
     if (this.notificationLogsComponent) {

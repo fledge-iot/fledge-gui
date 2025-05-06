@@ -22,6 +22,7 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { catchError, map, takeUntil } from 'rxjs/operators';
 import { NorthTask } from '../north-task';
 import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
+import { StorageService } from '../../../../services/storage.service';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -87,6 +88,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private toast: ToastService,
     public cDRef: ChangeDetectorRef,
     private activatedRoute: ActivatedRoute,
+    private storageService: StorageService
   ) {
     this.activatedRoute.paramMap.subscribe(params => {
       this.taskName = params.get('name');
@@ -522,6 +524,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   clearConfigTab() {
-    sessionStorage.removeItem('SELECTED_CONFIG_TAB');
+    this.storageService.removeActiveTab('ACTIVE_CONFIG_TAB');
   }
 }

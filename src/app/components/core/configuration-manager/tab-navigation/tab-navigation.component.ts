@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from "@angular/core";
+import { StorageService } from '../../../../services/storage.service';
 
 @Component({
   selector: 'app-tab-navigation',
@@ -8,12 +9,14 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, In
 })
 export class TabNavigationComponent {
 
-  currentTab = '';
+  currentTab = {};
   @Input() tabs: string[] = [];
   activeTab = 0;
-  @Output() selectedTabEvent = new EventEmitter<string>();
+  @Output() selectedTabEvent = new EventEmitter<any>();
 
-  constructor(private cdrf: ChangeDetectorRef) { }
+  constructor(private cdrf: ChangeDetectorRef,
+    private storageService: StorageService
+  ) { }
 
   prevTab() {
     this.activeTab--;
@@ -30,6 +33,7 @@ export class TabNavigationComponent {
 
   setCurrentTab() {
     this.currentTab = this.tabs[this.activeTab];
+    this.storageService.setActiveTab('ACTIVE_CONFIG_TAB', this.currentTab['key']);
     this.selectedTabEvent.emit(this.currentTab);
   }
 

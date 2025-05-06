@@ -4,6 +4,7 @@ import { DeveloperFeaturesService } from '../../../../services/developer-feature
 import { chain, cloneDeep, uniqWith, isEmpty } from 'lodash';
 import { TabHeader } from './tab-header-slider';
 import { TabNavigationComponent } from '../tab-navigation/tab-navigation.component';
+import { StorageService } from '../../../../services/storage.service';
 
 @Component({
   selector: 'app-configuration-group',
@@ -51,7 +52,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     private configService: ConfigurationService,
     private configurationControlService: ConfigurationControlService,
     private alertService: AlertService,
-    private cdrf: ChangeDetectorRef
+    private cdrf: ChangeDetectorRef,
+    private storageService: StorageService
   ) { }
 
 
@@ -70,12 +72,17 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     const groupNavigation = document.getElementById("group_navigation_" + idSuffix);
     this.tabs = new TabHeader(groupNavContents, groupNavigation);
 
-    const savedTabKey = sessionStorage.getItem('SELECTED_CONFIG_TAB');
-    if (savedTabKey && this.groups.some(g => g.group.key === savedTabKey)) {
-      this.selectedGroup = this.groups.find(g => g.group.key === savedTabKey).group;
-      if (this.tabNavigationComponent) {
-        const tabIndex = this.groupTabs.findIndex(t => t.key === this.selectedGroup.key);
-        this.tabNavigationComponent.setTab(tabIndex);
+    const savedTabKey = this.storageService.getActiveTab('ACTIVE_CONFIG_TAB');
+    if (savedTabKey) {
+      const matchingGroup = this.groups.find(g => g.group.key === savedTabKey);
+
+      if (matchingGroup) {
+        this.selectedGroup = matchingGroup.group;
+
+        if (this.tabNavigationComponent) {
+          const tabIndex = this.groupTabs.findIndex(t => t.key === savedTabKey);
+          this.tabNavigationComponent.setTab(tabIndex);
+        }
       }
     }
 
@@ -219,7 +226,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     if (tab.key !== this.selectedGroup.key) {
       this.selectedGroup = tab;
       // Store the selected tab key
-      sessionStorage.setItem('SELECTED_CONFIG_TAB', tab.key);
+      this.storageService.setActiveTab('ACTIVE_CONFIG_TAB', tab.key);
     }
     if (this.tabNavigationComponent) {
       const tabIndex = this.groupTabs.findIndex(t => t.key === this.selectedGroup.key);
