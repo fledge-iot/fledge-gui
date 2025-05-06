@@ -628,7 +628,7 @@ export class AddControlPipelineComponent implements OnInit {
     // small delay to effect backend changes before moving to list page
     setTimeout(() => {
       this.unsavedChangesInFilterForm = false;
-      this.storageService.removeActiveTab('ACTIVE_CONFIG_TAB');
+      this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
       this.router.navigate(['control-dispatcher/pipelines']);
     }, 1000);
   }

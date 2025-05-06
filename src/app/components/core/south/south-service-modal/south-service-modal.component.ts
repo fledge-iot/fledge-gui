@@ -105,7 +105,7 @@ export class SouthServiceModalComponent implements OnInit {
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
     if (!alertModal.classList.contains('is-active')) {
-      this.storageService.removeActiveTab('ACTIVE_CONFIG_TAB');
+      this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
       this.navToSouthPage();
     }
   }
@@ -491,7 +491,7 @@ export class SouthServiceModalComponent implements OnInit {
       this.filtersListComponent.update();
       this.unsavedChangesInFilterForm = false;
       if (this.apiCallsStack.length == 0) {
-        this.storageService.removeActiveTab('ACTIVE_CONFIG_TAB');
+        this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
         this.navToSouthPage();
       }
     }
@@ -510,7 +510,7 @@ export class SouthServiceModalComponent implements OnInit {
             }
           } else {
             this.response.handleResponseMessage(r.type);
-            this.storageService.removeActiveTab('ACTIVE_CONFIG_TAB');
+            this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
           }
         });
         this.notify.emit();
@@ -525,7 +525,7 @@ export class SouthServiceModalComponent implements OnInit {
   }
 
   navToSouth() {
-    this.storageService.removeActiveTab('ACTIVE_CONFIG_TAB');
+    this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
     if (this.source === 'flowEditor') {
       this.router.navigate(['/flow/editor', 'south', this.serviceName, 'details'])
     }

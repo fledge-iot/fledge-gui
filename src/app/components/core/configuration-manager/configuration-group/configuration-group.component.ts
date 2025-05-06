@@ -72,7 +72,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     const groupNavigation = document.getElementById("group_navigation_" + idSuffix);
     this.tabs = new TabHeader(groupNavContents, groupNavigation);
 
-    const savedTabKey = this.storageService.getActiveTab('ACTIVE_CONFIG_TAB');
+    const savedTabKey = this.storageService.getSessionItem('ACTIVE_CONFIG_TAB');
     if (savedTabKey) {
       const matchingGroup = this.groups.find(g => g.group.key === savedTabKey);
 
@@ -226,7 +226,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     if (tab.key !== this.selectedGroup.key) {
       this.selectedGroup = tab;
       // Store the selected tab key
-      this.storageService.setActiveTab('ACTIVE_CONFIG_TAB', tab.key);
+      this.storageService.setSessionItem('ACTIVE_CONFIG_TAB', tab.key);
     }
     if (this.tabNavigationComponent) {
       const tabIndex = this.groupTabs.findIndex(t => t.key === this.selectedGroup.key);

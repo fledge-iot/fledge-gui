@@ -524,6 +524,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   }
 
   clearConfigTab() {
-    this.storageService.removeActiveTab('ACTIVE_CONFIG_TAB');
+    this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
   }
 }
