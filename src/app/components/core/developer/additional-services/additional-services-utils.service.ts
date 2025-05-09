@@ -83,7 +83,7 @@ export class AdditionalServicesUtils {
         (data: any) => {
           let servicesRegistry = data.services.filter((el) => expectedExternalServiceType.includes(el.type))
           if (from !== 'additional-services') {
-            servicesRegistry = data.services.filter((s => (s.type.toLowerCase() === from)));
+            servicesRegistry = data.services.filter((s => (s.type.toLowerCase() === (from === 'bucket' ? 'bucketstorage' : from))));
           }
           this.servicesRegistry = servicesRegistry;
           const matchedServices = this.servicesRegistry.filter((svc) => this.expectedServices.some(es => es.type == svc.type));
