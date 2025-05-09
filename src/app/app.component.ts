@@ -50,7 +50,17 @@ export class AppComponent implements OnInit {
       .pipe(takeUntil(this.destroySubject))
       .subscribe((isLoginView: boolean) => {
         this.isLoginView = isLoginView;
-      })
+      });
+
+    // Subscribe to user login state to set sidebar collapsed state
+    this.sharedService.isUserLoggedIn
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(userState => {
+        if (userState.loggedIn) {
+          this.isSidemenuCollapsed = true;
+          this.sharedService.isSidebarCollapsed.next(true);
+        }
+      });
 
     this.setPingIntervalOnAppLaunch();
     this.setStasHistoryGraphRefreshIntervalOnAppLaunch();
