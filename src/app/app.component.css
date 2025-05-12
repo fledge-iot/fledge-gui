@@ -29,11 +29,11 @@
     width: 14.66667%;
   }
 
-  .layout-custom-width {
+  .expanded-mode-right-pane {
     width: 85%;
   }
 
-  .expanded-custom-width {
+  .narrow-mode-right-pane {
     width: 93%;
   }
 }

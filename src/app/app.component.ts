@@ -147,6 +147,20 @@ export class AppComponent implements OnInit {
     this.sharedService.isSidebarCollapsed.next(state);
   }
 
+  getMainContentClasses(): string {
+    if (this.isLoginView) {
+      return 'is-12';
+    }
+    return this.isSidemenuCollapsed ? 'is-11 narrow-mode-right-pane' : 'is-10 expanded-mode-right-pane';
+  }
+
+  shouldShowOverlay(): boolean {
+    return !this.isServiceRunning &&
+      !this.url?.includes('setting') &&
+      !this.url?.includes('login') &&
+      !this.modalWindow;
+  }
+
   ngOnDestroy() {
     // Unsubscribe from all observables
     this.destroySubject.next();
