@@ -118,8 +118,14 @@ export class SideMenuComponent implements OnInit {
     submenuWrapper.style.top = (menuItemPosition.top - addedMargin).toString() + 'px';
     submenuWrapper.style.left = (menuItemPosition.width + 4).toString() + 'px';
     setTimeout(function () {
+      // If mouse is not over the menu or child sub-menu then return and don't open the sub-menu   
+      if (!sidemenuLink.matches(':hover')) {
+        return;
+      }
+      if (!submenuWrapper.classList.contains('show')) {
+        this.toggleSubmenuState(menuLink);
+      }
       submenuWrapper.classList.add('show');
-      this.toggleSubmenuState(menuLink);
     }.bind(this), 200);
   }
 
@@ -143,10 +149,11 @@ export class SideMenuComponent implements OnInit {
       if (menuOption.matches(':hover')) {
         return;
       }
+      if (menuOption.classList.contains('show')) {
+        this.toggleSubmenuState(menuLink, false);
+      }
       menuOption.classList.remove('show');
-
-      this.toggleSubmenuState(menuLink, false);
-    }.bind(this), 200);
+    }.bind(this), 250);
   }
 
   toggleSubmenuState(menuLink, state = null) {
