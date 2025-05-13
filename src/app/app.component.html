@@ -7,8 +7,7 @@
   <ng-container *ngIf="!isLoginView">
     <div class="column is-sidebar-menu p-0" [ngClass]="{
         'is-hidden-mobile': !_opened,
-        'is-2': !isSidemenuCollapsed,
-        'is-1': isSidemenuCollapsed
+        'is-2': !isSidemenuCollapsed
       }">
       <app-side-menu (toggle)="toggleSidebar()" (sidebarCollapsedEvent)="setSidebarState($event)">
       </app-side-menu>
