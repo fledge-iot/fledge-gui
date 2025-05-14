@@ -127,7 +127,7 @@ export class SideMenuComponent implements OnInit {
         this.toggleSubmenuState(menuLink);
       }
       submenuWrapper.classList.add('show');
-    }.bind(this), 550);
+    }.bind(this), 500);
   }
 
   toggleSubmenuOnClick(menuLink, event = null) {
@@ -155,7 +155,7 @@ export class SideMenuComponent implements OnInit {
         this.toggleSubmenuState(menuLink, false);
       }
       menuOption.classList.remove('show');
-    }.bind(this), 350);
+    }.bind(this), 300);
   }
 
   toggleSubmenuState(menuLink, state = null) {
