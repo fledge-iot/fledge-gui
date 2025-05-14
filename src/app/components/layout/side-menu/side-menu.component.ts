@@ -126,7 +126,8 @@ export class SideMenuComponent implements OnInit {
         this.toggleSubmenuState(menuLink);
       }
       submenuWrapper.classList.add('show');
-    }.bind(this), 500); // Added a delay to prevent the submenu from opening too quickly when hovering over the parent menu item, and ensured it only opens when focused for some milliseconds
+    }.bind(this), 500); // Added a delay to prevent the submenu from opening too quickly 
+    // when hovering over the parent menu item, and ensured it only opens when focused for some milliseconds
   }
 
   toggleSubmenuOnClick(menuLink, event = null) {

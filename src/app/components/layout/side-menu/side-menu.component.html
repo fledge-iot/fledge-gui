@@ -194,7 +194,7 @@
           <div class="submenu-div" id="developer-submenu" [hidden]="viewPort !== 'desktop' && !isDeveloperListOpen">
             <ul class="submenu-list" [ngClass]="{'pl-0':  isSidemenuCollapsed }">
               <li>
-                <a class="submenu-text has-text-weight-medium" id="python-packages" routerLinkActive="is-active"
+                <a class="submenu-text" id="python-packages" routerLinkActive="is-active"
                   routerLink='/developer/options/python/package'>
                   <span class="has-text-weight-medium">Python
                     Packages</span>
@@ -202,7 +202,7 @@
                 </a>
               </li>
               <li>
-                <a class="submenu-text has-text-weight-medium" id="additional-services" routerLinkActive="is-active"
+                <a class="submenu-text" id="additional-services" routerLinkActive="is-active"
                   routerLink='/developer/options/additional-services'>
                   <span class="has-text-weight-medium">
                     Additional Services
@@ -214,8 +214,14 @@
                 </a>
               </li>
               <!-- <li>
-                <a class="submenu-text has-text-weight-medium" id="additional-services" routerLinkActive="is-active"
-                  routerLink='/developer/perfmon'>Performance Monitors
+                <a class="submenu-text has-text-weight-medium" id="perfmon" routerLinkActive="is-active"
+                  routerLink='/developer/perfmon'>
+                  <span class="has-text-weight-medium">
+                    Performance Monitors
+                   </span>
+                  <span class="help has-text-weight-light">
+                    View &amp; analyze performance counters to assist with tuning and optimization
+                  </span>
                 </a>
               </li> -->
             </ul>
