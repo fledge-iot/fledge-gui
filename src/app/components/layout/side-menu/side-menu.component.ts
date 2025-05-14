@@ -117,7 +117,6 @@ export class SideMenuComponent implements OnInit {
     // place the submenu in the correct position relevant to the menu item
     submenuWrapper.style.top = (menuItemPosition.top - addedMargin).toString() + 'px';
     submenuWrapper.style.left = (menuItemPosition.width + 4).toString() + 'px';
-    // delay the submenu open by 550ms to avoid flickering
     setTimeout(function () {
       // If mouse is not over the menu or child sub-menu then return and don't open the sub-menu   
       if (!sidemenuLink.matches(':hover')) {
@@ -127,7 +126,7 @@ export class SideMenuComponent implements OnInit {
         this.toggleSubmenuState(menuLink);
       }
       submenuWrapper.classList.add('show');
-    }.bind(this), 500);
+    }.bind(this), 500); // Added a delay to prevent the submenu from opening too quickly when hovering over the parent menu item, and ensured it only opens when focused for some milliseconds
   }
 
   toggleSubmenuOnClick(menuLink, event = null) {
@@ -145,7 +144,6 @@ export class SideMenuComponent implements OnInit {
       return;
     }
     const menuOption = document.getElementById(menuLink + '-submenu') as HTMLDivElement;
-    // delay the submenu close by 350ms to avoid flickering
     setTimeout(function () {
       // If mouse is over the menu or child sub-menu then return and don't close the sub-menu   
       if (menuOption.matches(':hover')) {
@@ -155,7 +153,7 @@ export class SideMenuComponent implements OnInit {
         this.toggleSubmenuState(menuLink, false);
       }
       menuOption.classList.remove('show');
-    }.bind(this), 300);
+    }.bind(this), 300); // delay the submenu close to avoid flickering
   }
 
   toggleSubmenuState(menuLink, state = null) {
