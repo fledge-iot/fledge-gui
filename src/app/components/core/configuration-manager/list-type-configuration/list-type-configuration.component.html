@@ -14,13 +14,12 @@
       </div>
     </div>
   </ng-container>
-  <div
-    [ngClass]="{'custom-viewport': configuration.items == 'object', 'scrollable': (listItems.controls?.length > 0 && configuration.items == 'object')}">
+  <div>
     <ng-container *ngIf="configuration.items !== 'object'; else objectTemplate">
       <form [formGroup]="listItemsForm">
         <div formArrayName="listItems">
           <!-- Virtual Scroll if more than 20 items -->
-          <cdk-virtual-scroll-viewport *ngIf="listItems.length > 20; else fallbackScroll" itemSize="5"
+          <cdk-virtual-scroll-viewport *ngIf="listItems.length > 20; else fallbackScroll" itemSize="20"
             class="virtual-scroll-viewport">
             <div *cdkVirtualFor="let ctrl of listItemControls; let i = index; trackBy: trackByIndex">
               <!-- Render input row -->
@@ -73,11 +72,24 @@
     </ng-container>
     <ng-template #objectTemplate>
       <ng-container *ngIf="!isListView">
-        <app-list-card *ngFor="let ctrl of listItemControls; let i = index; trackBy: trackByIndex"
-          [configuration]="configuration" [listItemsForm]="listItemsForm" [initialProperties]="initialProperties"
-          [from]="from" [group]="group" [listLabel]="listLabel" [firstKey]="firstKey" [items]="items" [item]="ctrl"
-          [index]="i" (changedConfig)="getChangedConfiguration(i, $event)" (formStatusEvent)="formStatus($event, i)"
-          (removeItem)="removeListItem($event)" />
+        <cdk-virtual-scroll-viewport *ngIf="listItemControls.length > 3; else normalView" itemSize="5"
+          class="card-viewport">
+          <app-list-card *cdkVirtualFor="let ctrl of listItemControls; let i = index; trackBy: trackByIndex"
+            [configuration]="configuration" [listItemsForm]="listItemsForm" [initialProperties]="initialProperties"
+            [from]="from" [group]="group" [listLabel]="listLabel" [firstKey]="firstKey" [items]="items" [item]="ctrl"
+            [index]="i" (changedConfig)="getChangedConfiguration(i, $event)" (formStatusEvent)="formStatus($event, i)"
+            (removeItem)="removeListItem($event)">
+          </app-list-card>
+        </cdk-virtual-scroll-viewport>
+        <!-- Normal *ngFor rendering for <= 3 items -->
+        <ng-template #normalView>
+          <app-list-card *ngFor="let ctrl of listItemControls; let i = index; trackBy: trackByIndex"
+            [configuration]="configuration" [listItemsForm]="listItemsForm" [initialProperties]="initialProperties"
+            [from]="from" [group]="group" [listLabel]="listLabel" [firstKey]="firstKey" [items]="items" [item]="ctrl"
+            [index]="i" (changedConfig)="getChangedConfiguration(i, $event)" (formStatusEvent)="formStatus($event, i)"
+            (removeItem)="removeListItem($event)" />
+        </ng-template>
+
       </ng-container>
     </ng-template>
   </div>

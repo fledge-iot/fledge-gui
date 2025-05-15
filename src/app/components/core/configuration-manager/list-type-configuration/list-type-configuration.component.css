@@ -40,8 +40,15 @@
 
 
 .virtual-scroll-viewport {
-  height: 600px;
+  height: 400px;
   /* or dynamic based on view */
   display: block;
+  overflow: auto;
+}
+
+.card-viewport {
+  height: 400px;
+  /* Adjust based on your design */
+  width: 100%;
   overflow: auto;
 }
