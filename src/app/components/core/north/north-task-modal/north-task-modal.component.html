@@ -13,7 +13,7 @@
           <p class="help has-text-grey modal-subtitle">North Task</p>
         </ng-template>
       </span>
-      <button class="delete" aria-label="close" [routerLink]="['/north']"></button>
+      <button class="delete" aria-label="close" [routerLink]="['/north']" (click)="clearConfigTab()"></button>
     </header>
     <section class="modal-card-body">
       <ng-container *ngIf="!isAddFilterWizard">

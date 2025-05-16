@@ -12,6 +12,7 @@ import Utils, { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.component';
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
+import { StorageService } from '../../../../services/storage.service';
 
 @Component({
   selector: 'app-add-task-wizard',
@@ -69,6 +70,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     private docService: DocService,
     private fileUploaderService: FileUploaderService,
     private configurationControlService: ConfigurationControlService,
+    private storageService: StorageService,
     private cdRef: ChangeDetectorRef
   ) {
     this.route.queryParams.subscribe(params => {
@@ -278,6 +280,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
             const name = payload.name;
             this.uploadScript(name, files);
           }
+          this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
           if (this.source === 'flowEditor') {
             this.router.navigate(['/flow/editor/north', response['name'], 'details'])
           }
@@ -289,6 +292,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           /** request completed */
           this.ngProgress.done();
           this.reenableButton.emit(false);
+          this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
@@ -327,6 +331,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
             const name = payload.name
             this.uploadScript(name, files);
           }
+          this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
           if (this.source === 'flowEditor') {
             this.router.navigate(['/flow/editor/north', response['name'], 'details']);
           }
@@ -338,6 +343,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
           /** request done */
           this.ngProgress.done();
           this.reenableButton.emit(false);
+          this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

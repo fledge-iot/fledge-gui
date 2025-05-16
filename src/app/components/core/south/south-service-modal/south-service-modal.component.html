@@ -9,7 +9,7 @@
         </span>
         <p class="help has-text-grey modal-subtitle">South Service</p>
       </span>
-      <button class="delete" aria-label="close" [routerLink]="['/south']"></button>
+      <button class="delete" aria-label="close" (click)="navToSouth()"></button>
     </header>
     <section class="modal-card-body">
       <ng-container *ngIf="!isAddFilterWizard">

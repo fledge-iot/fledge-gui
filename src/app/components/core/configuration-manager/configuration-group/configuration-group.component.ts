@@ -73,17 +73,16 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     this.tabs = new TabHeader(groupNavContents, groupNavigation);
 
     const savedTabKey = this.storageService.getSessionItem('ACTIVE_CONFIG_TAB');
-    if (savedTabKey) {
-      const matchingGroup = this.groups.find(g => g.group.key === savedTabKey);
+    const matchingGroup = this.groups.find(g => g.group.key === savedTabKey);
+    if (savedTabKey && matchingGroup) {
+      this.selectedGroup = matchingGroup.group;
 
-      if (matchingGroup) {
-        this.selectedGroup = matchingGroup.group;
-
-        if (this.tabNavigationComponent) {
-          const tabIndex = this.groupTabs.findIndex(t => t.key === savedTabKey);
-          this.tabNavigationComponent.setTab(tabIndex);
-        }
+      if (this.tabNavigationComponent) {
+        const tabIndex = this.groupTabs.findIndex(t => t.key === savedTabKey);
+        this.tabNavigationComponent.setTab(tabIndex);
       }
+    } else {
+      this.selectedGroup = this.groups[0]?.group;
     }
 
     window.addEventListener('resize', () => {
@@ -194,8 +193,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         e.group.key === 'Basic' ? acc.unshift(e) : acc.push(e);
         return acc;
       }, []);
-
-
     this.getGroups();
   }
 

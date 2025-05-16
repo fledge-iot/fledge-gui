@@ -13,7 +13,7 @@ import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.c
 import { delay, retryWhen, take } from 'rxjs/operators';
 import { DocService } from '../../../../services/doc.service';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
-
+import { StorageService } from '../../../../services/storage.service';
 
 @Component({
   selector: 'app-add-notification-wizard',
@@ -84,6 +84,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     private docService: DocService,
     private configurationControlService: ConfigurationControlService,
     private fileUploaderService: FileUploaderService,
+    private storageService: StorageService,
     private router: Router) {
     this.route.queryParams.subscribe(params => {
       if (params['source']) {
@@ -488,6 +489,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
           if (deliveryScriptFiles.length > 0) {
             this.uploadScript(`delivery${name}`, deliveryScriptFiles);
           }
+          this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
           if (this.source === 'flowEditor') {
             this.router.navigate(['/flow/editor/notifications']);
           }
@@ -499,6 +501,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
           /** request done */
           this.ngProgress.done();
           this.reenableButton.emit(false);
+          this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
           if (error.status === 0) {
             console.log('service down ', error);
           } else {
