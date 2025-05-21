@@ -98,7 +98,7 @@
 }
 
 .tabs .is-active {
-  z-index: 0.9;
+  z-index: 0;
   position: relative;
 }
 
