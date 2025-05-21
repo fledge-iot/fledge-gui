@@ -84,7 +84,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     } else {
       this.selectedGroup = this.groups[0]?.group;
     }
-
     window.addEventListener('resize', () => {
       this.tabs.setOverFlow();
     })
@@ -107,6 +106,14 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     if ((this.isFilterList && this.recalculateTabsOverflow !== undefined) || this.recalculateTabsOverflow) {
       this.tabs.setOverFlow();
     }
+    // To scroll the selected tab into view
+    setTimeout(() => {
+      const idSuffix = this.from + '_' + this.sourceName;
+      const selectedTabElement = document.querySelector(`[id="group_navigation_${idSuffix}"] li.is-active`);
+      if (selectedTabElement) {
+        selectedTabElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }, 200);
   }
 
   public updateCategroyConfig(config) {
