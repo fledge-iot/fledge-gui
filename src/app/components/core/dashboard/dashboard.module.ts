@@ -1,24 +1,45 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterModule, Routes } from '@angular/router';
 
-import { DashboardComponent } from '.';
-import { DateFormatterPipe } from '../../../pipes';
-import { StatisticsService } from '../../../services';
+import { PipesModule } from '../../../pipes/pipes.module';
+import { SharedModule } from '../../../shared.module';
 import { ChartModule } from '../../common/chart';
-import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
+import { DashboardComponent } from './dashboard.component';
+import { FilterPipe } from '../../../pipes/filter.pipe';
+import { StatisticsService } from '../../../services/statistics.service';
+import { AlertService } from '../../../services/alert.service';
+import { PingService } from '../../../services/ping.service';
+import { DocService } from '../../../services/doc.service';
+import { DateFormatterPipe } from '../../../pipes';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: DashboardComponent
+  }
+];
 
 @NgModule({
   declarations: [
-    DashboardComponent
+    DashboardComponent,
+    FilterPipe
   ],
   imports: [
-    FormsModule,
     CommonModule,
-    NumberInputDebounceModule,
+    FormsModule,
+    RouterModule.forChild(routes),
+    PipesModule,
     ChartModule,
+    SharedModule
   ],
-  providers: [StatisticsService, DateFormatterPipe],
-  exports: []
+  providers: [
+    StatisticsService,
+    AlertService,
+    PingService,
+    DocService,
+    DateFormatterPipe
+  ]
 })
 export class DashboardModule { }
