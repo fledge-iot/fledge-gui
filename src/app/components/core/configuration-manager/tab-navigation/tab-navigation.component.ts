@@ -11,6 +11,8 @@ export class TabNavigationComponent {
 
   currentTab = {};
   @Input() tabs: string[] = [];
+  @Input() from: string;
+  @Input() sourceName: string;
   activeTab = 0;
   @Output() selectedTabEvent = new EventEmitter<any>();
 
@@ -21,6 +23,7 @@ export class TabNavigationComponent {
   prevTab() {
     this.activeTab--;
     this.setCurrentTab();
+    this.scrollToActiveTab();
   }
 
   nextTab() {
@@ -29,6 +32,7 @@ export class TabNavigationComponent {
     }
     this.activeTab++;
     this.setCurrentTab();
+    this.scrollToActiveTab();
   }
 
   setCurrentTab() {
@@ -50,5 +54,14 @@ export class TabNavigationComponent {
     this.currentTab = this.tabs[index];
     this.cdrf.detectChanges();
   }
-}
 
+  private scrollToActiveTab() {
+    setTimeout(() => {
+      const idSuffix = this.from + '_' + this.sourceName;
+      const selectedTabElement = document.querySelector(`[id="group_navigation_${idSuffix}"] li.is-active`);
+      if (selectedTabElement) {
+        selectedTabElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }, 200);
+  }
+}
