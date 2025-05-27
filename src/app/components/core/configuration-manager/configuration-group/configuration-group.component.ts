@@ -103,6 +103,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   ngOnChanges() {
     this.categeryConfiguration();
     this.getChildConfigData();
+
     if ((this.isFilterList && this.recalculateTabsOverflow !== undefined) || this.recalculateTabsOverflow) {
       this.tabs.setOverFlow();
     }
@@ -110,8 +111,24 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     setTimeout(() => {
       const idSuffix = this.from + '_' + this.sourceName;
       const selectedTabElement = document.querySelector(`[id="group_navigation_${idSuffix}"] li.is-active`);
-      if (selectedTabElement) {
-        selectedTabElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      const navContainer = document.getElementById(`group_navigation_${idSuffix}`);
+
+      if (selectedTabElement && navContainer) {
+        const tabRect = selectedTabElement.getBoundingClientRect();
+        const containerRect = navContainer.getBoundingClientRect();
+
+        // Check if tab is not fully visible in the container
+        const isTabVisible = (
+          tabRect.left >= containerRect.left &&
+          tabRect.right <= containerRect.right
+        );
+        if (!isTabVisible) {
+          selectedTabElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'nearest'
+          });
+        }
       }
     }, 200);
   }
