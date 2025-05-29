@@ -100,7 +100,7 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   addListItem(isPrepend) {
     const controlsLength = this.listItems.length;
-    const listSize = this.configuration?.listSize > 0 ? +this.configuration.listSize : 999; // max threshold limit for new item creation
+    const listSize = this.configuration?.listSize > 0 ? +this.configuration.listSize : 9999; // max threshold limit for new item creation
     if (controlsLength > listSize) {
       return;
     }
