@@ -13,13 +13,6 @@ import { PingService } from '../../../services/ping.service';
 import { DocService } from '../../../services/doc.service';
 import { DateFormatterPipe } from '../../../pipes';
 
-const routes: Routes = [
-  {
-    path: '',
-    component: DashboardComponent
-  }
-];
-
 @NgModule({
   declarations: [
     DashboardComponent
@@ -27,16 +20,12 @@ const routes: Routes = [
   imports: [
     CommonModule,
     FormsModule,
-    RouterModule.forChild(routes),
     PipesModule,
     ChartModule,
     SharedModule
   ],
   providers: [
     StatisticsService,
-    AlertService,
-    PingService,
-    DocService,
     DateFormatterPipe
   ]
 })
