@@ -89,8 +89,7 @@ import { DynamicGroupComponent } from './components/core/configuration-manager/d
     TaskScheduleComponent,
     ServiceWarningComponent,
     ServiceConfigComponent,
-    DynamicGroupComponent,
-    StaticConfigurationComponent
+    DynamicGroupComponent
   ]
 })
 export class SharedModule { }

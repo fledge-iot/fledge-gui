@@ -7,11 +7,13 @@ import { CaseInsensitiveSearchPipe } from './case-insensitive-search.pipe';
 import { SearchPipe } from './search.pipe';
 import { TruncatePipe } from './truncate.pipe';
 import { TruncateMiddleOfTextPipe } from './truncate-middle-of-text.pipe';
+import { FilterPipe } from './filter';
 
 @NgModule({
   imports: [CommonModule],
   declarations: [
     DateFormatterPipe,
+    FilterPipe,
     KeysPipe,
     CaseInsensitiveSearchPipe,
     SearchPipe,
@@ -20,6 +22,7 @@ import { TruncateMiddleOfTextPipe } from './truncate-middle-of-text.pipe';
   ],
   exports: [
     DateFormatterPipe,
+    FilterPipe,
     KeysPipe,
     CaseInsensitiveSearchPipe,
     SearchPipe,
