@@ -1,7 +1,7 @@
 <div class="container" [ngClass]="{'is-fluid': sourceName, 'custom-max-width': from?.includes('control-pipeline')}"
   [id]="from">
-  <nav *ngIf="sourceName && from !== 'rule-modal' && from !== 'delivery-modal'" class="breadcrumb"
-    aria-label="breadcrumbs">
+  <nav *ngIf="sourceName && from !== 'rule-modal' && from !== 'delivery-modal'"
+    class="breadcrumb has-text-weight-semibold" aria-label="breadcrumbs">
     <ul>
       <li class="is-active"><a>{{sourceName}}</a></li>
       <li class="is-active">
@@ -9,6 +9,7 @@
       </li>
     </ul>
   </nav>
+  <hr *ngIf="sourceName" class="my-2">
   <div class="configuration_group_wrapper">
     <nav [id]="'group_navigation_'+from + '_' + sourceName" class="groupNav dragscroll mouse-scroll" role="tablist">
       <div [id]="'nav_contents_'+from + '_' + sourceName" class="nav">
