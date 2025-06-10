@@ -204,11 +204,10 @@ export class NodeEditorComponent implements OnInit {
     if (event.keyCode == 32) {
       resetNodes(this.flowEditorService);
     }
-    if ((event.key === 'Delete' || (event.key == 'Backspace' && event.metaKey)) && this.nodesToDelete.length !== 0) {
-      this.callDeleteAction();
+    if (event.key === 'Delete' || (event.key == 'Backspace' && event.metaKey)) {
+      this.deleteSelectedEntity();
     }
   }
-
 
   ngOnInit(): void {
     this.pipelineSubscription = this.flowEditorService.updatedFilterPipelineData$.subscribe(
@@ -860,6 +859,12 @@ export class NodeEditorComponent implements OnInit {
     return false;
   }
 
+  deleteSelectedEntity() {
+    if (this.nodesToDelete.length !== 0) {
+      this.onDeleteAction();
+    }
+  }
+
   saveConfiguration() {
     if (!isEmpty(this.changedConfig) && this.pluginConfiguration?.name) {
       this.updateConfiguration(this.pluginConfiguration.name, this.changedConfig, 'plugin-config');
@@ -1303,11 +1308,7 @@ export class NodeEditorComponent implements OnInit {
     }
   }
 
-  onDeleteAction() {
-    this.openModal('from-toolbar-dialog');
-  }
-
-  async callDeleteAction() {
+  async onDeleteAction() {
     const connectionToDelete = this.nodesToDelete.find(node => (node.label === 'Connection'));
     if (connectionToDelete) {
       await deleteConnection(connectionToDelete.id);
@@ -1315,7 +1316,12 @@ export class NodeEditorComponent implements OnInit {
       // check if filter pipeline is updated and emit the updated pipeline
       const pipeline = getUpdatedFilterPipeline();
       this.flowEditorService.emitPipelineUpdate(pipeline);
+    } else {
+      this.openModal('from-toolbar-dialog');
     }
+  }
+
+  async callDeleteAction() {
     const filterNodeToDelete = this.nodesToDelete.find(node => (node.label !== 'South' && node.label !== 'North' && node.label !== 'Connection'));
     if (filterNodeToDelete) {
       this.deleteFilter();
