@@ -35,13 +35,15 @@
               </ng-container>
             </td>
             <td>
+              <!-- show on hover of row-->
               <a *ngIf="rolesService.hasEditPermissions()" (click)="openEditSchedulePage(schedule.id)"
-                class="button is-text ed-btn" name={{schedule.name}}>
-                <i class="fa fa-xs fa-edit" aria-hidden="true"></i>
+                class="button is-text text-btn" name={{schedule.name}}>
+                <!-- <i class="bi bi-pencil-square bi-xs" aria-hidden="true"></i> -->
+                edit
               </a>
               <a *ngIf="!rolesService.hasEditPermissions()" (click)="openEditSchedulePage(schedule.id)"
-                class="button is-small is-text" name={{schedule.name}}>
-                View
+                class="button is-text text-btn" name={{schedule.name}}>
+                view
               </a>
             </td>
           </tr>

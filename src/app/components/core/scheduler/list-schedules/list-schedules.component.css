@@ -21,8 +21,3 @@
 .fa::before {
   display: inline-block;
 }
-
-.ed-btn {
-  height: auto;
-  opacity: 0.8;
-}
