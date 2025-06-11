@@ -861,7 +861,7 @@ export class NodeEditorComponent implements OnInit {
 
   deleteSelectedEntity() {
     if (this.nodesToDelete.length !== 0) {
-      this.onDeleteAction();
+      this.onDelete();
     }
   }
 
@@ -1308,20 +1308,20 @@ export class NodeEditorComponent implements OnInit {
     }
   }
 
-  async onDeleteAction() {
-    const connectionToDelete = this.nodesToDelete.find(node => (node.label === 'Connection'));
-    if (connectionToDelete) {
-      await deleteConnection(connectionToDelete.id);
+  async onDelete() {
+    const selectedConnection = this.nodesToDelete.find(node => (node.label === 'Connection'));
+    if (selectedConnection) {
+      await deleteConnection(selectedConnection.id);
       this.nodesToDelete = [];
       // check if filter pipeline is updated and emit the updated pipeline
       const pipeline = getUpdatedFilterPipeline();
       this.flowEditorService.emitPipelineUpdate(pipeline);
     } else {
-      this.openModal('from-toolbar-dialog');
+      this.openModal('toolbar-dialog');
     }
   }
 
-  async callDeleteAction() {
+  async deleteNodes() {
     const filterNodeToDelete = this.nodesToDelete.find(node => (node.label !== 'South' && node.label !== 'North' && node.label !== 'Connection'));
     if (filterNodeToDelete) {
       this.deleteFilter();
@@ -1331,7 +1331,7 @@ export class NodeEditorComponent implements OnInit {
       this.dialogServiceName = nodeToDelete.name;
       this.deleteService();
     }
-    this.closeModal('from-toolbar-dialog');
+    this.closeModal('toolbar-dialog');
   }
 
   /**
