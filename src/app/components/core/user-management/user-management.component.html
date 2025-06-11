@@ -5,7 +5,7 @@
         <ul>
           <li [ngClass]="{'is-active': selectedTab == 1}">
             <h6 class="is-6 has-text-weight-semibold">
-              <a (click)="showDiv(1)">User Management</a>
+              <a (click)="showDiv(1)">Users</a>
             </h6>
           </li>
           <li [ngClass]="{'is-active': selectedTab == 2}">
@@ -20,11 +20,11 @@
                   <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
                 </a>
               </div>
-              <div class="column is-narrow px-0">
-                <a id="add-user" class="is-light pl-0" (click)="openCreateUserModal()">
-                  <p *ngIf="viewPort !== 'mobile'" class="add-btn">&nbsp; Add User &nbsp;</p>
+              <div class="column is-narrow">
+                <button class="button is-link is-small" (click)="openCreateUserModal()">
+                  <span *ngIf="viewPort !== 'mobile'">Create User&nbsp;</span>
                   <i class="bi bi-person-plus bi-sm" aria-hidden="true"></i>
-                </a>
+                </button>
               </div>
             </div>
           </li>
