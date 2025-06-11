@@ -204,8 +204,8 @@ export class NodeEditorComponent implements OnInit {
     if (event.keyCode == 32) {
       resetNodes(this.flowEditorService);
     }
-    if (event.key === 'Delete' || (event.key == 'Backspace' && event.metaKey)) {
-      this.deleteSelectedEntity();
+    if ((event.key === 'Delete' || (event.key == 'Backspace' && event.metaKey)) && this.nodesToDelete.length !== 0) {
+      this.onDelete();
     }
   }
 
@@ -859,12 +859,6 @@ export class NodeEditorComponent implements OnInit {
     return false;
   }
 
-  deleteSelectedEntity() {
-    if (this.nodesToDelete.length !== 0) {
-      this.onDelete();
-    }
-  }
-
   saveConfiguration() {
     if (!isEmpty(this.changedConfig) && this.pluginConfiguration?.name) {
       this.updateConfiguration(this.pluginConfiguration.name, this.changedConfig, 'plugin-config');
@@ -1310,17 +1304,20 @@ export class NodeEditorComponent implements OnInit {
 
   async onDelete() {
     const selectedConnection = this.nodesToDelete.find(node => (node.label === 'Connection'));
+    const nodesToDelete = this.nodesToDelete.filter(node => (node.label && node.label !== 'Connection'));
     if (selectedConnection) {
       await deleteConnection(selectedConnection.id);
       this.nodesToDelete = [];
       // check if filter pipeline is updated and emit the updated pipeline
       const pipeline = getUpdatedFilterPipeline();
       this.flowEditorService.emitPipelineUpdate(pipeline);
-    } else {
+    }
+    if (nodesToDelete.length > 0) {
       this.openModal('toolbar-dialog');
     }
   }
 
+  // Delete nodes after confirmation in the dialog
   async deleteNodes() {
     const filterNodeToDelete = this.nodesToDelete.find(node => (node.label !== 'South' && node.label !== 'North' && node.label !== 'Connection'));
     if (filterNodeToDelete) {
