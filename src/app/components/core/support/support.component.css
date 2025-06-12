@@ -1,0 +1,7 @@
+.support-bundles-row .action-wrapper {
+  visibility: hidden;
+}
+
+.support-bundles-row:hover .action-wrapper {
+  visibility: visible;
+}
