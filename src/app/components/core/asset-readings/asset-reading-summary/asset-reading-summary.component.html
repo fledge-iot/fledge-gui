@@ -12,7 +12,7 @@
           <td>
             <div class="tags has-addons">
               <span class="tag is-light"> Avg </span>
-              <span class="tag is-link">{{isNumber(reading.average)
+              <span class="tag is-info">{{isNumber(reading.average)
                 ?
                 roundTo(reading.average,
                 5) : reading.average.toString().substring(0,6)}}
@@ -22,14 +22,14 @@
           <td>
             <div class="tags has-addons">
               <span class="tag is-light"> Min </span>
-              <span class="tag is-link">{{isNumber(reading.min) ?
+              <span class="tag is-info">{{isNumber(reading.min) ?
                 roundTo(reading.min, 5) : reading.min.toString().substring(0,6)}}</span>
             </div>
           </td>
           <td>
             <div class="tags has-addons">
               <span class="tag is-light"> Max </span>
-              <span class="tag is-link">{{isNumber(reading.max) ?
+              <span class="tag is-info">{{isNumber(reading.max) ?
                 roundTo(reading.max, 5): reading.max.toString().substring(0,6)}}</span>
             </div>
           </td>
