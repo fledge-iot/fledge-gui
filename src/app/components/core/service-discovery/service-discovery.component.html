@@ -19,22 +19,26 @@
           </div>
           <div class="column">
             <label class="label is-fullwidth">Host</label>
-            <input id="discovery_host" class="input" formControlName="discoveryHostControl" type="text" placeholder="localhost"
-              #discoveryHost required>
-            <span class="help is-danger" *ngIf="f.touched && form.controls.discoveryHostControl.invalid">Host can't left blank</span>
+            <input id="discovery_host" class="input" formControlName="discoveryHostControl" type="text"
+              placeholder="localhost" #discoveryHost required>
+            <span class="help is-danger" *ngIf="f.touched && form.controls.discoveryHostControl.invalid">Host can't left
+              blank</span>
           </div>
           <div class="column">
             <label class="label is-fullwidth">Port</label>
-            <input id='discovery_port' class="input" type="number" maxlength="4" placeholder="3000" formControlName="discoveryPortControl"
-              #discoveryPort required>
-            <span class="help is-danger" *ngIf="f.touched && form.controls.discoveryPortControl.invalid">Port can't left blank</span>
+            <input id='discovery_port' class="input" type="number" maxlength="4" placeholder="3000"
+              formControlName="discoveryPortControl" #discoveryPort required>
+            <span class="help is-danger" *ngIf="f.touched && form.controls.discoveryPortControl.invalid">Port can't left
+              blank</span>
           </div>
         </div>
         <div class="columns">
           <div class="column">
             <div class="field">
-              <button [ngClass]="{'is-loading': isLoading}" [disabled]="form.controls.discoveryHostControl.invalid || form.controls.discoveryPortControl.invalid"
-                class="button is-info is-pulled-left is-small" (click)="f.form.valid && setServiceDiscoveryURL()">Discover</button>
+              <button [ngClass]="{'is-loading': isLoading}"
+                [disabled]="form.controls.discoveryHostControl.invalid || form.controls.discoveryPortControl.invalid"
+                class="button is-link is-pulled-left is-small"
+                (click)="f.form.valid && setServiceDiscoveryURL()">Discover</button>
             </div>
           </div>
         </div>
@@ -59,8 +63,9 @@
                   {{d.key}}
                 </p>
                 <a class="card-header-icon">
-                  <button [ngClass]="{'is-primary':isServiceConnected(d), 'is-info': !isServiceConnected(d)}" class="button is-small"
-                    (click)="connectService(d)" [disabled]="isServiceConnected(d) ? 'disabled' : null">
+                  <button [ngClass]="{'is-primary':isServiceConnected(d), 'is-link': !isServiceConnected(d)}"
+                    class="button is-small" (click)="connectService(d)"
+                    [disabled]="isServiceConnected(d) ? 'disabled' : null">
                     {{!isServiceConnected(d) ? 'Connect' : 'Connected'}}
                   </button>
                 </a>

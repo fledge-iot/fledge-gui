@@ -10,7 +10,7 @@
   }
 }
 
-.is-info {
+.is-link {
   background-color: #85c1e9 !important;
 }
 
@@ -30,4 +30,3 @@ table.is-borderless td {
 .data-table {
   width: 100%;
 }
-
