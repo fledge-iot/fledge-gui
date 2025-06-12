@@ -83,26 +83,36 @@
                     <div class="dropdown-menu" id="dropdown-menu" role="menu">
                       <div class="dropdown-content">
                         <a class="dropdown-item" (click)="openUpdateUserModal(user, 'auth')">
-                          <i class="bi bi-pencil-square bi-xs" aria-hidden="true"></i>
-                          Edit
+                          <span class="icon">
+                            <i class="bi bi-pencil-square bi-xs" aria-hidden="true"></i>
+                          </span>
+                          <sapn>Edit</sapn>
                         </a>
                         <a class="dropdown-item" (click)="openUpdateUserModal(user, 'role')">
-                          <i class="bi bi-person-gear bi-xs" aria-hidden="true"></i>
-                          Change Role
+                          <span class="icon">
+                            <i class="bi bi-person-gear bi-xs" aria-hidden="true"></i>
+                          </span>
+                          <span>Change Role</span>
                         </a>
                         <a class="dropdown-item" (click)="openUpdateUserModal(user, 'password')">
-                          <i class="bi bi-key bi-xs" aria-hidden="true"></i>
-                          Reset Password
+                          <span class="icon">
+                            <i class="bi bi-key bi-xs" aria-hidden="true"></i>
+                          </span>
+                          <span>Reset Password</span>
                         </a>
                         <a *ngIf="user?.blockUntil" class="dropdown-item"
                           (click)="openModal(user.userId, user.userName, 'unblockUser', 'Are you sure, You want to unblock the user')">
-                          <i class="bi bi-unlock bi-xs" aria-hidden="true"></i>
-                          Unblock
+                          <span class="icon">
+                            <i class="bi bi-unlock bi-xs" aria-hidden="true"></i>
+                          </span>
+                          <span>Unblock</span>
                         </a>
                         <a class="dropdown-item"
                           (click)="openModal(user.userId, user.userName, 'deactivateUser', 'Are you sure, You want to deactivate the user')">
-                          <i class="bi bi-trash bi-xs" aria-hidden="true"></i>
-                          Deactivate
+                          <span class="icon">
+                            <i class="bi bi-trash bi-xs" aria-hidden="true"></i>
+                          </span>
+                          <span>Deactivate</span>
                         </a>
                         <!-- TODO: FOGL-5381
                       <a class="dropdown-item" (click)="openModal(user.userId, user.userName, 'enableUser', 'Are you sure, You want to enable the user')">
@@ -111,8 +121,10 @@
                       </a> -->
                         <a class="dropdown-item"
                           (click)="openModal(user.userId, user.userName, 'clearSessions', 'Are you sure, You want to clear all active sessions for')">
-                          <i class="bi bi-box-arrow-right bi-xs" aria-hidden="true"></i>
-                          Log out active sessions
+                          <span class="icon">
+                            <i class="bi bi-box-arrow-right bi-xs" aria-hidden="true"></i>
+                          </span>
+                          <span>Log out active sessions</span>
                         </a>
                       </div>
                     </div>

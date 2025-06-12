@@ -363,6 +363,10 @@ span.tooltip {
   min-height: 22vh;
 }
 
+.dropdown-item:hover i {
+  color: white !important;
+}
+
 .info-icon {
   color: gray;
 }
