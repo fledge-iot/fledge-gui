@@ -40,7 +40,6 @@
               <div class="action-wrapper">
                 <a *ngIf="rolesService.hasEditPermissions()" (click)="openEditSchedulePage(schedule.id)"
                   class="button is-text text-btn" name={{schedule.name}}>
-                  <!-- <i class="bi bi-pencil-square bi-xs" aria-hidden="true"></i> -->
                   edit
                 </a>
                 <a *ngIf="!rolesService.hasEditPermissions()" (click)="openEditSchedulePage(schedule.id)"
