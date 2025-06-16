@@ -51,7 +51,7 @@
   <div [hidden]="isAddFilterWizard">
     <app-toolbar *ngIf="source && rolesService.hasEditPermissions()" class="is-inline-block pr-2"
       (reloadData)="reload()" (resetNodes)="reset()" (undo)="callUndoAction()" (redo)="callRedoAction()"
-      [historyData]="historyData" (delete)="onDeleteAction()" [isDeleteDisabled]="nodesToDelete.length == 0">
+      [historyData]="historyData" (delete)="onDelete()" [isDeleteDisabled]="nodesToDelete.length == 0">
     </app-toolbar>
     <div class="rete"
       [ngClass]="{'expanded-width': isSidebarCollapsed, 'collapsed-width': !isSidebarCollapsed, 'custom-margin': source && rolesService.hasEditPermissions()}"
@@ -266,16 +266,16 @@
 </app-confirmation-dialog>
 
 
-<app-confirmation-dialog id="from-toolbar-dialog">
+<app-confirmation-dialog id="toolbar-dialog">
   <header class="modal-card-head">
     <span class="modal-card-title is-size-6">Delete</span>
-    <button class="delete" aria-label="close" (click)="closeModal('from-toolbar-dialog')"></button>
+    <button class="delete" aria-label="close" (click)="closeModal('toolbar-dialog')"></button>
   </header>
   <section class="modal-card-body">
     Are you sure, You want to delete the selected nodes/connection?
   </section>
   <footer class="modal-card-foot">
-    <button class="button is-small" (click)="closeModal('from-toolbar-dialog')">Cancel</button>
-    <button class="button is-small is-danger" (click)="callDeleteAction()">Delete</button>
+    <button class="button is-small" (click)="closeModal('toolbar-dialog')">Cancel</button>
+    <button class="button is-small is-danger" (click)="deleteNodes()">Delete</button>
   </footer>
 </app-confirmation-dialog>
