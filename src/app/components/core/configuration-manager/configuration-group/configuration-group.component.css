@@ -6,7 +6,6 @@
 
 .highlight {
   border: 1px solid #dbdbdb;
-  border-top: 1px solid transparent;
   border-radius: 4px;
   border-top-left-radius: 0 !important;
   border-top-right-radius: 0 !important;
@@ -62,6 +61,7 @@
   top: 0;
   bottom: 0;
   opacity: 0;
+  z-index: 2;
 }
 
 .advancer:focus {
@@ -96,7 +96,7 @@
 }
 
 .tabs .is-active {
-  z-index: 0;
+  z-index: 1;
   position: relative;
 }
 
@@ -142,4 +142,8 @@
   .custom-max-width {
     max-width: 1110px !important;
   }
+}
+
+.group-nav-list {
+  border-bottom: none !important;
 }
