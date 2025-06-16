@@ -6,8 +6,8 @@
       <button class="delete" aria-label="close" (click)="formReset()"></button>
     </header>
     <section class="modal-card-body">
-      <div class="file has-name is-boxed is-small is-centered"
-      (dragover)="onDragOver($event)" (drop)="onDropSuccess($event)">
+      <div class="file has-name is-boxed is-small is-centered" (dragover)="onDragOver($event)"
+        (drop)="onDropSuccess($event)">
         <label class="file-label">
           <input class="file-input" type="file" (change)="attachBackupFile($event)">
           <span class="file-cta">
@@ -27,7 +27,8 @@
 
     <footer class="modal-card-foot">
       <button class="button is-small" (click)="formReset()">Cancel</button>
-      <button [disabled]="!fileName || progress || !file"  class="button is-small is-info" (click)="uploadBackup()">Upload</button>
+      <button [disabled]="!fileName || progress || !file" class="button is-small is-link"
+        (click)="uploadBackup()">Upload</button>
       <progress *ngIf="progress" class="progress is-small is-primary" max="100"></progress>
     </footer>
   </div>

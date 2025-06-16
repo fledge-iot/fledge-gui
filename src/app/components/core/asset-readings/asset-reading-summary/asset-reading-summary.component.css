@@ -10,10 +10,6 @@
   }
 }
 
-.is-info {
-  background-color: #85c1e9 !important;
-}
-
 table.is-borderless tr a {
   padding-left: 0;
 }
@@ -30,4 +26,3 @@ table.is-borderless td {
 .data-table {
   width: 100%;
 }
-

@@ -49,7 +49,7 @@ export class ToastService {
   * @param Duration of the notification in milliseconds. Default is 10000 milliseconds.
   */
   info(message: string, duration = 10000) {
-    const prop: bulmaToast.Options = { ...toastDefaultProperties, message, type: 'is-info', duration };
+    const prop: bulmaToast.Options = { ...toastDefaultProperties, message, type: 'is-link', duration };
     bulmaToast.toast(prop)
   }
 
