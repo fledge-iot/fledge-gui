@@ -27,14 +27,16 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let key of keys">
+            <tr *ngFor="let key of keys" class="extension-key-row">
               <td class="showInCenter">{{getName(key)}}</td>
               <td class="showInCenter">{{key.split(".")[1]}}</td>
               <ng-container *ngIf="allowDelete">
                 <td class="showInCenter">
-                  <a (click)="openModal('delete-key-dialog', key)" class="button is-text text-btn">
-                    delete
-                  </a>
+                  <div class="action-wrapper">
+                    <a (click)="openModal('delete-key-dialog', key)" class="button is-text text-btn">
+                      delete
+                    </a>
+                  </div>
                 </td>
               </ng-container>
             </tr>
@@ -53,14 +55,16 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let cert of certificates">
+            <tr *ngFor="let cert of certificates" class="certificate-row">
               <td class="showInCenter">{{getName(cert)}}</td>
               <td class="showInCenter">{{cert.split(".")[1]}}</td>
               <ng-container *ngIf="allowDelete">
                 <td class="showInCenter">
-                  <a (click)="openModal('delete-cert-dialog', cert)" class="button is-text text-btn">
-                    delete
-                  </a>
+                  <div class="action-wrapper">
+                    <a (click)="openModal('delete-cert-dialog', cert)" class="button is-text text-btn">
+                      delete
+                    </a>
+                  </div>
                 </td>
               </ng-container>
             </tr>

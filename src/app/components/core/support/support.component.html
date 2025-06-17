@@ -21,12 +21,14 @@
     <div class="card-content">
       <table class="table is-narrow scroll is-responsive is-hoverable" cellpadding="0" cellspacing="0">
         <tbody>
-          <tr *ngFor="let bundle of bundlesData">
+          <tr *ngFor="let bundle of bundlesData" class="support-bundles-row">
             <td style="vertical-align: middle;">{{ bundle }}</td>
             <td>
-              <a (click)="downloadBundle(bundle)" class="button is-text text-btn">
-                download
-              </a>
+              <div class="action-wrapper">
+                <a (click)="downloadBundle(bundle)" class="button is-text text-btn">
+                  download
+                </a>
+              </div>
             </td>
           </tr>
         </tbody>

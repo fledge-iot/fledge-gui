@@ -15,14 +15,17 @@
 }
 
 .fade {
-  background-color:#f5f5f5 !important
+  background-color: #f5f5f5 !important
 }
 
 .fa::before {
   display: inline-block;
 }
 
-.ed-btn {
-  height: auto;
-  opacity: 0.8;
+.schedule-row .action-wrapper {
+  visibility: hidden;
+}
+
+.schedule-row:hover .action-wrapper {
+  visibility: visible;
 }

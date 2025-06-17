@@ -20,7 +20,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let schedule of scheduleData" [ngClass]="{'fade': !schedule.enabled}" id={{schedule.name}}>
+          <tr class="schedule-row" *ngFor="let schedule of scheduleData" [ngClass]="{'fade': !schedule.enabled}"
+            id={{schedule.name}}>
             <td>
               {{schedule.name}}
             </td>
@@ -35,14 +36,17 @@
               </ng-container>
             </td>
             <td>
-              <a *ngIf="rolesService.hasEditPermissions()" (click)="openEditSchedulePage(schedule.id)"
-                class="button is-text ed-btn" name={{schedule.name}}>
-                <i class="fa fa-xs fa-edit" aria-hidden="true"></i>
-              </a>
-              <a *ngIf="!rolesService.hasEditPermissions()" (click)="openEditSchedulePage(schedule.id)"
-                class="button is-small is-text" name={{schedule.name}}>
-                View
-              </a>
+              <!-- show on hover of row-->
+              <div class="action-wrapper">
+                <a *ngIf="rolesService.hasEditPermissions()" (click)="openEditSchedulePage(schedule.id)"
+                  class="button is-text text-btn" name={{schedule.name}}>
+                  edit
+                </a>
+                <a *ngIf="!rolesService.hasEditPermissions()" (click)="openEditSchedulePage(schedule.id)"
+                  class="button is-text text-btn" name={{schedule.name}}>
+                  view
+                </a>
+              </div>
             </td>
           </tr>
         </tbody>
