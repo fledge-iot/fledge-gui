@@ -25,4 +25,18 @@
 ##
 ##--------------------------------------------------------------------
 
-service nginx stop
+set -e
+
+is_running_in_container() {
+    grep -qaE '/docker|/lxc|/kubepods|containerd' /proc/1/cgroup 2>/dev/null && return 0
+    grep -qa 'container=' /proc/1/environ 2>/dev/null && return 0
+    [ -f /.dockerenv ] && return 0
+    [ -f /run/.containerenv ] && return 0
+    return 1
+}
+
+if is_running_in_container; then
+    echo "[postrm] Running inside container, skipping service nginx stop."
+else
+    service nginx stop
+fi

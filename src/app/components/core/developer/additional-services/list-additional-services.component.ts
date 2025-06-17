@@ -153,7 +153,7 @@ export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
       return "is-danger";
     }
     if (serviceStatus.toLowerCase() === "enabled" || serviceStatus.toLowerCase() === "installed") {
-      return "is-info";
+      return "is-link";
     }
   }
 

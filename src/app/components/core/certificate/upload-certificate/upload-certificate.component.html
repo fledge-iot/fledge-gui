@@ -2,7 +2,7 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-5">Upload Certificate</p>
+      <p class="modal-card-title is-size-6">Upload Certificate</p>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
@@ -78,7 +78,8 @@
       </form>
     </section>
     <footer class="modal-card-foot">
-      <button id="save" type="button" form="ngForm" class="button is-info is-small" (click)="uploadCertificate()" [appDisableUntilResponse]="reenableButton">Import</button>
+      <button id="save" type="button" form="ngForm" class="button is-link is-small" (click)="uploadCertificate()"
+        [appDisableUntilResponse]="reenableButton">Import</button>
     </footer>
   </div>
 </div>

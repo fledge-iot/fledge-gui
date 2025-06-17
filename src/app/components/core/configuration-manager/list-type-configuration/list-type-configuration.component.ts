@@ -137,7 +137,12 @@ export class ListTypeConfigurationComponent implements OnInit {
     // }
   }
 
-  addListItem(isPrepend: boolean) {
+  addListItem(isPrepend) {
+    const controlsLength = this.listItems.length;
+    const listSize = this.configuration?.listSize > 0 ? +this.configuration.listSize : 9999; // max threshold limit for new item creation
+    if (controlsLength > listSize) {
+      return;
+    }
     this.initListItem(isPrepend);
     this.formStatusEvent.emit({ status: this.listItems.valid, group: this.group });
     if (this.configuration.items === 'object') {

@@ -106,7 +106,7 @@
               </span>
             </p>
             <p class="control" *ngIf="serviceInfo.type === 'Management' && pollingScheduleID && isServiceEnabled">
-              <a class="button is-ghost title-name pl-0 pb-2" [routerLink]="['/schedules', pollingScheduleID]"
+              <a class="button is-ghost is-size-6 pl-0 pb-2" [routerLink]="['/schedules', pollingScheduleID]"
                 [queryParams]="{ from: 'additional-services' }">
                 Polling Schedule
               </a>

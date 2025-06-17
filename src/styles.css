@@ -70,6 +70,7 @@ table.scroll tbody {
 }
 
 .card-header-title {
+  font-weight: 500;
   font-size: 0.9rem;
   padding: 0.75rem 1.5rem;
   max-height: 48px !important;
@@ -318,10 +319,6 @@ table thead th {
   font-weight: 500;
 }
 
-.title-name {
-  font-size: 0.9rem;
-}
-
 .icon-group {
   padding-left: 16px;
 }
@@ -396,7 +393,7 @@ span.tooltip {
   font-size: 1.35rem;
 }
 
-.bi:hover {
+.bi:hover:not(.parent-icon):not(.child-icon) {
   color: rgb(91, 89, 89);
 }
 
@@ -426,8 +423,19 @@ span.tooltip {
   font-size: 0.8rem !important;
 }
 
-.card-header-title {
-  font-weight: 500;
+.modal-card-head {
+  border-top-left-radius: 3px !important;
+  border-top-right-radius: 3px !important;
+}
+
+.modal-card-foot {
+  border-bottom-left-radius: 3px !important;
+  border-bottom-right-radius: 3px !important;
+}
+
+.modal-card-head,
+.modal-card-foot {
+  padding: 15px !important;
 }
 
 .cog-icon {
@@ -521,6 +529,15 @@ span.tooltip {
 
 .scrollable {
   overflow: auto !important;
+}
+
+/* to manage icon color based on the parent color */
+.button .bi {
+  color: inherit !important;
+}
+
+.dropdown-menu .dropdown-item:hover .icon i {
+  color: white !important;
 }
 
 /*****************/

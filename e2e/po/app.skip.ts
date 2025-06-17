@@ -30,7 +30,7 @@ export class SkipLogin {
   }
 
   getLoginButton() {
-    return cy.get('app-login form button.is-info').invoke('text')
+    return cy.get('app-login form button.is-link').invoke('text')
   }
 
   getAppStatus() {

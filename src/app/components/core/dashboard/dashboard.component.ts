@@ -32,6 +32,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   public refreshInterval = GRAPH_REFRESH_INTERVAL;
   public optedTime;
+  public searchFilter = '';
 
   DEFAULT_LIMIT = 20;
   private isAlive: boolean;

@@ -21,10 +21,8 @@
 }
 
 .breadcrumb {
-  padding-top: 0.85rem;
-  margin-top: 10px;
-  font-size: 0.95rem;
-  margin-bottom: 0.25rem !important;
+  margin-top: 14px;
+  margin-bottom: 14px !important;
 }
 
 .tabs {
@@ -98,7 +96,7 @@
 }
 
 .tabs .is-active {
-  z-index: 1;
+  z-index: 0;
   position: relative;
 }
 

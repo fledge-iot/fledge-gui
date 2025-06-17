@@ -4,7 +4,7 @@ export class NonAdminLogin {
     cy.get('app-login form div:nth-child(1) div input[name="username"]').type('user')
     cy.get('app-login form input[name="password"]').type('fledge')
     cy.wait(1000)
-    cy.get('app-login form button.is-info').click()
+    cy.get('app-login form button.is-link').click()
     cy.wait(1000)
   }
 
