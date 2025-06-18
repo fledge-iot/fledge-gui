@@ -1,8 +1,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnInit, Output, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { filter, uniqWith, isEqual } from 'lodash';
+import { filter, uniqWith, isEqual, cloneDeep } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
-import { cloneDeep } from 'lodash';
 import { ConfigurationControlService, RolesService } from '../../../../services';
 import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
 import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
@@ -132,9 +131,6 @@ export class ListTypeConfigurationComponent implements OnInit {
     else {
       this.listItems.push(listItem);
     }
-    // if (triggerChange) {
-    //   this.cdRef.detectChanges();
-    // }
   }
 
   addListItem(isPrepend) {
@@ -171,24 +167,6 @@ export class ListTypeConfigurationComponent implements OnInit {
       });
     });
   }
-
-
-  // addListItem(isPrepend) {
-  //   console.log('add item', isPrepend);
-
-  //   this.initListItem(isPrepend);
-  //   this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
-  //   if (this.configuration.items == 'object') {
-  //     const index = isPrepend ? 0 : this.listItems.length - 1;
-  //     if (this.isListView) {
-  //       this.scrollToRow(index);
-  //     } else {
-  //       // Expand newly added item
-  //       this.expandListItem(index);
-  //     }
-  //   }
-  //   this.cdRef.detectChanges();
-  // }
 
   scrollToRow(i) {
     setTimeout(() => {
