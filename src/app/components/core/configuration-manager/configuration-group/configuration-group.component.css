@@ -5,15 +5,14 @@
 }
 
 .highlight {
-  border: 1px solid transparent;
-  border-color: #dbdbdb;
+  border: 1px solid #dbdbdb;
   border-radius: 4px;
   border-top-left-radius: 0 !important;
   border-top-right-radius: 0 !important;
   position: relative;
   padding: 1rem 1rem 0 1rem;
   overflow: visible;
-  margin-top: -0.1rem;
+  margin-top: -0.05rem;
 }
 
 .custom-quickview-configuration {
@@ -21,10 +20,8 @@
 }
 
 .breadcrumb {
-  padding-top: 0.85rem;
-  margin-top: 10px;
-  font-size: 0.95rem;
-  margin-bottom: 0.25rem !important;
+  margin-top: 14px;
+  margin-bottom: 14px !important;
 }
 
 .tabs {
@@ -64,6 +61,7 @@
   top: 0;
   bottom: 0;
   opacity: 0;
+  z-index: 2;
 }
 
 .advancer:focus {
@@ -98,7 +96,7 @@
 }
 
 .tabs .is-active {
-  z-index: 0;
+  z-index: 1;
   position: relative;
 }
 

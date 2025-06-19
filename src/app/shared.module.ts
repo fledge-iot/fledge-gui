@@ -34,6 +34,7 @@ import { ListTableComponent } from './components/core/configuration-manager/list
 import { ListCardComponent } from './components/core/configuration-manager/list-card/list-card.component';
 import { KvlistCardComponent } from './components/core/configuration-manager/kvlist-card/kvlist-card.component';
 import { DynamicGroupComponent } from './components/core/configuration-manager/dynamic-group/dynamic-group.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @NgModule({
   imports: [
@@ -44,6 +45,7 @@ import { DynamicGroupComponent } from './components/core/configuration-manager/d
     DirectivesModule,
     NgSelectModule,
     ReactiveFormsModule,
+    ScrollingModule,
     StaticConfigurationComponent
   ],
   declarations: [

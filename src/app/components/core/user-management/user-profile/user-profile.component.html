@@ -70,7 +70,7 @@
           <div class="column is-3">
             <div class="control">
               <button [disabled]="profileForm.invalid || profileForm.pristine" (click)="update()"
-                class="button is-info is-small">Update</button>
+                class="button is-link is-small">Save</button>
             </div>
           </div>
         </div>
@@ -83,7 +83,7 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-5">Reset Password</p>
+      <p class="modal-card-title is-size-6">Reset Password</p>
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
@@ -121,7 +121,7 @@
       </form>
     </section>
     <footer class="modal-card-foot">
-      <button id="update" type="submit" form="ngForm" class="button is-info is-small">Save</button>
+      <button id="update" type="submit" form="ngForm" class="button is-link is-small">Save</button>
     </footer>
   </div>
 </div>
