@@ -92,8 +92,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     if ((this.isFilterList && this.recalculateTabsOverflow !== undefined) || this.recalculateTabsOverflow) {
       this.tabs.setOverFlow();
     }
-    if (simpleChanges && simpleChanges?.sourceName?.previousValue && simpleChanges?.sourceName?.currentValue !== simpleChanges?.sourceName?.previousValue) {
-      this.tabNavigationComponent.setTab(0);
+    if (simpleChanges?.sourceName?.currentValue || simpleChanges?.category?.currentValue) {
+      this.tabNavigationComponent?.setTab(0);
     }
   }
 
