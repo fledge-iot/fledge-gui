@@ -215,7 +215,7 @@ describe('Fledge gui', () => {
       adminLogin.isUserManagementPresent()
       adminLogin.navToUserManagement();
       adminLogin.getUserManagementTabName().then(tabName => {
-        expect(tabName.trim()).to.equal('User Management')
+        expect(tabName.trim()).to.equal('Users')
       })
       adminLogin.getRoleTabName().then(tabName => {
         expect(tabName.trim()).to.equal('Roles')
