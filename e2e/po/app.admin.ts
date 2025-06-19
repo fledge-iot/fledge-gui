@@ -25,7 +25,7 @@ export class AdminLogin {
   }
 
   isAddUserPresent() {
-    return cy.get('app-user-management .add-btn').invoke('text')
+    return cy.get('app-user-management header li.action-items div:nth-child(2) button').invoke('text')
   }
 
   getUserManagementColNames() {
