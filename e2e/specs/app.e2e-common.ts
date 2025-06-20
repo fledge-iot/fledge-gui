@@ -215,13 +215,13 @@ describe('Fledge gui', () => {
       adminLogin.isUserManagementPresent()
       adminLogin.navToUserManagement();
       adminLogin.getUserManagementTabName().then(tabName => {
-        expect(tabName.trim()).to.equal('User Management')
+        expect(tabName.trim()).to.equal('Users')
       })
       adminLogin.getRoleTabName().then(tabName => {
         expect(tabName.trim()).to.equal('Roles')
       })
       adminLogin.isAddUserPresent().then(buttonText => {
-        expect(buttonText.trim()).to.equal('Add User')
+        expect(buttonText.trim()).to.equal('Create User')
       })
       const ColumnsName = [
         'Name',
