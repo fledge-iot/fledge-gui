@@ -32,7 +32,7 @@
                 </div>
                 <div class="dropdown-menu" id="dropdown-menu" role="menu">
                   <div class="dropdown-content">
-                    <a class="dropdown-item" *ngFor="let role of userRole"
+                    <a class="dropdown-item" *ngFor="let role of userRole" [attr.data-role-name]="setRoleName(role.id)"
                       (click)="toggleDropDown('create-user-dropdown');setRole(role)">
                       {{setRoleName(role.id)}}
                     </a>
