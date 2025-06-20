@@ -221,7 +221,7 @@ describe('Fledge gui', () => {
         expect(tabName.trim()).to.equal('Roles')
       })
       adminLogin.isAddUserPresent().then(buttonText => {
-        expect(buttonText.trim()).to.equal('Add User')
+        expect(buttonText.trim()).to.equal('Create User')
       })
       const ColumnsName = [
         'Name',
