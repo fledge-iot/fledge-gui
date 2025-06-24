@@ -100,11 +100,11 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     this.tabs.scrollToRight();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(simpleChanges) {
     this.categeryConfiguration();
 
     // Only fetch child config data when plugin changes (initial load or plugin switch) to fix group tabs flickering issue
-    if (changes['plugin']) {
+    if (simpleChanges['plugin']) {
       this.getChildConfigData();
     } else {
       // Update local configurations without API calls
@@ -121,30 +121,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     if ((this.isFilterList && this.recalculateTabsOverflow !== undefined) || this.recalculateTabsOverflow) {
       this.tabs.setOverFlow();
     }
-    // To scroll the selected tab into view
-    setTimeout(() => {
-      const idSuffix = this.from + '_' + this.sourceName;
-      const selectedTabElement = document.querySelector(`[id="group_navigation_${idSuffix}"] li.is-active`);
-      const navContainer = document.getElementById(`group_navigation_${idSuffix}`);
-
-      if (selectedTabElement && navContainer) {
-        const tabRect = selectedTabElement.getBoundingClientRect();
-        const containerRect = navContainer.getBoundingClientRect();
-
-        // Check if tab is not fully visible in the container
-        const isTabVisible = (
-          tabRect.left >= containerRect.left &&
-          tabRect.right <= containerRect.right
-        );
-        if (!isTabVisible) {
-          selectedTabElement.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest',
-            inline: 'nearest'
-          });
-        }
-      }
-    }, 200);
+    if (simpleChanges?.sourceName?.currentValue || simpleChanges?.category?.currentValue) {
+      this.tabNavigationComponent?.setTab(0);
+    }
   }
 
   updateLocalConfigurations(configuration, changedConfiguration) {
