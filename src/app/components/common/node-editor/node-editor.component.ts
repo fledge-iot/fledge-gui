@@ -885,8 +885,7 @@ export class NodeEditorComponent implements OnInit {
           }
         });
         this.apiCallsStack = [];
-        this.changedConfig = [];
-        this.advancedConfiguration = [];
+        this.getCategory();
       });
     }
   }

@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AlertService, ConfigurationControlService, ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
 import { chain, cloneDeep, uniqWith, isEmpty } from 'lodash';
@@ -100,9 +100,23 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     this.tabs.scrollToRight();
   }
 
-  ngOnChanges() {
+  ngOnChanges(changes: SimpleChanges) {
     this.categeryConfiguration();
-    this.getChildConfigData();
+
+    // Only fetch child config data when plugin changes (initial load or plugin switch) to fix group tabs flickering issue
+    if (changes['plugin']) {
+      this.getChildConfigData();
+    } else {
+      // Update local configurations without API calls
+      if (this.changedAdvanceConfiguration) {
+        this.advanceConfiguration = this.updateLocalConfigurations(this.advanceConfiguration, this.changedAdvanceConfiguration);
+      }
+      if (this.changedSecurityConfiguration) {
+        this.securityConfiguration = this.updateLocalConfigurations(this.securityConfiguration, this.changedSecurityConfiguration);
+      }
+      // Skip tab recalculation and scrolling for configuration updates
+      return;
+    }
 
     if ((this.isFilterList && this.recalculateTabsOverflow !== undefined) || this.recalculateTabsOverflow) {
       this.tabs.setOverFlow();
@@ -131,6 +145,21 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         }
       }
     }, 200);
+  }
+
+  updateLocalConfigurations(configuration, changedConfiguration) {
+    // Create a deep copy to avoid mutating the original object
+    const updatedConfig = cloneDeep(configuration);
+
+    // Iterate through the changed configuration
+    Object.keys(changedConfiguration).forEach(key => {
+      // Check if the key exists in the original configuration
+      if (updatedConfig.config[key]) {
+        // Update the value property
+        updatedConfig.config[key].value = changedConfiguration[key];
+      }
+    });
+    return updatedConfig;
   }
 
   public updateCategroyConfig(config) {
