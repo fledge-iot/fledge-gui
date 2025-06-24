@@ -9,13 +9,16 @@
             data-tooltip="Ingest Suspended">
             <i class="bi bi-ban overlay-icon"></i>
           </span>
-          <span *ngIf="isServiceNode && (service.status || task.status)" class="icon health-icon"
-            [ngClass]="applyServiceStatusCustomCss(service.status ? service.status : task.status)">
+          <span *ngIf="isServiceNode && (service.status || task.status)"
+            class="icon health-icon tooltip has-tooltip-left has-tooltip-arrow is-pulled-right"
+            [ngClass]="applyServiceStatusCustomCss(service.status ? service.status : task.status)"
+            [attr.data-tooltip]="service.status ? service.status : task.status">
             <i class="fa fa-2xs fa-circle child-icon"></i>
           </span>
           <span *ngIf="!source; else serviceNameTemplate" class="service-name"
-            [title]="data.controls?.nameControl?.name" (click)="openServiceDetails()">{{data.controls?.nameControl?.name
-            | truncateMiddleOfText}}</span>
+            [title]="data.controls?.nameControl?.name" (click)="openServiceDetails()">
+            {{data.controls?.nameControl?.name | truncateMiddleOfText}}
+          </span>
           <ng-template #serviceNameTemplate>
             <span [ngClass]="{'is-size-5': data?.pseudoNode}"
               [title]="data.controls?.nameControl?.name">{{data.controls?.nameControl?.name |

@@ -368,18 +368,26 @@
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content" [ngClass]="{'disabled': !pingInfo.isAlive}">
             <a *ngIf='isUserLoggedIn' (click)="showProfile()" class="dropdown-item user-content">
-              <i class="bi-person-badge bi-sm" aria-hidden="true"></i>&nbsp; Profile
+              <span class="icon">
+                <i class="bi-person-badge bi-sm" aria-hidden="true"></i>
+              </span>
+              <span>Profile</span>
             </a>
             <a *ngIf='isUserLoggedIn' (click)="logout()" class="dropdown-item user-content">
-              <i class="bi bi-box-arrow-right bi-sm logout-icon" aria-hidden="true"></i>&nbsp; Log Out
+              <span class="icon">
+                <i class="bi bi-box-arrow-right bi-sm" aria-hidden="true"></i>
+              </span>
+              <span>Log Out</span>
             </a>
             <ng-container *ngIf="pingInfo.isAlive && isUserLoggedIn && rolesService?.hasEditPermissions()">
               <a (click)="openModal()" class="dropdown-item user-content">
                 <span class="icon"><i class="bi bi-power bi-sm" aria-hidden="true"></i>
-                </span>&nbsp;Shut Down
+                </span>
+                <span>Shut Down</span>
               </a>
               <a id="restart" (click)="openRestartModal()" class="dropdown-item user-content">
-                <span class="icon"><i class="bi bi-arrow-repeat bi-sm" aria-hidden="true"></i></span>&nbsp; Restart
+                <span class="icon"><i class="bi bi-arrow-repeat bi-sm" aria-hidden="true"></i></span>
+                <span>Restart</span>
               </a>
             </ng-container>
           </div>

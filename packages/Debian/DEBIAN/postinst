@@ -27,10 +27,23 @@
 
 set -e
 
+is_running_in_container() {
+    grep -qaE '/docker|/lxc|/kubepods|containerd' /proc/1/cgroup 2>/dev/null && return 0
+    grep -qa 'container=' /proc/1/environ 2>/dev/null && return 0
+    [ -f /.dockerenv ] && return 0
+    [ -f /run/.containerenv ] && return 0
+    return 1
+}
+
 start_nginx () {
   service nginx start
   systemctl is-active nginx
 }
 
 cp --remove-destination /var/www/html/fledge.html /var/www/html/index.html
-start_nginx
+
+if is_running_in_container; then
+    echo "[postinst] Running inside container, skipping service nginx start."
+else
+    start_nginx
+fi

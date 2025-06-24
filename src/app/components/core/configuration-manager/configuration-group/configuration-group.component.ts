@@ -86,11 +86,14 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     this.tabs.scrollToRight();
   }
 
-  ngOnChanges() {
+  ngOnChanges(simpleChanges) {
     this.categeryConfiguration();
     this.getChildConfigData();
     if ((this.isFilterList && this.recalculateTabsOverflow !== undefined) || this.recalculateTabsOverflow) {
       this.tabs.setOverFlow();
+    }
+    if (simpleChanges?.sourceName?.currentValue || simpleChanges?.category?.currentValue) {
+      this.tabNavigationComponent?.setTab(0);
     }
   }
 

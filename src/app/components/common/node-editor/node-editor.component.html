@@ -227,7 +227,7 @@
   </section>
   <footer class="modal-card-foot">
     <button class="button is-small" (click)="closeModal('state-change-dialog')">Cancel</button>
-    <button class="button is-small is-outlined is-info" [appDisableUntilResponse]="reenableButton"
+    <button class="button is-small is-outlined is-link" [appDisableUntilResponse]="reenableButton"
       (click)="toggleState(btnText)">{{btnText}}</button>
   </footer>
 </app-confirmation-dialog>
@@ -256,7 +256,7 @@
 
   <footer class="modal-card-foot">
     <button type="button" class="button is-small" (click)="closeModal('service-status-dialog')">Cancel</button>
-    <button *ngIf="service || task" type="button" class="button is-small is-outlined is-info"
+    <button *ngIf="service || task" type="button" class="button is-small is-outlined is-link"
       [appDisableUntilResponse]="reenableButton" (click)="toggleServiceState({
         name: service?.name || task?.name,
         state: !(service?.schedule_enabled || task?.enabled)
@@ -264,7 +264,7 @@
       {{ (service?.schedule_enabled || task?.enabled) ? 'Disable' : 'Enable' }}
     </button>
 
-    <button *ngIf="filter" type="button" class="button is-small is-outlined is-info"
+    <button *ngIf="filter" type="button" class="button is-small is-outlined is-link"
       [appDisableUntilResponse]="reenableButton" (click)="updateFilterConfiguration({
         name: filter.name,
         state: filter.newState,
@@ -276,16 +276,16 @@
 </app-confirmation-dialog>
 
 
-<app-confirmation-dialog id="from-toolbar-dialog">
+<app-confirmation-dialog id="toolbar-dialog">
   <header class="modal-card-head">
     <span class="modal-card-title is-size-6">Delete</span>
-    <button class="delete" aria-label="close" (click)="closeModal('from-toolbar-dialog')"></button>
+    <button class="delete" aria-label="close" (click)="closeModal('toolbar-dialog')"></button>
   </header>
   <section class="modal-card-body">
     Are you sure, You want to delete the selected nodes/connection?
   </section>
   <footer class="modal-card-foot">
-    <button class="button is-small" (click)="closeModal('from-toolbar-dialog')">Cancel</button>
-    <button class="button is-small is-danger" (click)="callDeleteAction()">Delete</button>
+    <button class="button is-small" (click)="closeModal('toolbar-dialog')">Cancel</button>
+    <button class="button is-small is-danger" (click)="deleteNodes()">Delete</button>
   </footer>
 </app-confirmation-dialog>

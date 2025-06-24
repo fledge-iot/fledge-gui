@@ -1,6 +1,6 @@
 .is-text {
-    padding-left: 0;
-    padding-right: 0;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 #refresh-check {
@@ -20,4 +20,12 @@
 
 .card-header-title {
   max-height: 45px !important;
+}
+
+.logs-row .action-wrapper {
+  visibility: hidden;
+}
+
+.logs-row:hover .action-wrapper {
+  visibility: visible;
 }

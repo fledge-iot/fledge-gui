@@ -38,6 +38,7 @@ import { DebuggerComponent } from './components/core/debugger/debugger.component
 import { DebuggerReadingsComponent } from './components/core/debugger/debugger-readings/debugger-readings.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { BufferActionButtonsComponent } from './components/core/debugger/buffer-action-buttons/buffer-action-buttons.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @NgModule({
   imports: [
@@ -49,6 +50,7 @@ import { BufferActionButtonsComponent } from './components/core/debugger/buffer-
     NgSelectModule,
     ReactiveFormsModule,
     DragDropModule,
+    ScrollingModule,
     StaticConfigurationComponent
   ],
   declarations: [

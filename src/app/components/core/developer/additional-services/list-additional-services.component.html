@@ -48,7 +48,7 @@
                 <td class="py-1">
                   <a *ngIf="!s.added && rolesService?.hasEditPermissions()" (click)="openServiceModal(s)"
                     class="button is-text text-btn">
-                    Add
+                    add
                   </a>
                   <app-additional-services-context-menu *ngIf="s?.name" [service]="s" [index]="i"
                     (notify)="onNotifyEvent($event)" (click)="setService(s)"></app-additional-services-context-menu>
@@ -64,7 +64,7 @@
                 <td></td>
                 <td class="align-content content-pad">
                   <a (click)="openServiceModal(s)" class="button is-text text-btn">
-                    Add
+                    add
                   </a>
                 </td>
               </tr>
@@ -103,7 +103,7 @@
   <footer class="modal-card-foot">
     <button type="button" class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
     <button type="button" class="button is-small"
-      [ngClass]="{'is-info': ['shutdown', 'disabled'].includes(service?.state), 'is-danger': !['shutdown', 'disabled'].includes(service?.state)}"
+      [ngClass]="{'is-link': ['shutdown', 'disabled'].includes(service?.state), 'is-danger': !['shutdown', 'disabled'].includes(service?.state)}"
       (click)="stateUpdate()" [appDisableUntilResponse]="reenableButton">{{ ["shutdown",
       "disabled"].includes(service?.state) ? "Enable" : "Disable" }}</button>
   </footer>

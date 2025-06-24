@@ -1,3 +1,14 @@
 .showInCenter {
-    vertical-align: middle;
+  vertical-align: middle;
+}
+
+
+.certificate-row .action-wrapper,
+.extension-key-row .action-wrapper {
+  visibility: hidden;
+}
+
+.certificate-row:hover .action-wrapper,
+.extension-key-row:hover .action-wrapper {
+  visibility: visible;
 }
