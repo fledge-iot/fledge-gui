@@ -163,64 +163,6 @@
               </button>
             </span>
           </div>
-
-          <!-- TODO: Add buffer and step readings -->
-
-          <!-- <hr> -->
-
-          <!-- <form [formGroup]="formGroup" *ngIf="rolesService.hasEditPermissions()">
-            <div class="columns is-mobile mb-3">
-              <div class="column">
-                <label class="label is-small">
-                  Buffer <i class="bi bi-xs bi-info-circle info-icon" aria-hidden="true"
-                    title="Set the number of readings to hold in each buffer, passing an integer argument"></i></label>
-                <input class="input is-small" type="text" formControlName="buffer" appIntegerOnly>
-                <p class="is-size-7 has-text-grey mt-1" *ngIf="bufferStatus === 'saving'">Saving...</p>
-                <p class="is-size-7 has-text-success mt-1" *ngIf="bufferStatus === 'saved'">Saved!</p>
-              </div>
-              <div class="column">
-                <label class="label is-small">
-                  Step Readings
-                  <i class="bi bi-xs bi-info-circle info-icon" aria-hidden="true"
-                    title="Allow readings to flow into the pipeline. Pass an optional number of readings to ingest; default to 1 if omitted">
-                  </i>
-                </label>
-
-                <div class="field has-addons">
-                  <p class="control is-expanded">
-                    <input #step class="input is-small" type="text" formControlName="step" appIntegerOnly>
-                  </p>
-                  <p class="control">
-                    <button [disabled]="stepStatus === 'saving'" class="button is-small is-light" (click)="setSteps()">
-                      <span class="icon is-small">
-                        <i class="bi bi-skip-forward"></i>
-                      </span>
-                    </button>
-                  </p>
-                </div>
-
-                <p class="is-size-7 has-text-success mt-1" *ngIf="stepStatus === 'saved'">
-                  Ingested {{ step.value }} readings into buffer.
-                </p>
-              </div>
-
-            </div>
-          </form> -->
-
-          <!-- <div class="buttons are-small" *ngIf="rolesService.hasEditPermissions()">
-            <span class="tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline"
-              data-tooltip="It is also probably sensible to isolate the pipeline to prevent readings with the same timestamp as readings already sent upstream to be sent again">
-              <button [disabled]="debuggerData.debug.ingress !== 'Suspended'"
-                class="button is-small is-link is-outlined" (click)="replayBuffer()">
-                <span class="icon is-small"><i class="bi bi-arrow-clockwise"></i> </span><span>Replay Buffer</span>
-              </button>
-            </span>
-            <span class="px-2">
-              <button *ngIf="this.accordionItems.length > 0" class="button is-small is-ghost"
-                (click)="viewBufferData()">
-                View Buffered</button>
-            </span>
-          </div> -->
         </ng-container>
 
         <ng-container *ngIf="bufferDataExist">

@@ -2,13 +2,3 @@
   <path [attr.d]="path" class="hover-path"></path>
   <path [attr.d]="path" #svgpath [class]="{ selected: data.selected }" class="node-connection" />
 </svg>
-
-
-<!-- TODO: Add connection icon for debugger -->
-<!-- Show label on the connection line -->
-<!-- <ng-container *ngIf="data && data?.debuggerAttached">
-  <span [id]="data.id" tabindex="0" (pointerdown)="$event.stopPropagation()" (click)="showDebuggerReadings()"
-    class="connection-status label has-text-info-darker" appPopover>
-    <i class="bi bi-sm bi-lightning-charge"></i>
-  </span>
-</ng-container> -->
