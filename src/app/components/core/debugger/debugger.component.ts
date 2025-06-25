@@ -466,6 +466,7 @@ export class DebuggerComponent {
         const service = res['services'].find((service: any) => service.name === this.debuggerData.serviceName);
         this.debuggerData = { debug: service.debug, serviceName: service.name };
         this.debuggerDataChange.emit(this.debuggerData);
+        this.sharedService.debuggerStateSubject.next({ service: service.name, debug: service.debug });
         this.ngProgress.done();
       }, error => {
         this.showLoading = false;

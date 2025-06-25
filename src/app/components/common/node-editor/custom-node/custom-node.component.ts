@@ -15,7 +15,7 @@ import { interval, of, Subject, Subscription } from "rxjs";
 
 import { canUndo, canRedo } from './../editor';
 import { DialogService } from '../../confirmation-dialog/dialog.service';
-import { catchError, switchMap, take, takeUntil } from 'rxjs/operators';
+import { catchError, distinctUntilChanged, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import { Filter, North, Notification, South, Storage } from '../nodes';
 
 @Component({
@@ -109,6 +109,19 @@ export class CustomNodeComponent implements OnChanges {
         this.router.navigated = false;
       }
     });
+
+    this.sharedService.debuggerStateSubject
+      .pipe(
+        takeUntil(this.destroy$),
+        map((debuggerData: any) => debuggerData?.debug?.debugger === 'Attached'),
+        distinctUntilChanged()
+      )
+      .subscribe((isAttached: boolean) => {
+        if (this.data?.debug) {
+          this.data.debug.debugger = isAttached ? 'Attached' : 'Detached';
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   openModal(id: string) {

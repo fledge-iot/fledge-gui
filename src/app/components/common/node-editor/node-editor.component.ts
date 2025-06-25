@@ -613,11 +613,12 @@ export class NodeEditorComponent implements OnInit {
   }
 
   updateDebuggerState(debuggerInfo: any) {
-    console.log(debuggerInfo);
-    console.log(this.debugger);
     this.debugger = debuggerInfo;
-    console.log(this.debuggerPage);
-    const name = debuggerInfo.servicneName;
+    const name = debuggerInfo.serviceName;
+    this.service = this.services.find(service => (service.name == name));
+    if (this.service) {
+      this.service.debug = debuggerInfo.debug;
+    }
     this.sharedService.debuggerStateSubject.next({ service: name, debug: debuggerInfo.debug });
   }
 
