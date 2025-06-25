@@ -38,20 +38,21 @@ export class CustomConnectionComponent {
   constructor(private sharedService: SharedService) { }
 
   ngAfterViewInit() {
-    this.sharedService.debuggerStateSubject
-      .pipe(
-        takeUntil(this.destroy$),
-        map((debuggerData: any) => debuggerData?.debug?.debugger === 'Attached'),
-        distinctUntilChanged()
-      )
-      .subscribe((isAttached: boolean) => {
-        this.data.debuggerAttached = isAttached;
-        if (isAttached) {
-          setTimeout(() => {
-            this.updateConnectionIconPosition();
-          });
-        }
-      });
+    // TODO: Add connection icon position for debugger
+    // this.sharedService.debuggerStateSubject
+    //   .pipe(
+    //     takeUntil(this.destroy$),
+    //     map((debuggerData: any) => debuggerData?.debug?.debugger === 'Attached'),
+    //     distinctUntilChanged()
+    //   )
+    //   .subscribe((isAttached: boolean) => {
+    //     this.data.debuggerAttached = isAttached;
+    //     if (isAttached) {
+    //       setTimeout(() => {
+    //          this.updateConnectionIconPosition();
+    //       });
+    //     }
+    //   });
   }
 
   showDebuggerReadings() {

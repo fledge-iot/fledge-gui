@@ -164,9 +164,11 @@
             </span>
           </div>
 
-          <hr>
+          <!-- TODO: Add buffer and step readings -->
 
-          <form [formGroup]="formGroup" *ngIf="rolesService.hasEditPermissions()">
+          <!-- <hr> -->
+
+          <!-- <form [formGroup]="formGroup" *ngIf="rolesService.hasEditPermissions()">
             <div class="columns is-mobile mb-3">
               <div class="column">
                 <label class="label is-small">
@@ -197,16 +199,15 @@
                   </p>
                 </div>
 
-                <!-- Feedback -->
                 <p class="is-size-7 has-text-success mt-1" *ngIf="stepStatus === 'saved'">
                   Ingested {{ step.value }} readings into buffer.
                 </p>
               </div>
 
             </div>
-          </form>
+          </form> -->
 
-          <div class="buttons are-small" *ngIf="rolesService.hasEditPermissions()">
+          <!-- <div class="buttons are-small" *ngIf="rolesService.hasEditPermissions()">
             <span class="tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline"
               data-tooltip="It is also probably sensible to isolate the pipeline to prevent readings with the same timestamp as readings already sent upstream to be sent again">
               <button [disabled]="debuggerData.debug.ingress !== 'Suspended'"
@@ -219,7 +220,7 @@
                 (click)="viewBufferData()">
                 View Buffered</button>
             </span>
-          </div>
+          </div> -->
         </ng-container>
 
         <ng-container *ngIf="bufferDataExist">
