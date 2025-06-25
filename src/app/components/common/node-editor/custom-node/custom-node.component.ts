@@ -113,12 +113,15 @@ export class CustomNodeComponent implements OnChanges {
     this.sharedService.debuggerStateSubject
       .pipe(
         takeUntil(this.destroy$),
-        map((debuggerData: any) => debuggerData?.debug?.debugger === 'Attached'),
         distinctUntilChanged()
       )
-      .subscribe((isAttached: boolean) => {
-        if (this.data?.debug) {
+      .subscribe((debuggerData: any) => {
+        const isAttached = debuggerData?.debug?.debugger === 'Attached';
+        const serviceName = this.data.label === 'South' ? this.source : this.data.controls.nameControl['name'];
+        if (this.data?.debug && debuggerData?.service === serviceName) {
           this.data.debug.debugger = isAttached ? 'Attached' : 'Detached';
+          this.data.debug.ingress = debuggerData?.debug?.ingress;
+          this.data.debug.egress = debuggerData?.debug?.egress;
           this.cdr.detectChanges();
         }
       });
@@ -337,7 +340,7 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   openDebugPage() {
-    this.flowEditorService.openDebuggerInQuickview.next({ openDebuggerPage: true, debugger: this.data['debug'], serviceName: this.service.name });
+    // this.flowEditorService.openDebuggerInQuickview.next({ openDebuggerPage: true, debugger: this.data['debug'], serviceName: this.service.name });
   }
 
   showLogsInQuickview() {
