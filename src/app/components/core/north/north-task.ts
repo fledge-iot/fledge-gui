@@ -13,6 +13,7 @@ export interface NorthTask {
   sent: number
   plugin: Plugin
   status?: string
+  debug?: Debug[];
 }
 
 export interface TaskStatus {
@@ -26,4 +27,10 @@ export interface TaskStatus {
 export interface Plugin {
   name: string
   version: string
+}
+
+export interface Debug {
+  debugger: string
+  ingress: string
+  egress: string
 }

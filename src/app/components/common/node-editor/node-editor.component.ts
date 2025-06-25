@@ -1166,7 +1166,11 @@ export class NodeEditorComponent implements OnInit {
   }
 
   debugService() {
-    this.flowEditorService.openDebuggerInQuickview.next({ openDebuggerPage: true, debugger: this.service.debug, serviceName: this.service.name });
+    this.flowEditorService.openDebuggerInQuickview.next({
+      openDebuggerPage: true,
+      debugger: this.service ? this.service.debug : this.task.debug,
+      serviceName: this.service ? this.service.name : this.task.name
+    });
   }
 
   reload() {
