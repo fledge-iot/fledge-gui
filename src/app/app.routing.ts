@@ -6,7 +6,13 @@ import { AuthRequiredGuard, DataViewRoleGuard } from './guards';
 import { DashboardComponent } from './components/core/dashboard';
 
 export const appRoutes: Routes = [
-  { path: '', component: DashboardComponent, canActivate: [AuthRequiredGuard] },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthRequiredGuard] },
+  {
+    path: '',
+    loadComponent: () => import('./components/core/home-dashboard/home-dashboard.component')
+      .then(m => m.HomeDashboardComponent),
+    canActivate: [AuthRequiredGuard]
+  },
   {
     path: 'asset', canActivate: [AuthRequiredGuard], loadChildren: () => import('./components/core/asset-readings/assets.module')
       .then(m => m.AssetsModule)

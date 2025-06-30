@@ -10,6 +10,13 @@
         </a>
       </li>
       <li>
+        <a class="sidemenu-link" id="old-dashboard" routerLinkActive="is-active" routerLink="/dashboard"
+          [routerLinkActiveOptions]={exact:true}>
+          <span class="menu-text"><i class="bi bi-speedometer2 bi-sm"></i> </span>
+          <span class="sidemenu-text">Old Dashboard</span>
+        </a>
+      </li>
+      <li>
         <a class="sidemenu-link" id="asset" routerLinkActive="is-active" routerLink='/asset'>
           <span class="menu-text"><i class="bi bi-graph-up bi-xs"></i></span>
           <span class="sidemenu-text" [attr.title]="isSidemenuCollapsed ? 'Assets &amp; Readings' : null">

@@ -1,0 +1,524 @@
+<div class="container-fluid">
+
+    <!-- Stats Summary Section -->
+    <div class="section">
+        <div class="columns is-vcentered mb-4">
+            <div class="column">
+                <h2 class="title is-5 mb-0">System Overview</h2>
+            </div>
+            <div class="column is-narrow">
+                <button class="button is-small" [class.is-loading]="loading()" (click)="refreshData()">
+                    <span class="icon is-small">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </span>
+                    <span>Refresh</span>
+                </button>
+            </div>
+        </div>
+        <div class="columns stats-summary">
+            <!-- Total South Services Card -->
+            <div class="column is-3">
+                <div class="box data-source-card stats-card" (click)="navigateToSouth()" style="cursor: pointer;"
+                    title="Data Sources">
+                    <!-- Disabled indicator in top-right corner -->
+                    <div class="disabled-indicator" *ngIf="statsSummary().southServicesDisabled > 0">
+                        <span class="tag is-light is-small">
+                            <i class="bi bi-stop-circle-fill mr-1"></i>
+                            {{ statsSummary().southServicesDisabled }}
+                        </span>
+                    </div>
+                    <div class="media">
+                        <div class="media-left">
+                            <span class="icon is-large has-text-success">
+                                <img src="assets/icons/svg/south-icon.svg" style="width: 2rem; height: 2rem;"
+                                    alt="South">
+                            </span>
+                        </div>
+                        <div class="media-content">
+                            <div class="title-section">
+                                <p class="title is-4 has-text-dark">{{ statsSummary().totalSouthServices }}</p>
+                                <p class="subtitle is-6 has-text-grey-dark">Data Sources</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Assets Card -->
+            <div class="column is-3">
+                <div class="box has-background-info-light stats-card" (click)="navigateToAssets()"
+                    style="cursor: pointer;" title="Assets and Readings">
+                    <div class="media">
+                        <div class="media-left">
+                            <span class="icon is-large has-text-info">
+                                <i class="bi bi-activity" style="font-size: 2rem;"></i>
+                            </span>
+                        </div>
+                        <div class="media-content">
+                            <div class="title-section">
+                                <p class="title is-4 has-text-dark">{{ statsSummary().totalAssets }}</p>
+                                <p class="subtitle is-6 has-text-grey-dark">Total Assets</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Total Datapoints Card -->
+            <div class="column is-3">
+                <div class="box has-background-primary-light stats-card">
+                    <div class="media">
+                        <div class="media-left">
+                            <span class="icon is-large has-text-primary">
+                                <i class="bi bi-database-fill" style="font-size: 2rem;"></i>
+                            </span>
+                        </div>
+                        <div class="media-content">
+                            <div class="title-section">
+                                <p class="title is-4 has-text-dark">{{ statsSummary().totalDatapoints | number }}</p>
+                                <p class="subtitle is-6 has-text-grey-dark">Total Datapoints</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Total North Services Card -->
+            <div class="column is-3">
+                <div class="box integration-card stats-card" (click)="navigateToNorth()" style="cursor: pointer;"
+                    title="Integrations">
+                    <!-- Disabled indicator in top-right corner -->
+                    <div class="disabled-indicator" *ngIf="statsSummary().northServicesDisabled > 0">
+                        <span class="tag is-light is-small">
+                            <i class="bi bi-stop-circle-fill mr-1"></i>
+                            {{ statsSummary().northServicesDisabled }}
+                        </span>
+                    </div>
+                    <div class="media">
+                        <div class="media-left">
+                            <span class="icon is-large has-text-warning">
+                                <svg style="width: 2rem; height: 2rem;">
+                                    <use xlink:href="assets/icons/svg/north-icon.svg#north-icon" />
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="media-content">
+                            <div class="title-section">
+                                <p class="title is-4 has-text-dark">{{ statsSummary().totalNorthServices }}</p>
+                                <p class="subtitle is-6 has-text-grey-dark">Integrations</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Second Row -->
+        <div class="columns stats-summary">
+            <!-- Received Count Card -->
+            <div class="column is-3">
+                <div class="box has-background-link-light stats-card">
+                    <div class="media">
+                        <div class="media-left">
+                            <span class="icon is-large has-text-link">
+                                <i class="bi bi-arrow-down-circle" style="font-size: 2rem;"></i>
+                            </span>
+                        </div>
+                        <div class="media-content">
+                            <div class="title-section">
+                                <p class="title is-4 has-text-dark">{{ statsSummary().receivedCount | number }}</p>
+                                <p class="subtitle is-6 has-text-grey-dark">Received</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sent Count Card -->
+            <div class="column is-3">
+                <div class="box sent-card stats-card">
+                    <div class="media">
+                        <div class="media-left">
+                            <span class="icon is-large has-text-grey-dark">
+                                <i class="bi bi-arrow-up-circle" style="font-size: 2rem;"></i>
+                            </span>
+                        </div>
+                        <div class="media-content">
+                            <div class="title-section">
+                                <p class="title is-4 has-text-dark">{{ statsSummary().sentCount | number }}</p>
+                                <p class="subtitle is-6 has-text-grey-dark">Sent</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Purged Count Card -->
+            <div class="column is-3">
+                <div class="box has-background-danger-light stats-card">
+                    <div class="media">
+                        <div class="media-left">
+                            <span class="icon is-large has-text-danger">
+                                <i class="fa fa-eraser" style="font-size: 2rem;"></i>
+                            </span>
+                        </div>
+                        <div class="media-content">
+                            <div class="title-section">
+                                <p class="title is-4 has-text-dark">{{ statsSummary().purgedCount | number }}</p>
+                                <p class="subtitle is-6 has-text-grey-dark">Purged</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Alerts Card (always show, but highlight when > 0) -->
+            <div class="column is-3">
+                <div class="box stats-card alerts-card-container"
+                    [class]="statsSummary().alertsCount > 0 ? 'alert-card' : 'alert-card-lighter'"
+                    (mouseenter)="onAlertsHover()" (mouseleave)="onAlertsLeave()" style="position: relative;">
+                    <div class="media">
+                        <div class="media-left">
+                            <span class="icon is-large"
+                                [class]="statsSummary().alertsCount > 0 ? 'alert-icon' : 'has-text-grey'">
+                                <i class="bi bi-bell" style="font-size: 2rem;"></i>
+                            </span>
+                        </div>
+                        <div class="media-content">
+                            <div class="title-section">
+                                <p class="title is-4 has-text-dark">{{ statsSummary().alertsCount | number }}</p>
+                                <p class="subtitle is-6 has-text-grey-dark">Active Alerts</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alerts Tooltip -->
+                    <div *ngIf="showAlertsTooltip()" class="alerts-tooltip">
+                        <div class="alerts-tooltip-arrow"></div>
+                        <div class="alerts-tooltip-content">
+                            <div class="alerts-tooltip-header">
+                                <h6 class="has-text-weight-semibold mb-2">
+                                    {{ statsSummary().alertsCount > 0 ? 'System Alerts' : 'No Active Alerts' }}
+                                </h6>
+                            </div>
+                            <div class="alerts-tooltip-body">
+                                <div *ngIf="systemAlerts().length === 0 && statsSummary().alertsCount > 0"
+                                    class="has-text-grey is-size-7 has-text-centered">
+                                    <div class="loading-spinner-small mb-2"></div>
+                                    Loading alerts...
+                                </div>
+                                <div *ngIf="systemAlerts().length === 0 && statsSummary().alertsCount === 0"
+                                    class="has-text-grey is-size-7 has-text-centered py-3">
+                                    <i class="bi bi-check-circle has-text-success" style="font-size: 1.5rem;"></i>
+                                    <p class="mt-2 mb-0">All systems operational</p>
+                                </div>
+                                <div *ngFor="let alert of systemAlerts().slice(0, 5); let i = index"
+                                    class="alert-item-tooltip">
+                                    <div class="is-flex is-align-items-start">
+                                        <span class="icon is-small mr-2 mt-1">
+                                            <i class="bi bi-exclamation-triangle" [class]="getAlertClass(alert.urgency)"
+                                                style="font-size: 0.8rem;"></i>
+                                        </span>
+                                        <div class="is-flex-grow-1">
+                                            <p class="is-size-7 has-text-weight-medium mb-1">
+                                                {{ alert.message | slice:0:60 }}{{ alert.message.length > 60 ? '...' :
+                                                '' }}
+                                            </p>
+                                            <div class="is-flex is-justify-content-space-between is-align-items-center">
+                                                <span class="tag is-small is-light"
+                                                    [class]="'is-' + (alert.urgency === 'Critical' ? 'danger' : alert.urgency === 'High' ? 'warning' : alert.urgency === 'Normal' ? 'info' : 'light')"
+                                                    style="font-size: 0.65rem; padding: 0.15em 0.4em;">
+                                                    {{ alert.urgency }}
+                                                </span>
+                                                <span class="is-size-7 has-text-grey">
+                                                    {{ getAlertTime(alert.timestamp) }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div *ngIf="systemAlerts().length > 5" class="has-text-centered mt-2 pt-2"
+                                    style="border-top: 1px solid #f1f5f9;">
+                                    <span class="is-size-7 has-text-grey">
+                                        +{{ systemAlerts().length - 5 }} more alerts
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="alerts-tooltip-footer" *ngIf="statsSummary().alertsCount > 0">
+                                <p class="is-size-7 has-text-grey has-text-centered mb-0">
+                                    Total: {{ statsSummary().alertsCount }} alert{{ statsSummary().alertsCount !== 1 ?
+                                    's' : '' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats History Chart Section -->
+    <div class="section">
+        <div class="box">
+            <div class="columns is-vcentered mb-4">
+                <div class="column">
+                    <h2 class="title is-5">
+                        📈 Statistics History
+                        <button class="button is-small is-ghost ml-2" (click)="toggleStatsHistorySection()"
+                            [attr.aria-label]="isStatsHistoryExpanded() ? 'Collapse section' : 'Expand section'">
+                            <span class="icon is-small">
+                                <i [class]="isStatsHistoryExpanded() ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                            </span>
+                        </button>
+                    </h2>
+                </div>
+                <div class="column is-narrow" *ngIf="isStatsHistoryExpanded()">
+                    <!-- Controls grouped together -->
+                    <div class="field is-grouped">
+                        <!-- Statistics Selection Dropdown with Checkboxes -->
+                        <div class="control">
+                            <div class="dropdown" [class.is-active]="isStatsDropdownOpen()">
+                                <div class="dropdown-trigger">
+                                    <button class="button is-small" aria-haspopup="true"
+                                        aria-controls="stats-dropdown-menu" (click)="toggleStatsDropdown()">
+                                        <span>{{ getSelectedKeysDisplay() }}</span>
+                                        <span class="icon is-small">
+                                            <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                        </span>
+                                    </button>
+                                </div>
+                                <div class="dropdown-menu" id="stats-dropdown-menu" role="menu">
+                                    <div class="dropdown-content">
+                                        <div class="dropdown-item" *ngFor="let key of availableKeys()">
+                                            <label class="checkbox">
+                                                <input type="checkbox"
+                                                    [checked]="filterOptions().selectedKeys.includes(key)"
+                                                    (change)="onStatsCheckboxChange(key, $any($event.target).checked)">
+                                                {{ key }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Time Range Selector -->
+                        <div class="control">
+                            <div class="select is-small">
+                                <select [value]="filterOptions().timeRange"
+                                    (change)="onTimeRangeChange($any($event.target).value)">
+                                    <option value="10min">Last 10 minutes</option>
+                                    <option value="30min">Last 30 minutes</option>
+                                    <option value="60min">Last 60 minutes</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Collapsible Content -->
+            <div *ngIf="isStatsHistoryExpanded()">
+                <!-- Readings vs Sent Chart (Always at top) -->
+                <div class="mb-5">
+                    <div class="chart-container" style="position: relative; height: 350px;">
+                        <!-- Loading Indicator -->
+                        <div *ngIf="chartsLoading()[0]" class="loading-overlay">
+                            <div class="has-text-centered">
+                                <div class="loading-spinner mb-3"></div>
+                                <p class="has-text-grey">Loading Readings vs Sent...</p>
+                            </div>
+                        </div>
+                        <!-- Chart Canvas -->
+                        <canvas id="readingsVsSentChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Other Charts Container -->
+                <div *ngIf="filterOptions().selectedKeys.length > 0">
+                    <!-- Single Chart - Full Width -->
+                    <div *ngIf="filterOptions().selectedKeys.length === 1" class="mb-5">
+                        <div class="chart-container" style="position: relative; height: 350px;">
+                            <!-- Loading Indicator -->
+                            <div *ngIf="chartsLoading()[1]" class="loading-overlay">
+                                <div class="has-text-centered">
+                                    <div class="loading-spinner mb-3"></div>
+                                    <p class="has-text-grey">Loading {{ filterOptions().selectedKeys[0] }}...</p>
+                                </div>
+                            </div>
+                            <!-- Chart Canvas -->
+                            <canvas [id]="'statsChart-1'"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Multiple Charts - 3 per row -->
+                    <div *ngIf="filterOptions().selectedKeys.length > 1" class="columns is-multiline">
+                        <div *ngFor="let key of filterOptions().selectedKeys; let i = index; trackBy: trackByStatKey"
+                            class="column is-4">
+                            <div class="chart-container" style="position: relative; height: 350px;">
+                                <!-- Loading Indicator -->
+                                <div *ngIf="chartsLoading()[i + 1]" class="loading-overlay">
+                                    <div class="has-text-centered">
+                                        <div class="loading-spinner mb-3"></div>
+                                        <p class="has-text-grey">Loading {{ key }}...</p>
+                                    </div>
+                                </div>
+                                <!-- Chart Canvas -->
+                                <canvas [id]="'statsChart-' + (i + 1)"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Logs Section -->
+    <div class="section">
+        <div class="box">
+            <div class="columns is-vcentered mb-4">
+                <div class="column">
+                    <h2 class="title is-5">
+                        📋 System Logs
+                        <button class="button is-small is-ghost ml-2" (click)="toggleSystemLogsSection()"
+                            [attr.aria-label]="isSystemLogsExpanded() ? 'Collapse section' : 'Expand section'">
+                            <span class="icon is-small">
+                                <i [class]="isSystemLogsExpanded() ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                            </span>
+                        </button>
+                    </h2>
+                </div>
+            </div>
+
+            <!-- Collapsible Content -->
+            <div [hidden]="!isSystemLogsExpanded()" class="system-logs-container">
+                <!-- Filter Controls -->
+                <div class="columns is-vcentered filter-controls">
+                    <div class="column is-3">
+                        <div class="field">
+                            <label class="label">Service</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select [value]="systemLogsSource()"
+                                        (change)="onSystemLogsFilterChange('source', $any($event.target).value)">
+                                        <option value="">All</option>
+                                        <option *ngFor="let service of availableServices()"
+                                            [value]="service.toLowerCase() === 'all' ? '' : service.toLowerCase()">
+                                            {{ service }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-3">
+                        <div class="field">
+                            <label class="label">Level</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select [value]="systemLogsLevel()"
+                                        (change)="onSystemLogsFilterChange('level', $any($event.target).value)">
+                                        <option value="">Debug and above</option>
+                                        <option value="info">Info and above</option>
+                                        <option value="warning">Warning and above</option>
+                                        <option value="error">Error and above</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-6">
+                        <div class="field">
+                            <label class="label">Search</label>
+                            <div class="control has-icons-left">
+                                <input class="input" type="text" placeholder="Search in log messages..."
+                                    [value]="systemLogsKeyword()"
+                                    (input)="onSystemLogsSearchChange($any($event.target).value)">
+                                <span class="icon is-small is-left">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden SystemLogComponent for data source -->
+                <div style="display: none;">
+                    <app-system-log></app-system-log>
+                </div>
+
+                <!-- Custom Table Display -->
+                <div class="table-wrapper" style="border: 1px solid #dbdbdb; border-radius: 6px; overflow: hidden;">
+                    <!-- Table with sticky header -->
+                    <div class="table-container mb-0" style="max-height: 600px; overflow-y: auto;">
+                        <table class="table is-fullwidth is-striped is-hoverable" style="margin-bottom: 0;">
+                            <thead style="position: sticky; top: 0; background: white; z-index: 10;">
+                                <tr>
+                                    <th style="width: 180px;">Timestamp</th>
+                                    <th style="width: 100px;">Level</th>
+                                    <th style="width: 150px;">Service</th>
+                                    <th>Message</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let log of parsedSystemLogs()" class="log-row">
+                                    <td class="timestamp-cell">
+                                        <small *ngIf="log.timestamp">{{ log.timestamp }}</small>
+                                        <small *ngIf="!log.timestamp" class="has-text-grey">
+                                            {{ log.rawLog.substring(0, 20) }}...
+                                        </small>
+                                    </td>
+                                    <td class="level-cell">
+                                        <span class="tag" [class]="log.levelClass" *ngIf="log.level">
+                                            {{ log.level }}
+                                        </span>
+                                        <span *ngIf="!log.level">-</span>
+                                    </td>
+                                    <td class="service-cell">
+                                        <small>{{ log.service || '-' }}</small>
+                                    </td>
+                                    <td class="message-cell">
+                                        <span class="log-message">{{ log.message }}</span>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="parsedSystemLogs().length === 0">
+                                    <td colspan="4" class="has-text-centered has-text-grey">
+                                        <em>No log entries available</em>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Fixed Pagination Footer -->
+                    <div class="table-footer"
+                        style="background: #fafafa; border-top: 1px solid #dbdbdb; padding: 0.75rem;">
+                        <div class="field has-addons pagination-section" style="margin-bottom: 0;">
+                            <p class="control">
+                                <button class="button is-small" (click)="onSystemLogsNewer()"
+                                    [disabled]="systemLogsOffset() <= 0">
+                                    <span>Newer</span>
+                                </button>
+                            </p>
+                            <p class="control">
+                                <button class="button is-small" (click)="onSystemLogsOlder()"
+                                    [disabled]="parsedSystemLogs().length === 0">
+                                    <span>Older</span>
+                                </button>
+                            </p>
+                            <p class="control ml-3" *ngIf="systemLogsPage() > 1">
+                                <button class="button is-small is-light" (click)="onSystemLogsFirst()"
+                                    title="Go to first page">
+                                    <span class="icon is-small">
+                                        <i class="bi bi-arrow-left-circle"></i>
+                                    </span>
+                                    <span>First</span>
+                                </button>
+                            </p>
+                            <p class="control ml-2" *ngIf="systemLogsPage() > 1">
+                                <span class="button is-small is-static">
+                                    Page {{ systemLogsPage() }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
