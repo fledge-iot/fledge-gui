@@ -156,4 +156,14 @@ export class AssetsService {
       map(response => response),
       catchError(error => throwError(error)));
   }
+
+  /**
+   * GET | /fledge/track/storage/assets
+   * Return asset storage tracking data with datapoint counts
+   */
+  public getAssetStorageTracking() {
+    return this.http.get(`${this.TRACK_SERVICE_URL}/storage/assets`).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
 }

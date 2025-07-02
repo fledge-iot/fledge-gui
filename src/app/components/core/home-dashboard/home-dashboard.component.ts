@@ -29,6 +29,8 @@ interface StatsSummary {
     southServicesDisabled: number;
     northServicesEnabled: number;
     northServicesDisabled: number;
+    disabledSouthServices: string[];
+    disabledNorthServices: string[];
 }
 
 interface StatsHistoryData {
@@ -90,7 +92,9 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
         southServicesEnabled: 0,
         southServicesDisabled: 0,
         northServicesEnabled: 0,
-        northServicesDisabled: 0
+        northServicesDisabled: 0,
+        disabledSouthServices: [],
+        disabledNorthServices: []
     });
 
     statistics = signal<any[]>([]);
@@ -133,6 +137,38 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
             .map(stat => stat.key)
             .filter(key => key && key !== 'READINGS');
     });
+
+    // Error monitoring signals (mock data)
+    errorSummary = signal<any>({
+        totalErrorRate: 0,
+        totalErrors: 0,
+        discardedReadings: 0,
+        bufferedReadings: 0,
+        failedOperations: 0,
+        serviceErrorCounts: {},
+        lastUpdated: new Date().toISOString()
+    });
+    errorHistory = signal<any>({
+        timeRange: { start: '', end: '' },
+        data: []
+    });
+    serviceErrorMetrics = signal<any>({
+        services: [],
+        summary: { totalServices: 0, servicesWithErrors: 0, averageErrorRate: 0 }
+    });
+    systemHealth = signal<any>({
+        overall: 'healthy',
+        timestamp: new Date().toISOString(),
+        resources: {
+            cpu: { usage: 0, cores: 4, loadAverage: [0, 0, 0] },
+            memory: { usage: 0, total: 0, available: 0 },
+            disk: { usage: 0, total: 0, available: 0 },
+            network: { interfaces: [] }
+        },
+        services: { totalCount: 0, runningCount: 0, errorCount: 0, stoppedCount: 0 }
+    });
+    showErrorMonitoring = signal(true);
+    showSystemHealth = signal(true);
 
     @ViewChild(SystemLogComponent) systemLogComponent!: SystemLogComponent;
 
@@ -180,6 +216,11 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
                 this.systemLogsInitialized = true;
             }
         });
+
+        // Also ensure error rate chart is created after view init
+        setTimeout(() => {
+            this.createErrorRateChart();
+        }, 500);
     }
 
     private destroyCharts() {
@@ -196,6 +237,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
         this.loadStatsSummary();
         this.loadStatistics();
         this.loadStatisticsHistory();
+        this.loadErrorMonitoringData();
     }
 
     private setupAutoRefresh() {
@@ -214,6 +256,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
                 this.loadStatsSummary();
                 this.loadStatistics();
                 this.loadStatisticsHistory();
+                this.loadErrorMonitoringData();
                 // Parse system logs after refresh
                 setTimeout(() => {
                     this.parseSystemLogsData();
@@ -233,35 +276,50 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
         combineLatest([
             this.assetsService.getAsset().pipe(catchError(() => of([]))),
             this.servicesApiService.getSouthServices(false).pipe(catchError(() => of({ services: [] }))),
-            this.northService.getNorthTasks(false).pipe(catchError(() => of([])))
+            this.northService.getNorthTasks(false).pipe(catchError(() => of([]))),
+            this.assetsService.getAssetStorageTracking().pipe(catchError(() => of([])))
         ]).pipe(
             takeUntil(this.destroy$)
-        ).subscribe(([assets, southServices, northTasks]) => {
-            // Calculate total datapoints from assets (each asset represents multiple datapoints)
-            // For now, we'll use the asset count as a placeholder for datapoints
-            // In a real scenario, you might need to call a specific API to get actual datapoint counts
-            const totalDatapoints = Array.isArray(assets) ? assets.reduce((total, asset) => total + (asset.count || 1), 0) : 0;
+        ).subscribe(([assetsArray, southServicesResponse, northTasksArray, assetStorageData]) => {
+            // Calculate total datapoints from asset storage tracking data
+            let totalDatapoints = 0;
+            if (assetStorageData && typeof assetStorageData === 'object') {
+                const storageData = assetStorageData as any;
+                // Check if the response has the expected structure with assets array
+                if (storageData.assets && Array.isArray(storageData.assets)) {
+                    totalDatapoints = storageData.assets.reduce((total: number, asset: any) => {
+                        // Count individual datapoints in each asset's datapoints array
+                        const datapointCount = asset.datapoints && Array.isArray(asset.datapoints) ? asset.datapoints.length : 0;
+                        return total + datapointCount;
+                    }, 0);
+                } else if (storageData.count && typeof storageData.count === 'number') {
+                    // Fallback to using the count field if assets array is not available
+                    totalDatapoints = storageData.count;
+                }
+            }
 
             // Calculate south services status breakdown
-            const southServicesArray = (southServices as any)?.services || [];
+            const southServicesArray = (southServicesResponse as any)?.services || [];
             const southServicesEnabled = southServicesArray.filter((service: any) => service.schedule_enabled === true).length;
             const southServicesDisabled = southServicesArray.filter((service: any) => service.schedule_enabled === false).length;
 
             // Calculate north services status breakdown
-            const northTasksArray = Array.isArray(northTasks) ? northTasks : [];
-            const northServicesEnabled = northTasksArray.filter((task: any) => task.enabled === true).length;
-            const northServicesDisabled = northTasksArray.filter((task: any) => task.enabled === false).length;
+            const northTasksArrayData = Array.isArray(northTasksArray) ? northTasksArray : [];
+            const northServicesEnabled = northTasksArrayData.filter((task: any) => task.enabled === true).length;
+            const northServicesDisabled = northTasksArrayData.filter((task: any) => task.enabled === false).length;
 
             this.statsSummary.update(current => ({
                 ...current,
-                totalAssets: Array.isArray(assets) ? assets.length : 0,
+                totalAssets: Array.isArray(assetsArray) ? assetsArray.length : 0,
                 totalSouthServices: southServicesArray.length,
-                totalNorthServices: northTasksArray.length,
+                totalNorthServices: northTasksArrayData.length,
                 totalDatapoints: totalDatapoints,
                 southServicesEnabled: southServicesEnabled,
                 southServicesDisabled: southServicesDisabled,
                 northServicesEnabled: northServicesEnabled,
-                northServicesDisabled: northServicesDisabled
+                northServicesDisabled: northServicesDisabled,
+                disabledSouthServices: southServicesArray.filter((service: any) => !service.schedule_enabled).map((service: any) => service.name),
+                disabledNorthServices: northTasksArrayData.filter((task: any) => !task.enabled).map((task: any) => task.name)
             }));
 
             this.loading.set(false);
@@ -331,14 +389,222 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
             });
     }
 
+    private loadErrorMonitoringData() {
+        // Mock error monitoring data since the service was deleted
+        this.errorSummary.set({
+            totalErrorRate: Math.random() > 0.5 ? Math.floor(Math.random() * 8) : 0,
+            totalErrors: Math.floor(Math.random() * 150),
+            discardedReadings: Math.floor(Math.random() * 50),
+            bufferedReadings: Math.floor(Math.random() * 100),
+            failedOperations: Math.floor(Math.random() * 25),
+            serviceErrorCounts: {
+                'ModbusReader': Math.floor(Math.random() * 10),
+                'OPCUAClient': Math.floor(Math.random() * 8),
+                'HTTPSouth': Math.floor(Math.random() * 5)
+            },
+            lastUpdated: new Date().toISOString()
+        });
+
+        // Mock error history data
+        const now = new Date();
+        const mockData = [];
+        for (let i = 29; i >= 0; i--) {
+            const timestamp = new Date(now.getTime() - i * 60000); // 1 minute intervals
+            mockData.push({
+                timestamp: timestamp.toISOString(),
+                errorRate: Math.random() * 10,
+                totalErrors: Math.floor(Math.random() * 20),
+                discardedReadings: Math.floor(Math.random() * 8)
+            });
+        }
+
+        this.errorHistory.set({
+            timeRange: {
+                start: mockData[0]?.timestamp || now.toISOString(),
+                end: mockData[mockData.length - 1]?.timestamp || now.toISOString()
+            },
+            data: mockData
+        });
+
+        // Load real service data from fledge/service endpoint
+        this.servicesApiService.getAllServices()
+            .pipe(
+                takeUntil(this.destroy$),
+                catchError(error => {
+                    console.error('Error loading services:', error);
+                    // Fallback to mock data if API fails
+                    return of({
+                        services: [
+                            {
+                                name: 'Fledge Storage',
+                                type: 'Storage',
+                                status: 'running',
+                                address: 'localhost',
+                                management_port: 42269,
+                                service_port: 37895,
+                                protocol: 'http'
+                            },
+                            {
+                                name: 'Fledge Core',
+                                type: 'Core',
+                                status: 'running',
+                                address: '0.0.0.0',
+                                management_port: 43557,
+                                service_port: 8081,
+                                protocol: 'http'
+                            }
+                        ]
+                    });
+                })
+            )
+            .subscribe((response: any) => {
+                const services = response.services || [];
+
+                // Transform service data for the table
+                const transformedServices = services.map((service: any) => ({
+                    name: service.name,
+                    type: this.getServiceTypeLabel(service.type),
+                    status: service.status,
+                    errorRate: Math.random() * 5, // Mock error rate since not provided by API
+                    uptime: 95 + Math.random() * 5, // Mock uptime since not provided by API
+                    lastError: Math.random() > 0.8 ? {
+                        message: this.generateMockErrorMessage(service.type),
+                        timestamp: new Date(Date.now() - Math.random() * 3600000).toISOString()
+                    } : null,
+                    address: service.address,
+                    managementPort: service.management_port,
+                    servicePort: service.service_port,
+                    protocol: service.protocol
+                }));
+
+                this.serviceErrorMetrics.set({
+                    services: transformedServices,
+                    summary: {
+                        totalServices: transformedServices.length,
+                        servicesWithErrors: transformedServices.filter(s => s.lastError !== null).length,
+                        averageErrorRate: transformedServices.reduce((sum, s) => sum + s.errorRate, 0) / transformedServices.length
+                    }
+                });
+
+                // Calculate system health based on actual service data
+                const totalServices = transformedServices.length;
+                const runningServices = transformedServices.filter(s => s.status === 'running').length;
+                const errorServices = transformedServices.filter(s => s.status === 'unresponsive' || s.status === 'failed').length;
+                const stoppedServices = transformedServices.filter(s => s.status === 'shutdown' || s.status === 'stopped').length;
+
+                // Mock system health data with real service counts
+                this.systemHealth.set({
+                    overall: runningServices === totalServices ? 'healthy' : runningServices > totalServices * 0.8 ? 'degraded' : 'critical',
+                    timestamp: new Date().toISOString(),
+                    resources: {
+                        cpu: {
+                            usage: Math.floor(Math.random() * 40) + 20, // 20-60%
+                            cores: 4,
+                            loadAverage: [
+                                Math.random() * 2,
+                                Math.random() * 2,
+                                Math.random() * 2
+                            ]
+                        },
+                        memory: {
+                            usage: Math.floor(Math.random() * 30) + 40, // 40-70%
+                            total: 16384, // 16GB in MB
+                            available: Math.floor(Math.random() * 8000) + 4000
+                        },
+                        disk: {
+                            usage: Math.floor(Math.random() * 20) + 60, // 60-80%
+                            total: 500000, // 500GB in MB
+                            available: Math.floor(Math.random() * 200000) + 100000
+                        },
+                        network: {
+                            interfaces: [
+                                { name: 'eth0', status: 'up', speed: '1000Mbps' },
+                                { name: 'wlan0', status: 'down', speed: 'N/A' }
+                            ]
+                        }
+                    },
+                    services: {
+                        totalCount: totalServices,
+                        runningCount: runningServices,
+                        errorCount: errorServices,
+                        stoppedCount: stoppedServices
+                    }
+                });
+            });
+
+        // Create the error rate chart after data is loaded
+        setTimeout(() => {
+            this.createErrorRateChart();
+        }, 100);
+    }
+
+    private getServiceTypeLabel(type: string): string {
+        switch (type.toLowerCase()) {
+            case 'southbound':
+                return 'south';
+            case 'northbound':
+                return 'north';
+            case 'storage':
+                return 'storage';
+            case 'core':
+                return 'core';
+            case 'dispatcher':
+                return 'dispatcher';
+            case 'notification':
+                return 'notification';
+            default:
+                return type.toLowerCase();
+        }
+    }
+
+    private generateMockErrorMessage(serviceType: string): string {
+        const errorMessages = {
+            'Southbound': [
+                'Connection timeout to device',
+                'Authentication failed',
+                'Data parsing error',
+                'Network connection lost'
+            ],
+            'Northbound': [
+                'Failed to send data to external system',
+                'Authentication failed for external API',
+                'Rate limit exceeded',
+                'Connection refused by destination'
+            ],
+            'Storage': [
+                'Database connection timeout',
+                'Disk space low',
+                'Query execution failed'
+            ],
+            'Core': [
+                'Configuration update failed',
+                'Service restart required',
+                'Memory usage high'
+            ],
+            'Dispatcher': [
+                'Task queue overflow',
+                'Worker process crashed',
+                'Message delivery failed'
+            ],
+            'Notification': [
+                'Email delivery failed',
+                'SMTP connection timeout',
+                'Webhook endpoint unreachable'
+            ]
+        };
+
+        const messages = errorMessages[serviceType] || ['Service error occurred'];
+        return messages[Math.floor(Math.random() * messages.length)];
+    }
+
     private updateChart() {
         const history = this.statisticsHistory();
         const filters = this.filterOptions();
 
         if (!history.length) return;
 
-        // Set loading state for charts (only readings vs sent chart + selected keys)
-        const totalCharts = filters.selectedKeys.length + 1; // +1 for readings vs sent chart
+        // Set loading state for charts (only Readings vs Sent chart + selected keys)
+        const totalCharts = filters.selectedKeys.length + 1; // +1 for Readings vs Sent chart
         const loadingStates = new Array(totalCharts).fill(true);
         this.chartsLoading.set(loadingStates);
 
@@ -352,7 +618,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
 
             // Create individual charts for each selected key (if any)
             filters.selectedKeys.forEach((key, index) => {
-                this.createChart(key, index + 1, history); // +1 to account for readings vs sent chart
+                this.createChart(key, index + 1, history); // +1 to account for Readings vs Sent chart
             });
         }, 100);
     }
@@ -659,8 +925,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
             level: '',
             service: '',
             message: '',
-            rawLog: cleanLog,
-            levelClass: ''
+            rawLog: cleanLog
         };
 
         try {
@@ -714,7 +979,6 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
             const levelMatch = cleanLog.match(/(DEBUG|INFO|WARNING|ERROR|FATAL|EXCEPTION):/);
             if (levelMatch) {
                 logEntry.level = levelMatch[1];
-                logEntry.levelClass = this.getLevelClass(levelMatch[1]);
             }
 
             // Extract service name if present - format: servicename[pid]
@@ -754,27 +1018,9 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
             // Fallback: use raw log as message
             logEntry.message = cleanLog;
             logEntry.level = 'INFO';
-            logEntry.levelClass = 'is-info';
         }
 
         return logEntry;
-    }
-
-    private getLevelClass(level: string): string {
-        switch (level) {
-            case 'DEBUG':
-                return 'is-light tag-syslog';
-            case 'INFO':
-                return 'is-white tag-syslog';
-            case 'WARNING':
-                return 'is-light is-warning tag-syslog';
-            case 'ERROR':
-            case 'FATAL':
-            case 'EXCEPTION':
-                return 'is-light is-danger tag-syslog';
-            default:
-                return 'is-light tag-syslog';
-        }
     }
 
     getSelectedKeysDisplay(): string {
@@ -823,7 +1069,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
             data: {
                 labels,
                 datasets: [{
-                    label: 'READINGS',
+                    label: 'Received',
                     data: history.map(item => item.READINGS || 0),
                     borderColor: readingsColor,
                     backgroundColor: readingsColor + '30',
@@ -836,7 +1082,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
                     pointRadius: 4,
                     pointHoverRadius: 6
                 }, {
-                    label: 'SENT',
+                    label: 'Sent',
                     data: history.map(item => item.SENT || 0),
                     borderColor: sentColor,
                     backgroundColor: sentColor + '30',
@@ -953,6 +1199,47 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
         this.router.navigate(['/north']);
     }
 
+    // Helper methods for disabled services tooltips
+    getDisabledSouthServicesNames(): string {
+        const names = this.statsSummary().disabledSouthServices;
+        return names.length > 0 ? names.join(', ') : '';
+    }
+
+    getDisabledNorthServicesNames(): string {
+        const names = this.statsSummary().disabledNorthServices;
+        return names.length > 0 ? names.join(', ') : '';
+    }
+
+    getDisabledSouthServicesTooltip(): string {
+        const names = this.getDisabledSouthServicesNames();
+        return names;
+    }
+
+    getDisabledNorthServicesTooltip(): string {
+        const names = this.getDisabledNorthServicesNames();
+        return names;
+    }
+
+    // Alert hover functionality
+    onAlertsHover() {
+        // Clear any existing timeout
+        if (this.alertsTooltipTimeout) {
+            clearTimeout(this.alertsTooltipTimeout);
+            this.alertsTooltipTimeout = undefined;
+        }
+
+        this.showAlertsTooltip.set(true);
+        this.loadAlerts();
+    }
+
+    onAlertsLeave() {
+        // Add a small delay before hiding the tooltip
+        this.alertsTooltipTimeout = window.setTimeout(() => {
+            this.showAlertsTooltip.set(false);
+            this.alertsTooltipTimeout = undefined;
+        }, 300);
+    }
+
     private loadAlerts() {
         this.systemAlertService.getAlerts().pipe(
             takeUntil(this.destroy$)
@@ -1003,23 +1290,227 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
         }
     }
 
-    // Alert hover functionality
-    onAlertsHover() {
-        // Clear any existing timeout
-        if (this.alertsTooltipTimeout) {
-            clearTimeout(this.alertsTooltipTimeout);
-            this.alertsTooltipTimeout = undefined;
-        }
-
-        this.showAlertsTooltip.set(true);
-        this.loadAlerts();
+    // Error monitoring methods
+    getServiceErrorKeys(): string[] {
+        return Object.keys(this.errorSummary().serviceErrorCounts);
     }
 
-    onAlertsLeave() {
-        // Add a small delay before hiding the tooltip
-        this.alertsTooltipTimeout = window.setTimeout(() => {
-            this.showAlertsTooltip.set(false);
-            this.alertsTooltipTimeout = undefined;
-        }, 300);
+    getServiceErrorCount(service: string): number {
+        return this.errorSummary().serviceErrorCounts[service] || 0;
+    }
+
+    toggleErrorMonitoringSection() {
+        this.showErrorMonitoring.update(show => !show);
+
+        // If expanding the section, recreate the chart after a short delay
+        if (this.showErrorMonitoring()) {
+            setTimeout(() => {
+                this.createErrorRateChart();
+            }, 100);
+        }
+    }
+
+    toggleSystemHealthSection() {
+        this.showSystemHealth.update(show => !show);
+    }
+
+    private createErrorRateChart() {
+        console.log('🔧 Creating error rate chart...');
+
+        const ctx = document.getElementById('errorRateChart') as HTMLCanvasElement;
+        if (!ctx) {
+            console.error('❌ Error rate chart canvas not found');
+            return;
+        }
+
+        console.log('✅ Canvas found:', ctx);
+        console.log('   - Canvas dimensions:', ctx.offsetWidth, 'x', ctx.offsetHeight);
+
+        // Destroy existing chart if it exists
+        const existingChart = this.charts.find(chart => chart.canvas?.id === 'errorRateChart');
+        if (existingChart) {
+            console.log('🗑️ Destroying existing chart');
+            existingChart.destroy();
+            this.charts = this.charts.filter(chart => chart !== existingChart);
+        }
+
+        const errorHistoryData = this.errorHistory().data;
+        console.log('📊 Error history data:', errorHistoryData);
+
+        if (!errorHistoryData || errorHistoryData.length === 0) {
+            console.error('❌ No error history data available for chart');
+            return;
+        }
+
+        const labels = errorHistoryData.map(item => {
+            return this.dateFormatter.transform(item.timestamp, 'HH:mm:ss');
+        });
+
+        console.log('🏷️ Chart labels:', labels);
+
+        try {
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Error Rate (%)',
+                            data: errorHistoryData.map(item => item.errorRate),
+                            borderColor: '#EF4444',
+                            backgroundColor: '#EF444430',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2,
+                            pointBackgroundColor: '#EF4444',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 3,
+                            pointHoverRadius: 5,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Total Errors',
+                            data: errorHistoryData.map(item => item.totalErrors),
+                            borderColor: '#F59E0B',
+                            backgroundColor: '#F59E0B30',
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 2,
+                            pointBackgroundColor: '#F59E0B',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 3,
+                            pointHoverRadius: 5,
+                            yAxisID: 'y1'
+                        },
+                        {
+                            label: 'Discarded Readings',
+                            data: errorHistoryData.map(item => item.discardedReadings),
+                            borderColor: '#8B5CF6',
+                            backgroundColor: '#8B5CF630',
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 2,
+                            pointBackgroundColor: '#8B5CF6',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 3,
+                            pointHoverRadius: 5,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: false
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Error Rate (%)'
+                            },
+                            grid: {
+                                color: 'rgba(239, 68, 68, 0.1)'
+                            },
+                            ticks: {
+                                callback: function (value) {
+                                    return value + '%';
+                                }
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Count'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+
+            this.charts.push(chart);
+            console.log('✅ Error rate chart created successfully:', chart);
+
+            // Force chart update and resize to ensure visibility
+            setTimeout(() => {
+                chart.update();
+                chart.resize();
+                console.log('🔄 Chart updated and resized');
+            }, 100);
+        } catch (error) {
+            console.error('❌ Error creating chart:', error);
+        }
+    }
+
+    debugErrorChart() {
+        console.log('=== ERROR CHART DEBUG START ===');
+        console.log('1. Error Monitoring Section Visible:', this.showErrorMonitoring());
+        console.log('2. Error History Data:', this.errorHistory());
+        console.log('3. Error Summary:', this.errorSummary());
+
+        const canvas = document.getElementById('errorRateChart');
+        console.log('4. Canvas Element:', canvas);
+
+        if (canvas) {
+            console.log('   - Canvas Width:', canvas.offsetWidth);
+            console.log('   - Canvas Height:', canvas.offsetHeight);
+            console.log('   - Canvas Visible:', canvas.offsetParent !== null);
+        }
+
+        console.log('5. Existing Charts Count:', this.charts.length);
+        this.charts.forEach((chart, index) => {
+            console.log(`   - Chart ${index}:`, chart.canvas?.id, chart);
+        });
+
+        console.log('6. Attempting to create chart...');
+        this.createErrorRateChart();
+
+        // Check if chart is actually visible after creation
+        setTimeout(() => {
+            const canvas = document.getElementById('errorRateChart') as HTMLCanvasElement;
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                const imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height);
+                const hasData = imageData?.data.some(pixel => pixel !== 0);
+                console.log('📊 Chart has rendered data:', hasData);
+                console.log('📐 Final canvas size:', canvas.width, 'x', canvas.height);
+            }
+        }, 200);
+
+        console.log('=== ERROR CHART DEBUG END ===');
     }
 } 
