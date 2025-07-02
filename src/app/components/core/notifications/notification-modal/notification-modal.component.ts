@@ -86,7 +86,6 @@ export class NotificationModalComponent implements OnInit {
     this.ruleConfiguration = null;
     this.deliveryConfiguration = null;
     modalWindow.classList.remove('is-active');
-    this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
   }
 
   public getRuleConfiguration(): void {

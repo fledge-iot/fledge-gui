@@ -36,7 +36,6 @@ export class TabNavigationComponent {
 
   setCurrentTab() {
     this.currentTab = this.tabs[this.activeTab];
-    this.storageService.setSessionItem('ACTIVE_CONFIG_TAB', this.currentTab['key']);
     this.selectedTabEvent.emit(this.currentTab);
   }
 

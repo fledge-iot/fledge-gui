@@ -22,7 +22,6 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { catchError, map, takeUntil } from 'rxjs/operators';
 import { NorthTask } from '../north-task';
 import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
-import { StorageService } from '../../../../services/storage.service';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -87,8 +86,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private response: ResponseHandler,
     private toast: ToastService,
     public cDRef: ChangeDetectorRef,
-    private activatedRoute: ActivatedRoute,
-    private storageService: StorageService
+    private activatedRoute: ActivatedRoute
   ) {
     this.activatedRoute.paramMap.subscribe(params => {
       this.taskName = params.get('name');
@@ -101,7 +99,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
     if (!alertModal.classList.contains('is-active')) {
-      this.clearConfigTab();
       this.navToNorthPage();
     }
   }
@@ -461,7 +458,6 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
             }
           } else {
             this.response.handleResponseMessage(r.type);
-            this.clearConfigTab();
           }
         });
         this.notify.emit();
@@ -521,9 +517,5 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
             this.alertService.error(error.statusText);
           }
         });
-  }
-
-  clearConfigTab() {
-    this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
   }
 }

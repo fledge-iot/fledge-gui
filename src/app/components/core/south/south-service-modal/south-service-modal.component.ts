@@ -26,7 +26,6 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { catchError, map, takeUntil } from 'rxjs/operators';
 import { Service } from '../south-service';
 import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
-import { StorageService } from '../../../../services/storage.service';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -87,8 +86,7 @@ export class SouthServiceModalComponent implements OnInit {
     private response: ResponseHandler,
     private toastService: ToastService,
     private activatedRoute: ActivatedRoute,
-    public cDRef: ChangeDetectorRef,
-    private storageService: StorageService) {
+    public cDRef: ChangeDetectorRef,) {
     this.activatedRoute.paramMap.subscribe(params => {
       this.serviceName = params.get('name');
       if (this.serviceName) {
@@ -105,7 +103,6 @@ export class SouthServiceModalComponent implements OnInit {
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
     if (!alertModal.classList.contains('is-active')) {
-      this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
       this.navToSouthPage();
     }
   }
@@ -491,7 +488,6 @@ export class SouthServiceModalComponent implements OnInit {
       this.filtersListComponent.update();
       this.unsavedChangesInFilterForm = false;
       if (this.apiCallsStack.length == 0) {
-        this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
         this.navToSouthPage();
       }
     }
@@ -510,7 +506,6 @@ export class SouthServiceModalComponent implements OnInit {
             }
           } else {
             this.response.handleResponseMessage(r.type);
-            this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
           }
         });
         this.notify.emit();
@@ -525,7 +520,6 @@ export class SouthServiceModalComponent implements OnInit {
   }
 
   navToSouth() {
-    this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
     if (this.source === 'flowEditor') {
       this.router.navigate(['/flow/editor', 'south', this.serviceName, 'details'])
     }

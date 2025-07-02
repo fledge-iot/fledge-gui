@@ -273,13 +273,11 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
           else {
             this.router.navigate(['/south']);
           }
-          this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
         },
         (error) => {
           /** request done */
           this.ngProgress.done();
           this.reenableButton.emit(false);
-          this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
           if (error.status === 0) {
             console.log('service down ', error);
           } else {

@@ -48,8 +48,6 @@ export class AppComponent implements OnInit {
       this.navMode = 'over';
       this._opened = false;
     }
-    // Clear ACTIVE_CONFIG_TAB on page refresh/load
-    this.storageService.removeSessionItem('ACTIVE_CONFIG_TAB');
 
     this.sharedService.loginScreenSubject
       .pipe(takeUntil(this.destroySubject))
