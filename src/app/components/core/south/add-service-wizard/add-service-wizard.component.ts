@@ -13,7 +13,6 @@ import { ViewLogsComponent } from '../../logs/packages-log/view-logs/view-logs.c
 import { DocService } from '../../../../services/doc.service';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
-import { StorageService } from '../../../../services/storage.service';
 
 @Component({
   selector: 'app-add-service-wizard',
@@ -64,8 +63,7 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     private docService: DocService,
     private configurationControlService: ConfigurationControlService,
     private fileUploaderService: FileUploaderService,
-    private cdRef: ChangeDetectorRef,
-    private storageService: StorageService
+    private cdRef: ChangeDetectorRef
   ) {
     this.route.queryParams.subscribe(params => {
       if (params['source']) {

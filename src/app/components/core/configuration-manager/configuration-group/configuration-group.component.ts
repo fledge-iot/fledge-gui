@@ -4,7 +4,6 @@ import { DeveloperFeaturesService } from '../../../../services/developer-feature
 import { chain, cloneDeep, uniqWith, isEmpty } from 'lodash';
 import { TabHeader } from './tab-header-slider';
 import { TabNavigationComponent } from '../tab-navigation/tab-navigation.component';
-import { StorageService } from '../../../../services/storage.service';
 
 @Component({
   selector: 'app-configuration-group',
@@ -52,8 +51,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     private configService: ConfigurationService,
     private configurationControlService: ConfigurationControlService,
     private alertService: AlertService,
-    private cdrf: ChangeDetectorRef,
-    private storageService: StorageService
+    private cdrf: ChangeDetectorRef
   ) { }
 
 
@@ -90,12 +88,13 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     this.tabs.scrollToRight();
   }
 
-  ngOnChanges(simpleChanges) {
+  ngOnChanges(simpleChanges: SimpleChanges) {
     this.categeryConfiguration();
 
     // Only fetch child config data when plugin changes (initial load or plugin switch) to fix group tabs flickering issue
     if (simpleChanges['plugin']) {
       this.getChildConfigData();
+      this.selectedGroup = this.groups[0]?.group;
     } else {
       // Update local configurations without API calls
       if (this.changedAdvanceConfiguration) {

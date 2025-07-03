@@ -21,7 +21,6 @@ import { DocService } from '../../../../../services/doc.service';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../../utils';
 import { DialogService } from '../../../../common/confirmation-dialog/dialog.service';
 import { FilterListComponent } from '../../../filter/filter-list/filter-list.component';
-import { StorageService } from '../../../../../services/storage.service';
 
 export interface ControlPipeline {
   id?: number
@@ -95,8 +94,7 @@ export class AddControlPipelineComponent implements OnInit {
     private docService: DocService,
     private filterService: FilterService,
     private router: Router,
-    private toast: ToastService,
-    private storageService: StorageService) {
+    private toast: ToastService) {
   }
 
   canDeactivate(): Observable<boolean> | boolean {

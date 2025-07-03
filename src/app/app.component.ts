@@ -5,7 +5,6 @@ import { takeUntil } from 'rxjs/operators';
 
 import { PingService } from './services';
 import { SharedService } from './services/shared.service';
-import { StorageService } from './services/storage.service';
 
 @Component({
   selector: 'app-root',
@@ -30,8 +29,7 @@ export class AppComponent implements OnInit {
 
   constructor(private router: Router,
     private ping: PingService,
-    private sharedService: SharedService,
-    private storageService: StorageService) { }
+    private sharedService: SharedService) { }
 
 
   @ViewChild('navBurger') navBurger: ElementRef;
@@ -48,7 +46,6 @@ export class AppComponent implements OnInit {
       this.navMode = 'over';
       this._opened = false;
     }
-
     this.sharedService.loginScreenSubject
       .pipe(takeUntil(this.destroySubject))
       .subscribe((isLoginView: boolean) => {

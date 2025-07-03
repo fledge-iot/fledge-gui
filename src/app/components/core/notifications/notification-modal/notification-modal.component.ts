@@ -12,7 +12,6 @@ import { DocService } from '../../../../services/doc.service';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 import { catchError } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
-import { StorageService } from '../../../../services/storage.service';
 
 @Component({
   selector: 'app-notification-modal',
@@ -49,8 +48,7 @@ export class NotificationModalComponent implements OnInit {
     private docService: DocService,
     private fileUploaderService: FileUploaderService,
     private configurationControlService: ConfigurationControlService,
-    public rolesService: RolesService,
-    private storageService: StorageService) { }
+    public rolesService: RolesService) { }
 
   ngOnInit() { }
 

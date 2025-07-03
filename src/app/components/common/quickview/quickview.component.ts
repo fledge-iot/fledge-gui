@@ -1,6 +1,5 @@
 import { Component, HostListener, Input, OnInit, ViewChild, ContentChild } from '@angular/core';
 import { FlowEditorService } from './../node-editor/flow-editor.service';
-import { StorageService } from '../../../services/storage.service';
 
 declare const bulmaQuickview: any;
 
@@ -20,8 +19,7 @@ export class QuickviewComponent implements OnInit {
   @ContentChild('systemLogs', { static: false }) systemLogsComponent;
 
   constructor(
-    public flowEditorService: FlowEditorService,
-    private storageService: StorageService
+    public flowEditorService: FlowEditorService
   ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {

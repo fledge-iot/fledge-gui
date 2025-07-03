@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from "@angular/core";
-import { StorageService } from '../../../../services/storage.service';
+
 @Component({
   selector: 'app-tab-navigation',
   templateUrl: './tab-navigation.component.html',
@@ -15,8 +15,7 @@ export class TabNavigationComponent {
   activeTab = 0;
   @Output() selectedTabEvent = new EventEmitter<any>();
 
-  constructor(private cdrf: ChangeDetectorRef,
-    private storageService: StorageService
+  constructor(private cdrf: ChangeDetectorRef
   ) { }
 
   prevTab() {
