@@ -95,7 +95,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     if (simpleChanges['plugin']) {
       this.getChildConfigData();
       this.selectedGroup = this.groups[0]?.group;
-      console.log('plugin changed', simpleChanges);
     } else {
       // Update local configurations without API calls
       if (this.changedAdvanceConfiguration) {
@@ -104,7 +103,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
       if (this.changedSecurityConfiguration) {
         this.securityConfiguration = this.updateLocalConfigurations(this.securityConfiguration, this.changedSecurityConfiguration);
       }
-      console.log('plugin not changed', simpleChanges);
       // Skip tab recalculation and scrolling for configuration updates
       return;
     }
