@@ -20,6 +20,10 @@
     border-left: 4px solid #94a3b8;
 }
 
+.error-monitoring-section .stats-card {
+    border-left: none !important
+}
+
 .stats-card::before {
     content: '';
     position: absolute;
@@ -74,12 +78,25 @@
     border-radius: 16px;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4));
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Remove ALL icon changes on hover - keep transform and shadow but NO color changes */
 .stats-card:hover .media-left .icon {
     transform: scale(1.1);
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Ensure icons maintain their original colors on hover */
+.stats-card:hover .media-left .icon i,
+.stats-card:hover .media-left .icon .has-text-success,
+.stats-card:hover .media-left .icon .has-text-info,
+.stats-card:hover .media-left .icon .has-text-grey,
+.stats-card:hover .media-left .icon .has-text-grey-dark,
+.stats-card:hover .media-left .icon .has-text-warning,
+.stats-card:hover .media-left .icon .has-text-purple,
+.stats-card:hover .media-left .icon .alert-icon {
+    color: inherit !important;
 }
 
 .stats-card .title {
@@ -362,7 +379,7 @@
 
 /* Section Spacing */
 .section {
-    padding: 2rem 0;
+    padding: 1rem 0;
 }
 
 .section:first-child {
@@ -595,9 +612,10 @@
     border-left: 4px solid #3b82f6 !important;
 }
 
+/* Make integration card lighter */
 .integration-card {
-    background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%) !important;
-    border-left: 4px solid #8b5cf6 !important;
+    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%) !important;
+    border-left: 4px solid #a855f7 !important;
 }
 
 .has-background-info-light {
@@ -612,6 +630,7 @@
     border-left: 4px solid #3273dc !important;
 }
 
+/* Change datapoints tile to grey color (what sent tile had before purple) */
 .sent-card {
     background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
     border-left: 4px solid #64748b !important;
@@ -622,7 +641,7 @@
 }
 
 .alert-card {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+    background: linear-gradient(135deg, #fef7cd 0%, #fef3c7 100%) !important;
     border-left: 4px solid #f59e0b !important;
 }
 
@@ -757,116 +776,18 @@
     transform: none;
 }
 
-/* System logs filter controls */
+/* System logs filter controls - simple default styling */
 .system-logs-container .filter-controls {
     padding: 1rem;
-    border-bottom: 1px solid #e2e8f0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.9));
-    border-radius: 12px 12px 0 0;
-    backdrop-filter: blur(10px);
+    background: transparent;
+    border: none;
+    border-radius: 0;
 }
 
-.system-logs-container .filter-controls .columns {
-    margin-bottom: 0;
-    align-items: flex-start;
-}
-
-.system-logs-container .filter-controls .column {
-    padding-bottom: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-.system-logs-container .filter-controls .field {
-    margin-bottom: 0;
-    flex-grow: 1;
-}
-
-.system-logs-container .filter-controls .label {
-    color: #374151;
-    font-weight: 600;
-    margin-bottom: 0.375rem;
-    font-size: 0.75rem;
-    display: block;
-    min-height: 1rem;
-}
-
-.system-logs-container .filter-controls .control {
-    position: relative;
-}
-
-.system-logs-container .filter-controls .input,
-.system-logs-container .filter-controls .select select {
-    border-color: #d1d5db;
-    font-size: 0.75rem;
-    height: 2rem;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    padding: 0.375rem 0.5rem;
-    line-height: 1.4;
-}
-
-.system-logs-container .filter-controls .select {
-    width: 100%;
-    height: 2rem;
-}
-
-.system-logs-container .filter-controls .select select {
-    width: 100%;
-    height: 2rem;
-    padding-right: 1.5rem;
-}
-
-.system-logs-container .filter-controls .input:focus,
-.system-logs-container .filter-controls .select select:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
-    transform: translateY(-1px);
-    outline: none;
-}
-
-.system-logs-container .filter-controls .input::placeholder {
-    color: #9ca3af;
-    font-style: italic;
-}
-
-.system-logs-container .filter-controls .icon {
-    color: #6b7280;
-    pointer-events: none;
-}
-
-.system-logs-container .filter-controls .has-icons-left .icon.is-left {
-    left: 0.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 0.8rem;
-}
-
-.system-logs-container .filter-controls .has-icons-left .input {
-    padding-left: 2rem;
-}
-
-/* Responsive adjustments for filter controls */
-@media screen and (max-width: 768px) {
-    .system-logs-container .filter-controls {
-        padding: 1rem;
-    }
-
-    .system-logs-container .filter-controls .columns {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .system-logs-container .filter-controls .column {
-        margin-bottom: 0.75rem;
-    }
-
-    .system-logs-container .filter-controls .column:last-child {
-        margin-bottom: 0;
-    }
+/* System Health section - make all tiles white */
+.system-health-section .stats-card {
+    background: white !important;
+    border-left: 4px solid #94a3b8 !important;
 }
 
 /* Animation Enhancements */
@@ -913,25 +834,70 @@
     gap: 0.5rem;
 }
 
-.title.is-5::before {
-    content: '';
-    width: 4px;
-    height: 1.5rem;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border-radius: 2px;
+/* Make integration-light-card (sent tile) even lighter */
+.integration-light-card {
+    background: linear-gradient(135deg, #f8faff 0%, #f3e8ff 100%) !important;
+    border-left: 4px solid #c084fc !important;
 }
 
-/* Dropdown Enhancements */
+.has-text-purple {
+    color: #8b5cf6 !important;
+}
+
+/* Dropdown Enhancements - Make both dropdowns consistent */
 .dropdown .button {
     background: rgba(255, 255, 255, 0.9);
     border: 1px solid #e2e8f0;
     color: #475569;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown .button:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: #d1d5db;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .dropdown.is-active .button {
     background: #667eea;
     color: white;
     border-color: #667eea;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* Make select dropdown consistent with button dropdown */
+.select:not(.is-multiple):not(.is-loading)::after {
+    border-color: #667eea;
+}
+
+.select select {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #475569 !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.select select:hover {
+    background: rgba(255, 255, 255, 1) !important;
+    border-color: #d1d5db !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.select select:focus {
+    background: rgba(255, 255, 255, 1) !important;
+    border-color: #667eea !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3) !important;
+    outline: none !important;
 }
 
 .dropdown-menu {
@@ -964,9 +930,10 @@
     width: 8px;
 }
 
-.system-logs-container .table-container::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 4px;
+/* Make icons smaller in error monitoring section */
+.error-monitoring-section .stats-card .media-left .icon {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
 }
 
 .system-logs-container .table-container::-webkit-scrollbar-thumb {
@@ -976,6 +943,11 @@
 
 .system-logs-container .table-container::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(135deg, #5a67d8, #6b46c1);
+}
+
+.error-monitoring-section .stats-card .media-left .icon i {
+    font-size: 1.25rem !important;
+    /* Smaller than the default 2rem */
 }
 
 /* Enhanced Stats Card Layout */
@@ -1367,5 +1339,101 @@
 
     .alerts-tooltip-footer {
         padding: 0.5rem 0.75rem;
+    }
+}
+
+/* Custom Scrollbar Enhancement */
+.system-logs-container .table-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.system-logs-container .table-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.system-logs-container .table-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 4px;
+}
+
+.system-logs-container .table-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a67d8, #6b46c1);
+}
+
+/* Enhanced Stats Card Layout */
+.stats-card .media-content {
+    overflow: visible;
+}
+
+.stats-card .title-section {
+    margin-bottom: 0.5rem;
+}
+
+/* Disabled Indicator in Top-Right Corner */
+.disabled-indicator {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 10;
+}
+
+.disabled-indicator .tag {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: white;
+    border: none;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.25em 0.5em;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(107, 114, 128, 0.3);
+    transition: all 0.2s ease;
+}
+
+.disabled-indicator .tag:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(107, 114, 128, 0.4);
+}
+
+.disabled-indicator .tag i {
+    font-size: 0.65rem;
+    margin-right: 0.25rem;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .stats-card {
+        min-height: 80px;
+        /* Reduced from 110px */
+    }
+
+    .disabled-indicator .tag {
+        font-size: 0.65rem;
+        padding: 0.2em 0.4em;
+    }
+
+    .disabled-indicator .tag i {
+        font-size: 0.6rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .stats-card {
+        min-height: 70px;
+        /* Reduced from 100px */
+    }
+
+    .disabled-indicator {
+        top: 0.25rem;
+        right: 0.25rem;
+    }
+
+    .disabled-indicator .tag {
+        font-size: 0.6rem;
+        padding: 0.15em 0.3em;
+    }
+
+    .disabled-indicator .tag i {
+        font-size: 0.55rem;
     }
 }

@@ -400,7 +400,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
             serviceErrorCounts: {
                 'ModbusReader': Math.floor(Math.random() * 10),
                 'OPCUAClient': Math.floor(Math.random() * 8),
-                'HTTPSouth': Math.floor(Math.random() * 5)
+                'Sinusoid': Math.floor(Math.random() * 5)
             },
             lastUpdated: new Date().toISOString()
         });
@@ -532,10 +532,13 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
                 });
             });
 
-        // Create the error rate chart after data is loaded
+        // Create the error rate chart after data is loaded and DOM is ready
+        // Use a longer timeout to ensure the DOM is fully rendered
         setTimeout(() => {
-            this.createErrorRateChart();
-        }, 100);
+            if (this.showErrorMonitoring()) {
+                this.createErrorRateChart();
+            }
+        }, 200);
     }
 
     private getServiceTypeLabel(type: string): string {
@@ -1302,11 +1305,12 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
     toggleErrorMonitoringSection() {
         this.showErrorMonitoring.update(show => !show);
 
-        // If expanding the section, recreate the chart after a short delay
+        // If expanding the section, recreate the chart after DOM is updated
         if (this.showErrorMonitoring()) {
+            // Use a longer timeout to ensure the DOM is fully rendered
             setTimeout(() => {
                 this.createErrorRateChart();
-            }, 100);
+            }, 200);
         }
     }
 
@@ -1317,20 +1321,32 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
     private createErrorRateChart() {
         console.log('🔧 Creating error rate chart...');
 
-        const ctx = document.getElementById('errorRateChart') as HTMLCanvasElement;
-        if (!ctx) {
+        // Wait for the DOM to be ready and the canvas to be available
+        const canvas = document.getElementById('errorRateChart') as HTMLCanvasElement;
+        if (!canvas) {
             console.error('❌ Error rate chart canvas not found');
             return;
         }
 
-        console.log('✅ Canvas found:', ctx);
-        console.log('   - Canvas dimensions:', ctx.offsetWidth, 'x', ctx.offsetHeight);
+        // Additional check to ensure the canvas is properly rendered
+        if (canvas.offsetWidth === 0 || canvas.offsetHeight === 0) {
+            console.warn('⚠️ Canvas not yet rendered, retrying...');
+            setTimeout(() => this.createErrorRateChart(), 100);
+            return;
+        }
+
+        console.log('✅ Canvas found and ready:', canvas);
+        console.log('   - Canvas dimensions:', canvas.offsetWidth, 'x', canvas.offsetHeight);
 
         // Destroy existing chart if it exists
         const existingChart = this.charts.find(chart => chart.canvas?.id === 'errorRateChart');
         if (existingChart) {
             console.log('🗑️ Destroying existing chart');
-            existingChart.destroy();
+            try {
+                existingChart.destroy();
+            } catch (error) {
+                console.warn('Warning destroying existing chart:', error);
+            }
             this.charts = this.charts.filter(chart => chart !== existingChart);
         }
 
@@ -1349,6 +1365,13 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
         console.log('🏷️ Chart labels:', labels);
 
         try {
+            // Get the 2D context to ensure canvas is properly initialized
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                console.error('❌ Cannot get 2D context from canvas');
+                return;
+            }
+
             const chart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -1467,9 +1490,15 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
 
             // Force chart update and resize to ensure visibility
             setTimeout(() => {
-                chart.update();
-                chart.resize();
-                console.log('🔄 Chart updated and resized');
+                if (chart) {
+                    try {
+                        chart.update();
+                        chart.resize();
+                        console.log('🔄 Chart updated and resized');
+                    } catch (error) {
+                        console.warn('Chart update failed:', error);
+                    }
+                }
             }, 100);
         } catch (error) {
             console.error('❌ Error creating chart:', error);

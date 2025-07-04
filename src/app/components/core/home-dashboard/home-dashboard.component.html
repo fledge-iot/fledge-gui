@@ -65,10 +65,10 @@
             </div>
             <!-- Total Datapoints Card -->
             <div class="column is-3">
-                <div class="box has-background-primary-light stats-card">
+                <div class="box sent-card stats-card">
                     <div class="media">
                         <div class="media-left">
-                            <span class="icon is-large has-text-primary">
+                            <span class="icon is-large has-text-grey">
                                 <i class="bi bi-database-fill" style="font-size: 2rem;"></i>
                             </span>
                         </div>
@@ -132,51 +132,13 @@
                 </div>
             </div>
 
-            <!-- Sent Count Card -->
+            <!-- Alerts Card (moved to second position) -->
             <div class="column is-3">
-                <div class="box sent-card stats-card">
+                <div class="box stats-card alerts-card-container alert-card" (mouseenter)="onAlertsHover()"
+                    (mouseleave)="onAlertsLeave()" style="position: relative;">
                     <div class="media">
                         <div class="media-left">
-                            <span class="icon is-large has-text-grey-dark">
-                                <i class="bi bi-arrow-up-circle" style="font-size: 2rem;"></i>
-                            </span>
-                        </div>
-                        <div class="media-content">
-                            <div class="title-section">
-                                <p class="title is-4 has-text-dark">{{ statsSummary().sentCount | number }}</p>
-                                <p class="subtitle is-6 has-text-grey-dark">Sent</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Purged Count Card -->
-            <div class="column is-3">
-                <div class="box has-background-danger-light stats-card">
-                    <div class="media">
-                        <div class="media-left">
-                            <span class="icon is-large has-text-danger">
-                                <i class="fa fa-eraser" style="font-size: 2rem;"></i>
-                            </span>
-                        </div>
-                        <div class="media-content">
-                            <div class="title-section">
-                                <p class="title is-4 has-text-dark">{{ statsSummary().purgedCount | number }}</p>
-                                <p class="subtitle is-6 has-text-grey-dark">Purged</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Alerts Card (always show, but highlight when > 0) -->
-            <div class="column is-3">
-                <div class="box stats-card alerts-card-container"
-                    [class]="statsSummary().alertsCount > 0 ? 'alert-card' : 'alert-card-lighter'"
-                    (mouseenter)="onAlertsHover()" (mouseleave)="onAlertsLeave()" style="position: relative;">
-                    <div class="media">
-                        <div class="media-left">
-                            <span class="icon is-large"
-                                [class]="statsSummary().alertsCount > 0 ? 'alert-icon' : 'has-text-grey'">
+                            <span class="icon is-large alert-icon">
                                 <i class="bi bi-bell" style="font-size: 2rem;"></i>
                             </span>
                         </div>
@@ -250,6 +212,42 @@
                     </div>
                 </div>
             </div>
+            <!-- Purged Count Card -->
+            <div class="column is-3">
+                <div class="box has-background-danger-light stats-card">
+                    <div class="media">
+                        <div class="media-left">
+                            <span class="icon is-large has-text-danger">
+                                <i class="fa fa-eraser" style="font-size: 2rem;"></i>
+                            </span>
+                        </div>
+                        <div class="media-content">
+                            <div class="title-section">
+                                <p class="title is-4 has-text-dark">{{ statsSummary().purgedCount | number }}</p>
+                                <p class="subtitle is-6 has-text-grey-dark">Purged</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Sent Count Card (moved to fourth position) -->
+            <div class="column is-3">
+                <div class="box integration-light-card stats-card">
+                    <div class="media">
+                        <div class="media-left">
+                            <span class="icon is-large has-text-purple">
+                                <i class="bi bi-arrow-up-circle" style="font-size: 2rem;"></i>
+                            </span>
+                        </div>
+                        <div class="media-content">
+                            <div class="title-section">
+                                <p class="title is-4 has-text-dark">{{ statsSummary().sentCount | number }}</p>
+                                <p class="subtitle is-6 has-text-grey-dark">Sent</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -259,7 +257,7 @@
             <div class="columns is-vcentered mb-4">
                 <div class="column">
                     <h2 class="title is-5">
-                        📈 Statistics History
+                        Statistics History
                         <button class="button is-small is-ghost ml-2" (click)="toggleStatsHistorySection()"
                             [attr.aria-label]="isStatsHistoryExpanded() ? 'Collapse section' : 'Expand section'">
                             <span class="icon is-small">
@@ -374,7 +372,7 @@
             <div class="columns is-vcentered mb-4">
                 <div class="column">
                     <h2 class="title is-5">
-                        🚨 Error Rate Monitoring
+                        Error Rate Monitoring
                         <button class="button is-small is-ghost ml-2" (click)="toggleErrorMonitoringSection()"
                             [attr.aria-label]="showErrorMonitoring() ? 'Collapse section' : 'Expand section'">
                             <span class="icon is-small">
@@ -392,16 +390,16 @@
             </div>
 
             <!-- Collapsible Content -->
-            <div *ngIf="showErrorMonitoring()">
+            <div *ngIf="showErrorMonitoring()" class="error-monitoring-section">
                 <!-- Error Rate Summary Cards -->
                 <div class="columns is-multiline mb-4">
                     <!-- Total Error Rate Card -->
                     <div class="column is-3">
-                        <div class="has-background-danger-light stats-card">
+                        <div class="has-background-warning stats-card">
                             <div class="media">
                                 <div class="media-left">
-                                    <span class="icon is-large has-text-danger">
-                                        <i class="bi bi-exclamation-triangle" style="font-size: 2rem;"></i>
+                                    <span class="icon is-large has-text-warning-dark">
+                                        <i class="bi bi-exclamation-triangle"></i>
                                     </span>
                                 </div>
                                 <div class="media-content">
@@ -420,7 +418,7 @@
                             <div class="media">
                                 <div class="media-left">
                                     <span class="icon is-large has-text-warning">
-                                        <i class="bi bi-x-circle" style="font-size: 2rem;"></i>
+                                        <i class="bi bi-x-circle"></i>
                                     </span>
                                 </div>
                                 <div class="media-content">
@@ -439,15 +437,15 @@
                         <div class="has-background-info-light stats-card">
                             <div class="media">
                                 <div class="media-left">
-                                    <span class="icon is-large has-text-info">
-                                        <i class="bi bi-trash" style="font-size: 2rem;"></i>
+                                    <span class="icon is-large has-text-grey-dark">
+                                        <i class="bi bi-x-circle"></i>
                                     </span>
                                 </div>
                                 <div class="media-content">
                                     <div class="title-section">
                                         <p class="title is-4 has-text-dark">{{ errorSummary().discardedReadings | number
                                             }}</p>
-                                        <p class="subtitle is-6 has-text-grey-dark">Discarded</p>
+                                        <p class="subtitle is-6 has-text-grey-dark">Discarded Readings</p>
                                     </div>
                                 </div>
                             </div>
@@ -460,14 +458,14 @@
                             <div class="media">
                                 <div class="media-left">
                                     <span class="icon is-large has-text-danger-dark">
-                                        <i class="bi bi-x-octagon" style="font-size: 2rem;"></i>
+                                        <i class="bi bi-x-octagon"></i>
                                     </span>
                                 </div>
                                 <div class="media-content">
                                     <div class="title-section">
                                         <p class="title is-4 has-text-dark">{{ errorSummary().failedOperations | number
                                             }}</p>
-                                        <p class="subtitle is-6 has-text-grey-dark">Failed Ops</p>
+                                        <p class="subtitle is-6 has-text-grey-dark">Failed Operations</p>
                                     </div>
                                 </div>
                             </div>
@@ -525,7 +523,7 @@
             <div class="columns is-vcentered mb-4">
                 <div class="column">
                     <h2 class="title is-5">
-                        💻 System Health
+                        System Health
                         <button class="button is-small is-ghost ml-2" (click)="toggleSystemHealthSection()"
                             [attr.aria-label]="showSystemHealth() ? 'Collapse section' : 'Expand section'">
                             <span class="icon is-small">
@@ -534,16 +532,16 @@
                         </button>
                     </h2>
                 </div>
-                <div class="column is-narrow" *ngIf="showSystemHealth()">
+                <!-- <div class="column is-narrow" *ngIf="showSystemHealth()">
                     <span class="tag"
                         [class]="systemHealth().overall === 'healthy' ? 'is-success' : systemHealth().overall === 'degraded' ? 'is-warning' : 'is-danger'">
                         {{ systemHealth().overall | titlecase }}
                     </span>
-                </div>
+                </div> -->
             </div>
 
             <!-- Collapsible Content -->
-            <div *ngIf="showSystemHealth()">
+            <div *ngIf="showSystemHealth()" class="system-health-section">
                 <!-- System Resource Cards -->
                 <div class="columns is-multiline mb-4">
                     <!-- CPU Usage Card -->
@@ -554,7 +552,7 @@
                                 <div class="media-left">
                                     <span class="icon is-large"
                                         [class]="systemHealth().resources.cpu.usage > 80 ? 'has-text-danger' : systemHealth().resources.cpu.usage > 60 ? 'has-text-warning' : 'has-text-success'">
-                                        <i class="bi bi-cpu" style="font-size: 2rem;"></i>
+                                        <i class="bi bi-cpu"></i>
                                     </span>
                                 </div>
                                 <div class="media-content">
@@ -576,7 +574,7 @@
                                 <div class="media-left">
                                     <span class="icon is-large"
                                         [class]="systemHealth().resources.memory.usage > 85 ? 'has-text-danger' : systemHealth().resources.memory.usage > 70 ? 'has-text-warning' : 'has-text-success'">
-                                        <i class="bi bi-memory" style="font-size: 2rem;"></i>
+                                        <i class="bi bi-memory"></i>
                                     </span>
                                 </div>
                                 <div class="media-content">
@@ -598,7 +596,7 @@
                                 <div class="media-left">
                                     <span class="icon is-large"
                                         [class]="systemHealth().resources.disk.usage > 90 ? 'has-text-danger' : systemHealth().resources.disk.usage > 75 ? 'has-text-warning' : 'has-text-success'">
-                                        <i class="bi bi-hdd" style="font-size: 2rem;"></i>
+                                        <i class="bi bi-hdd"></i>
                                     </span>
                                 </div>
                                 <div class="media-content">
@@ -620,7 +618,7 @@
                                 <div class="media-left">
                                     <span class="icon is-large"
                                         [class]="systemHealth().services.errorCount > 0 ? 'has-text-warning' : 'has-text-success'">
-                                        <i class="bi bi-gear" style="font-size: 2rem;"></i>
+                                        <i class="bi bi-gear"></i>
                                     </span>
                                 </div>
                                 <div class="media-content">
@@ -637,7 +635,6 @@
 
                 <!-- Service Health Table -->
                 <div class="mb-5" *ngIf="serviceErrorMetrics().services.length > 0">
-                    <h3 class="title is-6 mb-3">Service Health Status</h3>
                     <div class="table-container">
                         <table class="table is-fullwidth is-striped is-hoverable is-size-9">
                             <thead>
@@ -655,8 +652,7 @@
                                     <td>{{ service.name }}
                                     </td>
                                     <td>
-                                        <span class="tag is-light"
-                                            [class]="service.type === 'south' ? 'is-south' : service.type === 'north' ? 'is-north' : service.type === 'notification' ? 'is-notification' : service.type === 'dispatcher' ?  'is-primary' : 'is-info'">
+                                        <span class="tag is-white">
                                             {{ service.type | titlecase }}
                                         </span>
                                     </td>
@@ -667,14 +663,13 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <span
-                                            [class]="service.errorRate > 5 ? 'has-text-danger' : service.errorRate > 2 ? 'text-warning' : 'has-text-success'">
-                                            {{ service.errorRate }}%
+                                        <span>
+                                            {{ service.errorRate | number:'1.1-1' }}%
                                         </span>
                                     </td>
-                                    <td>{{ service.uptime }}%</td>
+                                    <td>{{ service.uptime | number:'1.1-1' }}%</td>
                                     <td>
-                                        <span *ngIf="service.lastError" class="is-size-7">
+                                        <span *ngIf="service.lastError">
                                             {{ service.lastError.message | slice:0:50 }}{{
                                             service.lastError.message.length > 50 ? '...' : '' }}
                                         </span>
@@ -692,10 +687,10 @@
     <!-- System Logs Section -->
     <div class="section">
         <div class="box">
-            <div class="columns is-vcentered mb-4">
+            <div class="columns is-vcentered mb-0">
                 <div class="column">
                     <h2 class="title is-5">
-                        📋 System Logs
+                        System Logs
                         <button class="button is-small is-ghost ml-2" (click)="toggleSystemLogsSection()"
                             [attr.aria-label]="isSystemLogsExpanded() ? 'Collapse section' : 'Expand section'">
                             <span class="icon is-small">
@@ -709,7 +704,7 @@
             <!-- Collapsible Content -->
             <div [hidden]="!isSystemLogsExpanded()" class="system-logs-container">
                 <!-- Filter Controls -->
-                <div class="columns is-vcentered filter-controls">
+                <!-- <div class="columns is-vcentered filter-controls">
                     <div class="column is-3">
                         <div class="field">
                             <label class="label">Service</label>
@@ -756,8 +751,56 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
+                <div class="columns is-vcentered filter-controls">
+                    <div class="column is-3">
+                        <div class="field">
+                            <label class="label">Service</label>
+                            <div class="control">
+                                <div class="select is-small is-fullwidth">
+                                    <select [value]="systemLogsSource()"
+                                        (change)="onSystemLogsFilterChange('source', $any($event.target).value)">
+                                        <option value="">All</option>
+                                        <option *ngFor="let service of availableServices()"
+                                            [value]="service.toLowerCase() === 'all' ? '' : service.toLowerCase()">
+                                            {{ service }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-3">
+                        <div class="field">
+                            <label class="label">Level</label>
+                            <div class="control">
+                                <div class="select is-small is-fullwidth">
+                                    <select [value]="systemLogsLevel()"
+                                        (change)="onSystemLogsFilterChange('level', $any($event.target).value)">
+                                        <option value="">Debug and above</option>
+                                        <option value="info">Info and above</option>
+                                        <option value="warning">Warning and above</option>
+                                        <option value="error">Error and above</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-6 pr-0">
+                        <div class="field">
+                            <label class="label">Search</label>
+                            <div class="control has-icons-left">
+                                <input class="input is-small" type="text" placeholder="Search in log messages..."
+                                    [value]="systemLogsKeyword()"
+                                    (input)="onSystemLogsSearchChange($any($event.target).value)">
+                                <span class="icon is-small is-left">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- Hidden SystemLogComponent for data source -->
                 <div style="display: none;">
                     <app-system-log></app-system-log>
