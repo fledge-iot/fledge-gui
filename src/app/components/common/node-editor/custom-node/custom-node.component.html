@@ -88,7 +88,7 @@
               [serviceName]="service.name" [debug]="data.debug"></readings-count>
           </div>
           <div *ngIf="data.debug?.egress === 'Isolated' && !this.source"
-            class="mx-2 has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered"
+            class="mx-2 has-tooltip-auto custom-tooltip has-tooltip-arrow tooltip is-hovered"
             data-tooltip="Egress Isolated">
             <i class="bi bi-sm bi-database"></i>
           </div>
@@ -104,7 +104,7 @@
             <span class="reading p-1">&nbsp;</span>
           </ng-template>
           <div *ngIf="data.debug?.egress === 'Isolated'"
-            class="mx-2 has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered"
+            class="mx-2 has-tooltip-auto has-tooltip-arrow tooltip is-pulled-left is-hovered"
             data-tooltip="Egress Isolated">
             <i class="bi bi-sm bi-cloud-slash"></i>
           </div>

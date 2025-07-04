@@ -11,6 +11,7 @@ export class Notification extends ClassicPreset.Node {
   width = 198;
   parent?: string;
   debug?: Debug;
+  type? = "notification";
 
   constructor(socket: ClassicPreset.Socket, notification) {
     super("Notification");

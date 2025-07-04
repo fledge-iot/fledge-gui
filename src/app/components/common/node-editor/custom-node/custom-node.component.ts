@@ -116,13 +116,15 @@ export class CustomNodeComponent implements OnChanges {
         distinctUntilChanged()
       )
       .subscribe((debuggerData: any) => {
-        const isAttached = debuggerData?.debug?.debugger === 'Attached';
-        const serviceName = this.data.label === 'South' ? this.source : this.data.controls.nameControl['name'];
-        if (this.data?.debug && debuggerData?.service === serviceName) {
-          this.data.debug.debugger = isAttached ? 'Attached' : 'Detached';
-          this.data.debug.ingress = debuggerData?.debug?.ingress;
-          this.data.debug.egress = debuggerData?.debug?.egress;
-          this.cdr.detectChanges();
+        if (this.data?.controls?.nameControl) {
+          const isAttached = debuggerData?.debug?.debugger === 'Attached';
+          const serviceName = this.data.controls.nameControl['name'];
+          if (this.data?.debug && debuggerData?.service === serviceName) {
+            this.data.debug.debugger = isAttached ? 'Attached' : 'Detached';
+            this.data.debug.ingress = debuggerData?.debug?.ingress;
+            this.data.debug.egress = debuggerData?.debug?.egress;
+            // this.cdr.detectChanges();
+          }
         }
       });
   }
@@ -218,7 +220,7 @@ export class CustomNodeComponent implements OnChanges {
     }
 
     if (this.data.label === 'Storage') {
-      if (this.from == 'south') {
+      if (this.from == 'south' && this.data?.controls?.debugControl) {
         this.data.debug = this.data?.controls?.debugControl['debug'];
       }
       this.elRef.nativeElement.style.borderColor = "#999999";

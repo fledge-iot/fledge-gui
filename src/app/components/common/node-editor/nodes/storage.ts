@@ -8,6 +8,7 @@ export class Storage extends ClassicPreset.Node {
   width = 100;
   parent?: string;
   debug?: Debug;
+  type? = "storage";
 
   constructor(socket: ClassicPreset.Socket, data) {
     super("Storage");
