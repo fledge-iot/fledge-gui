@@ -154,7 +154,7 @@
       </div>
       <div class="box step-content" id="c-2">
         <app-configuration-group *ngIf="configurationData" #configChildComponent [category]="configurationData"
-          [recalculateTabsOverflow]="isTabsNavVisible" (changedConfigEvent)="getChangedConfig($event)"
+          [plugin]="plugin" [recalculateTabsOverflow]="isTabsNavVisible" (changedConfigEvent)="getChangedConfig($event)"
           (formStatusEvent)="validChildConfigurationForm = $event" [from]="'add-filter'">
         </app-configuration-group>
 
