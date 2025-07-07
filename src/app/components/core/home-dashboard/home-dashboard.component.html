@@ -83,7 +83,7 @@
             </div>
             <!-- Total North Services Card -->
             <div class="column is-3">
-                <div class="box integration-card stats-card" (click)="navigateToNorth()" style="cursor: pointer;">
+                <div class="box integration-light-card stats-card" (click)="navigateToNorth()" style="cursor: pointer;">
                     <!-- Disabled indicator in top-right corner -->
                     <div class="disabled-indicator" *ngIf="statsSummary().northServicesDisabled > 0"
                         [title]="getDisabledNorthServicesTooltip()">
@@ -94,7 +94,7 @@
                     </div>
                     <div class="media">
                         <div class="media-left">
-                            <span class="icon is-large has-text-warning">
+                            <span class="icon is-large has-text-purple">
                                 <svg style="width: 2rem; height: 2rem;">
                                     <use xlink:href="assets/icons/svg/north-icon.svg#north-icon" />
                                 </svg>
@@ -124,8 +124,15 @@
                         </div>
                         <div class="media-content">
                             <div class="title-section">
-                                <p class="title is-4 has-text-dark">{{ statsSummary().receivedCount | number }}</p>
-                                <p class="subtitle is-6 has-text-grey-dark">Received</p>
+                                <p class="title is-4 has-text-dark">
+                                    {{ statsSummary().receivedCount | number }}
+                                    <!-- <span class="icon is-small ml-2 has-text-info"
+                                        [title]="statsSummary().receivedCount + ' readings received'"
+                                        style="cursor: help;">
+                                        <i class="bi bi-info-circle" style="font-size: 0.8rem;"></i>
+                                    </span> -->
+                                </p>
+                                <p class="subtitle is-6 has-text-grey-dark">Readings Received</p>
                             </div>
                         </div>
                     </div>
@@ -224,7 +231,7 @@
                         <div class="media-content">
                             <div class="title-section">
                                 <p class="title is-4 has-text-dark">{{ statsSummary().purgedCount | number }}</p>
-                                <p class="subtitle is-6 has-text-grey-dark">Purged</p>
+                                <p class="subtitle is-6 has-text-grey-dark">Purged Readings</p>
                             </div>
                         </div>
                     </div>
@@ -232,17 +239,17 @@
             </div>
             <!-- Sent Count Card (moved to fourth position) -->
             <div class="column is-3">
-                <div class="box integration-light-card stats-card">
+                <div class="box integration-lighter-card stats-card">
                     <div class="media">
                         <div class="media-left">
-                            <span class="icon is-large has-text-purple">
+                            <span class="icon is-large has-text-purple-light">
                                 <i class="bi bi-arrow-up-circle" style="font-size: 2rem;"></i>
                             </span>
                         </div>
                         <div class="media-content">
                             <div class="title-section">
                                 <p class="title is-4 has-text-dark">{{ statsSummary().sentCount | number }}</p>
-                                <p class="subtitle is-6 has-text-grey-dark">Sent</p>
+                                <p class="subtitle is-6 has-text-grey-dark">Sent Readings</p>
                             </div>
                         </div>
                     </div>
@@ -382,16 +389,33 @@
                     </h2>
                 </div>
                 <div class="column is-narrow" *ngIf="showErrorMonitoring()">
-                    <span class="tag is-danger is-light">
-                        <!-- [class]="errorSummary().totalErrorRate > 5 ? 'is-danger' : errorSummary().totalErrorRate > 2 ? 'is-warning' : 'is-success'"> -->
-                        Error Rate: {{ errorSummary().totalErrorRate }}%
-                    </span>
+                    <div class="field is-grouped">
+                        <!-- Time Range Selector -->
+                        <div class="control">
+                            <div class="select is-small">
+                                <select [value]="errorTimeRange()"
+                                    (change)="onErrorTimeRangeChange($any($event.target).value)">
+                                    <option value="1h">Last 1 hour</option>
+                                    <option value="3h">Last 3 hours</option>
+                                    <option value="12h">Last 12 hours</option>
+                                    <option value="24h">Last 24 hours</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Error Rate Tag -->
+                        <div class="control">
+                            <span class="tag is-danger is-light">
+                                Error Rate: {{ errorSummary().totalErrorRate | number:'1.1-1' }}%
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Collapsible Content -->
             <div *ngIf="showErrorMonitoring()" class="error-monitoring-section">
                 <!-- Error Rate Summary Cards -->
+                <!-- Error rates are calculated based on actual system logs filtered by selected time range -->
                 <div class="columns is-multiline mb-4">
                     <!-- Total Error Rate Card -->
                     <div class="column is-3">
@@ -414,10 +438,10 @@
 
                     <!-- Total Errors Card -->
                     <div class="column is-3">
-                        <div class="has-background-warning-light stats-card">
+                        <div class="error-card stats-card">
                             <div class="media">
                                 <div class="media-left">
-                                    <span class="icon is-large has-text-warning">
+                                    <span class="icon is-large has-text-danger">
                                         <i class="bi bi-x-circle"></i>
                                     </span>
                                 </div>
@@ -478,12 +502,12 @@
                     <div class="is-flex is-justify-content-space-between is-align-items-center mb-3">
                         <h3 class="title is-6 mb-0">Error Rate Trends</h3>
                         <!-- Temporary debug button for troubleshooting -->
-                        <button class="button is-small" (click)="debugErrorChart()">
+                        <!-- <button class="button is-small" (click)="debugErrorChart()">
                             <span class="icon is-small">
                                 <i class="bi bi-bug"></i>
                             </span>
                             <span>Debug Chart</span>
-                        </button>
+                        </button> -->
                     </div>
                     <div class="chart-container" style="position: relative; height: 300px; border: 1px dashed #ccc;">
                         <canvas id="errorRateChart"></canvas>
@@ -791,8 +815,8 @@
                         <div class="field">
                             <label class="label">Search</label>
                             <div class="control has-icons-left">
-                                <input class="input is-small" type="text" placeholder="Search in log messages..."
-                                    [value]="systemLogsKeyword()"
+                                <input class="input is-small system-logs-search" type="text"
+                                    placeholder="Search in log messages..." [value]="systemLogsKeyword()"
                                     (input)="onSystemLogsSearchChange($any($event.target).value)">
                                 <span class="icon is-small is-left">
                                     <i class="bi bi-search"></i>

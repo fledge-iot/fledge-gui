@@ -169,6 +169,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
     });
     showErrorMonitoring = signal(true);
     showSystemHealth = signal(true);
+    errorTimeRange = signal<'1h' | '3h' | '12h' | '24h'>('3h');
 
     @ViewChild(SystemLogComponent) systemLogComponent!: SystemLogComponent;
 
@@ -256,8 +257,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
                 this.loadStatsSummary();
                 this.loadStatistics();
                 this.loadStatisticsHistory();
-                this.loadErrorMonitoringData();
-                // Parse system logs after refresh
+                // Parse system logs after refresh which will also update error monitoring
                 setTimeout(() => {
                     this.parseSystemLogsData();
                     this.updateAvailableServices();
@@ -390,40 +390,42 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
     }
 
     private loadErrorMonitoringData() {
-        // Mock error monitoring data since the service was deleted
-        this.errorSummary.set({
-            totalErrorRate: Math.random() > 0.5 ? Math.floor(Math.random() * 8) : 0,
-            totalErrors: Math.floor(Math.random() * 150),
-            discardedReadings: Math.floor(Math.random() * 50),
-            bufferedReadings: Math.floor(Math.random() * 100),
-            failedOperations: Math.floor(Math.random() * 25),
-            serviceErrorCounts: {
-                'ModbusReader': Math.floor(Math.random() * 10),
-                'OPCUAClient': Math.floor(Math.random() * 8),
-                'Sinusoid': Math.floor(Math.random() * 5)
-            },
-            lastUpdated: new Date().toISOString()
-        });
-
-        // Mock error history data
+        // Calculate error rates based on actual system logs
+        const timeRange = this.errorTimeRange();
         const now = new Date();
-        const mockData = [];
-        for (let i = 29; i >= 0; i--) {
-            const timestamp = new Date(now.getTime() - i * 60000); // 1 minute intervals
-            mockData.push({
-                timestamp: timestamp.toISOString(),
-                errorRate: Math.random() * 10,
-                totalErrors: Math.floor(Math.random() * 20),
-                discardedReadings: Math.floor(Math.random() * 8)
-            });
+        let cutoffTime: Date;
+
+        // Calculate cutoff time based on selected range
+        switch (timeRange) {
+            case '1h':
+                cutoffTime = new Date(now.getTime() - 60 * 60 * 1000);
+                break;
+            case '3h':
+                cutoffTime = new Date(now.getTime() - 3 * 60 * 60 * 1000);
+                break;
+            case '12h':
+                cutoffTime = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+                break;
+            case '24h':
+                cutoffTime = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+                break;
         }
 
+        // Parse system logs to calculate error rates
+        const parsedLogs = this.parsedSystemLogs();
+        const errorLogs = this.filterErrorLogsByTime(parsedLogs, cutoffTime);
+        const errorMetrics = this.calculateErrorMetrics(errorLogs, parsedLogs, cutoffTime);
+
+        this.errorSummary.set(errorMetrics.summary);
+
+        // Generate error history data for chart
+        const errorHistoryData = this.generateErrorHistory(errorLogs, cutoffTime, timeRange);
         this.errorHistory.set({
             timeRange: {
-                start: mockData[0]?.timestamp || now.toISOString(),
-                end: mockData[mockData.length - 1]?.timestamp || now.toISOString()
+                start: cutoffTime.toISOString(),
+                end: now.toISOString()
             },
-            data: mockData
+            data: errorHistoryData
         });
 
         // Load real service data from fledge/service endpoint
@@ -465,12 +467,9 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
                     name: service.name,
                     type: this.getServiceTypeLabel(service.type),
                     status: service.status,
-                    errorRate: Math.random() * 5, // Mock error rate since not provided by API
+                    errorRate: this.calculateServiceErrorRate(service.name, errorLogs, parsedLogs, cutoffTime),
                     uptime: 95 + Math.random() * 5, // Mock uptime since not provided by API
-                    lastError: Math.random() > 0.8 ? {
-                        message: this.generateMockErrorMessage(service.type),
-                        timestamp: new Date(Date.now() - Math.random() * 3600000).toISOString()
-                    } : null,
+                    lastError: this.getLastErrorForService(service.name, errorLogs),
                     address: service.address,
                     managementPort: service.management_port,
                     servicePort: service.service_port,
@@ -533,12 +532,186 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
             });
 
         // Create the error rate chart after data is loaded and DOM is ready
-        // Use a longer timeout to ensure the DOM is fully rendered
+        // Use a longer timeout to ensure the DOM is fully rendered and data is updated
         setTimeout(() => {
             if (this.showErrorMonitoring()) {
+                console.log('📊 Creating error rate chart with new data for time range:', this.errorTimeRange());
                 this.createErrorRateChart();
             }
-        }, 200);
+        }, 300);
+    }
+
+    private filterErrorLogsByTime(logs: any[], cutoffTime: Date): any[] {
+        return logs.filter(log => {
+            if (!log.timestamp) return false;
+
+            try {
+                const logTime = new Date(log.timestamp);
+                return logTime >= cutoffTime && (log.level === 'ERROR' || log.level === 'FATAL' || log.level === 'EXCEPTION');
+            } catch (error) {
+                return false;
+            }
+        });
+    }
+
+    private calculateErrorMetrics(errorLogs: any[], allLogs: any[], cutoffTime: Date): { summary: any } {
+        const totalLogs = allLogs.filter(log => {
+            if (!log.timestamp) return false;
+            try {
+                const logTime = new Date(log.timestamp);
+                return logTime >= cutoffTime;
+            } catch (error) {
+                return false;
+            }
+        }).length;
+
+        const totalErrors = errorLogs.length;
+        const errorRate = totalLogs > 0 ? (totalErrors / totalLogs) * 100 : 0;
+
+        // Count errors by service
+        const serviceErrorCounts: { [key: string]: number } = {};
+        let discardedReadings = 0;
+        let failedOperations = 0;
+
+        errorLogs.forEach(log => {
+            if (log.service) {
+                serviceErrorCounts[log.service] = (serviceErrorCounts[log.service] || 0) + 1;
+            }
+
+            // Count specific error types based on message content
+            if (log.message && log.message.toLowerCase().includes('discard')) {
+                discardedReadings++;
+            }
+            if (log.message && (log.message.toLowerCase().includes('failed') || log.message.toLowerCase().includes('failure'))) {
+                failedOperations++;
+            }
+        });
+
+        return {
+            summary: {
+                totalErrorRate: parseFloat(errorRate.toFixed(1)),
+                totalErrors: totalErrors,
+                discardedReadings: discardedReadings,
+                bufferedReadings: Math.floor(Math.random() * 100), // Keep mock for now
+                failedOperations: failedOperations,
+                serviceErrorCounts: serviceErrorCounts,
+                lastUpdated: new Date().toISOString()
+            }
+        };
+    }
+
+    private generateErrorHistory(errorLogs: any[], cutoffTime: Date, timeRange: string): any[] {
+        const now = new Date();
+        const data = [];
+
+        console.log('📊 Generating error history for time range:', timeRange);
+        console.log('   - Cutoff time:', cutoffTime.toISOString());
+        console.log('   - Current time:', now.toISOString());
+        console.log('   - Error logs count:', errorLogs.length);
+
+        // Determine interval based on time range
+        let intervalMinutes: number;
+        let totalIntervals: number;
+
+        switch (timeRange) {
+            case '1h':
+                intervalMinutes = 5; // 5-minute intervals
+                totalIntervals = 12;
+                break;
+            case '3h':
+                intervalMinutes = 15; // 15-minute intervals
+                totalIntervals = 12;
+                break;
+            case '12h':
+                intervalMinutes = 60; // 1-hour intervals
+                totalIntervals = 12;
+                break;
+            case '24h':
+                intervalMinutes = 120; // 2-hour intervals
+                totalIntervals = 12;
+                break;
+        }
+
+        console.log('   - Interval minutes:', intervalMinutes);
+        console.log('   - Total intervals:', totalIntervals);
+
+        // Generate data points for each interval
+        for (let i = totalIntervals - 1; i >= 0; i--) {
+            const intervalStart = new Date(now.getTime() - (i + 1) * intervalMinutes * 60 * 1000);
+            const intervalEnd = new Date(now.getTime() - i * intervalMinutes * 60 * 1000);
+
+            // Count errors in this interval
+            const intervalErrors = errorLogs.filter(log => {
+                if (!log.timestamp) return false;
+                try {
+                    const logTime = new Date(log.timestamp);
+                    return logTime >= intervalStart && logTime < intervalEnd;
+                } catch (error) {
+                    return false;
+                }
+            });
+
+            const errorCount = intervalErrors.length;
+            const discardedCount = intervalErrors.filter(log =>
+                log.message && log.message.toLowerCase().includes('discard')
+            ).length;
+
+            // Calculate error rate for this interval (simplified)
+            const intervalErrorRate = errorCount > 0 ? Math.min(errorCount * 2, 100) : 0;
+
+            const dataPoint = {
+                timestamp: intervalEnd.toISOString(),
+                errorRate: parseFloat(intervalErrorRate.toFixed(1)),
+                totalErrors: errorCount,
+                discardedReadings: discardedCount,
+                intervalStart: intervalStart.toISOString(),
+                intervalEnd: intervalEnd.toISOString()
+            };
+
+            data.push(dataPoint);
+        }
+
+        console.log('   - Generated data points:', data.length);
+        console.log('   - First data point:', data[0]);
+        console.log('   - Last data point:', data[data.length - 1]);
+
+        return data;
+    }
+
+    private calculateServiceErrorRate(serviceName: string, errorLogs: any[], allLogs: any[], cutoffTime: Date): number {
+        const serviceErrorLogs = errorLogs.filter(log => log.service === serviceName);
+        const serviceTotalLogs = allLogs.filter(log => {
+            if (!log.timestamp || log.service !== serviceName) return false;
+            try {
+                const logTime = new Date(log.timestamp);
+                return logTime >= cutoffTime;
+            } catch (error) {
+                return false;
+            }
+        });
+
+        if (serviceTotalLogs.length === 0) return 0;
+        return parseFloat(((serviceErrorLogs.length / serviceTotalLogs.length) * 100).toFixed(1));
+    }
+
+    private getLastErrorForService(serviceName: string, errorLogs: any[]): any {
+        const serviceErrors = errorLogs
+            .filter(log => log.service === serviceName)
+            .sort((a, b) => {
+                try {
+                    return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+                } catch (error) {
+                    return 0;
+                }
+            });
+
+        if (serviceErrors.length === 0) return null;
+
+        const lastError = serviceErrors[0];
+        return {
+            message: lastError.message || 'Unknown error',
+            timestamp: lastError.timestamp || new Date().toISOString()
+        };
     }
 
     private getServiceTypeLabel(type: string): string {
@@ -558,46 +731,6 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
             default:
                 return type.toLowerCase();
         }
-    }
-
-    private generateMockErrorMessage(serviceType: string): string {
-        const errorMessages = {
-            'Southbound': [
-                'Connection timeout to device',
-                'Authentication failed',
-                'Data parsing error',
-                'Network connection lost'
-            ],
-            'Northbound': [
-                'Failed to send data to external system',
-                'Authentication failed for external API',
-                'Rate limit exceeded',
-                'Connection refused by destination'
-            ],
-            'Storage': [
-                'Database connection timeout',
-                'Disk space low',
-                'Query execution failed'
-            ],
-            'Core': [
-                'Configuration update failed',
-                'Service restart required',
-                'Memory usage high'
-            ],
-            'Dispatcher': [
-                'Task queue overflow',
-                'Worker process crashed',
-                'Message delivery failed'
-            ],
-            'Notification': [
-                'Email delivery failed',
-                'SMTP connection timeout',
-                'Webhook endpoint unreachable'
-            ]
-        };
-
-        const messages = errorMessages[serviceType] || ['Service error occurred'];
-        return messages[Math.floor(Math.random() * messages.length)];
     }
 
     private updateChart() {
@@ -798,7 +931,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
             this.systemLogComponent.getSchedules();
             // Parse the logs and update services after refresh
             setTimeout(() => {
-                this.parseSystemLogsData();
+                this.parseSystemLogsData(); // This will also update error monitoring
                 this.updateAvailableServices();
             }, 500);
         }
@@ -863,6 +996,9 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
 
             // Debug: log the first few parsed entries
             console.log('Parsed system logs (first 3):', parsedLogs.slice(0, 3));
+
+            // Update error monitoring data when logs are refreshed
+            this.loadErrorMonitoringData();
         }
     }
 
@@ -1319,7 +1455,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
     }
 
     private createErrorRateChart() {
-        console.log('🔧 Creating error rate chart...');
+        console.log('🔧 Creating error rate chart for time range:', this.errorTimeRange());
 
         // Wait for the DOM to be ready and the canvas to be available
         const canvas = document.getElementById('errorRateChart') as HTMLCanvasElement;
@@ -1338,20 +1474,13 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
         console.log('✅ Canvas found and ready:', canvas);
         console.log('   - Canvas dimensions:', canvas.offsetWidth, 'x', canvas.offsetHeight);
 
-        // Destroy existing chart if it exists
-        const existingChart = this.charts.find(chart => chart.canvas?.id === 'errorRateChart');
-        if (existingChart) {
-            console.log('🗑️ Destroying existing chart');
-            try {
-                existingChart.destroy();
-            } catch (error) {
-                console.warn('Warning destroying existing chart:', error);
-            }
-            this.charts = this.charts.filter(chart => chart !== existingChart);
-        }
+        // Make sure we destroy any existing chart first
+        this.destroyErrorRateChart();
 
         const errorHistoryData = this.errorHistory().data;
-        console.log('📊 Error history data:', errorHistoryData);
+        console.log('📊 Error history data for chart:', errorHistoryData);
+        console.log('   - Data points count:', errorHistoryData.length);
+        console.log('   - Time range:', this.errorTimeRange());
 
         if (!errorHistoryData || errorHistoryData.length === 0) {
             console.error('❌ No error history data available for chart');
@@ -1359,10 +1488,14 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
         }
 
         const labels = errorHistoryData.map(item => {
-            return this.dateFormatter.transform(item.timestamp, 'HH:mm:ss');
+            // Use different time formats based on the time range
+            const timeFormat = this.getTimeFormatForRange(this.errorTimeRange());
+            return this.dateFormatter.transform(item.timestamp, timeFormat);
         });
 
         console.log('🏷️ Chart labels:', labels);
+        console.log('   - First label:', labels[0]);
+        console.log('   - Last label:', labels[labels.length - 1]);
 
         try {
             // Get the 2D context to ensure canvas is properly initialized
@@ -1410,12 +1543,12 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
                         {
                             label: 'Discarded Readings',
                             data: errorHistoryData.map(item => item.discardedReadings),
-                            borderColor: '#8B5CF6',
-                            backgroundColor: '#8B5CF630',
+                            borderColor: '#F97316',
+                            backgroundColor: '#F9731630',
                             fill: false,
                             tension: 0.4,
                             borderWidth: 2,
-                            pointBackgroundColor: '#8B5CF6',
+                            pointBackgroundColor: '#F97316',
                             pointBorderColor: '#ffffff',
                             pointBorderWidth: 2,
                             pointRadius: 3,
@@ -1429,7 +1562,12 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
                     maintainAspectRatio: false,
                     plugins: {
                         title: {
-                            display: false
+                            display: true,
+                            text: `Error Rate Trends (${this.errorTimeRange().toUpperCase()})`,
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
                         },
                         legend: {
                             display: true,
@@ -1471,7 +1609,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
                         x: {
                             title: {
                                 display: true,
-                                text: 'Time'
+                                text: `Time (${this.errorTimeRange()})`
                             },
                             grid: {
                                 color: 'rgba(0,0,0,0.1)'
@@ -1486,7 +1624,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
             });
 
             this.charts.push(chart);
-            console.log('✅ Error rate chart created successfully:', chart);
+            console.log('✅ Error rate chart created successfully with', labels.length, 'data points');
 
             // Force chart update and resize to ensure visibility
             setTimeout(() => {
@@ -1494,7 +1632,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
                     try {
                         chart.update();
                         chart.resize();
-                        console.log('🔄 Chart updated and resized');
+                        console.log('🔄 Chart updated and resized for time range:', this.errorTimeRange());
                     } catch (error) {
                         console.warn('Chart update failed:', error);
                     }
@@ -1541,5 +1679,43 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
         }, 200);
 
         console.log('=== ERROR CHART DEBUG END ===');
+    }
+
+    onErrorTimeRangeChange(timeRange: '1h' | '3h' | '12h' | '24h') {
+        this.errorTimeRange.set(timeRange);
+
+        // First destroy the existing error rate chart
+        this.destroyErrorRateChart();
+
+        // Then load new data and recreate the chart
+        this.loadErrorMonitoringData();
+    }
+
+    private destroyErrorRateChart() {
+        const existingChart = this.charts.find(chart => chart.canvas?.id === 'errorRateChart');
+        if (existingChart) {
+            console.log('🗑️ Destroying existing error rate chart');
+            try {
+                existingChart.destroy();
+            } catch (error) {
+                console.warn('Warning destroying existing error rate chart:', error);
+            }
+            this.charts = this.charts.filter(chart => chart !== existingChart);
+        }
+    }
+
+    private getTimeFormatForRange(timeRange: string): string {
+        switch (timeRange) {
+            case '1h':
+                return 'HH:mm'; // Show hours and minutes for short range
+            case '3h':
+                return 'HH:mm'; // Show hours and minutes 
+            case '12h':
+                return 'HH:mm'; // Show hours and minutes
+            case '24h':
+                return 'MM-DD HH:mm'; // Show month-day and time for longer range
+            default:
+                return 'HH:mm:ss';
+        }
     }
 } 

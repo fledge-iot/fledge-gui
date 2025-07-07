@@ -17,7 +17,6 @@
     min-height: 90px;
     display: flex;
     flex-direction: column;
-    border-left: 4px solid #94a3b8;
 }
 
 .error-monitoring-section .stats-card {
@@ -787,7 +786,6 @@
 /* System Health section - make all tiles white */
 .system-health-section .stats-card {
     background: white !important;
-    border-left: 4px solid #94a3b8 !important;
 }
 
 /* Animation Enhancements */
@@ -840,8 +838,50 @@
     border-left: 4px solid #c084fc !important;
 }
 
+/* New integration-lighter-card for sent tile - even lighter than integration-light-card */
+.integration-lighter-card {
+    background: linear-gradient(135deg, #fcfcff 0%, #faf9ff 100%) !important;
+    border-left: 4px solid #e9d5ff !important;
+}
+
+/* Error card styling for Total Errors tile */
+.error-card {
+    background: linear-gradient(135deg, #fef7f7 0%, #fef2f2 100%) !important;
+    border-left: 4px solid #fca5a5 !important;
+}
+
 .has-text-purple {
     color: #8b5cf6 !important;
+}
+
+.has-text-purple-light {
+    color: #c084fc !important;
+}
+
+/* System logs search input styling to match dropdowns */
+.system-logs-search {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #475569 !important;
+    border-radius: 3px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.system-logs-search:hover {
+    background: rgba(255, 255, 255, 1) !important;
+    border-color: #d1d5db !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.system-logs-search:focus {
+    background: rgba(255, 255, 255, 1) !important;
+    border-color: #667eea !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3) !important;
+    outline: none !important;
 }
 
 /* Dropdown Enhancements - Make both dropdowns consistent */
@@ -849,7 +889,7 @@
     background: rgba(255, 255, 255, 0.9);
     border: 1px solid #e2e8f0;
     color: #475569;
-    border-radius: 8px;
+    border-radius: 3px;
     font-weight: 600;
     transition: all 0.3s ease;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -879,7 +919,7 @@
     background: rgba(255, 255, 255, 0.9) !important;
     border: 1px solid #e2e8f0 !important;
     color: #475569 !important;
-    border-radius: 8px !important;
+    border-radius: 3px !important;
     font-weight: 600 !important;
     transition: all 0.3s ease !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
