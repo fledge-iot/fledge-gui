@@ -21,8 +21,6 @@ export class North extends ClassicPreset.Node {
     super("North");
     this.addInput("port", new ClassicPreset.Input(socket));
     if (task) {
-      console.log('task', task);
-
       const name = new NameControl(task.name);
       const plugin = new PluginControl(task.plugin.name);
       const sentReading = new SentReadingsControl(task.sent);

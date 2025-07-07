@@ -552,6 +552,9 @@ export function updateNode(data) {
         const sentReadingControl = node.controls.sentReadingControl as SentReadingsControl;
         const task = data.tasks.find(t => t.name === node.controls.nameControl['name']) as NorthTask;
         if (task) {
+          if (task?.execution == 'service' && task?.debug) {
+            node.debug = task.debug;
+          }
           sentReadingControl.sent = task.sent;
           enabledControl.enabled = task.enabled;
           statusControl.status = task.status;
