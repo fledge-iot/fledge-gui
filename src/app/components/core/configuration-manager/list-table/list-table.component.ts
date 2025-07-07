@@ -1,7 +1,7 @@
 import { KeyValue } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RolesService } from '../../../../services';
-import { FormArray, FormGroup } from '@angular/forms';
+import { AbstractControl, FormArray, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-list-table',
@@ -45,5 +45,9 @@ export class ListTableComponent {
 
   openExportFileModal() {
     this.exportFile.emit(true);
+  }
+
+  trackByIndex(index: number, _item: AbstractControl): number {
+    return index;
   }
 }

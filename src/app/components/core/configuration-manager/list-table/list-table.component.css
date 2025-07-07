@@ -1,23 +1,3 @@
-.sticky-header {
-  position: sticky;
-  top: 0px;
-  background: white;
-  z-index: 10;
-}
-
-table thead th {
-  font-size: 0.825rem !important;
-}
-
-.delete-icon {
-  visibility: hidden;
-  cursor: pointer;
-}
-
-tr:hover .delete-icon {
-  visibility: visible;
-}
-
 .table-wrapper {
   position: relative;
   display: inline-block;
@@ -35,6 +15,64 @@ tr:hover .delete-icon {
   visibility: visible;
 }
 
-.input {
+/* Required height for virtual scroll */
+.viewport {
+  height: 400px;
+  overflow: auto;
+}
+
+/* Sticky header bar */
+.table-header {
+  display: flex;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+  font-size: 0.825rem;
+  font-weight: 500;
+  border-bottom: 1px solid #ccc;
+  color: #363636;
+}
+
+/* Row and cell structure */
+.table-row {
+  display: flex;
+  border-bottom: 1px solid #eee;
+  align-items: center;
+}
+
+.table-row:hover {
+  background: #fafafa;
+}
+
+/* Cell base style */
+.cell {
+  flex: 1;
+  padding: 8px;
+  box-sizing: border-box;
   min-width: 120px;
+}
+
+/* First column for delete icon */
+.action-cell {
+  min-width: 30px;
+  flex: 0 0 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Delete icon shows only on row hover */
+.delete-icon {
+  visibility: hidden;
+  cursor: pointer;
+}
+
+.table-row:hover .delete-icon {
+  visibility: visible;
+}
+
+/* Optional full width on input inside cell */
+.input.is-fullwidth {
+  width: 100%;
 }
