@@ -547,13 +547,8 @@ span.tooltip {
 
 .debug {
   animation: blink 1s infinite;
+}
 
-  /* to manage icon color based on the parent color */
-  .button .bi {
-    color: inherit !important;
-  }
-
-  .dropdown-menu .dropdown-item:hover .icon i {
-    color: white !important;
-  }
+.button .bi {
+  color: inherit !important;
 }

@@ -123,3 +123,7 @@
   color: gray;
   font-size: 1.1em;
 }
+
+.dropdown-menu .dropdown-item:hover .icon i:not(.child-icon) {
+  color: white !important;
+}
