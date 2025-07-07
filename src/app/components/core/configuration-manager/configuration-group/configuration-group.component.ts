@@ -91,8 +91,10 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   ngOnChanges(simpleChanges: SimpleChanges) {
     this.categeryConfiguration();
 
-    // Only fetch child config data when plugin changes (initial load or plugin switch) to fix group tabs flickering issue
-    if (simpleChanges['plugin']) {
+    // Fetch child config data when plugin, category, or sourceName changes (initial load or service switch)
+    if (simpleChanges['plugin'] ||
+      (simpleChanges['category'] && simpleChanges['category'].currentValue?.name !== simpleChanges['category'].previousValue?.name) ||
+      (simpleChanges['sourceName'] && simpleChanges['sourceName'].currentValue !== simpleChanges['sourceName'].previousValue)) {
       this.getChildConfigData();
       this.selectedGroup = this.groups[0]?.group;
     } else {
