@@ -140,6 +140,7 @@ export class ListTypeConfigurationComponent implements OnInit {
       return;
     }
     this.initListItem(isPrepend);
+    this.reInitForm();
     this.formStatusEvent.emit({ status: this.listItems.valid, group: this.group });
     if (this.configuration.items === 'object') {
       const index = isPrepend ? 0 : this.listItems.length - 1;
@@ -184,6 +185,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.initialProperties.splice(index, 1);
     this.items.splice(index, 1);
     this.setChildConfigFormValidity();
+    this.reInitForm();
   }
 
   onControlValueChanges(): Subscription {
@@ -284,6 +286,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     event.fileData.forEach(element => {
       this.initListItem(false, element);
     });
+    this.reInitForm();
   }
 
   overrideFileData(event) {
@@ -292,6 +295,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     event.fileData.forEach(element => {
       this.initListItem(false, element);
     });
+    this.reInitForm();
   }
 
   openModal() {
@@ -325,6 +329,19 @@ export class ListTypeConfigurationComponent implements OnInit {
     if (this.listItems.length == 1 && !this.isListView) {
       this.expandListItem(0); // Expand the list if only one item is present
     }
+  }
+
+  reInitForm() {
+    setTimeout(() => {
+      this.listItemsForm = this.fb.group({
+        listItems: this.fb.array(this.listItems.controls)
+      });
+
+      if (this.valueChangeSub) {
+        this.valueChangeSub.unsubscribe();
+      }
+      this.valueChangeSub = this.onControlValueChanges();
+    }, 100);
   }
 
   ngOnDestroy() {
