@@ -170,8 +170,8 @@
         </app-plugin-persist-data>
       </ng-container>
       <app-tab-navigation #tabNaigation
-        *ngIf="groupTabs && !['notifications', 'config-manager', 'additional-services'].includes(from)"
-        [tabs]="groupTabs" (selectedTabEvent)="selectedGroup = $event"></app-tab-navigation>
+        *ngIf="groupTabs && !['notifications', 'config-manager', 'additional-services'].includes(from)" [from]="from"
+        [sourceName]="sourceName" [tabs]="groupTabs" (selectedTabEvent)="selectedGroup = $event"></app-tab-navigation>
     </div>
   </ng-template>
 </div>

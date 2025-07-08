@@ -434,10 +434,10 @@ export class AddControlPipelineComponent implements OnInit {
           const SortedSouthboundSvc = southboundSvc.sort((a, b) => a.name.localeCompare(b.name));
           const SortedNorthboundSvc = northboundSvc.sort((a, b) => a.name.localeCompare(b.name));
           if (direction === 'source') {
-	    /** The source of a control pipeline can only be north services and not south */
+            /** The source of a control pipeline can only be north services and not south */
             this.sourceNameList = SortedNorthboundSvc;
           } else {
-	    /** The destiantion of a control pipeline can only be south services and not north */
+            /** The destiantion of a control pipeline can only be south services and not north */
             this.destinationNameList = SortedSouthboundSvc;
           }
         },
