@@ -20,7 +20,7 @@ export class QuickviewComponent implements OnInit {
   @ContentChild('systemLogs', { static: false }) systemLogsComponent;
 
   constructor(
-    public flowEditorService: FlowEditorService,
+    public flowEditorService: FlowEditorService
   ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {

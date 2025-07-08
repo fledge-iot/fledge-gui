@@ -14,7 +14,6 @@ import { delay, retryWhen, take } from 'rxjs/operators';
 import { DocService } from '../../../../services/doc.service';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 
-
 @Component({
   selector: 'app-add-notification-wizard',
   templateUrl: './add-notification-wizard.component.html',

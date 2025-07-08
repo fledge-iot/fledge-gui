@@ -1,6 +1,6 @@
 import {
   ChangeDetectorRef,
-  Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild
+  Component, EventEmitter, HostListener, OnInit, Output, ViewChild
 } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { cloneDeep, isEmpty } from 'lodash';
@@ -86,7 +86,7 @@ export class SouthServiceModalComponent implements OnInit {
     private response: ResponseHandler,
     private toastService: ToastService,
     private activatedRoute: ActivatedRoute,
-    public cDRef: ChangeDetectorRef) {
+    public cDRef: ChangeDetectorRef,) {
     this.activatedRoute.paramMap.subscribe(params => {
       this.serviceName = params.get('name');
       if (this.serviceName) {

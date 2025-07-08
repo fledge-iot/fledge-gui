@@ -86,7 +86,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private response: ResponseHandler,
     private toast: ToastService,
     public cDRef: ChangeDetectorRef,
-    private activatedRoute: ActivatedRoute,
+    private activatedRoute: ActivatedRoute
   ) {
     this.activatedRoute.paramMap.subscribe(params => {
       this.taskName = params.get('name');
@@ -94,7 +94,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
         this.getNorthTasks(true)
       }
     })
-   }
+  }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
@@ -496,11 +496,11 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     return noChange;
   }
 
-  navToNorthPage(){
+  navToNorthPage() {
     this.router.navigate(['/north']);
   }
 
-  getNorthTasks(caching: boolean){
+  getNorthTasks(caching: boolean) {
     this.northService.getNorthTasks(caching)
       .pipe(takeUntil(this.destroy$))
       .subscribe(

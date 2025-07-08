@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AlertService, ConfigurationControlService, ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
 import { chain, cloneDeep, uniqWith, isEmpty } from 'lodash';
@@ -70,6 +70,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     const groupNavigation = document.getElementById("group_navigation_" + idSuffix);
     this.tabs = new TabHeader(groupNavContents, groupNavigation);
 
+    this.selectedGroup = this.groups[0]?.group;
+
     window.addEventListener('resize', () => {
       this.tabs.setOverFlow();
     })
@@ -86,15 +88,48 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     this.tabs.scrollToRight();
   }
 
-  ngOnChanges(simpleChanges) {
+  ngOnChanges(simpleChanges: SimpleChanges) {
     this.categeryConfiguration();
-    this.getChildConfigData();
+
+    // Fetch child config data when plugin, category, or sourceName changes (initial load or service switch)
+    if (simpleChanges['plugin'] ||
+      (simpleChanges['category'] && simpleChanges['category'].currentValue?.name !== simpleChanges['category'].previousValue?.name) ||
+      (simpleChanges['sourceName'] && simpleChanges['sourceName'].currentValue !== simpleChanges['sourceName'].previousValue)) {
+      this.getChildConfigData();
+      this.selectedGroup = this.groups[0]?.group;
+    } else {
+      // Update local configurations without API calls
+      if (this.changedAdvanceConfiguration) {
+        this.advanceConfiguration = this.updateLocalConfigurations(this.advanceConfiguration, this.changedAdvanceConfiguration);
+      }
+      if (this.changedSecurityConfiguration) {
+        this.securityConfiguration = this.updateLocalConfigurations(this.securityConfiguration, this.changedSecurityConfiguration);
+      }
+      // Skip tab recalculation and scrolling for configuration updates
+      return;
+    }
+
     if ((this.isFilterList && this.recalculateTabsOverflow !== undefined) || this.recalculateTabsOverflow) {
       this.tabs.setOverFlow();
     }
     if (simpleChanges?.sourceName?.currentValue || simpleChanges?.category?.currentValue) {
       this.tabNavigationComponent?.setTab(0);
     }
+  }
+
+  updateLocalConfigurations(configuration, changedConfiguration) {
+    // Create a deep copy to avoid mutating the original object
+    const updatedConfig = cloneDeep(configuration);
+
+    // Iterate through the changed configuration
+    Object.keys(changedConfiguration).forEach(key => {
+      // Check if the key exists in the original configuration
+      if (updatedConfig.config[key]) {
+        // Update the value property
+        updatedConfig.config[key].value = changedConfiguration[key];
+      }
+    });
+    return updatedConfig;
   }
 
   public updateCategroyConfig(config) {
@@ -181,11 +216,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         e.group.key === 'Basic' ? acc.unshift(e) : acc.push(e);
         return acc;
       }, []);
-
-
     this.getGroups();
-    // set initial group
-    this.selectedGroup = this.groups[0]?.group;
   }
 
   buildGroupOfItems(groups, category, configItems) {
