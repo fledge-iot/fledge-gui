@@ -187,6 +187,26 @@ export class NodeEditorComponent implements OnInit {
     this.additionalServicesUtils.getAllServiceStatus(false, 'notification');
   }
 
+  /**
+   * Clear stale configuration data when switching between services
+   */
+  private clearConfigurationData() {
+    this.changedConfig = null;
+    this.changedFilterConfig = null;
+    this.category = null;
+    this.filterCategory = null;
+    this.pluginConfiguration = null;
+    this.filterPluginConfiguration = null;
+    this.advancedConfiguration = [];
+    this.notificationChangedConfig = null;
+    this.rulePluginChangedConfig = null;
+    this.deliveryPluginChangedConfig = null;
+    this.ruleCategory = null;
+    this.deliveryCategory = null;
+    this.ruleConfiguration = null;
+    this.deliveryConfiguration = null;
+  }
+
   @HostListener('document:keydown', ['$event'])
   onKeydownHandler(event) {
     // Prevent actions when the focus is inside QuickviewComponent
@@ -218,6 +238,8 @@ export class NodeEditorComponent implements OnInit {
       }
     );
     this.logsSubscription = this.flowEditorService.showLogsInQuickview.subscribe(data => {
+      this.clearConfigurationData();
+
       this.showLogs = data.showLogs ? true : false;
       this.notification = data?.notification;
       this.serviceName = data?.serviceName ? data.serviceName : this.notification?.name;
@@ -233,6 +255,8 @@ export class NodeEditorComponent implements OnInit {
         this.showNotificationConfiguration = data.showNotificationConfiguration ? true : false;
         this.notification = data?.notification;
         this.serviceName = data.notification.name;
+        this.clearConfigurationData();
+
         if (this.showNotificationConfiguration) {
           this.getCategory();
           this.getRuleConfiguration();
@@ -240,6 +264,7 @@ export class NodeEditorComponent implements OnInit {
         }
         return;
       }
+      this.clearConfigurationData();
       this.showPluginConfiguration = data.showPluginConfiguration ? true : false;
       this.showFilterConfiguration = data.showFilterConfiguration ? true : false;
       this.showTaskSchedule = data.showTaskSchedule ? true : false;
