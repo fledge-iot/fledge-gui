@@ -227,7 +227,6 @@ export class AuthenticationPage {
     validateCertificateModal() {
         cy.get('#certificate-login-modal').should('be.visible');
         cy.get('#certificate-login-modal .modal-card-title').should('contain', 'Login with Certificate');
-        // cy.get('#certificate-login-modal input[type="file"]').should('be.visible');
         cy.get('#certificate-login-modal textarea').should('be.visible');
     }
 
