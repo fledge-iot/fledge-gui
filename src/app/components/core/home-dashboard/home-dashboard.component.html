@@ -571,11 +571,11 @@
                     <!-- CPU Usage Card -->
                     <div class="column is-3">
                         <div class="stats-card"
-                            [class]="systemHealth().resources.cpu.usage > 80 ? 'has-background-danger-light' : systemHealth().resources.cpu.usage > 60 ? 'has-background-warning-light' : 'has-background-success-light'">
+                            [class]="systemHealth().resources.cpu.usage > 80 ? 'has-background-danger-light' : systemHealth().resources.cpu.usage > 70 ? 'has-background-warning-light' : 'has-background-success-light'">
                             <div class="media">
                                 <div class="media-left">
                                     <span class="icon is-large"
-                                        [class]="systemHealth().resources.cpu.usage > 80 ? 'has-text-danger' : systemHealth().resources.cpu.usage > 60 ? 'has-text-warning' : 'has-text-success'">
+                                        [class]="systemHealth().resources.cpu.usage > 80 ? 'has-text-danger' : systemHealth().resources.cpu.usage > 70 ? 'has-text-warning' : 'has-text-success'">
                                         <i class="bi bi-cpu"></i>
                                     </span>
                                 </div>
@@ -593,11 +593,11 @@
                     <!-- Memory Usage Card -->
                     <div class="column is-3">
                         <div class="stats-card"
-                            [class]="systemHealth().resources.memory.usage > 85 ? 'has-background-danger-light' : systemHealth().resources.memory.usage > 70 ? 'has-background-warning-light' : 'has-background-success-light'">
+                            [class]="systemHealth().resources.memory.usage > 80 ? 'has-background-danger-light' : systemHealth().resources.memory.usage > 70 ? 'has-background-warning-light' : 'has-background-success-light'">
                             <div class="media">
                                 <div class="media-left">
                                     <span class="icon is-large"
-                                        [class]="systemHealth().resources.memory.usage > 85 ? 'has-text-danger' : systemHealth().resources.memory.usage > 70 ? 'has-text-warning' : 'has-text-success'">
+                                        [class]="systemHealth().resources.memory.usage > 80 ? 'has-text-danger' : systemHealth().resources.memory.usage > 70 ? 'has-text-warning' : 'has-text-success'">
                                         <i class="bi bi-memory"></i>
                                     </span>
                                 </div>
@@ -615,11 +615,11 @@
                     <!-- Disk Usage Card -->
                     <div class="column is-3">
                         <div class="stats-card"
-                            [class]="systemHealth().resources.disk.usage > 90 ? 'has-background-danger-light' : systemHealth().resources.disk.usage > 75 ? 'has-background-warning-light' : 'has-background-success-light'">
+                            [class]="systemHealth().resources.disk.usage > 80 ? 'has-background-danger-light' : systemHealth().resources.disk.usage > 70 ? 'has-background-warning-light' : 'has-background-success-light'">
                             <div class="media">
                                 <div class="media-left">
                                     <span class="icon is-large"
-                                        [class]="systemHealth().resources.disk.usage > 90 ? 'has-text-danger' : systemHealth().resources.disk.usage > 75 ? 'has-text-warning' : 'has-text-success'">
+                                        [class]="systemHealth().resources.disk.usage > 80 ? 'has-text-danger' : systemHealth().resources.disk.usage > 70 ? 'has-text-warning' : 'has-text-success'">
                                         <i class="bi bi-hdd"></i>
                                     </span>
                                 </div>
@@ -697,7 +697,7 @@
                                             {{ service.lastError.message | slice:0:50 }}{{
                                             service.lastError.message.length > 50 ? '...' : '' }}
                                         </span>
-                                        <span *ngIf="!service.lastError" class="has-text-grey">No recent errors</span>
+                                        <span *ngIf="!service.lastError">No recent errors</span>
                                     </td>
                                 </tr>
                             </tbody>
