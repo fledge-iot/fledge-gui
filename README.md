@@ -65,10 +65,10 @@ For **windows**, see details [here](docs/windows-nginx-deployment-guide.md)
 
 | Browser        | Tested Version   | Supported |
 | -------------- | ---------------- | --------- |
-| Safari (macOS) | 17.5.x           | latest 1  |
-| Chrome         | 128.0.x (64-bit) | latest 2  |
-| Firefox        | 131.0.x (64-bit) | latest 2  |
-| Microsoft Edge | 123.0.x (64-bit) | latest 2  |
+| Safari (macOS) | 18.4.x           | latest 1  |
+| Chrome         | 138.0.x (64-bit) | latest 2  |
+| Firefox        | 140.0.x (64-bit) | latest 2  |
+| Microsoft Edge | 138.0.x (64-bit) | latest 2  |
 
 [Changelog](docs/changelog.md)
 
