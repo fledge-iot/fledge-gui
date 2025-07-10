@@ -6,22 +6,21 @@
 
 ### Changed
 
-- [FOGL-9844]: Made several cosmetic changes to improve the appearance of the user interface. [#526](https://github.com/fledge-iot/fledge-gui/pull/526)
 - [FOGL-9708]: The menubar now defaults to narrow mode. [#510](https://github.com/fledge-iot/fledge-gui/pull/510)
-- [FOGL-9527]: Removed the confirmation prompt when deleting a connection using the Delete key, making this action consistent with deletion via mouse. [#525](https://github.com/fledge-iot/fledge-gui/pull/525)
 - [FOGL-9452]: Improved submenu operation to reduce accidental selection of incorrect menu items. [#518](https://github.com/fledge-iot/fledge-gui/pull/518)
+- [FOGL-9741]: The collapsed or expanded state of the menubar is now retained between sessions. [#517](https://github.com/fledge-iot/fledge-gui/pull/517)
+- [FOGL-9527]: Removed the confirmation prompt when deleting a connection using the Delete key, making this action consistent with deletion via mouse on flow editor view. [#525](https://github.com/fledge-iot/fledge-gui/pull/525)
 
 ### Fixed
 
+- [FOGL-9756]: Resolved an issue where the menu sidebar could behave incorrectly on some screen sizes. [#517](https://github.com/fledge-iot/fledge-gui/pull/517)
+- [FOGL-9625]: Resolved an issue where the entire screen was not hidden during restart if the side menu was collapsed. [#515](https://github.com/fledge-iot/fledge-gui/pull/515)
 - [FOGL-9511]: Prevented tab switching after saving configuration in the configuration panel. [#514](https://github.com/fledge-iot/fledge-gui/pull/514)
 - [FOGL-9925]: Fixed an issue where the last active tab would not scroll into view. [#514](https://github.com/fledge-iot/fledge-gui/pull/514)
+- [FOGL-9679]: Resolved an issue where the scroll arrows on the configuration page of a south service could be incorrectly disabled. [#520](https://github.com/fledge-iot/fledge-gui/pull/520)
 - [FOGL-9969]: Added a tooltip to the notification log page to display the description of the source column. [#532](https://github.com/fledge-iot/fledge-gui/pull/532)
 - [FOGL-9826]: Fixed a bug where the service state icon would incorrectly change color to grey. [#519](https://github.com/fledge-iot/fledge-gui/pull/519)
-- [FOGL-9756]: Resolved an issue where the menu sidebar could behave incorrectly on some screen sizes. [#517](https://github.com/fledge-iot/fledge-gui/pull/517)
-- [FOGL-9741]: The collapsed or expanded state of the menubar is now retained between sessions. [#517](https://github.com/fledge-iot/fledge-gui/pull/517)
-- [FOGL-9679]: Resolved an issue where the scroll arrows on the configuration page of a south service could be incorrectly disabled. [#520](https://github.com/fledge-iot/fledge-gui/pull/520)
 - [FOGL-9626]: Resolved an issue where icons appeared incorrectly in a data pipeline when long filter or service names were used. [#505](https://github.com/fledge-iot/fledge-gui/pull/505)
-- [FOGL-9625]: Resolved an issue where the entire screen was not hidden during restart if the side menu was collapsed. [#515](https://github.com/fledge-iot/fledge-gui/pull/515)
 
 ## v3.0.0 [2025-03-13]
 
