@@ -38,17 +38,97 @@
   margin-top: -10px;
 }
 
-
+/* Virtual Scrolling Optimizations */
 .virtual-scroll-viewport {
   height: 400px;
-  /* or dynamic based on view */
-  display: block;
-  overflow: auto;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 8px;
 }
 
 .card-viewport {
-  height: 400px;
-  /* Adjust based on your design */
-  width: 100%;
-  overflow: auto;
+  height: 600px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+/* Performance optimizations */
+.cdk-virtual-scroll-content-wrapper {
+  contain: layout style paint;
+}
+
+.cdk-virtual-scroll-orientation-vertical .cdk-virtual-scroll-content-wrapper {
+  transform: translateZ(0);
+}
+
+/* Scrollbar styling */
+.virtual-scroll-viewport::-webkit-scrollbar,
+.card-viewport::-webkit-scrollbar {
+  width: 8px;
+}
+
+.virtual-scroll-viewport::-webkit-scrollbar-track,
+.card-viewport::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.virtual-scroll-viewport::-webkit-scrollbar-thumb,
+.card-viewport::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.virtual-scroll-viewport::-webkit-scrollbar-thumb:hover,
+.card-viewport::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Additional performance styles */
+.items-container {
+  position: relative;
+}
+
+.custom-viewport {
+  position: relative;
+  overflow: hidden;
+}
+
+.scrollable {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Loading state styles */
+.loading-chunk {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  color: #666;
+  font-size: 14px;
+}
+
+.loading-chunk::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }

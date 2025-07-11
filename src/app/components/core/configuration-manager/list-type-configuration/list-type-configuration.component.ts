@@ -1,20 +1,21 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnInit, OnDestroy, Output, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { filter, uniqWith, isEqual, cloneDeep } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { ConfigurationControlService, RolesService } from '../../../../services';
 import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
 import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
-import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-list-type-configuration',
   templateUrl: './list-type-configuration.component.html',
-  styleUrls: ['./list-type-configuration.component.css']
+  styleUrls: ['./list-type-configuration.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ListTypeConfigurationComponent implements OnInit {
+export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
   @Input() configuration;
   @Input() categoryName;
   @Input() group: string = '';
@@ -23,6 +24,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   @Output() formStatusEvent = new EventEmitter<any>();
   @ViewChild(FileImportModalComponent, { static: true }) fileImportModal: FileImportModalComponent;
   @ViewChild(FileExportModalComponent, { static: true }) fileExportModal: FileExportModalComponent;
+
   listItemsForm: FormGroup;
   initialProperties = [];
   items = [];
@@ -33,7 +35,9 @@ export class ListTypeConfigurationComponent implements OnInit {
   isListView = true;
 
   @ViewChild(CdkVirtualScrollViewport, { static: false }) viewport: CdkVirtualScrollViewport;
-  private valueChangeSub: Subscription;
+
+  private destroy$ = new Subject<void>();
+  private processingChunk = false;
 
   constructor(
     private zone: NgZone,
@@ -52,37 +56,118 @@ export class ListTypeConfigurationComponent implements OnInit {
       // Show first property label as list card header
       this.listLabel = this.configuration.properties[this.firstKey]?.displayName ?? this.firstKey;
     }
+
+    this.loadDataWithChunking();
+    this.setupValueChangeSubscription();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadDataWithChunking() {
     let values = this.configuration?.value ?? this.configuration.default;
     const t0 = performance.now();
-    values = JSON.parse(values);
+
+    try {
+      values = JSON.parse(values);
+    } catch (e) {
+      console.error('Error parsing list values:', e);
+      values = [];
+    }
 
     if (this.configuration.listName) {
       values = values[this.configuration.listName];
     }
 
-    this.cdRef.detach(); // stop Angular from detecting changes
-    const chunkSize = 20;
-    let i = 0;
+    if (!Array.isArray(values) || values.length === 0) {
+      this.cdRef.detectChanges();
+      return;
+    }
+
+    // Detach change detection for bulk operations
+    this.cdRef.detach();
+    this.processingChunk = true;
+
+    const chunkSize = Math.max(20, Math.min(50, Math.ceil(values.length / 10)));
+    let currentIndex = 0;
 
     const processChunk = () => {
-      const end = Math.min(i + chunkSize, values.length);
-      for (; i < end; i++) {
+      const endIndex = Math.min(currentIndex + chunkSize, values.length);
+
+      for (let i = currentIndex; i < endIndex; i++) {
         this.initListItem(false, values[i]);
       }
-      if (i < values.length) {
-        setTimeout(processChunk, 0); // Yield to browser/UI
+
+      currentIndex = endIndex;
+
+      if (currentIndex < values.length) {
+        // Use scheduler for better performance
+        this.zone.runOutsideAngular(() => {
+          setTimeout(() => {
+            this.zone.run(() => processChunk());
+          }, 0);
+        });
+      } else {
+        // Processing complete
+        this.processingChunk = false;
+        this.cdRef.reattach();
+        this.cdRef.detectChanges();
+
+        const t1 = performance.now();
+        console.log(`List form creation took ${t1 - t0} ms for ${values.length} items`);
       }
     };
 
     processChunk();
+  }
 
-    this.cdRef.reattach(); // resume change detection
-    this.cdRef.detectChanges(); // trigger only once
+  private setupValueChangeSubscription() {
+    this.listItems.valueChanges
+      .pipe(
+        debounceTime(300), // Increased debounce time for better performance
+        distinctUntilChanged(isEqual),
+        takeUntil(this.destroy$),
+        map((value: any) => {
+          if (this.processingChunk) {
+            return null; // Skip processing during chunk loading
+          }
 
-    const t1 = performance.now();
-    console.log(`Form creation took ${t1 - t0} ms`);
+          // Remove empty, undefined, null values
+          let filtered = filter(value);
 
-    this.valueChangeSub = this.onControlValueChanges();
+          // Convert to float if needed
+          if (this.configuration?.items === 'float') {
+            filtered = filtered.map((num: any) => Number.isInteger(+num) ? Number.parseFloat(num).toFixed(1) : num);
+          }
+
+          // Update initial properties if items are objects
+          if (this.configuration.items === 'object') {
+            this.initialProperties.forEach((property, index) => {
+              Object.entries(property).forEach(([key, prop]) => {
+                (prop as any).value = filtered?.[index]?.[key];
+              });
+            });
+          }
+
+          return uniqWith(filtered, isEqual);
+        })
+      )
+      .subscribe((processedValue) => {
+        if (processedValue === null) {
+          return; // Skip if processing during chunk loading
+        }
+
+        this.changedConfig.emit({
+          [this.configuration.key]: JSON.stringify(processedValue),
+        });
+
+        this.formStatusEvent.emit({
+          status: this.listItems.valid,
+          group: this.group,
+        });
+      });
   }
 
   get listItems() {
@@ -186,44 +271,6 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.setChildConfigFormValidity();
   }
 
-  onControlValueChanges(): Subscription {
-    return this.listItems.valueChanges
-      .pipe(
-        debounceTime(100), // Avoid unnecessary rapid firing
-        distinctUntilChanged(isEqual), // Prevent duplicate processing
-        map((value: any) => {
-          // Remove empty, undefined, null values
-          let filtered = filter(value);
-
-          // Convert to float if needed
-          if (this.configuration?.items === 'float') {
-            filtered = filtered.map((num: any) => Number.isInteger(+num) ? Number.parseFloat(num).toFixed(1) : num
-            );
-          }
-          // Update initial properties if items are objects
-          if (this.configuration.items === 'object') {
-            this.initialProperties.forEach((property, index) => {
-              Object.entries(property).forEach(([key, prop]) => {
-                (prop as any).value = filtered?.[index]?.[key];
-              });
-            });
-          }
-
-          return uniqWith(filtered, isEqual);
-        })
-      )
-      .subscribe((processedValue) => {
-        this.changedConfig.emit({
-          [this.configuration.key]: JSON.stringify(processedValue),
-        });
-
-        this.formStatusEvent.emit({
-          status: this.listItems.valid,
-          group: this.group,
-        });
-      });
-  }
-
   getChangedConfiguration(index, propertyChangedValues: any) {
     this.listItems.controls[index].patchValue(propertyChangedValues);
   }
@@ -325,9 +372,5 @@ export class ListTypeConfigurationComponent implements OnInit {
     if (this.listItems.length == 1 && !this.isListView) {
       this.expandListItem(0); // Expand the list if only one item is present
     }
-  }
-
-  ngOnDestroy() {
-    this.valueChangeSub?.unsubscribe();
   }
 }

@@ -1,18 +1,20 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ChangeDetectionStrategy, NgZone } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { filter } from 'lodash';
+import { filter, cloneDeep } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
-import { cloneDeep } from 'lodash';
 import { ConfigurationControlService, RolesService } from '../../../../services';
 import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
 import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-kv-list-type-configuration',
   templateUrl: './kv-list-type-configuration.component.html',
-  styleUrls: ['./kv-list-type-configuration.component.css']
+  styleUrls: ['./kv-list-type-configuration.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class KvListTypeConfigurationComponent implements OnInit {
+export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   @Input() configuration;
   @Input() categoryName;
   @Input() group: string = '';
@@ -21,6 +23,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
   @Output() formStatusEvent = new EventEmitter<any>();
   @ViewChild(FileImportModalComponent, { static: true }) fileImportModal: FileImportModalComponent;
   @ViewChild(FileExportModalComponent, { static: true }) fileExportModal: FileExportModalComponent;
+
   kvListItemsForm: FormGroup;
   initialProperties = [];
   items = [];
@@ -28,8 +31,12 @@ export class KvListTypeConfigurationComponent implements OnInit {
   kvlistValues = {};
   isListView = true;
 
+  private destroy$ = new Subject<void>();
+  private processingChunk = false;
+
   constructor(
     public cdRef: ChangeDetectorRef,
+    private zone: NgZone,
     public rolesService: RolesService,
     public configControlService: ConfigurationControlService,
     private fb: FormBuilder) {
@@ -39,16 +46,125 @@ export class KvListTypeConfigurationComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loadDataWithChunking();
+    this.setupValueChangeSubscription();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadDataWithChunking() {
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
-    values = JSON.parse(values) as [];
-    for (const [key, value] of Object.entries(values)) {
-      this.kvListItems.push(this.initListItem(false, { key, value }));
+    const t0 = performance.now();
+
+    try {
+      values = JSON.parse(values);
+    } catch (e) {
+      console.error('Error parsing kvlist values:', e);
+      values = {};
     }
-    this.onControlValueChanges();
+
+    const entries = Object.entries(values);
+
+    if (entries.length === 0) {
+      this.cdRef.detectChanges();
+      return;
+    }
+
+    // Detach change detection for bulk operations
+    this.cdRef.detach();
+    this.processingChunk = true;
+
+    const chunkSize = Math.max(20, Math.min(50, Math.ceil(entries.length / 10)));
+    let currentIndex = 0;
+
+    const processChunk = () => {
+      const endIndex = Math.min(currentIndex + chunkSize, entries.length);
+
+      for (let i = currentIndex; i < endIndex; i++) {
+        const [key, value] = entries[i];
+        this.kvListItems.push(this.initListItem(false, { key, value }));
+      }
+
+      currentIndex = endIndex;
+
+      if (currentIndex < entries.length) {
+        // Use scheduler for better performance
+        this.zone.runOutsideAngular(() => {
+          setTimeout(() => {
+            this.zone.run(() => processChunk());
+          }, 0);
+        });
+      } else {
+        // Processing complete
+        this.processingChunk = false;
+        this.cdRef.reattach();
+        this.cdRef.detectChanges();
+
+        const t1 = performance.now();
+        console.log(`KvList form creation took ${t1 - t0} ms for ${entries.length} items`);
+      }
+    };
+
+    processChunk();
+  }
+
+  private setupValueChangeSubscription() {
+    this.kvListItems.valueChanges
+      .pipe(
+        debounceTime(300), // Increased debounce time for better performance
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((data) => {
+        if (this.processingChunk) {
+          return; // Skip processing during chunk loading
+        }
+
+        this.processValueChanges(data);
+      });
+  }
+
+  private processValueChanges(data: any[]) {
+    // Filter and process data
+    const filteredData = filter(data, (d: any) => d.key && d.key.trim() !== '');
+    const transformedObject = {};
+
+    filteredData.forEach((item, index) => {
+      // Handle float conversion
+      if (this.configuration?.items === 'float') {
+        if (+item.value && Number.isInteger(+item.value)) {
+          item.value = Number.parseFloat(item.value).toFixed(1);
+        } else if (item.value && item.value.toString().trim() === '') {
+          item.value = Number.parseFloat('0').toFixed(1);
+        }
+      }
+
+      let itemValue = item.value;
+
+      // Handle object configuration
+      if (this.configuration.items === 'object' && this.initialProperties[index]) {
+        const property = this.initialProperties[index];
+        for (const [key, prop] of Object.entries(property)) {
+          (prop as any).value = itemValue[key];
+        }
+      }
+
+      transformedObject[item.key] = itemValue;
+    });
+
+    this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(transformedObject) });
+    this.formStatusEvent.emit({ status: this.kvListItems.valid, group: this.group });
   }
 
   get kvListItems() {
     return this.kvListItemsForm.get('kvListItems') as FormArray;
+  }
+
+  trackByIndex(index: number, _item: any): number {
+    return index;
   }
 
   initListItem(isPrepend, param) {
@@ -131,36 +247,6 @@ export class KvListTypeConfigurationComponent implements OnInit {
     this.initialProperties.splice(index, 1);
     this.items.splice(index, 1);
     this.setChildConfigFormValidity();
-  }
-
-  onControlValueChanges(): void {
-    this.kvListItems.valueChanges.subscribe((data) => {
-      // remove empty, undefined, null values
-      data = filter((data), (d: any) => d.key && d.key.trim() !== ''); // remove empty, undefined, null values
-      const transformedObject = {};
-      data.forEach((item, index) => {
-        // float value conversion
-        if (this.configuration?.items == 'float') {
-          if (+item.value && Number.isInteger(+item.value)) {
-            item.value = Number.parseFloat(item.value).toFixed(1); // update Integer value to single decimal point. e.g. 2 => 2.0
-          } else {
-            if (item.value.trim() == '')
-              item.value = Number.parseFloat('0').toFixed(1); // set default 0.0 if no value passed in the input field
-          }
-        }
-        let itemValue = item.value;
-        if (this.configuration.items == 'object') {
-          let property = this.initialProperties[index]
-          for (let [key, prop] of Object.entries(property)) {
-            let val = prop as any
-            val.value = itemValue[key];
-          }
-        }
-        transformedObject[item.key] = itemValue;
-      });
-      this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(transformedObject) });
-      this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
-    })
   }
 
   getChangedConfiguration(index: string, propertyChangedValues: any) {
