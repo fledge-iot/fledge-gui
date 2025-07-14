@@ -1,17 +1,22 @@
 import { isEmpty } from 'lodash';
-import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef } from "@angular/core";
-import { ClassicPreset } from "rete";
+import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef, OnDestroy } from "@angular/core";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import {
-  RolesService
+  AlertService,
+  ProgressBarService,
+  RolesService,
+  ServicesApiService,
+  SharedService
 } from "./../../../../services";
 import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
-import { Subject, Subscription } from "rxjs";
+import { interval, of, Subject, Subscription } from "rxjs";
 
 import { canUndo, canRedo } from './../editor';
 import { DialogService } from '../../confirmation-dialog/dialog.service';
+import { catchError, distinctUntilChanged, map, switchMap, take, takeUntil } from 'rxjs/operators';
+import { Filter, North, Notification, South, Storage } from '../nodes';
 
 @Component({
   selector: 'app-custom-node',
@@ -21,9 +26,9 @@ import { DialogService } from '../../confirmation-dialog/dialog.service';
     "data-testid": "node"
   }
 })
-export class CustomNodeComponent implements OnChanges {
+export class CustomNodeComponent implements OnChanges, OnDestroy {
 
-  @Input() data!: ClassicPreset.Node;
+  @Input() data!: South | Filter | North | Notification | Storage;
   @Input() emit!: (data: any) => void;
   @Input() rendered!: () => void;
 
@@ -73,7 +78,6 @@ export class CustomNodeComponent implements OnChanges {
   timeoutId;
 
   previousState: boolean;  // To store previous state of checkbox
-  serviceStatusSubscription: Subscription;
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -85,7 +89,11 @@ export class CustomNodeComponent implements OnChanges {
     private route: ActivatedRoute,
     public flowEditorService: FlowEditorService,
     public rolesService: RolesService,
+    private sharedService: SharedService,
     private dialogService: DialogService,
+    private alertService: AlertService,
+    private ngProgress: ProgressBarService,
+    private serviceApi: ServicesApiService,
     private elRef: ElementRef) {
     this.route.params.subscribe(params => {
       this.from = params.from;
@@ -101,6 +109,43 @@ export class CustomNodeComponent implements OnChanges {
         this.router.navigated = false;
       }
     });
+
+    this.sharedService.debuggerStateSubject
+      .pipe(
+        takeUntil(this.destroy$),
+        distinctUntilChanged((prev, curr) => {
+          // Skip if no debug data in service response
+          if (!curr?.services) return true;
+
+          // Get current node's service name
+          const nodeName = this.data?.controls?.nameControl?.['name'];
+          if (!nodeName) return true;
+
+          // Find the service in the response that matches this node
+          const serviceData = curr.services.find(s => s.name === nodeName);
+          if (!serviceData) return true;
+
+          // Compare current node debug state with new state from matching service
+          return this.data.debug?.debugger === serviceData.debug?.debugger &&
+            this.data.debug?.ingress === serviceData.debug?.ingress &&
+            this.data.debug?.egress === serviceData.debug?.egress;
+        })
+      )
+      .subscribe((servicesResponse: any) => {
+        if (!this.data?.controls?.nameControl?.['name'] || !this.data?.debug) return;
+
+        // Find the matching service in the response
+        const nodeName = this.data.controls.nameControl['name'];
+        const serviceData = servicesResponse.services.find(s => s.name === nodeName);
+
+        // Only update debug state if we found matching service with debug info
+        if (serviceData?.debug) {
+          this.data.debug.debugger = serviceData.debug.debugger;
+          this.data.debug.ingress = serviceData.debug.ingress;
+          this.data.debug.egress = serviceData.debug.egress;
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   openModal(id: string) {
@@ -112,7 +157,18 @@ export class CustomNodeComponent implements OnChanges {
     if (this.data.label === 'South' || this.data.label === 'North') {
       this.setSetectedNodeColor('#C781BB');
       if (this.source !== '') {
-        this.isServiceNode = true;
+        // Only emit debug state if it has changed
+        if (this.data.debug) {
+          const currentDebugState = {
+            service: this.source,
+            debug: {
+              debugger: this.data.debug.debugger,
+              ingress: this.data.debug.ingress,
+              egress: this.data.debug.egress
+            }
+          };
+          this.sharedService.debuggerStateSubject.next(currentDebugState);
+        }
         this.elRef.nativeElement.style.borderColor = this.data.label === 'South' ? "#B6D7A8" : '#C781BB'
         this.isServiceNode = true;
         if (this.from == 'north') {
@@ -193,6 +249,9 @@ export class CustomNodeComponent implements OnChanges {
     }
 
     if (this.data.label === 'Storage') {
+      if (this.from == 'south' && this.data?.controls?.debugControl) {
+        this.data.debug = this.data?.controls?.debugControl['debug'];
+      }
       this.elRef.nativeElement.style.borderColor = "#999999";
     }
     this.cdr.detectChanges();
@@ -225,6 +284,73 @@ export class CustomNodeComponent implements OnChanges {
       this.data['isFilterNode'] = this.isFilterNode;
       this.flowEditorService.nodeClick.next(this.data);
     }
+  }
+
+  toggleDebuggerState() {
+    this.ngProgress.start();
+    const name = this.data.controls.nameControl['name'];
+    const previousDebugState = this.data.debug.debugger;
+    const expectedState = previousDebugState === 'Attached' ? 'Detached' : 'Attached';
+    const action = previousDebugState === 'Attached' ? 'detach' : 'attach';
+    this.serviceApi.manageServiceDebuggerState(name, action)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        this.ngProgress.done();
+        this.alertService.success(res['message'], true);
+        // Retry to fetch the service and verify the new debugger state
+        this.getDebuggerStateChanges(expectedState);
+      }, error => {
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText, true);
+        }
+      });
+  }
+
+  getDebuggerStateChanges(expectedState: string) {
+    const maxRetries = 3;
+    let attempt = 0;
+    const poll$ = interval(2000).pipe( // poll every 2 seconds
+      take(maxRetries),
+      switchMap(() => {
+        attempt++;
+        const type = this.from === 'south' ? 'Southbound' : 'Northbound';
+        return this.serviceApi.getServiceByType(type).pipe(
+          catchError(err => {
+            console.error(`Error on attempt ${attempt}:`, err);
+            return of(null); // swallow error and continue polling
+          })
+        );
+      })
+    );
+
+    const subscription = poll$.subscribe((res: any) => {
+      if (!res) return;
+      if (this.data.controls.nameControl) {
+        const name = this.data.controls.nameControl['name'];
+        const service = res['services'].find((s: any) => s.name === name);
+        const currentState = service?.debug?.debugger;
+
+        if (currentState === expectedState) {
+          this.data.debug = { ...service.debug };
+          this.data.controls.debugControl['debug'] = { ...service.debug };
+          const name = this.data.controls.nameControl['name'];
+          this.sharedService.debuggerStateSubject.next({ service: name, debug: this.data.debug });
+          this.cdr.detectChanges();
+          // Success: update and stop polling
+          subscription.unsubscribe();
+          this.alertService.success(`Debugger ${service.debug.debugger.toLowerCase()} successfully.`, true);
+        }
+
+        if (attempt > maxRetries) {
+          // Max retries hit
+          this.alertService.error('Debugger state failed to update. Please refresh.', true);
+          subscription.unsubscribe();
+        }
+      }
+    });
   }
 
   addService() {
@@ -359,8 +485,10 @@ export class CustomNodeComponent implements OnChanges {
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
     this.destroy$.next(true);
-    this.destroy$.unsubscribe();
+    this.destroy$.complete();
   }
 }

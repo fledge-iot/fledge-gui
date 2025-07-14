@@ -118,11 +118,6 @@
   padding: 0px 4px 4px 4px;
 }
 
-.reading-details {
-  display: flex;
-  justify-content: center;
-}
-
 .reading {
   font-size: 14px;
   visibility: hidden;
@@ -234,4 +229,69 @@
 .btn-icon:has(.bi-gear-wide-connected):focus {
   outline: none;
   box-shadow: none;
+}
+
+.icon.status-icon {
+  position: absolute;
+  top: 16%;
+  left: 6%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  font-size: 1.1em;
+}
+
+.ban-icon {
+  position: absolute;
+  top: 45%;
+  left: 48%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  font-size: xx-large !important;
+}
+
+/* Parent should be relative so submenu can position itself absolutely */
+.has-submenu {
+  position: relative;
+}
+
+/* Submenu styling */
+.submenu-div {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  display: none;
+  min-width: 180px;
+  z-index: 999;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
+  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+/* Show submenu on hover */
+.has-submenu:hover .submenu-div {
+  display: block;
+}
+
+
+.submenu-text {
+  display: block;
+  padding: 8px 12px;
+  color: #4a4a4a;
+  text-decoration: none;
+}
+
+.submenu-text:hover {
+  background-color: #3273dc;
+  color: #fff;
+}
+
+.dropdown-content {
+  overflow: visible !important;
+  position: relative;
+}
+
+.has-submenu:hover {
+  background-color: #f5f5f5;
 }

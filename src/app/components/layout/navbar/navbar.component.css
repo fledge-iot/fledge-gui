@@ -65,6 +65,7 @@
 
 .dropdown-item {
   width: max-content;
+  overflow: visible;
 }
 
 .dropdown-item.user-content {
@@ -110,6 +111,38 @@
   color: #485fc7;
 }
 
-.dropdown-menu .dropdown-item:hover .icon i:not(.child-icon) {
+.status-icon {
+  position: relative;
+  display: inline-block;
+}
+
+.overlay-icon {
+  position: absolute;
+  top: 58%;
+  left: 48%;
+  transform: translate(-50%, -50%);
+  color: gray;
+  font-size: 1.1em;
+}
+
+.dropdown-menu .dropdown-item:hover .icon i:not(.child-icon):not(.debug) {
   color: white !important;
+}
+
+.dropdown-content {
+  overflow: visible !important;
+}
+
+.dropdown-menu {
+  overflow: visible !important;
+}
+
+.dropdown .tooltip {
+  position: relative;
+  overflow: visible;
+}
+
+.dropdown .tooltip::before,
+.dropdown .tooltip::after {
+  z-index: 31 !important;
 }
