@@ -3,6 +3,7 @@
     <app-toggle-switch (currentView)="setCurrentView($event)" [isListView]="isListView" />
   </div>
 </ng-container>
+
 <div [formGroup]="listItemsForm" class="items-container">
   <ng-container *ngIf="configuration.items == 'object' && listItems.controls.length>0">
     <div *ngIf="!isListView" class="btn-panel-container is-flex-direction-row-reverse">
@@ -14,7 +15,24 @@
       </div>
     </div>
   </ng-container>
-  <div>
+
+  <!-- Loading indicator shown in place of content -->
+  <div *ngIf="isLoadingLargeDataset" class="loading-indicator">
+    <div class="has-text-centered p-5">
+      <div class="spinner"></div>
+      <p class="mt-3">Loading data...</p>
+    </div>
+  </div>
+
+  <!-- View switching indicator -->
+  <div *ngIf="isViewSwitching && !isLoadingLargeDataset" class="loading-indicator">
+    <div class="has-text-centered p-5">
+      <div class="spinner"></div>
+      <p class="mt-3">Switching view...</p>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoadingLargeDataset && !isViewSwitching">
     <ng-container *ngIf="configuration.items !== 'object'; else objectTemplate">
       <form [formGroup]="listItemsForm">
         <div formArrayName="listItems">
@@ -72,28 +90,18 @@
     </ng-container>
     <ng-template #objectTemplate>
       <ng-container *ngIf="!isListView">
-        <cdk-virtual-scroll-viewport *ngIf="listItemControls.length > 3; else normalView" itemSize="5"
-          class="card-viewport">
-          <app-list-card *cdkVirtualFor="let ctrl of listItemControls; let i = index; trackBy: trackByIndex"
-            [configuration]="configuration" [listItemsForm]="listItemsForm" [initialProperties]="initialProperties"
-            [from]="from" [group]="group" [listLabel]="listLabel" [firstKey]="firstKey" [items]="items" [item]="ctrl"
-            [index]="i" (changedConfig)="getChangedConfiguration(i, $event)" (formStatusEvent)="formStatus($event, i)"
-            (removeItem)="removeListItem($event)">
-          </app-list-card>
-        </cdk-virtual-scroll-viewport>
-        <!-- Normal *ngFor rendering for <= 3 items -->
-        <ng-template #normalView>
+        <div class="scrollable">
           <app-list-card *ngFor="let ctrl of listItemControls; let i = index; trackBy: trackByIndex"
             [configuration]="configuration" [listItemsForm]="listItemsForm" [initialProperties]="initialProperties"
             [from]="from" [group]="group" [listLabel]="listLabel" [firstKey]="firstKey" [items]="items" [item]="ctrl"
             [index]="i" (changedConfig)="getChangedConfiguration(i, $event)" (formStatusEvent)="formStatus($event, i)"
             (removeItem)="removeListItem($event)" />
-        </ng-template>
-
+        </div>
       </ng-container>
     </ng-template>
   </div>
-  <ng-container *ngIf="configuration.items == 'object' && isListView">
+
+  <ng-container *ngIf="configuration.items == 'object' && isListView && !isLoadingLargeDataset && !isViewSwitching">
     <app-list-table [configuration]="configuration" [listItemsForm]="listItemsForm" [listType]="'list'" [from]="from"
       [validConfigurationForm]="validConfigurationForm" (removeItem)="removeListItem($event)"
       (addItem)="addListItem(true)" (openModalEvent)="openModal()" (exportFile)="openExportFileModal()" />

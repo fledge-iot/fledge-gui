@@ -38,6 +38,42 @@
   margin-top: -10px;
 }
 
+/* Loading indicator for large datasets */
+.loading-indicator {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* View switching specific styling - lighter and faster feel */
+.loading-indicator:has(p:contains("Switching view")) {
+  background: rgba(248, 250, 252, 0.98);
+  border: 1px solid #cbd5e1;
+  min-height: 120px;
+  transition: opacity 0.2s ease;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+/* Faster spinner for view switching */
+.loading-indicator:has(p:contains("Switching view")) .spinner {
+  animation: spin 0.8s linear infinite;
+  border-top: 3px solid #10b981;
+}
+
 /* Virtual Scrolling Optimizations */
 .virtual-scroll-viewport {
   height: 400px;
@@ -45,6 +81,8 @@
   border: 1px solid #e2e8f0;
   border-radius: 4px;
   padding: 8px;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
 }
 
 .card-viewport {
@@ -53,6 +91,8 @@
   border: 1px solid #e2e8f0;
   border-radius: 4px;
   padding: 8px;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
 }
 
 /* Performance optimizations */
@@ -62,6 +102,15 @@
 
 .cdk-virtual-scroll-orientation-vertical .cdk-virtual-scroll-content-wrapper {
   transform: translateZ(0);
+}
+
+/* Improved virtual scroll item positioning */
+.cdk-virtual-scroll-viewport {
+  scroll-snap-type: y proximity;
+}
+
+.cdk-virtual-scroll-content-wrapper>* {
+  scroll-snap-align: start;
 }
 
 /* Scrollbar styling */

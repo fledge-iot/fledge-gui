@@ -16,7 +16,7 @@ export class FileImportService {
   /**
    * Optimized CSV import with chunked processing for large files
    */
-  async importCsvDataChunked(files: File[], type, chunkSize = 100, progressCallback?: (progress: number) => void) {
+  async importCsvDataChunked(files: File[], type, chunkSize = 200, progressCallback?: (progress: number) => void, delayMs = 0) {
     const fileContent = await this.getTextFromFile(files);
     const propertyNames = fileContent.slice(0, fileContent.indexOf('\n')).split(',');
     const dataRows = fileContent.slice(fileContent.indexOf('\n') + 1).split('\n');
@@ -50,9 +50,9 @@ export class FileImportService {
           progressCallback(Math.round((processedRows / totalRows) * 100));
         }
 
-        // Yield control to prevent blocking
-        if (i + chunkSize < dataRows.length) {
-          await this.delay(0);
+        // Yield control with minimal delays only when needed
+        if (i + chunkSize < dataRows.length && delayMs > 0) {
+          await this.delay(delayMs);
         }
       }
 
@@ -86,9 +86,9 @@ export class FileImportService {
           progressCallback(Math.round((processedRows / totalRows) * 100));
         }
 
-        // Yield control to prevent blocking
-        if (i + chunkSize < dataRows.length) {
-          await this.delay(0);
+        // Yield control with minimal delays only when needed
+        if (i + chunkSize < dataRows.length && delayMs > 0) {
+          await this.delay(delayMs);
         }
       }
 
@@ -99,7 +99,7 @@ export class FileImportService {
   /**
    * Optimized JSON import with validation and memory management
    */
-  async importJsonDataOptimized(files: File[], type, progressCallback?: (progress: number) => void) {
+  async importJsonDataOptimized(files: File[], type, progressCallback?: (progress: number) => void, delayMs = 0) {
     const jsonText = await this.getTextFromFile(files);
 
     try {
@@ -109,8 +109,15 @@ export class FileImportService {
         const entries = Object.entries(jsonObj);
         const totalEntries = entries.length;
 
-        // Process in chunks to avoid blocking
-        const chunkSize = Math.min(100, Math.max(10, Math.ceil(totalEntries / 20)));
+        // Optimized chunking for better performance while preventing crashes
+        let chunkSize = 200; // Increased default chunk size
+
+        if (totalEntries > 15000) {
+          chunkSize = 50;  // Medium chunks for very large datasets
+        } else if (totalEntries > 8000) {
+          chunkSize = 100; // Larger chunks for large datasets
+        }
+
         const result = {};
 
         for (let i = 0; i < entries.length; i += chunkSize) {
@@ -125,9 +132,9 @@ export class FileImportService {
             progressCallback(Math.round(((i + chunkSize) / totalEntries) * 100));
           }
 
-          // Yield control
-          if (i + chunkSize < entries.length) {
-            await this.delay(0);
+          // Yield control with minimal delays only when needed
+          if (i + chunkSize < entries.length && delayMs > 0) {
+            await this.delay(delayMs);
           }
         }
 
@@ -145,10 +152,23 @@ export class FileImportService {
   }
 
   /**
-   * Utility method to add delays for better performance
+   * Utility method for chunked processing delays
    */
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => {
+      if (ms > 5 && 'requestIdleCallback' in window) {
+        // Use requestIdleCallback for delays > 5ms for better performance
+        requestIdleCallback(() => {
+          if (ms > 5) {
+            setTimeout(resolve, ms - 5); // Reduce overhead
+          } else {
+            resolve();
+          }
+        }, { timeout: ms + 20 }); // Reduced timeout
+      } else {
+        setTimeout(resolve, ms);
+      }
+    });
   }
 
   /**

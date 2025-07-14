@@ -39,6 +39,13 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private processingChunk = false;
 
+  // Performance optimization properties with different thresholds for different operations
+  isLoadingLargeDataset = false;
+  isViewSwitching = false; // Add back view switching indicator
+  private LARGE_DATASET_THRESHOLD = 500; // For showing loading indicators
+  private FORM_CREATION_THRESHOLD = 1000; // For conservative form creation chunking
+  private DOM_OPERATION_THRESHOLD = 3000; // For DOM manipulation chunking (higher threshold)
+
   constructor(
     private zone: NgZone,
     public cdRef: ChangeDetectorRef,
@@ -86,32 +93,73 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Show loading indicator for large datasets
+    if (values.length > this.LARGE_DATASET_THRESHOLD) {
+      this.isLoadingLargeDataset = true;
+      this.cdRef.detectChanges();
+    }
+
     // Detach change detection for bulk operations
     this.cdRef.detach();
     this.processingChunk = true;
 
-    const chunkSize = Math.max(20, Math.min(50, Math.ceil(values.length / 10)));
+    // Conservative chunking for form creation based on FORM_CREATION_THRESHOLD
+    let chunkSize, delay;
+    if (values.length > this.FORM_CREATION_THRESHOLD) {
+      // Use conservative chunking for form creation to prevent crashes
+      if (values.length > 8000) {
+        // Very large datasets: very small chunks with longer delays
+        chunkSize = 5;
+        delay = 50;
+      } else if (values.length > 3000) {
+        // Large datasets: small chunks with moderate delays  
+        chunkSize = 10;
+        delay = 30;
+      } else {
+        // Medium datasets: moderate chunks with small delays
+        chunkSize = 20;
+        delay = 15;
+      }
+    } else {
+      // Smaller datasets: larger chunks with minimal delays
+      chunkSize = 50;
+      delay = 5;
+    }
+
     let currentIndex = 0;
 
     const processChunk = () => {
       const endIndex = Math.min(currentIndex + chunkSize, values.length);
 
-      for (let i = currentIndex; i < endIndex; i++) {
-        this.initListItem(false, values[i]);
-      }
+      // Use zone outside to prevent multiple change detection cycles
+      this.zone.runOutsideAngular(() => {
+        for (let i = currentIndex; i < endIndex; i++) {
+          this.zone.run(() => {
+            this.initListItem(false, values[i]);
+          });
+        }
+      });
 
       currentIndex = endIndex;
 
       if (currentIndex < values.length) {
-        // Use scheduler for better performance
+        // Use conservative scheduling for form creation
         this.zone.runOutsideAngular(() => {
-          setTimeout(() => {
-            this.zone.run(() => processChunk());
-          }, 0);
+          if ('requestIdleCallback' in window && values.length > 3000) {
+            // Use browser idle time for large datasets
+            requestIdleCallback(() => {
+              this.zone.run(() => processChunk());
+            }, { timeout: delay + 100 });
+          } else {
+            setTimeout(() => {
+              this.zone.run(() => processChunk());
+            }, delay);
+          }
         });
       } else {
         // Processing complete
         this.processingChunk = false;
+        this.isLoadingLargeDataset = false;
         this.cdRef.reattach();
         this.cdRef.detectChanges();
 
@@ -120,7 +168,8 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
       }
     };
 
-    processChunk();
+    // Start processing with a small initial delay to let UI settle
+    setTimeout(() => processChunk(), 10);
   }
 
   private setupValueChangeSubscription() {
@@ -296,53 +345,213 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   expandCollapseSingleItem(i: number, isExpand: boolean, scrollIntoView = false) {
-    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
-    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
-    if (isExpand) {
-      cardHeader.classList.add('is-hidden');
-      cardBody.classList.remove('is-hidden');
-      if (scrollIntoView) {
-        let input: HTMLElement = cardBody.querySelector('.input.is-small');
-        if (input) {
-          input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          input.focus();
+    // Add safety checks for DOM manipulation with timeout for heavy operations
+    this.zone.runOutsideAngular(() => {
+      setTimeout(() => {
+        const cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
+        const cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
+
+        if (!cardHeader || !cardBody) {
+          return; // Silently skip if elements don't exist
         }
-      }
-    }
-    else {
-      cardHeader.classList.remove('is-hidden');
-      cardBody.classList.add('is-hidden');
-    }
+
+        if (isExpand) {
+          cardHeader.classList.add('is-hidden');
+          cardBody.classList.remove('is-hidden');
+          if (scrollIntoView) {
+            let input: HTMLElement = cardBody.querySelector('.input.is-small');
+            if (input) {
+              input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              input.focus();
+            }
+          }
+        }
+        else {
+          cardHeader.classList.remove('is-hidden');
+          cardBody.classList.add('is-hidden');
+        }
+      }, 0);
+    });
   }
 
   expandAllItems() {
-    for (let i = 0; i < this.listItems.length; i++) {
-      this.expandCollapseSingleItem(i, true);
+    // Use chunked processing only for very large datasets (DOM operations are fast)
+    if (this.listItems.length > this.DOM_OPERATION_THRESHOLD) {
+      this.expandAllItemsChunked();
+    } else {
+      for (let i = 0; i < this.listItems.length; i++) {
+        this.expandCollapseSingleItem(i, true);
+      }
     }
   }
 
   collapseAllItems() {
-    for (let i = 0; i < this.listItems.length; i++) {
-      this.expandCollapseSingleItem(i, false);
+    // Use chunked processing only for very large datasets (DOM operations are fast)
+    if (this.listItems.length > this.DOM_OPERATION_THRESHOLD) {
+      this.collapseAllItemsChunked();
+    } else {
+      for (let i = 0; i < this.listItems.length; i++) {
+        this.expandCollapseSingleItem(i, false);
+      }
     }
   }
 
+  private expandAllItemsChunked() {
+    const chunkSize = 100; // Larger chunks for DOM operations (much faster than form creation)
+    let currentIndex = 0;
+
+    const processChunk = () => {
+      const endIndex = Math.min(currentIndex + chunkSize, this.listItems.length);
+
+      for (let i = currentIndex; i < endIndex; i++) {
+        this.expandCollapseSingleItem(i, true);
+      }
+
+      currentIndex = endIndex;
+
+      if (currentIndex < this.listItems.length) {
+        this.zone.runOutsideAngular(() => {
+          setTimeout(() => {
+            this.zone.run(() => processChunk());
+          }, 5); // Much shorter delay for DOM operations
+        });
+      }
+    };
+
+    processChunk();
+  }
+
+  private collapseAllItemsChunked() {
+    const chunkSize = 100; // Larger chunks for DOM operations (much faster than form creation)
+    let currentIndex = 0;
+
+    const processChunk = () => {
+      const endIndex = Math.min(currentIndex + chunkSize, this.listItems.length);
+
+      for (let i = currentIndex; i < endIndex; i++) {
+        this.expandCollapseSingleItem(i, false);
+      }
+
+      currentIndex = endIndex;
+
+      if (currentIndex < this.listItems.length) {
+        this.zone.runOutsideAngular(() => {
+          setTimeout(() => {
+            this.zone.run(() => processChunk());
+          }, 5); // Much shorter delay for DOM operations
+        });
+      }
+    };
+
+    processChunk();
+  }
+
   appendFileData(event) {
-    event.fileData.forEach(element => {
-      this.initListItem(false, element);
-    });
+    // Show loading indicator for large file imports
+    if (event.fileData && event.fileData.length > this.LARGE_DATASET_THRESHOLD) {
+      this.isLoadingLargeDataset = true;
+      this.cdRef.detectChanges();
+
+      // Process large file data in chunks
+      this.processLargeFileData(event.fileData, false);
+    } else {
+      event.fileData.forEach(element => {
+        this.initListItem(false, element);
+      });
+    }
   }
 
   overrideFileData(event) {
-    this.listItems.clear();
-    this.initialProperties = [];
-    event.fileData.forEach(element => {
-      this.initListItem(false, element);
-    });
+    // Show loading indicator for large file imports
+    if (event.fileData && event.fileData.length > this.LARGE_DATASET_THRESHOLD) {
+      this.isLoadingLargeDataset = true;
+      this.listItems.clear();
+      this.initialProperties = [];
+      this.cdRef.detectChanges();
+
+      // Process large file data in chunks
+      this.processLargeFileData(event.fileData, true);
+    } else {
+      this.listItems.clear();
+      this.initialProperties = [];
+      event.fileData.forEach(element => {
+        this.initListItem(false, element);
+      });
+    }
+  }
+
+  private processLargeFileData(fileData: any[], isOverride: boolean) {
+    this.cdRef.detach();
+    this.processingChunk = true;
+
+    // Use conservative chunking for file imports based on FORM_CREATION_THRESHOLD
+    let chunkSize, delay;
+    if (fileData.length > this.FORM_CREATION_THRESHOLD) {
+      // Use conservative chunking for form creation to prevent crashes
+      if (fileData.length > 8000) {
+        // Very large files: very small chunks with longer delays
+        chunkSize = 5;
+        delay = 50;
+      } else if (fileData.length > 3000) {
+        // Large files: small chunks with moderate delays  
+        chunkSize = 10;
+        delay = 30;
+      } else {
+        // Medium files: moderate chunks with small delays
+        chunkSize = 20;
+        delay = 15;
+      }
+    } else {
+      // Smaller files: larger chunks with minimal delays
+      chunkSize = 50;
+      delay = 5;
+    }
+
+    let currentIndex = 0;
+
+    const processChunk = () => {
+      const endIndex = Math.min(currentIndex + chunkSize, fileData.length);
+
+      // Use zone outside to prevent multiple change detection cycles
+      this.zone.runOutsideAngular(() => {
+        for (let i = currentIndex; i < endIndex; i++) {
+          this.zone.run(() => {
+            this.initListItem(false, fileData[i]);
+          });
+        }
+      });
+
+      currentIndex = endIndex;
+
+      if (currentIndex < fileData.length) {
+        this.zone.runOutsideAngular(() => {
+          if ('requestIdleCallback' in window && fileData.length > 3000) {
+            // Use browser idle time for large files
+            requestIdleCallback(() => {
+              this.zone.run(() => processChunk());
+            }, { timeout: delay + 100 });
+          } else {
+            setTimeout(() => {
+              this.zone.run(() => processChunk());
+            }, delay);
+          }
+        });
+      } else {
+        // Processing complete
+        this.processingChunk = false;
+        this.isLoadingLargeDataset = false;
+        this.cdRef.reattach();
+        this.cdRef.detectChanges();
+      }
+    };
+
+    // Start processing with a small initial delay
+    setTimeout(() => processChunk(), 10);
   }
 
   openModal() {
     this.hideDropDown();
+    // Ensure modal state is reset when opening
     this.fileImportModal.toggleModal(true);
   }
 
@@ -368,9 +577,51 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   setCurrentView(event) {
-    this.isListView = event.isListView;
-    if (this.listItems.length == 1 && !this.isListView) {
-      this.expandListItem(0); // Expand the list if only one item is present
+    // Show view switching indicator for datasets that need it
+    if (this.listItems.length > this.LARGE_DATASET_THRESHOLD) {
+      this.isViewSwitching = true;
+      this.cdRef.detectChanges();
+
+      // Use a short delay to let the loading indicator appear
+      this.zone.runOutsideAngular(() => {
+        setTimeout(() => {
+          this.zone.run(() => {
+            this.isListView = event.isListView;
+
+            // Additional delay for detailed view to let cards render
+            if (!this.isListView) {
+              setTimeout(() => {
+                if (this.listItems.length == 1) {
+                  this.expandListItem(0);
+                }
+                this.isViewSwitching = false;
+                this.cdRef.detectChanges();
+              }, 200); // Give cards time to render
+            } else {
+              // Tabular view is faster
+              setTimeout(() => {
+                this.isViewSwitching = false;
+                this.cdRef.detectChanges();
+              }, 50);
+            }
+          });
+        }, 100); // Let loading indicator show
+      });
+    } else {
+      // Fast switching for smaller datasets
+      this.zone.runOutsideAngular(() => {
+        setTimeout(() => {
+          this.zone.run(() => {
+            this.isListView = event.isListView;
+
+            if (this.listItems.length == 1 && !this.isListView) {
+              setTimeout(() => {
+                this.expandListItem(0);
+              }, 100);
+            }
+          });
+        }, 0);
+      });
     }
   }
 }
