@@ -54,11 +54,9 @@ Base URL: `http://localhost:8081/fledge`
 
 ### 3. Get Services
 - **Endpoint:** `GET /service`
-- **Purpose:** Retrieve all south (data collection) services
-- **Parameters:** 
-  - `schedule_enabled` (optional) - Filter by enabled status
-- **Used for:** Powers south services summary cards and service health table
-- **Returns:** List of south services with status and configuration
+- **Purpose:** Retrieve all services
+- **Used for:** Powers services summary cards and service health table
+- **Returns:** List of services with status and configuration
 
 **Example Response:**
 ```json
@@ -81,9 +79,6 @@ Base URL: `http://localhost:8081/fledge`
 ### 4. Get North Tasks
 - **Endpoint:** `GET /task`
 - **Purpose:** Retrieve all north (data sending) tasks
-- **Parameters:**
-  - `enabled` (optional) - Filter by enabled status
-- **Used for:** Powers north services summary cards
 - **Returns:** List of north tasks with status and configuration
 
 **Example Response:**
@@ -198,7 +193,7 @@ Base URL: `http://localhost:8081/fledge`
 ```
 
 ### 9. Get System Logs
-- **Endpoint:** `GET /log`
+- **Endpoint:** `GET /syslog`
 - **Purpose:** Retrieve system logs with filtering options
 - **Parameters:**
   - `limit` (optional) - Max logs to return (default: 50)
@@ -261,12 +256,11 @@ Base URL: `http://localhost:8081/fledge`
    - Historical trends (`/statistics/history`)
 
 3. **System Logs**
-   - Log display (`/log`)
+   - Log display (`/syslog`)
    - Service filtering (`/schedule`)
 
 4. **Error Rate Monitoring**
-   - Log analysis (`/log`)
-   - Service information (`/service/available`)
+   - Log analysis (`/syslog`)
 
 5. **System Health**
    - Service status (`/service/available`)

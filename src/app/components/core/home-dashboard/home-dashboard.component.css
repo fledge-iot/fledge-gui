@@ -1019,11 +1019,6 @@
     transition: all 0.2s ease;
 }
 
-.disabled-indicator .tag:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(107, 114, 128, 0.4);
-}
-
 .disabled-indicator .tag i {
     font-size: 0.65rem;
     margin-right: 0.25rem;
@@ -1476,4 +1471,25 @@
     .disabled-indicator .tag i {
         font-size: 0.55rem;
     }
+}
+
+/* Ensure disabled indicator maintains its styling on card hover */
+.stats-card:hover .disabled-indicator .tag {
+    background: linear-gradient(135deg, #6b7280, #4b5563) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.stats-card:hover .disabled-indicator .tag i {
+    color: white !important;
+}
+
+/* Prevent any color changes on disabled indicator hover */
+.disabled-indicator .tag:hover {
+    background: linear-gradient(135deg, #6b7280, #4b5563) !important;
+    color: white !important;
+}
+
+.disabled-indicator .tag:hover i {
+    color: white !important;
 }

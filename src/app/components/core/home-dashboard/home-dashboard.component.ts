@@ -79,6 +79,8 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
     private errorRateCharts: Chart[] = []; // For error rate monitoring charts only
     private autoRefreshSubscription?: Subscription;
     private systemLogsInitialized = false;
+    private errorMonitoringLoading = false;
+    private systemLogsInitializing = false; // Add flag to prevent double initialization
 
     // Signals for reactive state management
     statsSummary = signal<StatsSummary>({
@@ -105,7 +107,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
     chartsLoading = signal<boolean[]>([]);
     isStatsHistoryExpanded = signal(true);
     isSystemLogsExpanded = signal(true);
-    isAutoRefreshEnabled = signal(true);
+    isAutoRefreshEnabled = signal(false); // Start with auto-refresh disabled
 
     // Parsed system logs for table display
     parsedSystemLogs = signal<any[]>([]);
@@ -190,6 +192,11 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
         this.destroyErrorRateChart(); // Destroy error rate charts
         this.stopAutoRefresh();
 
+        // Reset loading flags
+        this.errorMonitoringLoading = false;
+        this.systemLogsInitialized = false;
+        this.systemLogsInitializing = false;
+
         // Clean up alerts tooltip timeout
         if (this.alertsTooltipTimeout) {
             clearTimeout(this.alertsTooltipTimeout);
@@ -200,33 +207,53 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
     ngAfterViewInit() {
         // SystemLogComponent is now always available in DOM (just hidden/shown)
         // Initialize it immediately and disable its auto-refresh
-        setTimeout(() => {
-            if (this.systemLogComponent && !this.systemLogsInitialized) {
-                // Disable the SystemLogComponent's auto-refresh to prevent continuous calls
-                this.systemLogComponent.toggleAutoRefresh(false);
+        if (this.systemLogComponent && !this.systemLogsInitialized && !this.systemLogsInitializing) {
 
-                // Set our local auto-refresh state to false initially
-                this.isAutoRefreshEnabled.set(false);
 
-                // Load initial data once
-                this.systemLogComponent.getSysLogs();
-                this.systemLogComponent.getSchedules();
+            this.systemLogsInitializing = true; // Prevent double initialization
 
-                // Parse initial logs after a short delay
-                setTimeout(() => {
-                    this.parseSystemLogsData();
-                    this.updateAvailableServices();
-                }, 1000);
+            // Disable the SystemLogComponent's auto-refresh IMMEDIATELY to prevent any calls
+            this.systemLogComponent.toggleAutoRefresh(false);
 
+
+
+            // Load initial data once after a short delay - SINGLE API CALL
+            setTimeout(() => {
+                this.loadSystemLogsOnce();
                 // Mark as initialized to prevent multiple calls
                 this.systemLogsInitialized = true;
-            }
-        });
+                this.systemLogsInitializing = false; // Reset the flag
+            }, 100);
+        } else {
+            console.log('⚠️ SystemLogComponent initialization skipped:', {
+                systemLogComponent: !!this.systemLogComponent,
+                systemLogsInitialized: this.systemLogsInitialized,
+                systemLogsInitializing: this.systemLogsInitializing
+            });
+        }
 
         // Also ensure error rate chart is created after view init
         setTimeout(() => {
             this.createErrorRateChart();
         }, 500);
+    }
+
+    // New method to load system logs only once during initialization
+    private loadSystemLogsOnce() {
+        if (this.systemLogComponent) {
+
+            // DO NOT make API calls here - SystemLogComponent already calls them in its ngOnInit()
+            // Just wait for the data to be available and then parse it
+            // Parse logs after SystemLogComponent has time to load its data
+            setTimeout(() => {
+                this.parseSystemLogsData();
+                this.updateAvailableServices();
+                // Load error monitoring data after system logs are properly initialized
+                this.loadErrorMonitoringData();
+            }, 1500); // Longer timeout to ensure SystemLogComponent has loaded data
+        } else {
+            console.error('❌ SystemLogComponent not available in loadSystemLogsOnce');
+        }
     }
 
     private destroyCharts() {
@@ -247,7 +274,8 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
         this.loadStatsSummary();
         this.loadStatistics();
         this.loadStatisticsHistory();
-        this.loadErrorMonitoringData();
+        // Don't load error monitoring data here - it will be loaded after system logs are initialized
+        // this.loadErrorMonitoringData();
     }
 
     private setupAutoRefresh() {
@@ -256,6 +284,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
     }
 
     private startAutoRefresh() {
+
         // Stop any existing auto-refresh
         this.stopAutoRefresh();
 
@@ -266,11 +295,12 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
                 this.loadStatsSummary();
                 this.loadStatistics();
                 this.loadStatisticsHistory();
-                // Parse system logs after refresh which will also update error monitoring
-                setTimeout(() => {
-                    this.parseSystemLogsData();
-                    this.updateAvailableServices();
-                }, 1000);
+                // Only refresh system logs if already initialized
+                if (this.systemLogsInitialized) {
+                    this.refreshSystemLogs();
+                } else {
+                    console.log('⚠️ Auto-refresh: skipping refreshSystemLogs (not initialized)');
+                }
             });
     }
 
@@ -422,6 +452,13 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
     }
 
     private loadErrorMonitoringData() {
+        // Prevent multiple simultaneous calls
+        if (this.errorMonitoringLoading) {
+            return;
+        }
+
+        this.errorMonitoringLoading = true;
+
         // Calculate error rates based on actual system logs
         const timeRange = this.errorTimeRange();
         const now = new Date();
@@ -561,16 +598,22 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
                         stoppedCount: stoppedServices
                     }
                 });
-            });
 
-        // Create the error rate chart after data is loaded and DOM is ready
-        // Use a longer timeout to ensure the DOM is fully rendered and data is updated
-        setTimeout(() => {
-            if (this.showErrorMonitoring()) {
-                console.log('📊 Creating error rate chart with new data for time range:', this.errorTimeRange());
-                this.createErrorRateChart();
-            }
-        }, 300);
+                // Reset the loading flag
+                this.errorMonitoringLoading = false;
+
+                // Create the error rate chart after data is loaded and DOM is ready
+                // Use a longer timeout to ensure the DOM is fully rendered and data is updated
+                setTimeout(() => {
+                    if (this.showErrorMonitoring()) {
+                        this.createErrorRateChart();
+                    }
+                }, 300);
+            }, error => {
+                // Reset the loading flag on error
+                this.errorMonitoringLoading = false;
+                console.error('Error in loadErrorMonitoringData:', error);
+            });
     }
 
     private filterErrorLogsByTime(logs: any[], cutoffTime: Date): any[] {
@@ -1151,19 +1194,43 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
 
     // Add a method to manually refresh system logs
     refreshSystemLogs() {
-        if (this.systemLogComponent) {
+        if (this.systemLogComponent && this.systemLogsInitialized) {
+            console.log('🔄 Manual refresh: Refreshing system logs and schedules...');
+            console.log('📍 Refresh call stack trace:', new Error().stack);
+
+            // For manual refresh, explicitly call the APIs
+            console.log('📞 Manual refresh: Calling systemLogComponent.getSysLogs()...');
             this.systemLogComponent.getSysLogs();
+
+            console.log('📞 Manual refresh: Calling systemLogComponent.getSchedules()...');
             this.systemLogComponent.getSchedules();
+
             // Parse the logs and update services after refresh
             setTimeout(() => {
-                this.parseSystemLogsData(); // This will also update error monitoring
+                console.log('✅ Manual refresh complete, parsing updated data...');
+                console.log('📊 Updated logs length:', this.systemLogComponent.logs?.length || 0);
+                console.log('📊 Updated scheduleData size:', this.systemLogComponent.scheduleData?.size || 0);
+
+                this.parseSystemLogsData();
                 this.updateAvailableServices();
+                // Explicitly update error monitoring data after refresh
+                this.loadErrorMonitoringData();
             }, 500);
+        } else {
+            console.log('⚠️ refreshSystemLogs skipped:', {
+                systemLogComponent: !!this.systemLogComponent,
+                systemLogsInitialized: this.systemLogsInitialized
+            });
         }
     }
 
     // Pagination methods for system logs
     onSystemLogsNewer() {
+        // Don't trigger API calls during initialization
+        if (!this.systemLogsInitialized) {
+            return;
+        }
+
         if (this.systemLogsOffset() > 0) {
             const newPage = this.systemLogsPage() - 1;
             this.systemLogsPage.set(newPage);
@@ -1174,6 +1241,11 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
     }
 
     onSystemLogsOlder() {
+        // Don't trigger API calls during initialization
+        if (!this.systemLogsInitialized) {
+            return;
+        }
+
         const newPage = this.systemLogsPage() + 1;
         this.systemLogsPage.set(newPage);
         const newOffset = (newPage - 1) * this.systemLogsLimit;
@@ -1182,13 +1254,20 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
     }
 
     onSystemLogsFirst() {
+        // Don't trigger API calls during initialization
+        if (!this.systemLogsInitialized) {
+            return;
+        }
+
         this.systemLogsPage.set(1);
         this.systemLogsOffset.set(0);
         this.loadSystemLogsPage();
     }
 
     private loadSystemLogsPage() {
-        if (this.systemLogComponent) {
+        if (this.systemLogComponent && this.systemLogsInitialized) {
+            console.log('📄 Loading system logs page:', this.systemLogsPage());
+
             // Update the SystemLogComponent's pagination properties
             this.systemLogComponent.page = this.systemLogsPage();
             this.systemLogComponent.offset = this.systemLogsOffset();
@@ -1199,12 +1278,16 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
             this.systemLogComponent.level = this.systemLogsLevel();
             this.systemLogComponent.keyword = this.systemLogsKeyword();
 
-            // Trigger the logs reload
+            // Trigger the logs reload only if initialized (pagination requires API call)
+            console.log('📞 Pagination: Calling systemLogComponent.getSysLogs() for page', this.systemLogsPage());
             this.systemLogComponent.getSysLogs();
 
             // Parse the logs after reload
             setTimeout(() => {
+                console.log('✅ Pagination complete for page', this.systemLogsPage());
                 this.parseSystemLogsData();
+                // Update error monitoring data after pagination
+                this.loadErrorMonitoringData();
             }, 500);
         }
     }
@@ -1222,8 +1305,8 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
             // Debug: log the first few parsed entries
             console.log('Parsed system logs (first 3):', parsedLogs.slice(0, 3));
 
-            // Update error monitoring data when logs are refreshed
-            this.loadErrorMonitoringData();
+            // Remove circular dependency - don't call loadErrorMonitoringData here
+            // this.loadErrorMonitoringData();
         }
     }
 
@@ -1395,7 +1478,19 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
     }
 
     refreshData() {
+        console.log('🔄 refreshData called');
+        console.log('📍 refreshData call stack:', new Error().stack);
+
         this.loadInitialData();
+        // Only refresh system logs if already initialized
+        if (this.systemLogsInitialized) {
+            console.log('🔄 refreshData: calling refreshSystemLogs()');
+            this.refreshSystemLogs();
+        } else {
+            console.log('⚠️ refreshData: system logs not initialized, loading error monitoring with mock data');
+            // If system logs aren't initialized yet, load error monitoring with mock data
+            this.loadErrorMonitoringData();
+        }
     }
 
     trackByStatKey(index: number, key: string): string {
@@ -1515,6 +1610,11 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
 
     // Filter methods for system logs
     onSystemLogsFilterChange(filter: string, value: string) {
+        // Don't trigger API calls during initialization
+        if (!this.systemLogsInitialized) {
+            return;
+        }
+
         // Reset to first page when filter changes
         this.systemLogsPage.set(1);
         this.systemLogsOffset.set(0);
@@ -1529,6 +1629,11 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
     }
 
     onSystemLogsSearchChange(keyword: string) {
+        // Don't trigger API calls during initialization
+        if (!this.systemLogsInitialized) {
+            return;
+        }
+
         // Reset to first page when search changes
         this.systemLogsPage.set(1);
         this.systemLogsOffset.set(0);

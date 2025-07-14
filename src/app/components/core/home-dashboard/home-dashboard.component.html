@@ -20,9 +20,9 @@
             <div class="column is-3">
                 <div class="box data-source-card stats-card" (click)="navigateToSouth()" style="cursor: pointer;">
                     <!-- Disabled indicator in top-right corner -->
-                    <div class="disabled-indicator" *ngIf="statsSummary().southServicesDisabled > 0"
-                        [title]="getDisabledSouthServicesTooltip()">
-                        <span class="tag is-light is-small">
+                    <div class="disabled-indicator" *ngIf="statsSummary().southServicesDisabled > 0">
+                        <span class="tag is-light is-small tooltip has-tooltip-left has-tooltip-arrow is-pulled-right"
+                            [attr.data-tooltip]="getDisabledSouthServicesTooltip()">
                             <i class="bi bi-stop-circle-fill mr-1"></i>
                             {{ statsSummary().southServicesDisabled }}
                         </span>
@@ -85,9 +85,9 @@
             <div class="column is-3">
                 <div class="box integration-light-card stats-card" (click)="navigateToNorth()" style="cursor: pointer;">
                     <!-- Disabled indicator in top-right corner -->
-                    <div class="disabled-indicator" *ngIf="statsSummary().northServicesDisabled > 0"
-                        [title]="getDisabledNorthServicesTooltip()">
-                        <span class="tag is-light is-small">
+                    <div class="disabled-indicator" *ngIf="statsSummary().northServicesDisabled > 0">
+                        <span class="tag is-light is-small tooltip has-tooltip-left has-tooltip-arrow is-pulled-right"
+                            [attr.data-tooltip]="getDisabledNorthServicesTooltip()">
                             <i class="bi bi-stop-circle-fill mr-1"></i>
                             {{ statsSummary().northServicesDisabled }}
                         </span>

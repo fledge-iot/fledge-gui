@@ -6,7 +6,7 @@ Base URL: `http://localhost:8081/fledge`
 
 ---
 
-## 🚨 Critical Missing APIs
+## Missing APIs
 
 These APIs are essential for a production-ready dashboard. Currently, the dashboard shows fake/random data for these features.
 
