@@ -81,6 +81,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
     private systemLogsInitialized = false;
     private errorMonitoringLoading = false;
     private systemLogsInitializing = false; // Add flag to prevent double initialization
+    private pingData: any;
 
     // Signals for reactive state management
     statsSummary = signal<StatsSummary>({
@@ -372,6 +373,7 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
         // Call ping service directly to get the actual data
         this.pingService.pingService()
             .then((pingData: any) => {
+                this.pingData = pingData;
                 this.statsSummary.update(current => ({
                     ...current,
                     receivedCount: pingData?.dataRead || 0,
@@ -751,6 +753,26 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
         console.log('   - Last data point:', data[data.length - 1]);
 
         return data;
+    }
+
+    applyPingStatusCustomCss(ping_info) {
+        if (this.pingData) {
+            if (this.pingData['health'] === 'green') {
+                this.pingData['healthInfo'] = 'Healthy';
+                return 'has-text-success';
+            }
+            if (this.pingData['health'] === 'amber') {
+                this.pingData['healthInfo'] = 'Degraded';
+                return 'has-text-warning';
+            }
+            if (this.pingData['health'] === 'red' || !ping_info.isAlive) {
+                this.pingData['healthInfo'] = 'Critical';
+                return 'has-text-danger';
+            }
+        } else {
+            this.pingData['healthInfo'] = 'Critical';
+            return 'has-text-danger';
+        }
     }
 
     private calculateServiceErrorRate(serviceName: string, errorLogs: any[], allLogs: any[], cutoffTime: Date): number {

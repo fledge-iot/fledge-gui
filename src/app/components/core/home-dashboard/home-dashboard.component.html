@@ -556,12 +556,11 @@
                         </button>
                     </h2>
                 </div>
-                <!-- <div class="column is-narrow" *ngIf="showSystemHealth()">
-                    <span class="tag"
-                        [class]="systemHealth().overall === 'healthy' ? 'is-success' : systemHealth().overall === 'degraded' ? 'is-warning' : 'is-danger'">
-                        {{ systemHealth().overall | titlecase }}
+                <div class="column is-narrow" *ngIf="showSystemHealth()">
+                    <span class="tag" [class]="applyPingStatusCustomCss(pingData)">
+                        {{ pingData.healthInfo | titlecase }}
                     </span>
-                </div> -->
+                </div>
             </div>
 
             <!-- Collapsible Content -->
