@@ -46,11 +46,15 @@
   justify-content: center;
 }
 
-/* View switching specific styling - lighter and faster feel */
-.loading-indicator:has(p:contains("Switching view")) {
-  background: rgba(248, 250, 252, 0.98);
+/* Lighter view switching indicator - only for very large datasets */
+.view-switching-indicator {
   border: 1px solid #cbd5e1;
-  min-height: 120px;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: opacity 0.2s ease;
 }
 
@@ -64,10 +68,15 @@
   margin: 0 auto;
 }
 
-/* Faster spinner for view switching */
-.loading-indicator:has(p:contains("Switching view")) .spinner {
+/* Smaller, faster spinner for view switching */
+.spinner-small {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
   animation: spin 0.8s linear infinite;
-  border-top: 3px solid #10b981;
+  margin: 0 auto;
 }
 
 /* Virtual Scrolling Optimizations */
@@ -94,6 +103,7 @@
 /* Performance optimizations */
 .cdk-virtual-scroll-content-wrapper {
   contain: layout style paint;
+  will-change: transform;
 }
 
 .cdk-virtual-scroll-orientation-vertical .cdk-virtual-scroll-content-wrapper {
@@ -135,6 +145,7 @@
 /* Existing styles preserved */
 .items-container {
   position: relative;
+  contain: layout;
 }
 
 .custom-viewport {
@@ -145,6 +156,8 @@
 .scrollable {
   max-height: 400px;
   overflow-y: auto;
+  contain: layout style;
+  will-change: scroll-position;
 }
 
 /* Loading state styles */

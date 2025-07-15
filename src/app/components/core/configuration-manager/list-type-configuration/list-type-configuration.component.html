@@ -24,11 +24,11 @@
     </div>
   </div>
 
-  <!-- View switching indicator -->
-  <div *ngIf="isViewSwitching && !isLoadingLargeDataset" class="loading-indicator">
-    <div class="has-text-centered p-5">
-      <div class="spinner"></div>
-      <p class="mt-3">Switching view...</p>
+  <!-- Smart view switching indicator - only for very large datasets -->
+  <div *ngIf="isViewSwitching && !isLoadingLargeDataset" class="view-switching-indicator">
+    <div class="has-text-centered p-3">
+      <div class="spinner-small"></div>
+      <p class="mt-2">Switching view...</p>
     </div>
   </div>
 
@@ -37,9 +37,9 @@
       <form [formGroup]="listItemsForm">
         <div formArrayName="listItems">
           <!-- Virtual Scroll if more than 20 items -->
-          <cdk-virtual-scroll-viewport *ngIf="listItems.length > 20; else fallbackScroll" itemSize="20"
+          <cdk-virtual-scroll-viewport *ngIf="listItems.length > 20; else fallbackScroll" itemSize="35"
             class="virtual-scroll-viewport">
-            <div *cdkVirtualFor="let ctrl of listItemControls; let i = index; trackBy: trackByIndex">
+            <div *cdkVirtualFor="let ctrl of listItemControls; let i = index; trackBy: trackByFormControl">
               <!-- Render input row -->
               <ng-container [ngTemplateOutlet]="inputRow"
                 [ngTemplateOutletContext]="{ ctrl: ctrl, i: i }"></ng-container>
@@ -48,7 +48,7 @@
 
           <!-- Normal *ngFor rendering for <= 20 items -->
           <ng-template #fallbackScroll>
-            <div *ngFor="let ctrl of listItems.controls; let i = index; trackBy: trackByIndex">
+            <div *ngFor="let ctrl of listItems.controls; let i = index; trackBy: trackByFormControl">
               <ng-container [ngTemplateOutlet]="inputRow"
                 [ngTemplateOutletContext]="{ ctrl: ctrl, i: i }"></ng-container>
             </div>
@@ -91,7 +91,7 @@
     <ng-template #objectTemplate>
       <ng-container *ngIf="!isListView">
         <div class="scrollable">
-          <app-list-card *ngFor="let ctrl of listItemControls; let i = index; trackBy: trackByIndex"
+          <app-list-card *ngFor="let ctrl of listItemControls; let i = index; trackBy: trackByFormControl"
             [configuration]="configuration" [listItemsForm]="listItemsForm" [initialProperties]="initialProperties"
             [from]="from" [group]="group" [listLabel]="listLabel" [firstKey]="firstKey" [items]="items" [item]="ctrl"
             [index]="i" (changedConfig)="getChangedConfiguration(i, $event)" (formStatusEvent)="formStatus($event, i)"
