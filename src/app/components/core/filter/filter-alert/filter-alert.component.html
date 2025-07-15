@@ -6,11 +6,13 @@
     </header>
     <section *ngIf="filerDialogData" class="modal-card-body">
       {{filerDialogData.message}}
-      <span *ngIf="filerDialogData.name != ''" class="has-text-black has-text-weight-semibold">{{filerDialogData.name}}</span>
+      <span *ngIf="filerDialogData.name != ''"
+        class="has-text-black has-text-weight-semibold">{{filerDialogData.name}}</span>
     </section>
     <footer class="modal-card-foot">
       <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
-      <button *ngIf="filerDialogData" class="button is-small is-info" [ngClass]="{'is-warning': filerDialogData.actionButtonValue === 'Discard' }"
+      <button *ngIf="filerDialogData" class="button is-small is-link"
+        [ngClass]="{'is-warning': filerDialogData.actionButtonValue === 'Discard' }"
         (click)="triggerAction()">{{filerDialogData.actionButtonValue}}</button>
     </footer>
   </div>

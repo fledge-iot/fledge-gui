@@ -1,7 +1,7 @@
 <div class="container" [ngClass]="{'is-fluid': sourceName, 'custom-max-width': from?.includes('control-pipeline')}"
   [id]="from">
-  <nav *ngIf="sourceName && from !== 'rule-modal' && from !== 'delivery-modal'" class="breadcrumb"
-    aria-label="breadcrumbs">
+  <nav *ngIf="sourceName && from !== 'rule-modal' && from !== 'delivery-modal'"
+    class="breadcrumb has-text-weight-semibold" aria-label="breadcrumbs">
     <ul>
       <li class="is-active"><a>{{sourceName}}</a></li>
       <li class="is-active">
@@ -9,6 +9,7 @@
       </li>
     </ul>
   </nav>
+  <hr *ngIf="sourceName" class="my-2">
   <div class="configuration_group_wrapper">
     <nav [id]="'group_navigation_'+from + '_' + sourceName" class="groupNav dragscroll mouse-scroll" role="tablist">
       <div [id]="'nav_contents_'+from + '_' + sourceName" class="nav">
@@ -149,17 +150,17 @@
       <!-- Advanced and security group configuration -->
       <ng-container *ngFor="let g of dynamicCategoriesGroup">
         <ng-container *ngIf="g.category == category?.name+'Advanced'; else SecurityGroup">
-          <app-show-configuration [hidden]="selectedGroup.key !== g.group.key" [groupConfiguration]="g.config"
-            [group]="g.group.key" [selectedGroup]="selectedGroup.key" [fullConfiguration]="g.config" [from]="from"
-            (event)="getChangedAdvanceConfiguration($event)" (formStatusEvent)="formStatus($event)">
-          </app-show-configuration>
+          <app-dynamic-group [categoryGroups]="advancedGroups" [selectedGroup]="selectedGroup"
+            [selectedCategoryGroup]="selectedAdvancedGroup" [group]="g" [from]="from"
+            (getChangedConfiguration)="getChangedAdvanceConfiguration($event)" (formStatus)="formStatus($event)"
+            (selectSubTab)="selectAdvancedSubTab($event)" />
         </ng-container>
         <ng-template #SecurityGroup>
           <ng-container *ngIf="g.category == category?.name+'Security'; else pluginGroup">
-            <app-show-configuration [hidden]="selectedGroup.key !== g.group.key" [groupConfiguration]="g.config"
-              [group]="g.group.key" [selectedGroup]="selectedGroup.key" [fullConfiguration]="g.config" [from]="from"
-              (event)="getChangedSecurityConfiguration($event)" (formStatusEvent)="formStatus($event)">
-            </app-show-configuration>
+            <app-dynamic-group [categoryGroups]="securityGroups" [selectedGroup]="selectedGroup"
+              [selectedCategoryGroup]="selectedSecurityGroup" [group]="g" [from]="from"
+              (getChangedConfiguration)="getChangedSecurityConfiguration($event)" (formStatus)="formStatus($event)"
+              (selectSubTab)="selectSecuritySubTab($event)" />
           </ng-container>
         </ng-template>
       </ng-container>
@@ -169,8 +170,8 @@
         </app-plugin-persist-data>
       </ng-container>
       <app-tab-navigation #tabNaigation
-        *ngIf="groupTabs && !['notifications', 'config-manager', 'additional-services'].includes(from)"
-        [tabs]="groupTabs" (selectedTabEvent)="selectedGroup = $event"></app-tab-navigation>
+        *ngIf="groupTabs && !['notifications', 'config-manager', 'additional-services'].includes(from)" [from]="from"
+        [sourceName]="sourceName" [tabs]="groupTabs" (selectedTabEvent)="selectedGroup = $event"></app-tab-navigation>
     </div>
   </ng-template>
 </div>

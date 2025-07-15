@@ -106,7 +106,8 @@
               </td>
               <td><small>{{log.details.name}}</small></td>
               <td><small>{{log.severity}}</small></td>
-              <td><small>{{log.source}}</small></td>
+              <td><small [ngClass]="'tooltip has-tooltip-left has-tooltip-arrow tooltip-help is-hovered'"
+                [attr.data-tooltip]="showtooltip(log.source)">{{log.source}}</small></td>
             </tr>
           </tbody>
         </table>

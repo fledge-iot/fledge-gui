@@ -279,4 +279,8 @@ export class NotificationLogComponent implements OnInit, OnDestroy {
       this.subscription.unsubscribe();
     }
   }
+
+  showtooltip(sourceCode: string) {
+    return this.logSourceList.find(s => s.code === sourceCode)?.description;
+  }
 }

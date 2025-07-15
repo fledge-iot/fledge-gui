@@ -6,12 +6,11 @@ tr:hover .btn-delete {
   cursor: pointer !important;
 }
 
-
 .btn-delete {
   border-color: transparent !important;
   opacity: 0;
 }
 
-.button.is-light {
+.dropdown-trigger .button.is-light {
   background-color: transparent !important
 }

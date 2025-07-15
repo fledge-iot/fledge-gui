@@ -21,10 +21,11 @@
             <tr>
               <th>Timestamp</th>
               <th>Name</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let log of logList">
+            <tr *ngFor="let log of logList" class="logs-row">
               <td style="vertical-align: middle;">
                 <small>
                   {{ log.timestamp | dateparser:"YYYY-MM-DD HH:mm:ss" }}
@@ -34,14 +35,14 @@
                 {{ log.name ? log.name : '' }}
               </td>
               <td style="vertical-align: middle;">
-                <a (click)="showLogs(log.filename)" class="button is-text text-btn">
-                  view
-                </a>
-              </td>
-              <td style="vertical-align: middle;">
-                <a (click)="downloadLogs(log.filename)" class="button is-text text-btn">
-                  download
-                </a>
+                <div class="is-flex action-wrapper">
+                  <a (click)="showLogs(log.filename)" class="mx-1 px-2 button is-text text-btn">
+                    view
+                  </a>
+                  <a (click)="downloadLogs(log.filename)" class="px-2 button is-text text-btn">
+                    download
+                  </a>
+                </div>
               </td>
             </tr>
           </tbody>

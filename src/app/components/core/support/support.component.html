@@ -8,11 +8,12 @@
         </button>
       </p>
       <div *ngIf="rolesService.hasEditPermissions()">
-        <a class="button is-light fix-pad" (click)="requestNewBundle()">
-          <p *ngIf="viewPort !== 'mobile'" class="add-btn">Request New  &nbsp;</p>
+        <a class="button is-small mt-3 mr-2 is-light" (click)="requestNewBundle()">
+          <p *ngIf="viewPort !== 'mobile'" class="add-btn">Request New &nbsp;</p>
           <i class="bi bi-file-medical bi-sm" aria-hidden="true"></i>
-        </a>    
-        <span class="icon is-small tooltip has-tooltip-left has-tooltip-arrow is-hovered help-pad" data-tooltip="Help" (click)="goToLink()">
+        </a>
+        <span class="icon is-small tooltip has-tooltip-left has-tooltip-arrow is-hovered help-pad" data-tooltip="Help"
+          (click)="goToLink()">
           <i class="far fa-question-circle"></i>
         </span>
       </div>
@@ -20,12 +21,14 @@
     <div class="card-content">
       <table class="table is-narrow scroll is-responsive is-hoverable" cellpadding="0" cellspacing="0">
         <tbody>
-          <tr *ngFor="let bundle of bundlesData">
+          <tr *ngFor="let bundle of bundlesData" class="support-bundles-row">
             <td style="vertical-align: middle;">{{ bundle }}</td>
             <td>
-              <a (click)="downloadBundle(bundle)" class="button is-text text-btn">
-                download
-              </a>
+              <div class="action-wrapper">
+                <a (click)="downloadBundle(bundle)" class="button is-text text-btn">
+                  download
+                </a>
+              </div>
             </td>
           </tr>
         </tbody>

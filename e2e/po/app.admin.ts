@@ -4,7 +4,7 @@ export class AdminLogin {
     cy.get('app-login form div:nth-child(1) div input[name="username"]').type('admin')
     cy.get('app-login form input[name="password"]').type('fledge')
     cy.wait(1000)
-    cy.get('app-login form button.is-info').click()
+    cy.get('app-login form button.is-link').click()
   }
 
   isUserManagementPresent() {
@@ -25,7 +25,7 @@ export class AdminLogin {
   }
 
   isAddUserPresent() {
-    return cy.get('app-user-management .add-btn').invoke('text')
+    return cy.get('app-user-management header li.action-items div:nth-child(2) button').invoke('text')
   }
 
   getUserManagementColNames() {
@@ -96,6 +96,6 @@ export class AdminLogin {
   }
 
   getLoginButton() {
-    return cy.get('app-login form button.is-info').invoke('text')
+    return cy.get('app-login form button.is-link').invoke('text')
   }
 }

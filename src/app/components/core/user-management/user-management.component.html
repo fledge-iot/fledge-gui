@@ -5,7 +5,7 @@
         <ul>
           <li [ngClass]="{'is-active': selectedTab == 1}">
             <h6 class="is-6 has-text-weight-semibold">
-              <a (click)="showDiv(1)">User Management</a>
+              <a (click)="showDiv(1)">Users</a>
             </h6>
           </li>
           <li [ngClass]="{'is-active': selectedTab == 2}">
@@ -14,17 +14,17 @@
             </h6>
           </li>
           <li class="action-items">
-            <div class="columns is-vcentered m-0 p-0">
+            <div class="is-flex columns is-vcentered m-0 p-0">
               <div *ngIf="selectedTab == 1" class="column is-narrow px-0">
                 <a type="button" (click)="getUsers()" class="button is-small" title="Reload" id="refresh-check">
                   <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
                 </a>
               </div>
-              <div class="column is-narrow px-0">
-                <a id="add-user" class="is-light pl-0" (click)="openCreateUserModal()">
-                  <p *ngIf="viewPort !== 'mobile'" class="add-btn">&nbsp; Add User &nbsp;</p>
+              <div class="column is-narrow">
+                <button class="button is-link is-small" (click)="openCreateUserModal()">
+                  <span *ngIf="viewPort !== 'mobile'">Create User&nbsp;</span>
                   <i class="bi bi-person-plus bi-sm" aria-hidden="true"></i>
-                </a>
+                </button>
               </div>
             </div>
           </li>
@@ -83,26 +83,36 @@
                     <div class="dropdown-menu" id="dropdown-menu" role="menu">
                       <div class="dropdown-content">
                         <a class="dropdown-item" (click)="openUpdateUserModal(user, 'auth')">
-                          <i class="bi bi-pen bi-xs" aria-hidden="true"></i>
-                          Edit
+                          <span class="icon">
+                            <i class="bi bi-pencil-square bi-xs" aria-hidden="true"></i>
+                          </span>
+                          <span>Edit</span>
                         </a>
                         <a class="dropdown-item" (click)="openUpdateUserModal(user, 'role')">
-                          <i class="bi bi-person-gear bi-xs" aria-hidden="true"></i>
-                          Change Role
+                          <span class="icon">
+                            <i class="bi bi-person-gear bi-xs" aria-hidden="true"></i>
+                          </span>
+                          <span>Change Role</span>
                         </a>
                         <a class="dropdown-item" (click)="openUpdateUserModal(user, 'password')">
-                          <i class="bi bi-key bi-xs" aria-hidden="true"></i>
-                          Reset Password
+                          <span class="icon">
+                            <i class="bi bi-key bi-xs" aria-hidden="true"></i>
+                          </span>
+                          <span>Reset Password</span>
                         </a>
                         <a *ngIf="user?.blockUntil" class="dropdown-item"
                           (click)="openModal(user.userId, user.userName, 'unblockUser', 'Are you sure, You want to unblock the user')">
-                          <i class="bi bi-unlock bi-xs" aria-hidden="true"></i>
-                          Unblock
+                          <span class="icon">
+                            <i class="bi bi-unlock bi-xs" aria-hidden="true"></i>
+                          </span>
+                          <span>Unblock</span>
                         </a>
                         <a class="dropdown-item"
                           (click)="openModal(user.userId, user.userName, 'deactivateUser', 'Are you sure, You want to deactivate the user')">
-                          <i class="bi bi-trash bi-xs" aria-hidden="true"></i>
-                          Deactivate
+                          <span class="icon">
+                            <i class="bi bi-trash bi-xs" aria-hidden="true"></i>
+                          </span>
+                          <span>Deactivate</span>
                         </a>
                         <!-- TODO: FOGL-5381
                       <a class="dropdown-item" (click)="openModal(user.userId, user.userName, 'enableUser', 'Are you sure, You want to enable the user')">
@@ -111,8 +121,10 @@
                       </a> -->
                         <a class="dropdown-item"
                           (click)="openModal(user.userId, user.userName, 'clearSessions', 'Are you sure, You want to clear all active sessions for')">
-                          <i class="bi bi-box-arrow-right bi-xs" aria-hidden="true"></i>
-                          Log out active sessions
+                          <span class="icon">
+                            <i class="bi bi-box-arrow-right bi-xs" aria-hidden="true"></i>
+                          </span>
+                          <span>Log out active sessions</span>
                         </a>
                       </div>
                     </div>

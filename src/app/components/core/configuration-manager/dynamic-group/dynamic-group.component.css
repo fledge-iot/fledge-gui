@@ -1,0 +1,11 @@
+.subtab-menu {
+  border-right: 1px solid #dbdbdb;
+}
+
+.custom-width {
+  width: 100%;
+}
+
+.is-extra-small-font {
+  font-size: 0.85rem !important;
+}

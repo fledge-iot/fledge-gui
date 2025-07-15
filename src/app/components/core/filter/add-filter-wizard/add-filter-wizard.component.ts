@@ -428,8 +428,6 @@ export class AddFilterWizardComponent implements OnInit {
             if (this.source && this.from) {
               this.replaceFilterNameInPipeline(data.filter);
               this.updateFilterPipeline({ 'pipeline': this.updatedFilterPipeline, files }, data.filter);
-              console.log(this.updatedFilterPipeline)
-              this.router.navigate(['/flow/editor', this.from, this.serviceName, 'details']);
             }
             else {
               this.addFilterPipeline({ 'pipeline': [payload.name], files });

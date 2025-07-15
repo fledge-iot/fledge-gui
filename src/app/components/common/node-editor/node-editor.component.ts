@@ -30,6 +30,7 @@ import {
   undoAction, redoAction, resetNodes,
   editor,
   history,
+  getNodeView,
 } from './editor';
 import { FlowEditorService, NodeStatus } from './flow-editor.service';
 
@@ -186,6 +187,26 @@ export class NodeEditorComponent implements OnInit {
     this.additionalServicesUtils.getAllServiceStatus(false, 'notification');
   }
 
+  /**
+   * Clear stale configuration data when switching between services
+   */
+  private clearConfigurationData() {
+    this.changedConfig = null;
+    this.changedFilterConfig = null;
+    this.category = null;
+    this.filterCategory = null;
+    this.pluginConfiguration = null;
+    this.filterPluginConfiguration = null;
+    this.advancedConfiguration = [];
+    this.notificationChangedConfig = null;
+    this.rulePluginChangedConfig = null;
+    this.deliveryPluginChangedConfig = null;
+    this.ruleCategory = null;
+    this.deliveryCategory = null;
+    this.ruleConfiguration = null;
+    this.deliveryConfiguration = null;
+  }
+
   @HostListener('document:keydown', ['$event'])
   onKeydownHandler(event) {
     // Prevent actions when the focus is inside QuickviewComponent
@@ -203,11 +224,10 @@ export class NodeEditorComponent implements OnInit {
     if (event.keyCode == 32) {
       resetNodes(this.flowEditorService);
     }
-    if (event.key === 'Delete' || (event.key == 'Backspace' && event.metaKey)) {
-      this.deleteSelectedEntity();
+    if ((event.key === 'Delete' || (event.key == 'Backspace' && event.metaKey)) && this.nodesToDelete.length !== 0) {
+      this.onDelete();
     }
   }
-
 
   ngOnInit(): void {
     this.pipelineSubscription = this.flowEditorService.updatedFilterPipelineData$.subscribe(
@@ -218,6 +238,8 @@ export class NodeEditorComponent implements OnInit {
       }
     );
     this.logsSubscription = this.flowEditorService.showLogsInQuickview.subscribe(data => {
+      this.clearConfigurationData();
+
       this.showLogs = data.showLogs ? true : false;
       this.notification = data?.notification;
       this.serviceName = data?.serviceName ? data.serviceName : this.notification?.name;
@@ -233,6 +255,8 @@ export class NodeEditorComponent implements OnInit {
         this.showNotificationConfiguration = data.showNotificationConfiguration ? true : false;
         this.notification = data?.notification;
         this.serviceName = data.notification.name;
+        this.clearConfigurationData();
+
         if (this.showNotificationConfiguration) {
           this.getCategory();
           this.getRuleConfiguration();
@@ -240,6 +264,7 @@ export class NodeEditorComponent implements OnInit {
         }
         return;
       }
+      this.clearConfigurationData();
       this.showPluginConfiguration = data.showPluginConfiguration ? true : false;
       this.showFilterConfiguration = data.showFilterConfiguration ? true : false;
       this.showTaskSchedule = data.showTaskSchedule ? true : false;
@@ -280,7 +305,6 @@ export class NodeEditorComponent implements OnInit {
           let updatedPipeline = getUpdatedFilterPipeline();
           if (updatedPipeline?.length > 0) {
             this.updatedFilterPipeline = updatedPipeline;
-            console.log(this.updatedFilterPipeline);
             this.flowEditorService.pipelineInfo.next(this.updatedFilterPipeline);
             this.isAddFilterWizard = true;
           }
@@ -329,6 +353,10 @@ export class NodeEditorComponent implements OnInit {
         this.nodesToDelete.push({ id: data.id, 'label': 'Connection' });
       }
       if (data.label !== 'Storage' && data.label !== 'Filter') {
+        if (!(data.source && data.target)) {
+          let view = getNodeView(data.id);
+          data['dragStartPosition'] = view?.position;
+        }
         if (data.selected && !this.nodesToDelete?.some(node => (node.id == data.id))) {
           if (data.isFilterNode) {
             if (!this.selectedFilters.some(filter => filter === data.label)) {
@@ -856,12 +884,6 @@ export class NodeEditorComponent implements OnInit {
     return false;
   }
 
-  deleteSelectedEntity() {
-    if (this.nodesToDelete.length !== 0) {
-      this.onDeleteAction();
-    }
-  }
-
   saveConfiguration() {
     if (!isEmpty(this.changedConfig) && this.pluginConfiguration?.name) {
       this.updateConfiguration(this.pluginConfiguration.name, this.changedConfig, 'plugin-config');
@@ -1305,19 +1327,23 @@ export class NodeEditorComponent implements OnInit {
     }
   }
 
-  onDeleteAction() {
-    this.openModal('from-toolbar-dialog');
-  }
-
-  async callDeleteAction() {
-    const connectionToDelete = this.nodesToDelete.find(node => (node.label === 'Connection'));
-    if (connectionToDelete) {
-      await deleteConnection(connectionToDelete.id);
+  async onDelete() {
+    const selectedConnection = this.nodesToDelete.find(node => (node.label === 'Connection'));
+    const nodesToDelete = this.nodesToDelete.filter(node => (node.label && node.label !== 'Connection'));
+    if (selectedConnection) {
+      await deleteConnection(selectedConnection.id);
       this.nodesToDelete = [];
       // check if filter pipeline is updated and emit the updated pipeline
       const pipeline = getUpdatedFilterPipeline();
       this.flowEditorService.emitPipelineUpdate(pipeline);
     }
+    if (nodesToDelete.length > 0) {
+      this.openModal('toolbar-dialog');
+    }
+  }
+
+  // Delete nodes after confirmation in the dialog
+  async deleteNodes() {
     const filterNodeToDelete = this.nodesToDelete.find(node => (node.label !== 'South' && node.label !== 'North' && node.label !== 'Connection'));
     if (filterNodeToDelete) {
       this.deleteFilter();
@@ -1327,7 +1353,7 @@ export class NodeEditorComponent implements OnInit {
       this.dialogServiceName = nodeToDelete.name;
       this.deleteService();
     }
-    this.closeModal('from-toolbar-dialog');
+    this.closeModal('toolbar-dialog');
   }
 
   /**

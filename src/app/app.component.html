@@ -3,21 +3,31 @@
 </div>
 
 <div class="columns m-0">
-  <div *ngIf="!isLoginView" class="column is-sidebar-menu p-0"
-    [ngClass]="{'is-hidden-mobile': !_opened, 'is-2': !isSidemenuCollapsed}">
-    <app-side-menu (toggle)="toggleSidebar()" (sidebarCollapsedEvent)="setSidebarState($event)"></app-side-menu>
-  </div>
-  <div class="column is-fullheight is-mobile pt-3"
-    [ngClass]="(!isLoginView && !isSidemenuCollapsed) ? 'is-10 layout-custom-width' : (isSidemenuCollapsed ? 'is-11 expanded-custom-width' : 'is-12')">
-    <div [ngClass]="{'overlay': !isServiceRunning
-                    && !url?.includes('setting')
-                    && !url?.includes('login') && !modalWindow}">
+  <!-- Sidebar Column -->
+  <ng-container *ngIf="!isLoginView">
+    <div class="column is-sidebar-menu p-0" [ngClass]="{
+        'is-hidden-mobile': !_opened,
+        'is-2': !isSidemenuCollapsed
+      }">
+      <app-side-menu (toggle)="toggleSidebar()" (sidebarCollapsedEvent)="setSidebarState($event)">
+      </app-side-menu>
     </div>
+  </ng-container>
+
+  <!-- Main Content Column -->
+  <div class="column is-fullheight is-mobile pt-3 is-relative" [ngClass]="getMainContentClasses()">
+
+    <!-- Overlay -->
+    <div *ngIf="shouldShowOverlay()" class="overlay">
+    </div>
+
+    <!-- Page Content -->
     <div class="page-container">
       <app-alert></app-alert>
       <app-progress-bar></app-progress-bar>
       <router-outlet></router-outlet>
     </div>
+
     <app-footer></app-footer>
   </div>
 </div>
