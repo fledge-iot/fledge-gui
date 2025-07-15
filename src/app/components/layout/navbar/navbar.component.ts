@@ -178,7 +178,6 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           additionalServices.forEach(service => {
             this.servicesRecord.push(service);
           });
-
           this.hideLoadingSpinner();
         },
         (error) => {

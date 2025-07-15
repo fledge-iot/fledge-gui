@@ -1,0 +1,28 @@
+.modal.is-lightweight {
+  position: absolute;
+  z-index: 1050;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  pointer-events: none;
+}
+
+.modal.is-lightweight.is-active {
+  display: block;
+  pointer-events: none;
+}
+
+.modal.is-lightweight .modal-card {
+  pointer-events: auto;
+  width: fit-content;
+  max-height: 250px;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.scrollable-json {
+  max-height: 250px;
+  overflow-y: auto;
+}

@@ -44,4 +44,8 @@ export class DocService {
     window.open(`${packageInfo.doc_url}${this.version}/quick_start/${slug}`, '_blank');
   }
 
+  openDocsLink(slug: string) {
+    window.open(`${packageInfo.doc_url}${this.version}/building_pipelines.html#${slug}`, '_blank');
+  }
+
 }

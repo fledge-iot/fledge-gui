@@ -4,11 +4,14 @@ import {
   NameControl
 } from "../controls/common-custom-control";
 import { RuleControl, ChannelControl, NotificationTypeControl, ServiceStatusControl } from "../controls/notification-custom-control";
+import { Debug } from "../../../../components/core/south/south-service";
 
 export class Notification extends ClassicPreset.Node {
   height = 92;
   width = 198;
   parent?: string;
+  debug?: Debug;
+  type? = "notification";
 
   constructor(socket: ClassicPreset.Socket, notification) {
     super("Notification");
