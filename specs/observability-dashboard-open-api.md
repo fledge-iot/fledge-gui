@@ -11,30 +11,15 @@ Base URL: `http://localhost:8081/fledge`
 These APIs are essential for a production-ready dashboard. Currently, the dashboard shows fake/random data for these features.
 
 ### 1. System Health API
-- **Endpoint:** `GET /health/system`
+- **Endpoint:** `GET /system/health`
 - **Problem:** Dashboard shows random CPU, Memory, and Disk usage
 - **Current Code:** Uses `Math.random()` to generate fake percentages
 - **Impact:** System administrators can't see real resource usage
 
-**What's currently broken:**
-```typescript
-// This is generating FAKE data right now:
-cpu: {
-    usage: Math.floor(Math.random() * 40) + 20, // Random 20-60%
-    cores: 4,
-    loadAverage: [Math.random() * 2, Math.random() * 2, Math.random() * 2]
-},
-memory: {
-    usage: Math.floor(Math.random() * 30) + 40, // Random 40-70%
-    total: 16384,
-    available: Math.floor(Math.random() * 8000) + 4000
-}
-```
-
 **What we need this API to return:**
 ```json
 {
-  "overall": "healthy",
+  "health": "healthy",
   "timestamp": "2024-01-20T10:30:00Z",
   "resources": {
     "cpu": {
@@ -82,17 +67,11 @@ memory: {
 ---
 
 ### 2. Error Monitoring API
-- **Endpoint:** `GET /metrics/monitoring`
-- **Problem:** "Buffered Readings" shows random numbers
+- **Endpoint:** `GET /system/monitor`
+- **Problem:** Shows random numbers
 - **Current Code:** `Math.floor(Math.random() * 100)` 
 - **Impact:** Error monitoring metrics are unreliable
 - **Parameters:** `timeRange` (1h, 3h, 12h, 24h)
-
-**What's currently broken:**
-```typescript
-// This shows FAKE buffered readings:
-bufferedReadings: Math.floor(Math.random() * 100), // Random 0-100
-```
 
 **What we need this API to return:**
 ```json
@@ -101,7 +80,6 @@ bufferedReadings: Math.floor(Math.random() * 100), // Random 0-100
     "totalErrorRate": 2.3,
     "totalErrors": 45,
     "discardedReadings": 12,
-    "bufferedReadings": 156,
     "failedOperations": 8,
     "serviceErrorCounts": {
       "temperature_sensor": 15,
@@ -109,22 +87,6 @@ bufferedReadings: Math.floor(Math.random() * 100), // Random 0-100
       "storage_service": 2
     },
     "lastUpdated": "2024-01-20T10:30:00Z"
-  },
-  "history": {
-    "timeRange": {
-      "start": "2024-01-20T07:30:00Z",
-      "end": "2024-01-20T10:30:00Z"
-    },
-    "data": [
-      {
-        "timestamp": "2024-01-20T08:00:00Z",
-        "errorRate": 1.8,
-        "totalErrors": 3,
-        "discardedReadings": 1,
-        "intervalStart": "2024-01-20T07:45:00Z",
-        "intervalEnd": "2024-01-20T08:00:00Z"
-      }
-    ]
   }
 }
 ```
@@ -132,49 +94,33 @@ bufferedReadings: Math.floor(Math.random() * 100), // Random 0-100
 **Dashboard sections affected:**
 - Error Rate Monitoring summary cards
 - Error Rate Trends chart
-- Buffer monitoring metrics
 
 ---
 
 ### 3. Service Health API
-- **Endpoint:** `GET /metrics/health`
+- **Endpoint:** Extend existing endpoint `GET /service` response
 - **Problem:** Service uptime and error rates use fake correlation logic
 - **Current Code:** Complex dummy algorithms to simulate realistic data
 - **Impact:** Service health monitoring is not based on real metrics
-- **Parameters:** `timeRange` (1h, 3h, 12h, 24h)
-
-**What's currently broken:**
-```typescript
-// These functions generate FAKE service metrics:
-private generateDummyErrorRate(serviceName: string): number {
-    // Uses service name hash to create fake but consistent error rates
-}
-
-private getRealisticUptime(errorRate: number, serviceStatus: string): number {
-    // Creates fake correlation between error rate and uptime
-}
-```
 
 **What we need this API to return:**
 ```json
 {
   "services": [
-    {
+    {   
       "name": "Fledge Storage",
       "type": "Storage",
+      "address": "localhost",
+      "management_port": 33753,
+      "service_port": 34823,
+      "protocol": "http",
       "status": "running",
       "errorRate": 0.5,
       "uptime": 99.2,
       "lastError": null,
       "lastErrorTime": null,
-      "responseTime": 15.6,
-      "throughput": 1250.5,
       "memoryUsage": 512.8,
       "cpuUsage": 12.3,
-      "address": "localhost",
-      "managementPort": 42269,
-      "servicePort": 37895,
-      "protocol": "http"
     }
   ],
   "summary": {
@@ -195,13 +141,3 @@ private getRealisticUptime(errorRate: number, serviceStatus: string): number {
 - Performance metrics per service
 
 ---
-
-## 📋 Implementation Priority
-
-1. **System Health API** - Replace fake CPU/Memory/Disk data
-2. **Error Monitoring API** - Replace fake buffer statistics  
-3. **Service Health API** - Replace fake uptime/error correlation
-
----
-
-*Implementing these APIs will transform the dashboard from a demo/prototype into a production-ready monitoring solution.* 

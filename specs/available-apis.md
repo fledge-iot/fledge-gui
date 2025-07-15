@@ -263,8 +263,7 @@ Base URL: `http://localhost:8081/fledge`
    - Log analysis (`/syslog`)
 
 5. **System Health**
-   - Service status (`/service/available`)
-   - Alert monitoring (`/alert`)
+   - Service status (`/service`)
 ---
 
 *These APIs form the foundation of the Fledge home dashboard and are currently operational and providing real data to the user interface.* 
