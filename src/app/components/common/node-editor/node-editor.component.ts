@@ -33,6 +33,7 @@ import {
   getNodeView,
 } from './editor';
 import { FlowEditorService, NodeStatus } from './flow-editor.service';
+import { DebuggerReadingsComponent } from '../../core/debugger/debugger-readings/debugger-readings.component';
 
 @Component({
   selector: 'app-node-editor',
@@ -43,6 +44,7 @@ export class NodeEditorComponent implements OnInit {
   @ViewChild(ServiceWarningComponent, { static: true }) notificationServiceWarningComponent: ServiceWarningComponent;
   @ViewChild(ServiceConfigComponent, { static: true }) notificationServiceConfigComponent: ServiceConfigComponent;
   @ViewChild("rete") container!: ElementRef;
+  @ViewChild(DebuggerReadingsComponent, { static: false }) debuggerReadingsComp: DebuggerReadingsComponent;
 
   public source = '';
   public from = '';
@@ -64,10 +66,14 @@ export class NodeEditorComponent implements OnInit {
   private nodeClickSubscription: Subscription;
   private nodeDropdownClickSubscription: Subscription;
   private pipelineSubscription: Subscription;
+  private debuggerStateSubscription: Subscription;
 
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
   showLogs: boolean = false;
+  debugger: any = {};
+  debuggerPage = false;
+
   showNotificationConfiguration = false;
   showTaskSchedule = false;
   showReadings = false;
@@ -237,6 +243,19 @@ export class NodeEditorComponent implements OnInit {
         }
       }
     );
+
+    this.debuggerStateSubscription = this.flowEditorService.openDebuggerInQuickview.subscribe(data => {
+      this.debuggerPage = data.openDebuggerPage;
+      this.debugger = { debug: data.debugger, serviceName: data.serviceName };
+      this.showNotificationConfiguration = false;
+      this.showPluginConfiguration = false;
+      this.showFilterConfiguration = false;
+      this.showTaskSchedule = false;
+      this.showReadings = false;
+      this.showLogs = false;
+    });
+
+
     this.logsSubscription = this.flowEditorService.showLogsInQuickview.subscribe(data => {
       this.clearConfigurationData();
 
@@ -248,7 +267,9 @@ export class NodeEditorComponent implements OnInit {
       this.showFilterConfiguration = false;
       this.showTaskSchedule = false;
       this.showReadings = false;
+      this.debuggerPage = false;
     });
+
     this.subscription = this.flowEditorService.showItemsInQuickview.pipe(skip(1)).subscribe(data => {
       if (this.from === 'notifications') {
         this.showLogs = false;
@@ -271,6 +292,7 @@ export class NodeEditorComponent implements OnInit {
       this.showReadings = data.showReadings ? true : false;
       this.serviceName = data?.serviceName;
       this.showLogs = false;
+      this.debuggerPage = false;
 
       if (this.showPluginConfiguration || this.showNotificationConfiguration) {
         this.getCategory();
@@ -406,6 +428,24 @@ export class NodeEditorComponent implements OnInit {
     this.flowEditorService.checkHistory.subscribe(data => {
       this.historyData = data;
     });
+
+
+    this.sharedService.bufferReadings
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: any) => {
+        if (data?.show && this.debuggerReadingsComp) {
+          this.debuggerReadingsComp.serviceName = this.service.name;
+          this.debugger = { debug: this.service.debug, serviceName: this.service.name };
+          const node = editor.getNode(data.nodeId)?.controls.nameControl['name'];
+          this.debuggerReadingsComp.debuggerData = { debug: this.debugger, serviceName: this.service.name, node: node };
+          this.debuggerReadingsComp.toggleModal(true);
+        }
+        this.debuggerPage = false;
+        this.showPluginConfiguration = false;
+        this.showFilterConfiguration = false;
+        this.showTaskSchedule = false;
+        this.showNotificationConfiguration = false;
+      });
   }
 
   ngAfterViewInit(): void {
@@ -486,7 +526,6 @@ export class NodeEditorComponent implements OnInit {
                         notification.isServiceEnabled = this.serviceInfo.isEnabled;
                         return notification;
                       })
-
                       data.isServiceEnabled = this.serviceInfo.isEnabled;
                       createEditor(el, this.injector, this.flowEditorService, this.rolesService, this.alertService, data);
                     }
@@ -596,6 +635,16 @@ export class NodeEditorComponent implements OnInit {
             this.toastService.error(error.statusText);
           }
         });
+  }
+
+  updateDebuggerState(debuggerInfo: any) {
+    this.debugger = debuggerInfo;
+    const name = debuggerInfo.serviceName;
+    this.service = this.services.find(service => (service.name == name));
+    if (this.service) {
+      this.service.debug = debuggerInfo.debug;
+    }
+    this.sharedService.debuggerStateSubject.next({ service: name, debug: debuggerInfo.debug });
   }
 
   getSouthservices(caching: boolean) {
@@ -1141,6 +1190,14 @@ export class NodeEditorComponent implements OnInit {
     this.updatedFilterPipeline = [];
   }
 
+  debugService() {
+    this.flowEditorService.openDebuggerInQuickview.next({
+      openDebuggerPage: true,
+      debugger: this.service ? this.service.debug : this.task.debug,
+      serviceName: this.service ? this.service.name : this.task.name
+    });
+  }
+
   reload() {
     this.flowEditorService.clearEmittedPipelineChanges();
     if (editor) {
@@ -1379,6 +1436,7 @@ export class NodeEditorComponent implements OnInit {
 
   ngOnDestroy() {
     this.isAlive = false;
+    this.debuggerStateSubscription?.unsubscribe();
     this.pipelineSubscription?.unsubscribe();
     this.subscription?.unsubscribe();
     this.filterSubscription?.unsubscribe();

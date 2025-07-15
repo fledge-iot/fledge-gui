@@ -51,7 +51,8 @@
   <div [hidden]="isAddFilterWizard">
     <app-toolbar *ngIf="source && rolesService.hasEditPermissions()" class="is-inline-block pr-2"
       (reloadData)="reload()" (resetNodes)="reset()" (undo)="callUndoAction()" (redo)="callRedoAction()"
-      [historyData]="historyData" (delete)="onDelete()" [isDeleteDisabled]="nodesToDelete.length == 0">
+      [debuggerState]="service?.debug?.debugger || task?.debug?.debugger" [historyData]="historyData"
+      (delete)="onDeleteAction()" [isDeleteDisabled]="nodesToDelete.length == 0" (debug)="debugService()">
     </app-toolbar>
     <div class="rete"
       [ngClass]="{'expanded-width': isSidebarCollapsed, 'collapsed-width': !isSidebarCollapsed, 'custom-margin': source && rolesService.hasEditPermissions()}"
@@ -64,8 +65,13 @@
       <app-add-filter-wizard (notify)="onNotify($event)" [serviceName]="source" [from]="from"></app-add-filter-wizard>
     </div>
   </ng-contafiner>
+
   <!-- Quick View -->
-  <app-quickview [showReadings]="showReadings" [showLogs]="showLogs">
+  <app-quickview [showReadings]="showReadings" [showLogs]="showLogs" [isDebuggerPage]="debuggerPage">
+    <ng-container *ngIf="debuggerPage">
+      <app-debugger [debuggerData]="debugger" [from]="from" [serviceName]="debugger?.serviceName"
+        (debuggerDataChange)="updateDebuggerState($event)"></app-debugger>
+    </ng-container>
     <ng-container *ngIf="showPluginConfiguration">
       <app-configuration-group *ngIf="category" [category]="category" [from]="'south'" [sourceName]="serviceName"
         (changedConfigEvent)="getChangedConfig($event)" [plugin]="category?.config.plugin.value"
@@ -97,6 +103,7 @@
     <ng-container *ngIf="showLogs && from !== 'notifications'">
       <app-system-log [sourceName]="serviceName" #systemLogs></app-system-log>
     </ng-container>
+
     <!-- Notification Log in Quickview -->
     <ng-container *ngIf="showLogs && from === 'notifications'">
       <app-notification-log [sourceName]="serviceName" [notificationService]="serviceInfo.name" #notificationLogs>
@@ -157,6 +164,9 @@
     </ng-container>
   </app-quickview>
 </div>
+
+<debugger-readings #debuggerReadingsComp *ngIf="service" [serviceName]="service.name" [from]="from"
+  [serviceName]="debugger?.serviceName"></debugger-readings>
 
 <app-confirmation-dialog id="delete-service-dialog" *ngIf="rolesService.hasEditPermissions()">
   <header class="modal-card-head">

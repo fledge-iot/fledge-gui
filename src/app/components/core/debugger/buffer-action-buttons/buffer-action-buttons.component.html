@@ -1,0 +1,32 @@
+<div class="is-flex is-align-items-center is-flex-wrap-wrap gap-4">
+
+  <!-- Buffer group -->
+  <div>
+    <div class="is-flex is-align-items-center">
+      <label class="label is-small mb-0 mr-2">Buffer</label>
+      <input class="input is-small" style="width: 80px;" type="text" appIntegerOnly>
+    </div>
+    <!-- Buffer status messages -->
+    <p class="is-size-7 has-text-grey mt-1" *ngIf="bufferStatus === 'saving'">Saving...</p>
+    <p class="is-size-7 has-text-success mt-1" *ngIf="bufferStatus === 'saved'">Saved!</p>
+  </div>
+
+  <!-- Replay Button -->
+  <div class="mx-2">
+    <button class="button is-small is-light" (click)="onReplay()" title="Replay Buffer">
+      Replay
+    </button>
+  </div>
+
+  <!-- Step group -->
+  <div class="is-flex is-align-items-center">
+    <label class="label is-small mb-0 mr-2">Step</label>
+    <input class="input is-small" style="width: 80px;" type="text" appIntegerOnly>
+    <button class="button is-small is-light" (click)="setSteps()" [disabled]="stepStatus === 'saving'"
+      title="Step Forward">
+      <span class="icon is-small">
+        <i class="bi bi-skip-forward"></i>
+      </span>
+    </button>
+  </div>
+</div>

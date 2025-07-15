@@ -10,8 +10,10 @@ export class ReadingsCountComponent {
   @Input() readingCount: string;
   @Input() assetCount: string;
   @Input() serviceName;
+  @Input() debug: any = {};
+
   constructor(public flowEditorService: FlowEditorService) { }
-  
+
   showReadingsPerAsset() {
     this.flowEditorService.showItemsInQuickview.next({ showReadings: true, serviceName: this.serviceName });
   }

@@ -4,6 +4,11 @@
     <div class="title" data-testid="title">
       <div class="is-flex is-justify-content-space-between is-align-items-baseline">
         <div class="is-inline-flex is-align-items-baseline">
+          <span *ngIf="data?.debug?.ingress === 'Suspended'"
+            class="icon status-icon has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered"
+            data-tooltip="Ingest Suspended">
+            <i class="bi bi-ban overlay-icon"></i>
+          </span>
           <span *ngIf="isServiceNode && (service.status || task.status)"
             class="icon health-icon tooltip has-tooltip-left has-tooltip-arrow is-pulled-right"
             [ngClass]="applyServiceStatusCustomCss(service.status ? service.status : task.status)"
@@ -11,8 +16,9 @@
             <i class="fa fa-2xs fa-circle child-icon"></i>
           </span>
           <span *ngIf="!source; else serviceNameTemplate" class="service-name"
-            [title]="data.controls?.nameControl?.name" (click)="openServiceDetails()">{{data.controls?.nameControl?.name
-            | truncateMiddleOfText}}</span>
+            [title]="data.controls?.nameControl?.name" (click)="openServiceDetails()">
+            {{data.controls?.nameControl?.name | truncateMiddleOfText}}
+          </span>
           <ng-template #serviceNameTemplate>
             <span [ngClass]="{'is-size-5': data?.pseudoNode}"
               [title]="data.controls?.nameControl?.name">{{data.controls?.nameControl?.name |
@@ -23,11 +29,17 @@
         <div class="is-inline-flex">
           <ng-container *ngIf="data.label!=='Filter'; else southServiceTemplate">
             <div class="is-inline-flex">
+              <button *ngIf="isServiceNode && data?.debug?.debugger == 'Attached'" class="btn is-small btn-icon">
+                <span class="icon is-small  has-tooltip-left has-tooltip-arrow tooltip is-hovered"
+                  data-tooltip="Debugger Attached">
+                  <i class="bi bi-bug bi-sm debug"></i>
+                </span>
+              </button>
               <label class="checkbox">
                 <input type="checkbox" [checked]='isEnabled' (click)="onCheckboxClicked($event)"
                   [disabled]="!rolesService.hasEditPermissions()">
               </label>
-              <button class="btn btn-icon pt-0" data-show="quickview" data-target="quickviewDefault"
+              <button class="btn btn-icon is-small" data-show="quickview" data-target="quickviewDefault"
                 data-toggle="quickview" (click)="showConfigurationInQuickview()">
                 <span class="has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Configuration">
                   <i class="bi bi-gear-wide-connected bi-sm"></i>
@@ -70,11 +82,20 @@
     </div>
     <div>
       <ng-container *ngIf="isServiceNode && from != 'north'">
-        <readings-count *ngIf="service" [readingCount]="service.readingCount" [assetCount]="service.assetCount"
-          [serviceName]="service.name"></readings-count>
+        <div class="column is-flex  is-align-items-center p-0 m-0" [ngClass]="{'is-11': source}">
+          <div class="is-flex-grow-2">
+            <readings-count *ngIf="service" [readingCount]="service.readingCount" [assetCount]="service.assetCount"
+              [serviceName]="service.name" [debug]="data.debug"></readings-count>
+          </div>
+          <div *ngIf="data.debug?.egress === 'Isolated' && !this.source"
+            class="mx-2 has-tooltip-auto custom-tooltip has-tooltip-arrow tooltip is-hovered"
+            data-tooltip="Egress Isolated">
+            <i class="bi bi-sm bi-database"></i>
+          </div>
+        </div>
       </ng-container>
       <ng-container *ngIf="isServiceNode && from == 'north'">
-        <div class="reading-details">
+        <div class="is-flex is-justify-content-space-between is-align-items-center">
           <ng-container *ngIf="service.readingCount > 0; else emptySpan">
             <small class="reading has-tooltip-right has-tooltip-arrow"
               data-tooltip="Readings Sent">{{service.readingCount}}</small>
@@ -82,6 +103,11 @@
           <ng-template #emptySpan>
             <span class="reading p-1">&nbsp;</span>
           </ng-template>
+          <div *ngIf="data.debug?.egress === 'Isolated'"
+            class="mx-2 has-tooltip-auto has-tooltip-arrow tooltip is-pulled-left is-hovered"
+            data-tooltip="Egress Isolated">
+            <i class="bi bi-sm bi-cloud-slash"></i>
+          </div>
         </div>
       </ng-container>
       <ng-container *ngIf="isFilterNode">
@@ -156,6 +182,24 @@
             </div>
             <div class="dropdown-menu" id="dropdown-menu3" role="menu">
               <div class="dropdown-content">
+                <ng-container *ngIf="data?.debug?.debugger !== 'Disabled' && rolesService.hasEditPermissions()">
+                  <div class="dropdown-item has-submenu"
+                    *ngIf="data.type == 'south' || (data.type == 'north' && task.execution !== 'task') ">
+                    <span class="is-flex-grow-3">Debugger</span>
+                    <span class="icon is-small is-pulled-right m-0">
+                      <i class="fas fa-xs fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                    <!-- Submenu -->
+                    <div class="submenu-div">
+                      <div class="submenu-list">
+                        <div>
+                          <a class="submenu-text" (click)="toggleDebuggerState()">
+                            {{data?.debug?.debugger === 'Attached'? 'Detach':'Attach'}}</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
                 <ng-container *ngIf="!source">
                   <a class="dropdown-item" (click)="openServiceDetails()">
                     <span>Details</span>
@@ -205,6 +249,9 @@
     </ng-container>
     <div class="is-pulled-center has-text-grey"
       [ngClass]="{'north-storage-icon': from=='north', 'south-storage-icon':from=='south'}">
+      <span class="icon ban-icon" *ngIf="data?.debug?.egress === 'Isolated' &&  from=='south'">
+        <i class="bi bi-ban"></i>
+      </span>
       <i class="bi bi-database bi-xl no-hover"></i>
     </div>
     <ng-container *ngIf="from=='north'">

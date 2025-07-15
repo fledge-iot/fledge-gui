@@ -82,14 +82,27 @@
                     <table>
                       <tr *ngFor="let s of servicesRecord">
                         <td class="has-text-left">
-                          <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
+                          <!-- <span class="icon status-icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
                             <i class="bi bi-circle-fill child-icon"></i>
-                          </span>
+                            <i *ngIf="s?.debug?.ingress === 'Suspended'"
+                              class="bi bi-ban overlay-icon"></i>
+                          </span> -->
                           {{s.name}}&nbsp;
+
+
                         </td>
+
                         <td>
                           <b>{{s.status}}</b>
                         </td>
+                        <td>
+                          <span *ngIf="s?.debug?.debugger === 'Attached'"
+                            class="icon is-small has-tooltip-top has-tooltip-arrow tooltip help-icon"
+                            data-tooltip="Debugger Attached">
+                            <i class="bi bi-bug bi-sm debug"></i>
+                          </span>
+                        </td>
+
                       </tr>
                     </table>
                   </div>
@@ -171,10 +184,18 @@
                       <table>
                         <tr *ngFor="let s of servicesRecord">
                           <td class="has-text-left">
-                            <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
+                            <!-- <span class="icon status-icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
                               <i class="bi bi-circle-fill child-icon"></i>
-                            </span>
-                            {{s.name.length <= 18 ? s.name : s.name.substr(0,18) + '..' }}&nbsp; </td>
+                              <i *ngIf="s?.debug?.ingress === 'Suspended' || s?.debug?.egress === 'Isolated'"
+                                class="bi bi-ban overlay-icon"></i>
+                            </span> -->
+                            {{s.name.length <= 18 ? s.name : s.name.substr(0,18) + '..' }}&nbsp; <!-- <span
+                              *ngIf="s?.debug?.debugger === 'Attached'"
+                              class="icon is-small has-tooltip-top has-tooltip-arrow tooltip help-icon"
+                              data-tooltip="Debugger Attached">
+                              <i class="bi bi-bug bi-sm debug"></i>
+                              </span> -->
+                          </td>
                           <td>
                             <b>{{s.status}}</b>
                           </td>
@@ -240,18 +261,32 @@
                         <table>
                           <tr *ngFor="let s of servicesRecord">
                             <td class="has-text-left">
-                              <span class="icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
+                              <span class="icon status-icon" [ngClass]="applyServiceStatusCustomCss(s.status)"
+                                class="has-tooltip-arrow tooltip is-hovered" data-tooltip="Ingest Suspended">
                                 <i class="bi bi-circle-fill child-icon"></i>
+                                <i *ngIf="s?.debug?.ingress === 'Suspended'" class="bi bi-ban overlay-icon"></i>
                               </span>
                               <ng-container
                                 *ngIf="servicesToShow.includes(s.type.toLowerCase()); else elseServiceTemplate">
-                                <a class="ghost" (click)="navToServiceConfiguration(s)">{{s.name}}</a>
+                                <a class="ghost" (click)="navToServiceConfiguration(s)">
+                                  {{s.name}}
+                                </a>
+                              </ng-container>
+                              <ng-container *ngIf="s?.debug?.egress === 'Isolated'">
+                                <span *ngIf="s.type == 'Southbound'" class="has-tooltip-arrow tooltip is-hovered"
+                                  data-tooltip="Storage Isolated">
+                                  <i class="bi bi-database-slash"></i>
+                                </span>
+                                <span *ngIf="s.type == 'Northbound'" class="has-tooltip-arrow tooltip is-hovered"
+                                  data-tooltip="Egress Isolated">
+                                  <i class="bi bi-cloud-slash"></i>
+                                </span>
                               </ng-container>
                               <ng-template #elseServiceTemplate>
-                                <span>{{s.name}}</span>
+                                <span>
+                                  {{s.name}}
+                                </span>
                               </ng-template>
-                              &nbsp;
-                            </td>
                             <td>
                               <ng-container *ngIf="['failed', 'unresponsive'].includes(s.status.toLowerCase())">
                                 <span
@@ -262,7 +297,16 @@
                               </ng-container>
                             </td>
                             <td>
-                              <b>{{s.status}}</b>
+                              <div class="is-flex px-1">
+                                <div class="is-flex is-align-items-center">
+                                  <span><b>{{s.status}}</b></span>
+                                  <span *ngIf="s?.debug?.debugger === 'Attached'"
+                                    class="icon is-small has-tooltip-top has-tooltip-arrow tooltip help-icon is-align-items-baseline"
+                                    data-tooltip="Debugger Attached">
+                                    <i class="bi bi-bug bi-sm debug"></i>
+                                  </span>
+                                </div>
+                              </div>
                             </td>
                           </tr>
                         </table>
