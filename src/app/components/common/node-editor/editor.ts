@@ -83,6 +83,22 @@ export async function createEditor(
   setupInsertableNodes(flowEditorService, alertService);
   configureEditor(connectionEvents, render, flowEditorService, alertService);
   applyCustomSettings(socket, data, flowEditorService, rolesService, alertService);
+  area.addPipe((context) => {
+    if (context.type === 'nodetranslated') {
+      const node: Node = editor.getNode(context.data.id);
+      const nodeConnections = editor.getConnections().filter(conn => conn.source == node.id || conn.target == node.id);
+      // Defer icon position update to the next paint frame
+      requestAnimationFrame(() => {
+        nodeConnections.forEach(conn => {
+          const element = area.connectionViews.get(conn.id)?.element;
+          if (element) {
+            updateConnectionIconPosition(conn.id, element);
+          }
+        });
+      });
+    }
+    return context;
+  });
 }
 
 function initializeEditor(container: HTMLElement) {
@@ -198,6 +214,19 @@ function setupConnectionEvents(selector) {
   };
 }
 
+function updateConnectionIconPosition(id: string, element: HTMLElement) {
+  const path = element.querySelector<SVGPathElement>('.node-connection');
+  const icon = element.querySelector<HTMLElement>(`#${CSS.escape(id)}`);
+  if (!path?.getTotalLength || !icon) return;
+
+  const length = path.getTotalLength();
+  if (length === 0) return;
+
+  const mid = path.getPointAtLength(length / 2);
+  icon.style.left = `${mid.x}px`;
+  icon.style.top = `${mid.y}px`;
+}
+
 function configureEditor(connectionEvents, render, flowEditorService: FlowEditorService, alertService: AlertService) {
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   connection.addPreset(() => new Connector(connectionEvents, flowEditorService, alertService));
@@ -252,7 +281,7 @@ async function createNodesAndConnections(socket: ClassicPreset.Socket,
   flowEditorService) {
 
   if (data.source) {
-    const db = new Storage(socket);
+    const db = new Storage(socket, data);
     const plugin = data.from == 'south' ? new South(socket, data.service) : new North(socket, data.task);
     //  FIX ME: Array index based change
     if (data.from == 'south') {
@@ -505,7 +534,7 @@ export function updateNode(data) {
           let readingCount = service.assets.reduce((total, asset) => {
             return total + asset.count;
           }, 0)
-
+          node.debug = service?.debug;
           assetControls.count = assetCount;
           readingControl.count = readingCount;
           enabledControl.enabled = service.schedule_enabled;
@@ -523,6 +552,9 @@ export function updateNode(data) {
         const sentReadingControl = node.controls.sentReadingControl as SentReadingsControl;
         const task = data.tasks.find(t => t.name === node.controls.nameControl['name']) as NorthTask;
         if (task) {
+          if (task?.execution == 'service' && task?.debug) {
+            node.debug = task.debug;
+          }
           sentReadingControl.sent = task.sent;
           enabledControl.enabled = task.enabled;
           statusControl.status = task.status;

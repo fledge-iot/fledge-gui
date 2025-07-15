@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, Input } from '@angular/core';
+import { Component, Output, EventEmitter, Input, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-toolbar',
@@ -13,6 +13,17 @@ export class ToolbarComponent {
   @Output() undo = new EventEmitter<Object>();
   @Output() redo = new EventEmitter<Object>();
   @Output() delete = new EventEmitter<Object>();
+  @Output() debug = new EventEmitter<boolean>();
+  @Input() debuggerState: string;
+
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['debuggerState']) {
+      this.debuggerState = changes['debuggerState'].currentValue;
+    }
+  }
+
+  ngOnInit() { }
 
   reload() {
     this.reloadData.emit(true);

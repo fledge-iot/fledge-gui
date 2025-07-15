@@ -1,6 +1,10 @@
 import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 import { ClassicPreset } from 'rete';
 import { Position } from '../types';
+import { SharedService } from '../../../../services';
+import { area } from '../editor';
+import { Subject } from 'rxjs';
+import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 
 type Connection = ClassicPreset.Connection<
   ClassicPreset.Node,
@@ -8,6 +12,7 @@ type Connection = ClassicPreset.Connection<
 > & {
   selected?: boolean,
   isLoop?: boolean
+  debuggerAttached?: boolean;
   click: (c: Connection) => void
   remove: (c: Connection) => void
 }
@@ -23,18 +28,34 @@ export class CustomConnectionComponent {
   @Input() end: Position
   @Input() path: string
 
+  public isAlive: boolean;
+  destroy$: Subject<boolean> = new Subject<boolean>();
+
   @ViewChild('menu') menu!: ElementRef;
   @ViewChild('svg') connection!: ElementRef<SVGAElement>;
   @ViewChild('svgpath', { static: true }) pathRef: ElementRef<SVGPathElement>;
 
-  // code block to show label on the connection line
-  // get point() {
-  //   if (!this.pathRef) return { x: 0, y: 0 }
-  //   const path = this.pathRef.nativeElement
-  //   if (path.getTotalLength() != 0) {
-  //     const point = path?.getPointAtLength(path.getTotalLength() / 2)
-  //     return point;
-  //   }
-  //   return { x: 0, y: 0 }
-  // }
+  constructor(private sharedService: SharedService) { }
+
+  ngAfterViewInit() { }
+
+  updateConnectionIconPosition() {
+    const path = this.pathRef.nativeElement;
+    const icon = document.querySelector<HTMLElement>(`#${CSS.escape(this.data.id)}`);
+    if (!path?.getTotalLength || !icon) return;
+
+    const length = path.getTotalLength();
+    if (length === 0) return;
+
+    const mid = path.getPointAtLength(length / 2);
+    icon.style.left = `${mid.x}px`;
+    icon.style.top = `${mid.y}px`;
+    area.update('connection', this.data.id);
+  }
+
+  public ngOnDestroy(): void {
+    this.isAlive = false;
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
+  }
 }

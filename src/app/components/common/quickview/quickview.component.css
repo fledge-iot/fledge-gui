@@ -1,27 +1,29 @@
 .title {
-    margin-bottom: 0px !important;
+  margin-bottom: 0px !important;
 }
 
 .quickview-block {
-    display: inline-block;
-    width: 95%;
+  display: inline-block;
+  width: 95%;
 }
 
 .quickview.is-active {
-    right: 0 !important;
+  right: 0 !important;
 }
 
 @media screen and (min-width: 1px) {
-    .quickview {
-        width: 66%;
-        right: -66%;
-    }
+  .quickview {
+    width: 66%;
+    right: -66%;
+  }
 }
 
 .delete {
-    float: right;
+  position: absolute;
+  top: 1.85rem;
+  right: 1rem;
 }
 
 .quickview-body {
-    border-left: 1px dashed silver;
+  border-left: 1px dashed silver;
 }

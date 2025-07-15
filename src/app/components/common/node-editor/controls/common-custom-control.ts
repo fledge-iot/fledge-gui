@@ -29,3 +29,9 @@ export class EnabledControl extends ClassicPreset.Control {
     super();
   }
 }
+
+export class DebugControl extends ClassicPreset.Control {
+  constructor(public debug: object) {
+    super();
+  }
+}

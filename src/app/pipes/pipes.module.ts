@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import { HasAttachedDebuggerPipe } from '../components/core/debugger/has-attached-debugger.pipe';
 import { DateFormatterPipe } from './date-formatter-pipe';
 import { KeysPipe } from './keys';
 import { CaseInsensitiveSearchPipe } from './case-insensitive-search.pipe';
@@ -18,7 +18,8 @@ import { FilterPipe } from './filter';
     CaseInsensitiveSearchPipe,
     SearchPipe,
     TruncatePipe,
-    TruncateMiddleOfTextPipe
+    TruncateMiddleOfTextPipe,
+    HasAttachedDebuggerPipe
   ],
   exports: [
     DateFormatterPipe,
@@ -27,7 +28,8 @@ import { FilterPipe } from './filter';
     CaseInsensitiveSearchPipe,
     SearchPipe,
     TruncatePipe,
-    TruncateMiddleOfTextPipe
+    TruncateMiddleOfTextPipe,
+    HasAttachedDebuggerPipe
   ]
 })
 export class PipesModule { }

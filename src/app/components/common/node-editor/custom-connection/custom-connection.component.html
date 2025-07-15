@@ -1,11 +1,4 @@
 <svg data-testid="connection" #svg (click)="data.click(data)">
   <path [attr.d]="path" class="hover-path"></path>
-  <path [attr.d]="path" #svgpath [class]="{ selected: data.selected }" />
+  <path [attr.d]="path" #svgpath [class]="{ selected: data.selected }" class="node-connection" />
 </svg>
-<!-- Show label on the connection line -->
-<!-- <span (pointerdown)="$event.stopPropagation()" class="connection-status label has-text-success" [style]="{
-    left: point.x + 'px',
-    top: point.y + 'px',
-  }">
-  <i class="bi bi-vinyl"></i>
-</span> -->

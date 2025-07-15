@@ -34,6 +34,10 @@ import { ListTableComponent } from './components/core/configuration-manager/list
 import { ListCardComponent } from './components/core/configuration-manager/list-card/list-card.component';
 import { KvlistCardComponent } from './components/core/configuration-manager/kvlist-card/kvlist-card.component';
 import { DynamicGroupComponent } from './components/core/configuration-manager/dynamic-group/dynamic-group.component';
+import { DebuggerComponent } from './components/core/debugger/debugger.component';
+import { DebuggerReadingsComponent } from './components/core/debugger/debugger-readings/debugger-readings.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { BufferActionButtonsComponent } from './components/core/debugger/buffer-action-buttons/buffer-action-buttons.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @NgModule({
@@ -45,6 +49,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     DirectivesModule,
     NgSelectModule,
     ReactiveFormsModule,
+    DragDropModule,
     ScrollingModule,
     StaticConfigurationComponent
   ],
@@ -74,7 +79,10 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     ListTableComponent,
     ListCardComponent,
     KvlistCardComponent,
-    DynamicGroupComponent
+    DynamicGroupComponent,
+    DebuggerComponent,
+    DebuggerReadingsComponent,
+    BufferActionButtonsComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -91,7 +99,10 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     TaskScheduleComponent,
     ServiceWarningComponent,
     ServiceConfigComponent,
-    DynamicGroupComponent
+    DynamicGroupComponent,
+    DebuggerComponent,
+    DebuggerReadingsComponent,
+    BufferActionButtonsComponent
   ]
 })
 export class SharedModule { }
