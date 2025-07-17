@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ChangeDetectionStrategy, NgZone } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { filter, cloneDeep } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { ConfigurationControlService, RolesService } from '../../../../services';
@@ -31,18 +31,29 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   kvlistValues = {};
   isListView = true;
 
-  private destroy$ = new Subject<void>();
-  private processingChunk = false;
+  // Cached controls array for virtual scrolling performance
+  private _cachedKvControls: AbstractControl[] = [];
+  private _lastKvControlsLength = 0;
 
-  // Performance optimization properties with different thresholds for different operations
+  private destroy$ = new Subject<void>();
+  public processingChunk = false; // Changed from private to public for template access
+
+  // Performance optimization properties - MUCH MORE AGGRESSIVE thresholds
   isLoadingLargeDataset = false;
   isViewSwitching = false; // Smart view switching indicator
-  private LARGE_DATASET_THRESHOLD = 500; // For showing loading indicators
-  private FORM_CREATION_THRESHOLD = 1000; // For conservative form creation chunking
-  private DOM_OPERATION_THRESHOLD = 3000; // For DOM manipulation chunking (higher threshold)
-  private PERFORMANCE_MODE_THRESHOLD = 1000; // For performance optimizations
-  private VIEW_SWITCHING_THRESHOLD = 2000; // Only show view switching indicator for very large datasets
+  isLoadingInitialData = false; // For visual loading feedback without disabling buttons
+  private LARGE_DATASET_THRESHOLD = 100; // Reduced from 2000 - now kicks in at 100+ items
+  private FORM_CREATION_THRESHOLD = 200; // Reduced from 3000 - chunking starts at 200+ items
+  private DOM_OPERATION_THRESHOLD = 500; // Reduced from 5000 - DOM optimization at 500+ items
+  private PERFORMANCE_MODE_THRESHOLD = 100; // Reduced from 2000 - performance mode at 100+ items
+  private VIEW_SWITCHING_THRESHOLD = 300; // Reduced from 3000 - loading indicator at 300+ items
+  private DELETION_OPTIMIZATION_THRESHOLD = 400; // Reduced from 8000 - optimized deletion at 400+ items
   private isLargeDataset = false; // Track if we have large dataset for optimizations
+
+  // New properties to handle deferred loading and file import distinction
+  private isFileImportOperation = false; // Track if we're in a file import operation
+  private initialLoadDeferred = false; // Track if initial load should be deferred
+  private hasInitiallyLoaded = false; // Track if we've completed initial load
 
   constructor(
     public cdRef: ChangeDetectorRef,
@@ -56,8 +67,25 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.loadDataWithChunking();
-    this.setupValueChangeSubscription();
+    // Check if we should defer initial loading (for quickview scenarios)
+    this.checkDeferredLoading();
+
+    if (this.initialLoadDeferred) {
+      console.log(`KvList: Using deferred loading for "${this.from}" context`);
+      // Defer loading until after view is rendered
+      this.zone.runOutsideAngular(() => {
+        setTimeout(() => {
+          this.zone.run(() => {
+            this.loadDataWithChunking();
+            this.setupValueChangeSubscription();
+          });
+        }, 100); // Small delay to allow UI to render first
+      });
+    } else {
+      console.log(`KvList: Using immediate loading`);
+      this.loadDataWithChunking();
+      this.setupValueChangeSubscription();
+    }
   }
 
   ngOnDestroy() {
@@ -65,9 +93,18 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  private checkDeferredLoading() {
+    // Defer loading for quickview scenarios or when from contains 'modal'
+    // to improve initial rendering performance
+    this.initialLoadDeferred = this.from?.includes('quickview') ||
+      this.from?.includes('modal') ||
+      this.from?.includes('wizard');
+  }
+
   private loadDataWithChunking() {
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
     const t0 = performance.now();
+    console.log(`KvList: Starting data loading for configuration "${this.configuration.key}"`);
 
     try {
       values = JSON.parse(values);
@@ -77,8 +114,12 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
     }
 
     const entries = Object.entries(values);
+    console.log(`KvList: Found ${entries.length} entries to process`);
 
     if (entries.length === 0) {
+      const t1 = performance.now();
+      console.log(`KvList form creation took ${t1 - t0} ms for ${entries.length} items (empty dataset)`);
+      this.hasInitiallyLoaded = true;
       this.cdRef.detectChanges();
       return;
     }
@@ -86,37 +127,63 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
     // Track if this is a large dataset for performance optimizations
     this.isLargeDataset = entries.length > this.PERFORMANCE_MODE_THRESHOLD;
 
-    // Show loading indicator for large datasets
-    if (entries.length > this.LARGE_DATASET_THRESHOLD) {
-      this.isLoadingLargeDataset = true;
+    // For initial data loading: show visual loading feedback but don't disable buttons
+    // For file import: emit loading state that disables buttons
+    if (entries.length > 200) { // Reduced from 1000 to 200
+      if (this.isFileImportOperation) {
+        // File import - disable buttons
+        this.isLoadingLargeDataset = true;
+        this.formStatusEvent.emit({ 'status': false, 'group': this.group, 'loading': true });
+      } else {
+        // Initial data loading - visual feedback only, don't disable buttons
+        this.isLoadingInitialData = true;
+      }
       this.cdRef.detectChanges();
     }
 
+    // Use chunked processing for datasets over 200 items (reduced from 1000)
+    if (entries.length > 200) {
+      console.log(`KvList: Using chunked processing for ${entries.length} entries`);
+      this.processEntriesChunked(entries, t0);
+    } else {
+      // Process normally for smaller datasets (faster)
+      console.log(`KvList: Using normal processing for ${entries.length} entries`);
+      for (const [key, value] of entries) {
+        this.kvListItems.push(this.initListItem(false, { key, value }));
+      }
+      this.hasInitiallyLoaded = true;
+      this.cdRef.detectChanges();
+
+      const t1 = performance.now();
+      console.log(`KvList form creation took ${t1 - t0} ms for ${entries.length} items (normal processing)`);
+
+      if (this.isLoadingLargeDataset) {
+        this.isLoadingLargeDataset = false;
+        this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group, 'loading': false });
+        this.cdRef.detectChanges();
+      }
+    }
+  }
+
+  private processEntriesChunked(entries: [string, any][], startTime: number) {
     // Detach change detection for bulk operations
     this.cdRef.detach();
     this.processingChunk = true;
 
-    // Conservative chunking for form creation based on FORM_CREATION_THRESHOLD
+    // Optimized chunking based on dataset size
     let chunkSize, delay;
-    if (entries.length > this.FORM_CREATION_THRESHOLD) {
-      // Use conservative chunking for form creation to prevent crashes
-      if (entries.length > 10000) {
-        // 10k+ items: very small chunks with longer delays
-        chunkSize = 5;
-        delay = 50;
-      } else if (entries.length > 5000) {
-        // 5k-10k items: small chunks with moderate delays  
-        chunkSize = 10;
-        delay = 30;
-      } else {
-        // 1k-5k items: moderate chunks with small delays
-        chunkSize = 20;
-        delay = 15;
-      }
+    if (entries.length > 10000) {
+      // 10k+ items: large chunks with moderate delays
+      chunkSize = 500;
+      delay = 50;
+    } else if (entries.length > 5000) {
+      // 5k-10k items: medium chunks with small delays  
+      chunkSize = 200;
+      delay = 25;
     } else {
-      // < 1k items: larger chunks with minimal delays
-      chunkSize = 50;
-      delay = 5;
+      // 1k-5k items: smaller chunks with minimal delays
+      chunkSize = 100;
+      delay = 10;
     }
 
     let currentIndex = 0;
@@ -137,13 +204,13 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
       currentIndex = endIndex;
 
       if (currentIndex < entries.length) {
-        // Use conservative scheduling for form creation
+        // Use optimized scheduling for form creation
         this.zone.runOutsideAngular(() => {
           if ('requestIdleCallback' in window && entries.length > 5000) {
             // Use browser idle time for large datasets
             requestIdleCallback(() => {
               this.zone.run(() => processChunk());
-            }, { timeout: delay + 100 });
+            }, { timeout: delay + 50 });
           } else {
             setTimeout(() => {
               this.zone.run(() => processChunk());
@@ -154,11 +221,18 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
         // Processing complete
         this.processingChunk = false;
         this.isLoadingLargeDataset = false;
+        this.isLoadingInitialData = false;
+        this.hasInitiallyLoaded = true;
         this.cdRef.reattach();
         this.cdRef.detectChanges();
 
         const t1 = performance.now();
-        console.log(`KvList form creation took ${t1 - t0} ms for ${entries.length} items`);
+        console.log(`KvList form creation took ${t1 - startTime} ms for ${entries.length} items (chunked processing)`);
+
+        // Only emit loading complete for file import operations
+        if (this.isFileImportOperation) {
+          this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group, 'loading': false });
+        }
       }
     };
 
@@ -218,8 +292,24 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
     return this.kvListItemsForm.get('kvListItems') as FormArray;
   }
 
+  get kvListItemControls(): AbstractControl[] {
+    // Cache controls array for virtual scrolling performance
+    const currentLength = this.kvListItems.length;
+    if (currentLength !== this._lastKvControlsLength || this._cachedKvControls.length === 0) {
+      this._cachedKvControls = [...this.kvListItems.controls];
+      this._lastKvControlsLength = currentLength;
+    }
+    return this._cachedKvControls;
+  }
+
   trackByIndex(index: number, _item: any): number {
     return index;
+  }
+
+  private refreshKvControlsCache() {
+    // Force refresh of cached controls
+    this._cachedKvControls = [...this.kvListItems.controls];
+    this._lastKvControlsLength = this.kvListItems.length;
   }
 
   // Optimized trackBy for large datasets
@@ -287,8 +377,8 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Optimize for large datasets
-    if (this.isLargeDataset) {
+    // Only optimize for very large datasets
+    if (this.isLargeDataset && this.kvListItems.length > 3000) {
       this.cdRef.detach();
     }
 
@@ -299,7 +389,6 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
       this.kvListItems.push(this.initListItem(isPrepend, { key: '', value: '' }));
     }
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
-
     if (this.configuration.items == 'object') {
       const index = isPrepend ? 0 : this.kvListItems.length - 1;
       if (this.isListView) {
@@ -310,8 +399,8 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
       }
     }
 
-    // Reattach change detection for large datasets
-    if (this.isLargeDataset) {
+    // Reattach change detection for very large datasets
+    if (this.isLargeDataset && this.kvListItems.length > 3000) {
       this.zone.runOutsideAngular(() => {
         setTimeout(() => {
           this.zone.run(() => {
@@ -320,7 +409,12 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
           });
         }, 0);
       });
+    } else {
+      this.cdRef.detectChanges();
     }
+
+    // Refresh cached controls after adding item
+    this.refreshKvControlsCache();
   }
 
   scrollToRow(i) {
@@ -335,26 +429,64 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   removeListItem(index: number) {
-    // Optimize for large datasets
-    if (this.isLargeDataset) {
+    // More aggressive optimization for very large datasets (10k+)
+    // Use lower threshold for deletion operations as they are more expensive
+    const needsOptimization = this.kvListItems.length > this.DELETION_OPTIMIZATION_THRESHOLD;
+
+    if (needsOptimization) {
+      // For very large datasets, completely detach and use zone outside
       this.cdRef.detach();
-    }
 
-    this.kvListItems.removeAt(index);
-    this.initialProperties.splice(index, 1);
-    this.items.splice(index, 1);
-    this.setChildConfigFormValidity();
+      this.zone.runOutsideAngular(() => {
+        // Perform deletion operations outside Angular zone
+        this.kvListItems.removeAt(index);
+        this.initialProperties.splice(index, 1);
+        this.items.splice(index, 1);
 
-    // Reattach change detection for large datasets
-    if (this.isLargeDataset) {
+        this.zone.run(() => {
+          this.setChildConfigFormValidity();
+
+          // Refresh cached controls after removing item
+          this.refreshKvControlsCache();
+
+          // Use longer delay for very large datasets to prevent UI blocking
+          setTimeout(() => {
+            this.cdRef.reattach();
+            this.cdRef.detectChanges();
+          }, this.kvListItems.length > 15000 ? 200 : 100);
+        });
+      });
+    } else if (this.isLargeDataset && this.kvListItems.length > 5000) {
+      // Medium optimization for moderately large datasets
+      this.cdRef.detach();
+
+      this.kvListItems.removeAt(index);
+      this.initialProperties.splice(index, 1);
+      this.items.splice(index, 1);
+      this.setChildConfigFormValidity();
+
+      // Refresh cached controls after removing item
+      this.refreshKvControlsCache();
+
       this.zone.runOutsideAngular(() => {
         setTimeout(() => {
           this.zone.run(() => {
             this.cdRef.reattach();
             this.cdRef.detectChanges();
           });
-        }, 0);
+        }, 50);
       });
+    } else {
+      // Normal processing for smaller datasets
+      this.kvListItems.removeAt(index);
+      this.initialProperties.splice(index, 1);
+      this.items.splice(index, 1);
+      this.setChildConfigFormValidity();
+
+      // Refresh cached controls after removing item
+      this.refreshKvControlsCache();
+
+      this.cdRef.detectChanges();
     }
   }
 
@@ -363,8 +495,8 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   formStatus(formState: any, index) {
-    // Optimize form status updates for large datasets
-    if (this.isLargeDataset) {
+    // Only optimize form status updates for very large datasets
+    if (this.isLargeDataset && this.kvListItems.length > 3000) {
       this.zone.runOutsideAngular(() => {
         this.items[index].status = formState.status;
         this.zone.run(() => {
@@ -494,36 +626,52 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   appendFileData(event) {
+    // Mark this as a file import operation
+    this.isFileImportOperation = true;
+
     // Show loading indicator for large file imports
-    if (event.fileData && Object.keys(event.fileData).length > this.LARGE_DATASET_THRESHOLD) {
+    if (event.fileData && Object.keys(event.fileData).length > 1000) {
       this.isLoadingLargeDataset = true;
+      this.formStatusEvent.emit({ 'status': false, 'group': this.group, 'loading': true });
       this.cdRef.detectChanges();
 
       // Process large file data in chunks
       this.processLargeFileData(event.fileData, false);
     } else {
+      // Process normally for smaller files - this fixes the preview issue
       for (const [key, value] of Object.entries(event.fileData)) {
         this.kvListItems.push(this.initListItem(false, { key, value }));
       }
+      this.cdRef.detectChanges();
+      // Reset file import flag
+      this.isFileImportOperation = false;
     }
   }
 
   overrideFileData(event) {
+    // Mark this as a file import operation
+    this.isFileImportOperation = true;
+
     // Show loading indicator for large file imports
-    if (event.fileData && Object.keys(event.fileData).length > this.LARGE_DATASET_THRESHOLD) {
+    if (event.fileData && Object.keys(event.fileData).length > 1000) {
       this.isLoadingLargeDataset = true;
       this.kvListItems.clear();
       this.initialProperties = [];
+      this.formStatusEvent.emit({ 'status': false, 'group': this.group, 'loading': true });
       this.cdRef.detectChanges();
 
       // Process large file data in chunks
       this.processLargeFileData(event.fileData, true);
     } else {
+      // Process normally for smaller files - this fixes the preview issue
       this.kvListItems.clear();
       this.initialProperties = [];
       for (const [key, value] of Object.entries(event.fileData)) {
         this.kvListItems.push(this.initListItem(false, { key, value }));
       }
+      this.cdRef.detectChanges();
+      // Reset file import flag
+      this.isFileImportOperation = false;
     }
   }
 
@@ -533,27 +681,20 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
 
     const entries = Object.entries(fileData);
 
-    // Use conservative chunking for file imports based on FORM_CREATION_THRESHOLD
+    // Use optimized chunking for file imports - same as initial loading
     let chunkSize, delay;
-    if (entries.length > this.FORM_CREATION_THRESHOLD) {
-      // Use conservative chunking for form creation to prevent crashes
-      if (entries.length > 10000) {
-        // 10k+ files: very small chunks with longer delays
-        chunkSize = 5;
-        delay = 50;
-      } else if (entries.length > 5000) {
-        // 5k-10k files: small chunks with moderate delays  
-        chunkSize = 10;
-        delay = 30;
-      } else {
-        // 1k-5k files: moderate chunks with small delays
-        chunkSize = 20;
-        delay = 15;
-      }
+    if (entries.length > 10000) {
+      // 10k+ files: large chunks with moderate delays
+      chunkSize = 500;
+      delay = 50;
+    } else if (entries.length > 5000) {
+      // 5k-10k files: medium chunks with small delays  
+      chunkSize = 200;
+      delay = 25;
     } else {
-      // < 1k files: larger chunks with minimal delays
-      chunkSize = 50;
-      delay = 5;
+      // 1k-5k files: smaller chunks with minimal delays
+      chunkSize = 100;
+      delay = 10;
     }
 
     let currentIndex = 0;
@@ -579,7 +720,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
             // Use browser idle time for large files
             requestIdleCallback(() => {
               this.zone.run(() => processChunk());
-            }, { timeout: delay + 100 });
+            }, { timeout: delay + 50 });
           } else {
             setTimeout(() => {
               this.zone.run(() => processChunk());
@@ -592,6 +733,11 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
         this.isLoadingLargeDataset = false;
         this.cdRef.reattach();
         this.cdRef.detectChanges();
+
+        // Emit loading complete
+        this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group, 'loading': false });
+        // Reset file import flag
+        this.isFileImportOperation = false;
       }
     };
 
@@ -606,10 +752,32 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
 
   openExportFileModal() {
     this.hideDropDown();
+
+    // Check if we have a large dataset that needs async processing
+    const dataSize = this.kvListItems.length;
+
+    if (dataSize > 1000) {
+      // Process large datasets asynchronously to prevent blocking
+      this.zone.runOutsideAngular(() => {
+        setTimeout(() => {
+          this.zone.run(() => {
+            this.prepareKvListData();
+            this.fileExportModal.toggleModal(true);
+          });
+        }, 10); // Small delay to let UI update
+      });
+    } else {
+      // Process small datasets immediately
+      this.prepareKvListData();
+      this.fileExportModal.toggleModal(true);
+    }
+  }
+
+  private prepareKvListData() {
+    this.kvlistValues = {};
     for (let [ind, val] of this.kvListItems.value.entries()) {
       this.kvlistValues[val.key] = val.value;
     }
-    this.fileExportModal.toggleModal(true);
   }
 
   toggleDropdown() {
@@ -629,53 +797,30 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   setCurrentView(event) {
     // Smart view switching - only show loading for very large datasets
     const needsViewSwitchingIndicator = this.kvListItems.length > this.VIEW_SWITCHING_THRESHOLD;
-    const isVeryLargeDataset = this.kvListItems.length > 4000; // Extra safety for 5k+ data
-    const isExtremelyLarge = this.kvListItems.length > 8000; // Ultra conservative for 8k+
 
     if (needsViewSwitchingIndicator) {
       this.isViewSwitching = true;
+      this.formStatusEvent.emit({ 'status': false, 'group': this.group, 'loading': true });
       this.cdRef.detectChanges();
 
-      // Use zone.runOutsideAngular for the entire process to prevent blocking
+      // Simplified and faster view switching
       this.zone.runOutsideAngular(() => {
-        // Much longer delay for very large datasets to prevent crashes
-        const initialDelay = isExtremelyLarge ? 500 : (isVeryLargeDataset ? 200 : 50);
-
         setTimeout(() => {
           this.zone.run(() => {
-            // Detach change detection for very large datasets to prevent crashes
-            if (isVeryLargeDataset) {
-              this.cdRef.detach();
+            this.isListView = event.isListView;
+
+            // Expand first item if switching to detailed view with exactly one item
+            if (!this.isListView && this.kvListItems.length === 1) {
+              setTimeout(() => {
+                this.expandListItem(0);
+              }, 10);
             }
 
-            this.isListView = event.isListView;
+            this.isViewSwitching = false;
+            this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group, 'loading': false });
+            this.cdRef.detectChanges();
           });
-
-          // Progressive rendering delay - much longer for detailed view with large data
-          const renderDelay = isExtremelyLarge ? 1000 : (isVeryLargeDataset && !event.isListView) ? 600 : 100;
-
-          setTimeout(() => {
-            this.zone.run(() => {
-              // Expand first item if switching to detailed view with exactly one item
-              if (!this.isListView && this.kvListItems.length === 1) {
-                setTimeout(() => {
-                  this.expandListItem(0);
-                }, 50);
-              }
-
-              // Final delay before hiding indicator
-              setTimeout(() => {
-                // Reattach change detection for very large datasets
-                if (isVeryLargeDataset) {
-                  this.cdRef.reattach();
-                }
-
-                this.isViewSwitching = false;
-                this.cdRef.detectChanges();
-              }, 200);
-            });
-          }, renderDelay);
-        }, initialDelay);
+        }, 50); // Reduced delay for faster switching
       });
     } else {
       // Instant switching for smaller datasets
@@ -685,7 +830,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
       if (!this.isListView && this.kvListItems.length === 1) {
         setTimeout(() => {
           this.expandListItem(0);
-        }, 50);
+        }, 10);
       }
 
       this.cdRef.detectChanges();

@@ -1,4 +1,4 @@
-import { Component, HostListener, Input } from '@angular/core';
+import { Component, HostListener, Input, ChangeDetectorRef, NgZone } from '@angular/core';
 import { AlertService } from '../../../services';
 
 @Component({
@@ -11,11 +11,18 @@ export class FileExportModalComponent {
   @Input() configuration;
   @Input() categoryName;
   format = 'csv';
+  isExporting = false; // Loading state for export processing
 
-  constructor(private alertService: AlertService) { }
+  constructor(
+    private alertService: AlertService,
+    private cdRef: ChangeDetectorRef,
+    private zone: NgZone
+  ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
-    this.formReset();
+    if (!this.isExporting) {
+      this.formReset();
+    }
   }
 
   public toggleModal(isOpen: boolean) {
@@ -28,6 +35,39 @@ export class FileExportModalComponent {
   }
 
   exportFile() {
+    // Check data size and decide if async processing is needed
+    const dataSize = this.getDataSize();
+    const needsAsyncProcessing = dataSize > 200; // Reduced from 1000 to 200 for more aggressive optimization
+
+    if (needsAsyncProcessing) {
+      this.isExporting = true;
+      this.cdRef.detectChanges();
+
+      // Process large datasets asynchronously to prevent blocking
+      this.zone.runOutsideAngular(() => {
+        setTimeout(() => {
+          this.zone.run(() => {
+            this.processExport();
+            this.isExporting = false;
+            this.cdRef.detectChanges();
+          });
+        }, 10); // Small delay to let UI update
+      });
+    } else {
+      // Process small datasets immediately
+      this.processExport();
+    }
+  }
+
+  private getDataSize(): number {
+    if (this.configuration.type == 'list') {
+      return Array.isArray(this.data) ? this.data.length : 0;
+    } else {
+      return this.data ? Object.keys(this.data).length : 0;
+    }
+  }
+
+  private processExport() {
     if (this.format == 'json') {
       let jsonData;
       if (this.configuration.type == 'list') {
@@ -111,17 +151,24 @@ export class FileExportModalComponent {
   }
 
   jsonTocsv(json) {
+    // Optimized CSV generation for large datasets
     if (this.configuration.type == 'list') {
       let header;
       if (json.length > 0) {
         header = Object.keys(json[0]);
-        const rows = json.map((obj) => {
-          return header.map((key) => {
-            const value = obj[key];
-            return `${value}`;
-          }).join(',');
-        });
-        return [header.join(','), ...rows].join('\n');
+
+        // Process in chunks for large datasets to prevent blocking
+        if (json.length > 500) { // Reduced from 5000 to 500 for more aggressive optimization
+          return this.processLargeArrayToCsv(json, header);
+        } else {
+          const rows = json.map((obj) => {
+            return header.map((key) => {
+              const value = obj[key];
+              return `${value}`;
+            }).join(',');
+          });
+          return [header.join(','), ...rows].join('\n');
+        }
       }
       else {
         header = Object.keys(this.configuration.properties);
@@ -132,14 +179,21 @@ export class FileExportModalComponent {
       let rows = [];
       let header;
       if (Object.keys(json).length > 0) {
-        for (let [key, val] of Object.entries(json)) {
-          header = Object.keys(val);
-          let row = header.map((key) => {
-            const value = val[key];
-            return `${value}`;
-          }).join(',');
-          row = key + ',' + row;
-          rows.push(row)
+        const entries = Object.entries(json);
+
+        // Process in chunks for large datasets to prevent blocking
+        if (entries.length > 500) { // Reduced from 5000 to 500 for more aggressive optimization
+          return this.processLargeObjectToCsv(entries);
+        } else {
+          for (let [key, val] of entries) {
+            header = Object.keys(val);
+            let row = header.map((key) => {
+              const value = val[key];
+              return `${value}`;
+            }).join(',');
+            row = key + ',' + row;
+            rows.push(row)
+          }
         }
       }
       else {
@@ -148,5 +202,52 @@ export class FileExportModalComponent {
       header = (this.configuration.keyName ? this.configuration.keyName : 'Key') + ',' + header.join(',');
       return [header, ...rows].join('\n');
     }
+  }
+
+  private processLargeArrayToCsv(json: any[], header: string[]): string {
+    // Process large arrays in chunks to prevent blocking
+    let result = header.join(',') + '\n';
+    const chunkSize = 1000;
+
+    for (let i = 0; i < json.length; i += chunkSize) {
+      const chunk = json.slice(i, i + chunkSize);
+      const chunkRows = chunk.map((obj) => {
+        return header.map((key) => {
+          const value = obj[key];
+          return `${value}`;
+        }).join(',');
+      });
+      result += chunkRows.join('\n');
+      if (i + chunkSize < json.length) {
+        result += '\n';
+      }
+    }
+
+    return result;
+  }
+
+  private processLargeObjectToCsv(entries: [string, any][]): string {
+    // Process large objects in chunks to prevent blocking
+    let header;
+    let rows = [];
+    const chunkSize = 1000;
+
+    for (let i = 0; i < entries.length; i += chunkSize) {
+      const chunk = entries.slice(i, i + chunkSize);
+      for (let [key, val] of chunk) {
+        if (!header) {
+          header = Object.keys(val);
+        }
+        let row = header.map((key) => {
+          const value = val[key];
+          return `${value}`;
+        }).join(',');
+        row = key + ',' + row;
+        rows.push(row);
+      }
+    }
+
+    const headerRow = (this.configuration.keyName ? this.configuration.keyName : 'Key') + ',' + header.join(',');
+    return [headerRow, ...rows].join('\n');
   }
 }

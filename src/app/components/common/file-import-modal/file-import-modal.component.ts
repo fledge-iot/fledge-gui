@@ -77,7 +77,7 @@ export class FileImportModalComponent {
 
         try {
           const fileSizeInMB = files[0].size / (1024 * 1024);
-          const isLargeFile = fileSizeInMB > 5; // Consider files > 5MB as large
+          const isLargeFile = fileSizeInMB > 1; // Reduced from 5MB to 1MB for more aggressive optimization
 
           if (this.file.extension == 'csv') {
             // Use optimized methods for large files

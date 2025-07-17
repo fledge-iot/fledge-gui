@@ -109,13 +109,13 @@ export class FileImportService {
         const entries = Object.entries(jsonObj);
         const totalEntries = entries.length;
 
-        // Optimized chunking for better performance while preventing crashes
-        let chunkSize = 200; // Increased default chunk size
+        // MUCH MORE AGGRESSIVE chunking for better performance
+        let chunkSize = 50; // Reduced default chunk size for better responsiveness
 
-        if (totalEntries > 15000) {
-          chunkSize = 50;  // Medium chunks for very large datasets
-        } else if (totalEntries > 8000) {
-          chunkSize = 100; // Larger chunks for large datasets
+        if (totalEntries > 2000) {
+          chunkSize = 20;  // Small chunks for large datasets (was 50 for 15000+)
+        } else if (totalEntries > 500) {
+          chunkSize = 30; // Medium chunks for medium datasets (was 100 for 8000+)
         }
 
         const result = {};

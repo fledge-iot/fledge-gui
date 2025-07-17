@@ -9,7 +9,14 @@
       <button class="delete" aria-label="close" (click)="formReset()"></button>
     </header>
     <section class="modal-card-body pl-1">
-      <div>
+      <!-- Loading indicator during export processing -->
+      <div *ngIf="isExporting" class="has-text-centered p-5">
+        <div class="spinner-small"></div>
+        <p class="mt-3">Processing export...</p>
+      </div>
+
+      <!-- Export format selection -->
+      <div *ngIf="!isExporting">
         <div class="field is-horizontal">
           <div class="field-label has-text-left column is-4">
             <label class="label">Format</label>
@@ -40,7 +47,14 @@
     </section>
 
     <footer class="modal-card-foot p-4">
-      <button class="button is-small is-link is-outlined" (click)="exportFile()">Export</button>
+      <div class="button-container" style="position: relative; display: inline-block;">
+        <button class="button is-small is-link is-outlined" [disabled]="isExporting" (click)="exportFile()">
+          Export
+        </button>
+        <div *ngIf="isExporting" class="loading-overlay">
+          <div class="spinner-small"></div>
+        </div>
+      </div>
     </footer>
   </div>
 </div>

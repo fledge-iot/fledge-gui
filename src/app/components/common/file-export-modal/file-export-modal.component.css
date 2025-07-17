@@ -7,3 +7,41 @@
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
 }
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  z-index: 10;
+}
+
+.spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #dbdbdb;
+  border-top: 2px solid #3273dc;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.button-container {
+  position: relative;
+  display: inline-block;
+}

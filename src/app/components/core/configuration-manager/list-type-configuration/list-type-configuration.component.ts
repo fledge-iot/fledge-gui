@@ -34,20 +34,30 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
   listValues;
   isListView = true;
 
+  // Cached controls array for virtual scrolling performance
+  private _cachedControls: AbstractControl[] = [];
+  private _lastControlsLength = 0;
+
   @ViewChild(CdkVirtualScrollViewport, { static: false }) viewport: CdkVirtualScrollViewport;
 
   private destroy$ = new Subject<void>();
-  private processingChunk = false;
-
-  // Performance optimization properties with different thresholds for different operations
+  public processingChunk = false; // Changed from private to public for template access
+  // Performance optimization properties - MUCH MORE AGGRESSIVE thresholds
   isLoadingLargeDataset = false;
   isViewSwitching = false; // Smart view switching indicator
-  private LARGE_DATASET_THRESHOLD = 500; // For showing loading indicators
-  private FORM_CREATION_THRESHOLD = 1000; // For conservative form creation chunking
-  private DOM_OPERATION_THRESHOLD = 3000; // For DOM manipulation chunking (higher threshold)
-  private PERFORMANCE_MODE_THRESHOLD = 1000; // For performance optimizations
-  private VIEW_SWITCHING_THRESHOLD = 2000; // Only show view switching indicator for very large datasets
+  isLoadingInitialData = false; // For visual loading feedback without disabling buttons
+  private LARGE_DATASET_THRESHOLD = 100; // Reduced from 2000 - now kicks in at 100+ items
+  private FORM_CREATION_THRESHOLD = 200; // Reduced from 3000 - chunking starts at 200+ items
+  private DOM_OPERATION_THRESHOLD = 500; // Reduced from 5000 - DOM optimization at 500+ items
+  private PERFORMANCE_MODE_THRESHOLD = 100; // Reduced from 2000 - performance mode at 100+ items
+  private VIEW_SWITCHING_THRESHOLD = 300; // Reduced from 3000 - loading indicator at 300+ items
+  private DELETION_OPTIMIZATION_THRESHOLD = 400; // Reduced from 8000 - optimized deletion at 400+ items
   private isLargeDataset = false; // Track if we have large dataset for optimizations
+
+  // New properties to handle deferred loading and file import distinction
+  private isFileImportOperation = false; // Track if we're in a file import operation
+  private initialLoadDeferred = false; // Track if initial load should be deferred
+  private hasInitiallyLoaded = false; // Track if we've completed initial load
 
   constructor(
     private zone: NgZone,
@@ -67,8 +77,25 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
       this.listLabel = this.configuration.properties[this.firstKey]?.displayName ?? this.firstKey;
     }
 
-    this.loadDataWithChunking();
-    this.setupValueChangeSubscription();
+    // Check if we should defer initial loading (for quickview scenarios)
+    this.checkDeferredLoading();
+
+    if (this.initialLoadDeferred) {
+      console.log(`List: Using deferred loading for "${this.from}" context`);
+      // Defer loading until after view is rendered
+      this.zone.runOutsideAngular(() => {
+        setTimeout(() => {
+          this.zone.run(() => {
+            this.loadDataWithChunking();
+            this.setupValueChangeSubscription();
+          });
+        }, 100); // Small delay to allow UI to render first
+      });
+    } else {
+      console.log(`List: Using immediate loading`);
+      this.loadDataWithChunking();
+      this.setupValueChangeSubscription();
+    }
   }
 
   ngOnDestroy() {
@@ -76,9 +103,18 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  private checkDeferredLoading() {
+    // Defer loading for quickview scenarios or when from contains 'modal'
+    // to improve initial rendering performance
+    this.initialLoadDeferred = this.from?.includes('quickview') ||
+      this.from?.includes('modal') ||
+      this.from?.includes('wizard');
+  }
+
   private loadDataWithChunking() {
     let values = this.configuration?.value ?? this.configuration.default;
     const t0 = performance.now();
+    console.log(`List: Starting data loading for configuration "${this.configuration.key}"`);
 
     try {
       values = JSON.parse(values);
@@ -91,7 +127,13 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
       values = values[this.configuration.listName];
     }
 
+    const itemCount = Array.isArray(values) ? values.length : 0;
+    console.log(`List: Found ${itemCount} items to process`);
+
     if (!Array.isArray(values) || values.length === 0) {
+      const t1 = performance.now();
+      console.log(`List form creation took ${t1 - t0} ms for ${Array.isArray(values) ? values.length : 0} items (empty dataset)`);
+      this.hasInitiallyLoaded = true;
       this.cdRef.detectChanges();
       return;
     }
@@ -99,37 +141,63 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
     // Track if this is a large dataset for performance optimizations
     this.isLargeDataset = values.length > this.PERFORMANCE_MODE_THRESHOLD;
 
-    // Show loading indicator for large datasets
-    if (values.length > this.LARGE_DATASET_THRESHOLD) {
-      this.isLoadingLargeDataset = true;
+    // For initial data loading: show visual loading feedback but don't disable buttons
+    // For file import: emit loading state that disables buttons
+    if (values.length > 200) { // Reduced from 1000 to 200
+      if (this.isFileImportOperation) {
+        // File import - disable buttons
+        this.isLoadingLargeDataset = true;
+        this.formStatusEvent.emit({ status: false, group: this.group, loading: true });
+      } else {
+        // Initial data loading - visual feedback only, don't disable buttons
+        this.isLoadingInitialData = true;
+      }
       this.cdRef.detectChanges();
     }
 
+    // Use chunked processing for datasets over 200 items (reduced from 1000)
+    if (values.length > 200) {
+      console.log(`List: Using chunked processing for ${values.length} items`);
+      this.processValuesChunked(values, t0);
+    } else {
+      // Process normally for smaller datasets (faster)
+      console.log(`List: Using normal processing for ${values.length} items`);
+      for (let i = 0; i < values.length; i++) {
+        this.initListItem(false, values[i]);
+      }
+      this.hasInitiallyLoaded = true;
+      this.cdRef.detectChanges();
+
+      const t1 = performance.now();
+      console.log(`List form creation took ${t1 - t0} ms for ${values.length} items (normal processing)`);
+
+      if (this.isLoadingLargeDataset) {
+        this.isLoadingLargeDataset = false;
+        this.formStatusEvent.emit({ status: this.listItems.valid, group: this.group, loading: false });
+        this.cdRef.detectChanges();
+      }
+    }
+  }
+
+  private processValuesChunked(values: any[], startTime: number) {
     // Detach change detection for bulk operations
     this.cdRef.detach();
     this.processingChunk = true;
 
-    // Conservative chunking for form creation based on FORM_CREATION_THRESHOLD
+    // Optimized chunking based on dataset size
     let chunkSize, delay;
-    if (values.length > this.FORM_CREATION_THRESHOLD) {
-      // Use conservative chunking for form creation to prevent crashes
-      if (values.length > 10000) {
-        // 10k+ items: very small chunks with longer delays
-        chunkSize = 5;
-        delay = 50;
-      } else if (values.length > 5000) {
-        // 5k-10k items: small chunks with moderate delays  
-        chunkSize = 10;
-        delay = 30;
-      } else {
-        // 1k-5k items: moderate chunks with small delays
-        chunkSize = 20;
-        delay = 15;
-      }
+    if (values.length > 10000) {
+      // 10k+ items: large chunks with moderate delays
+      chunkSize = 500;
+      delay = 50;
+    } else if (values.length > 5000) {
+      // 5k-10k items: medium chunks with small delays  
+      chunkSize = 200;
+      delay = 25;
     } else {
-      // < 1k items: larger chunks with minimal delays
-      chunkSize = 50;
-      delay = 5;
+      // 1k-5k items: smaller chunks with minimal delays
+      chunkSize = 100;
+      delay = 10;
     }
 
     let currentIndex = 0;
@@ -149,13 +217,13 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
       currentIndex = endIndex;
 
       if (currentIndex < values.length) {
-        // Use conservative scheduling for form creation
+        // Use optimized scheduling for form creation
         this.zone.runOutsideAngular(() => {
           if ('requestIdleCallback' in window && values.length > 5000) {
             // Use browser idle time for large datasets
             requestIdleCallback(() => {
               this.zone.run(() => processChunk());
-            }, { timeout: delay + 100 });
+            }, { timeout: delay + 50 });
           } else {
             setTimeout(() => {
               this.zone.run(() => processChunk());
@@ -166,11 +234,18 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
         // Processing complete
         this.processingChunk = false;
         this.isLoadingLargeDataset = false;
+        this.isLoadingInitialData = false;
+        this.hasInitiallyLoaded = true;
         this.cdRef.reattach();
         this.cdRef.detectChanges();
 
         const t1 = performance.now();
-        console.log(`List form creation took ${t1 - t0} ms for ${values.length} items`);
+        console.log(`List form creation took ${t1 - startTime} ms for ${values.length} items (chunked processing)`);
+
+        // Only emit loading complete for file import operations
+        if (this.isFileImportOperation) {
+          this.formStatusEvent.emit({ status: this.listItems.valid, group: this.group, loading: false });
+        }
       }
     };
 
@@ -230,7 +305,19 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   get listItemControls(): AbstractControl[] {
-    return [...this.listItems.controls]; // returns a new reference
+    // Cache controls array for virtual scrolling performance
+    const currentLength = this.listItems.length;
+    if (currentLength !== this._lastControlsLength || this._cachedControls.length === 0) {
+      this._cachedControls = [...this.listItems.controls];
+      this._lastControlsLength = currentLength;
+    }
+    return this._cachedControls;
+  }
+
+  private refreshControlsCache() {
+    // Force refresh of cached controls
+    this._cachedControls = [...this.listItems.controls];
+    this._lastControlsLength = this.listItems.length;
   }
 
   trackByIndex(index: number, _item: AbstractControl): number {
@@ -298,8 +385,8 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Optimize for large datasets
-    if (this.isLargeDataset) {
+    // Only optimize for very large datasets
+    if (this.isLargeDataset && this.listItems.length > 3000) {
       this.cdRef.detach();
     }
 
@@ -314,8 +401,11 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
       }
     }
 
-    // Reattach change detection for large datasets
-    if (this.isLargeDataset) {
+    // Refresh cached controls after adding item
+    this.refreshControlsCache();
+
+    // Reattach change detection for very large datasets
+    if (this.isLargeDataset && this.listItems.length > 3000) {
       this.zone.runOutsideAngular(() => {
         setTimeout(() => {
           this.zone.run(() => {
@@ -329,18 +419,18 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
       this.cdRef.detectChanges();
 
       // Step 2: Wait for rendering to finish
-      this.zone.runOutsideAngular(() => {
-        requestAnimationFrame(() => {
-          if (this.viewport) {
+      if (this.viewport) {
+        this.zone.runOutsideAngular(() => {
+          requestAnimationFrame(() => {
             this.viewport.checkViewportSize();
 
             // Step 3: Scroll after layout is fully calculated
             setTimeout(() => {
               this.viewport.scrollToIndex(this.listItems.length - 1, 'smooth');
             }, 0);
-          }
+          });
         });
-      });
+      }
     }
   }
 
@@ -356,26 +446,75 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   removeListItem(index: number) {
-    // Optimize for large datasets
-    if (this.isLargeDataset) {
+    // More aggressive optimization for very large datasets (10k+)
+    // Use lower threshold for deletion operations as they are more expensive
+    const needsOptimization = this.listItems.length > this.DELETION_OPTIMIZATION_THRESHOLD;
+
+    if (needsOptimization) {
+      // For very large datasets, completely detach and use zone outside
       this.cdRef.detach();
-    }
 
-    this.listItems.removeAt(index);
-    this.initialProperties.splice(index, 1);
-    this.items.splice(index, 1);
-    this.setChildConfigFormValidity();
+      this.zone.runOutsideAngular(() => {
+        // Perform deletion operations outside Angular zone
+        this.listItems.removeAt(index);
+        this.initialProperties.splice(index, 1);
+        this.items.splice(index, 1);
 
-    // Reattach change detection for large datasets
-    if (this.isLargeDataset) {
+        this.zone.run(() => {
+          this.setChildConfigFormValidity();
+
+          // Refresh cached controls after removing item
+          this.refreshControlsCache();
+
+          // Use longer delay for very large datasets to prevent UI blocking
+          setTimeout(() => {
+            this.cdRef.reattach();
+            this.cdRef.detectChanges();
+          }, this.listItems.length > 15000 ? 200 : 100);
+        });
+      });
+    } else if (this.isLargeDataset && this.listItems.length > 5000) {
+      // Medium optimization for moderately large datasets
+      this.cdRef.detach();
+
+      this.listItems.removeAt(index);
+      this.initialProperties.splice(index, 1);
+      this.items.splice(index, 1);
+      this.setChildConfigFormValidity();
+
+      // Refresh cached controls after removing item
+      this.refreshControlsCache();
+
       this.zone.runOutsideAngular(() => {
         setTimeout(() => {
           this.zone.run(() => {
             this.cdRef.reattach();
             this.cdRef.detectChanges();
           });
-        }, 0);
+        }, 50);
       });
+    } else {
+      // Normal processing for smaller datasets
+      this.listItems.removeAt(index);
+      this.initialProperties.splice(index, 1);
+      this.items.splice(index, 1);
+      this.setChildConfigFormValidity();
+      this.cdRef.detectChanges();
+
+      // Step 1: Trigger DOM update
+      // Step 2: Wait for rendering to finish
+      if (this.viewport) {
+        this.zone.runOutsideAngular(() => {
+          requestAnimationFrame(() => {
+            this.viewport.checkViewportSize();
+
+            // Step 3: Scroll after layout is fully calculated
+            setTimeout(() => {
+              this.viewport.scrollToIndex(this.listItems.length - 1, 'smooth');
+            }, 0);
+          });
+        });
+      }
     }
   }
 
@@ -384,8 +523,8 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   formStatus(formState: any, index) {
-    // Optimize form status updates for large datasets
-    if (this.isLargeDataset) {
+    // Only optimize form status updates for very large datasets
+    if (this.isLargeDataset && this.listItems.length > 3000) {
       this.zone.runOutsideAngular(() => {
         this.items[index].status = formState.status;
         this.zone.run(() => {
@@ -515,36 +654,52 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   appendFileData(event) {
+    // Mark this as a file import operation
+    this.isFileImportOperation = true;
+
     // Show loading indicator for large file imports
-    if (event.fileData && event.fileData.length > this.LARGE_DATASET_THRESHOLD) {
+    if (event.fileData && event.fileData.length > 1000) {
       this.isLoadingLargeDataset = true;
+      this.formStatusEvent.emit({ status: false, group: this.group, loading: true });
       this.cdRef.detectChanges();
 
       // Process large file data in chunks
       this.processLargeFileData(event.fileData, false);
     } else {
+      // Process normally for smaller files - this fixes the preview issue
       event.fileData.forEach(element => {
         this.initListItem(false, element);
       });
+      this.cdRef.detectChanges();
+      // Reset file import flag
+      this.isFileImportOperation = false;
     }
   }
 
   overrideFileData(event) {
+    // Mark this as a file import operation
+    this.isFileImportOperation = true;
+
     // Show loading indicator for large file imports
-    if (event.fileData && event.fileData.length > this.LARGE_DATASET_THRESHOLD) {
+    if (event.fileData && event.fileData.length > 1000) {
       this.isLoadingLargeDataset = true;
       this.listItems.clear();
       this.initialProperties = [];
+      this.formStatusEvent.emit({ status: false, group: this.group, loading: true });
       this.cdRef.detectChanges();
 
       // Process large file data in chunks
       this.processLargeFileData(event.fileData, true);
     } else {
+      // Process normally for smaller files - this fixes the preview issue
       this.listItems.clear();
       this.initialProperties = [];
       event.fileData.forEach(element => {
         this.initListItem(false, element);
       });
+      this.cdRef.detectChanges();
+      // Reset file import flag
+      this.isFileImportOperation = false;
     }
   }
 
@@ -552,27 +707,20 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
     this.cdRef.detach();
     this.processingChunk = true;
 
-    // Use conservative chunking for file imports based on FORM_CREATION_THRESHOLD
+    // Use optimized chunking for file imports - same as initial loading
     let chunkSize, delay;
-    if (fileData.length > this.FORM_CREATION_THRESHOLD) {
-      // Use conservative chunking for form creation to prevent crashes
-      if (fileData.length > 10000) {
-        // 10k+ files: very small chunks with longer delays
-        chunkSize = 5;
-        delay = 50;
-      } else if (fileData.length > 5000) {
-        // 5k-10k files: small chunks with moderate delays  
-        chunkSize = 10;
-        delay = 30;
-      } else {
-        // 1k-5k files: moderate chunks with small delays
-        chunkSize = 20;
-        delay = 15;
-      }
+    if (fileData.length > 10000) {
+      // 10k+ files: large chunks with moderate delays
+      chunkSize = 500;
+      delay = 50;
+    } else if (fileData.length > 5000) {
+      // 5k-10k files: medium chunks with small delays  
+      chunkSize = 200;
+      delay = 25;
     } else {
-      // < 1k files: larger chunks with minimal delays
-      chunkSize = 50;
-      delay = 5;
+      // 1k-5k files: smaller chunks with minimal delays
+      chunkSize = 100;
+      delay = 10;
     }
 
     let currentIndex = 0;
@@ -597,7 +745,7 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
             // Use browser idle time for large files
             requestIdleCallback(() => {
               this.zone.run(() => processChunk());
-            }, { timeout: delay + 100 });
+            }, { timeout: delay + 50 });
           } else {
             setTimeout(() => {
               this.zone.run(() => processChunk());
@@ -610,6 +758,11 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
         this.isLoadingLargeDataset = false;
         this.cdRef.reattach();
         this.cdRef.detectChanges();
+
+        // Emit loading complete
+        this.formStatusEvent.emit({ status: this.listItems.valid, group: this.group, loading: false });
+        // Reset file import flag
+        this.isFileImportOperation = false;
       }
     };
 
@@ -625,9 +778,30 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
 
   openExportFileModal() {
     this.hideDropDown();
+
+    // Check if we have a large dataset that needs async processing
+    const dataSize = this.listItems.length;
+
+    if (dataSize > 1000) {
+      // Process large datasets asynchronously to prevent blocking
+      this.zone.runOutsideAngular(() => {
+        setTimeout(() => {
+          this.zone.run(() => {
+            this.prepareListData();
+            this.fileExportModal.toggleModal(true);
+          });
+        }, 10); // Small delay to let UI update
+      });
+    } else {
+      // Process small datasets immediately
+      this.prepareListData();
+      this.fileExportModal.toggleModal(true);
+    }
+  }
+
+  private prepareListData() {
     this.listValues = this.listItems.value;
     this.listValues = uniqWith(this.listValues, isEqual);
-    this.fileExportModal.toggleModal(true);
   }
 
   toggleDropdown() {
@@ -647,53 +821,30 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
   setCurrentView(event) {
     // Smart view switching - only show loading for very large datasets
     const needsViewSwitchingIndicator = this.listItems.length > this.VIEW_SWITCHING_THRESHOLD;
-    const isVeryLargeDataset = this.listItems.length > 4000; // Extra safety for 5k+ data
-    const isExtremelyLarge = this.listItems.length > 8000; // Ultra conservative for 8k+
 
     if (needsViewSwitchingIndicator) {
       this.isViewSwitching = true;
+      this.formStatusEvent.emit({ status: false, group: this.group, loading: true });
       this.cdRef.detectChanges();
 
-      // Use zone.runOutsideAngular for the entire process to prevent blocking
+      // Simplified and faster view switching
       this.zone.runOutsideAngular(() => {
-        // Much longer delay for very large datasets to prevent crashes
-        const initialDelay = isExtremelyLarge ? 500 : (isVeryLargeDataset ? 200 : 50);
-
         setTimeout(() => {
           this.zone.run(() => {
-            // Detach change detection for very large datasets to prevent crashes
-            if (isVeryLargeDataset) {
-              this.cdRef.detach();
+            this.isListView = event.isListView;
+
+            // Expand first item if switching to detailed view with exactly one item
+            if (!this.isListView && this.listItems.length === 1) {
+              setTimeout(() => {
+                this.expandListItem(0);
+              }, 10);
             }
 
-            this.isListView = event.isListView;
+            this.isViewSwitching = false;
+            this.formStatusEvent.emit({ status: this.listItems.valid, group: this.group, loading: false });
+            this.cdRef.detectChanges();
           });
-
-          // Progressive rendering delay - much longer for detailed view with large data
-          const renderDelay = isExtremelyLarge ? 1000 : (isVeryLargeDataset && !event.isListView) ? 600 : 100;
-
-          setTimeout(() => {
-            this.zone.run(() => {
-              // Expand first item if switching to detailed view with exactly one item
-              if (!this.isListView && this.listItems.length === 1) {
-                setTimeout(() => {
-                  this.expandListItem(0);
-                }, 50);
-              }
-
-              // Final delay before hiding indicator
-              setTimeout(() => {
-                // Reattach change detection for very large datasets
-                if (isVeryLargeDataset) {
-                  this.cdRef.reattach();
-                }
-
-                this.isViewSwitching = false;
-                this.cdRef.detectChanges();
-              }, 200);
-            });
-          }, renderDelay);
-        }, initialDelay);
+        }, 50); // Reduced delay for faster switching
       });
     } else {
       // Instant switching for smaller datasets
@@ -703,7 +854,7 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
       if (!this.isListView && this.listItems.length === 1) {
         setTimeout(() => {
           this.expandListItem(0);
-        }, 50);
+        }, 10);
       }
 
       this.cdRef.detectChanges();
