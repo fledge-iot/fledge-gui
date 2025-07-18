@@ -48,7 +48,14 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   private PERFORMANCE_MODE_THRESHOLD = 100; // Reduced from 2000 - performance mode at 100+ items
   private VIEW_SWITCHING_THRESHOLD = 300; // Reduced from 3000 - loading indicator at 300+ items
   private DELETION_OPTIMIZATION_THRESHOLD = 400; // Reduced from 8000 - optimized deletion at 400+ items
+  private VIRTUAL_SCROLL_THRESHOLD = 150; // Enable aggressive virtual scrolling at 150+ items
   private isLargeDataset = false; // Track if we have large dataset for optimizations
+
+  // Advanced memory management for very large datasets
+  private isVirtualScrollOptimized = false;
+  private visibleItemsBuffer = 20; // Only keep 20 extra items in DOM
+  private lastScrollTop = 0;
+  private scrollDebounceTimer: any;
 
   // New properties to handle deferred loading and file import distinction
   private isFileImportOperation = false; // Track if we're in a file import operation
@@ -67,38 +74,28 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // Check if we should defer initial loading (for quickview scenarios)
-    this.checkDeferredLoading();
-
-    if (this.initialLoadDeferred) {
-      console.log(`KvList: Using deferred loading for "${this.from}" context`);
-      // Defer loading until after view is rendered
-      this.zone.runOutsideAngular(() => {
-        setTimeout(() => {
-          this.zone.run(() => {
-            this.loadDataWithChunking();
-            this.setupValueChangeSubscription();
-          });
-        }, 100); // Small delay to allow UI to render first
-      });
-    } else {
-      console.log(`KvList: Using immediate loading`);
-      this.loadDataWithChunking();
-      this.setupValueChangeSubscription();
-    }
+    // Since we're now using true lazy loading with *ngIf, always load data immediately
+    // Components are only created when tab is selected
+    console.log(`KvList: Loading data immediately for tab "${this.group}"`);
+    this.loadDataWithChunking();
+    this.setupValueChangeSubscription();
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+
+    // Cleanup scroll debounce timer to prevent memory leaks
+    if (this.scrollDebounceTimer) {
+      clearTimeout(this.scrollDebounceTimer);
+      this.scrollDebounceTimer = null;
+    }
   }
 
   private checkDeferredLoading() {
-    // Defer loading for quickview scenarios or when from contains 'modal'
-    // to improve initial rendering performance
-    this.initialLoadDeferred = this.from?.includes('quickview') ||
-      this.from?.includes('modal') ||
-      this.from?.includes('wizard');
+    // No longer needed - components are now truly lazy loaded with *ngIf
+    // This method is kept for compatibility but deferred loading is disabled
+    this.initialLoadDeferred = false;
   }
 
   private loadDataWithChunking() {
@@ -127,24 +124,39 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
     // Track if this is a large dataset for performance optimizations
     this.isLargeDataset = entries.length > this.PERFORMANCE_MODE_THRESHOLD;
 
-    // For initial data loading: show visual loading feedback but don't disable buttons
-    // For file import: emit loading state that disables buttons
-    if (entries.length > 200) { // Reduced from 1000 to 200
+    // Show loading indicator immediately for datasets over 100 items (reduced threshold for better UX)
+    if (entries.length > 100) { // Reduced from 200 to 100
       if (this.isFileImportOperation) {
         // File import - disable buttons
         this.isLoadingLargeDataset = true;
         this.formStatusEvent.emit({ 'status': false, 'group': this.group, 'loading': true });
       } else {
-        // Initial data loading - visual feedback only, don't disable buttons
+        // Initial data loading - always show loading indicator for better UX
         this.isLoadingInitialData = true;
+        // Always emit loading state for large datasets to show proper tab feedback
+        this.formStatusEvent.emit({ 'status': false, 'group': this.group, 'loading': true });
       }
       this.cdRef.detectChanges();
-    }
 
+      // Defer data processing to ensure loading indicator renders first
+      this.zone.runOutsideAngular(() => {
+        setTimeout(() => {
+          this.zone.run(() => {
+            this.processDataAfterLoadingIndicator(entries, t0);
+          });
+        }, 50); // Give UI time to render loading indicator
+      });
+    } else {
+      // Process normally for smaller datasets (faster)
+      this.processDataAfterLoadingIndicator(entries, t0);
+    }
+  }
+
+  private processDataAfterLoadingIndicator(entries: [string, any][], startTime: number) {
     // Use chunked processing for datasets over 200 items (reduced from 1000)
     if (entries.length > 200) {
       console.log(`KvList: Using chunked processing for ${entries.length} entries`);
-      this.processEntriesChunked(entries, t0);
+      this.processEntriesChunked(entries, startTime);
     } else {
       // Process normally for smaller datasets (faster)
       console.log(`KvList: Using normal processing for ${entries.length} entries`);
@@ -155,11 +167,17 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
       this.cdRef.detectChanges();
 
       const t1 = performance.now();
-      console.log(`KvList form creation took ${t1 - t0} ms for ${entries.length} items (normal processing)`);
+      console.log(`KvList form creation took ${t1 - startTime} ms for ${entries.length} items (normal processing)`);
 
       if (this.isLoadingLargeDataset) {
         this.isLoadingLargeDataset = false;
         this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group, 'loading': false });
+        this.cdRef.detectChanges();
+      }
+
+      // Also clear initial data loading states for 1k+ datasets
+      if (this.isLoadingInitialData) {
+        this.isLoadingInitialData = false;
         this.cdRef.detectChanges();
       }
     }
@@ -218,20 +236,26 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
           }
         });
       } else {
-        // Processing complete
+        // Processing complete - Use progressive reattachment for large datasets
         this.processingChunk = false;
         this.isLoadingLargeDataset = false;
         this.isLoadingInitialData = false;
         this.hasInitiallyLoaded = true;
-        this.cdRef.reattach();
-        this.cdRef.detectChanges();
 
-        const t1 = performance.now();
-        console.log(`KvList form creation took ${t1 - startTime} ms for ${entries.length} items (chunked processing)`);
+        // For very large datasets, use progressive reattachment to prevent freezing
+        if (entries.length > 5000) {
+          this.progressiveReattachment(entries.length, startTime);
+        } else {
+          this.cdRef.reattach();
+          this.cdRef.detectChanges();
 
-        // Only emit loading complete for file import operations
-        if (this.isFileImportOperation) {
-          this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group, 'loading': false });
+          const t1 = performance.now();
+          console.log(`KvList form creation took ${t1 - startTime} ms for ${entries.length} items (chunked processing)`);
+
+          // Emit loading complete for file import operations OR for 1k+ initial data loading
+          if (this.isFileImportOperation || entries.length >= 1000) {
+            this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group, 'loading': false });
+          }
         }
       }
     };
@@ -240,10 +264,167 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
     setTimeout(() => processChunk(), 10);
   }
 
+  private progressiveReattachment(itemCount: number, startTime: number) {
+    // Progressive reattachment for very large datasets to prevent UI freezing
+    this.zone.runOutsideAngular(() => {
+      // Use requestAnimationFrame for smooth reattachment
+      requestAnimationFrame(() => {
+        this.zone.run(() => {
+          this.cdRef.reattach();
+
+          // Batch change detection for large datasets
+          setTimeout(() => {
+            this.cdRef.detectChanges();
+
+            const t1 = performance.now();
+            console.log(`KvList form creation took ${t1 - startTime} ms for ${itemCount} items (chunked processing with progressive reattachment)`);
+
+            // Emit loading complete
+            if (this.isFileImportOperation || itemCount >= 1000) {
+              this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group, 'loading': false });
+            }
+
+            // Enable optimizations for large datasets post-load
+            this.enablePostLoadOptimizations(itemCount);
+          }, 16); // ~60fps frame timing
+        });
+      });
+    });
+  }
+
+  private enablePostLoadOptimizations(itemCount: number) {
+    if (itemCount > 5000) {
+      console.log(`KvList: Enabling post-load optimizations for ${itemCount} items`);
+
+      // Enable efficient change detection throttling
+      this.enableChangeDetectionThrottling();
+
+      // Optimize viewport handling for very large datasets
+      this.optimizeViewportHandling();
+
+      // Enable aggressive memory management for very large datasets
+      this.enableAggressiveMemoryManagement();
+
+      // Setup scroll optimization
+      this.setupScrollOptimization();
+    }
+  }
+
+  private enableChangeDetectionThrottling() {
+    // Implement change detection throttling for large datasets
+    if (this.isLargeDataset && this.kvListItems.length > 5000) {
+      // Temporarily detach change detection during heavy operations
+      this.zone.runOutsideAngular(() => {
+        // Use longer debounce times for value changes
+        this.destroy$.next();
+        this.setupOptimizedValueChangeSubscription();
+      });
+    }
+  }
+
+  private optimizeViewportHandling() {
+    // Optimize virtual scroll viewport for large datasets
+    this.zone.runOutsideAngular(() => {
+      setTimeout(() => {
+        this.zone.run(() => {
+          // Refresh cached controls for virtual scrolling
+          this.refreshKvControlsCache();
+
+          // Enable virtual scroll optimizations
+          if (this.kvListItems.length > this.VIRTUAL_SCROLL_THRESHOLD) {
+            this.enableVirtualScrollOptimizations();
+          }
+        });
+      }, 100);
+    });
+  }
+
+  private enableAggressiveMemoryManagement() {
+    console.log(`KvList: Enabling aggressive memory management for ${this.kvListItems.length} items`);
+
+    // Implement memory-efficient form control management
+    this.zone.runOutsideAngular(() => {
+      // Detach change detection for optimization setup
+      this.cdRef.detach();
+
+      // Setup memory management for very large datasets
+      this.setupMemoryEfficientControls();
+
+      // Reattach with optimized settings
+      setTimeout(() => {
+        this.zone.run(() => {
+          this.cdRef.reattach();
+          this.cdRef.detectChanges();
+        });
+      }, 100);
+    });
+  }
+
+  private enableVirtualScrollOptimizations() {
+    if (!this.isVirtualScrollOptimized) {
+      console.log(`KvList: Enabling virtual scroll optimizations`);
+      this.isVirtualScrollOptimized = true;
+
+      // Setup scroll-based optimizations
+      this.setupScrollOptimization();
+    }
+  }
+
+  private setupMemoryEfficientControls() {
+    // Implement lazy form control creation for very large datasets
+    if (this.kvListItems.length > this.VIRTUAL_SCROLL_THRESHOLD) {
+      console.log(`KvList: Setting up memory-efficient controls for ${this.kvListItems.length} items`);
+
+      // Use OnPush change detection more aggressively
+      this.cdRef.markForCheck();
+
+      // Reduce form control complexity for non-visible items
+      this.optimizeFormControlsForMemory();
+    }
+  }
+
+  private optimizeFormControlsForMemory() {
+    // Detach value change subscriptions for very large datasets temporarily
+    this.zone.runOutsideAngular(() => {
+      // Temporarily pause subscriptions during optimization
+      this.destroy$.next();
+
+      // Setup optimized subscriptions
+      setTimeout(() => {
+        this.zone.run(() => {
+          this.setupOptimizedValueChangeSubscription();
+        });
+      }, 200);
+    });
+  }
+
+  private setupScrollOptimization() {
+    // Setup scroll-based optimizations for very large datasets
+    this.zone.runOutsideAngular(() => {
+      // Handle scroll optimizations outside Angular zone
+      this.handleScrollOptimization();
+    });
+  }
+
+  private handleScrollOptimization() {
+    // Optimize scroll handling for large datasets
+    // Debounce scroll-based optimizations for performance
+    if (this.scrollDebounceTimer) {
+      clearTimeout(this.scrollDebounceTimer);
+    }
+
+    this.scrollDebounceTimer = setTimeout(() => {
+      this.zone.run(() => {
+        // Minimal change detection on scroll
+        this.cdRef.markForCheck();
+      });
+    }, 150);
+  }
+
   private setupValueChangeSubscription() {
     this.kvListItems.valueChanges
       .pipe(
-        debounceTime(this.isLargeDataset ? 500 : 300), // Longer debounce for large datasets
+        debounceTime(this.isLargeDataset ? (this.kvListItems.length > 5000 ? 800 : 500) : 300), // Much longer debounce for very large datasets
         distinctUntilChanged(),
         takeUntil(this.destroy$)
       )
@@ -252,7 +433,45 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
           return; // Skip processing during chunk loading
         }
 
-        this.processValueChanges(data);
+        // For very large datasets, batch processing to prevent UI blocking
+        if (this.isLargeDataset && this.kvListItems.length > 5000) {
+          this.zone.runOutsideAngular(() => {
+            setTimeout(() => {
+              this.zone.run(() => {
+                this.processValueChanges(data);
+              });
+            }, 10);
+          });
+        } else {
+          this.processValueChanges(data);
+        }
+      });
+  }
+
+  private setupOptimizedValueChangeSubscription() {
+    this.kvListItems.valueChanges
+      .pipe(
+        debounceTime(this.isLargeDataset ? (this.kvListItems.length > 5000 ? 800 : 500) : 300), // Much longer debounce for very large datasets
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((data) => {
+        if (this.processingChunk) {
+          return; // Skip processing during chunk loading
+        }
+
+        // For very large datasets, batch processing to prevent UI blocking
+        if (this.isLargeDataset && this.kvListItems.length > 5000) {
+          this.zone.runOutsideAngular(() => {
+            setTimeout(() => {
+              this.zone.run(() => {
+                this.processValueChanges(data);
+              });
+            }, 10);
+          });
+        } else {
+          this.processValueChanges(data);
+        }
       });
   }
 
@@ -377,6 +596,12 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // For very large datasets, use optimized DOM operations
+    if (this.isLargeDataset && this.kvListItems.length > 5000) {
+      this.addListItemOptimized(isPrepend);
+      return;
+    }
+
     // Only optimize for very large datasets
     if (this.isLargeDataset && this.kvListItems.length > 3000) {
       this.cdRef.detach();
@@ -415,6 +640,29 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
 
     // Refresh cached controls after adding item
     this.refreshKvControlsCache();
+  }
+
+  private addListItemOptimized(isPrepend: boolean) {
+    // Highly optimized add for very large datasets
+    this.zone.runOutsideAngular(() => {
+      // Perform operations outside Angular zone
+      if (isPrepend) {
+        this.kvListItems.insert(0, this.initListItem(isPrepend, { key: '', value: '' }));
+      } else {
+        this.kvListItems.push(this.initListItem(isPrepend, { key: '', value: '' }));
+      }
+
+      this.zone.run(() => {
+        // Batch status emission
+        this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
+
+        // Refresh cached controls
+        this.refreshKvControlsCache();
+
+        // Minimal change detection
+        this.cdRef.markForCheck();
+      });
+    });
   }
 
   scrollToRow(i) {

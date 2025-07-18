@@ -147,7 +147,7 @@ export class FileImportModalComponent {
                 this.file.isValid = false;
               }
             }
-          } else {
+          } else if (this.file.extension == 'json') {
             // JSON file processing
             if (isLargeFile) {
               // Use optimized JSON import for large files

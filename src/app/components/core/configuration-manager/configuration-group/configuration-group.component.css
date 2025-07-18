@@ -95,6 +95,25 @@
   border-bottom-color: #f14668 !important;
 }
 
+/* Fix double line issue - ensure only invalid tabs have red border */
+.tabs li a.invalid-tab {
+  border-bottom: 1px solid #f14668 !important;
+}
+
+/* Ensure loading tabs don't show invalid styling */
+.tabs li a:not(.invalid-tab) {
+  border-bottom-color: transparent;
+}
+
+/* Override for boxed tabs - only show red border when actually invalid */
+.tabs.is-boxed li.is-active a:not(.invalid-tab) {
+  border-bottom-color: #dbdbdb;
+}
+
+.tabs.is-boxed li.is-active a.invalid-tab {
+  border-bottom-color: #f14668 !important;
+}
+
 .tabs .is-active {
   z-index: 1;
   position: relative;

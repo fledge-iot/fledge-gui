@@ -447,14 +447,25 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     if (!groupObject) {
       groupObject = this.dynamicCategoriesGroup.find((g: any) => g.group.key === formState.group)
     }
-    // Set the status of respected tab
+    // Set the status of respected tab - handle loading state properly
     if (groupObject) {
-      groupObject.status = formState.status;
+      // Don't mark as invalid during loading state
+      if (formState.loading) {
+        groupObject.loading = true;
+        // Keep previous status during loading, don't set to false
+        if (groupObject.status === undefined) {
+          groupObject.status = true; // Default to valid during loading
+        }
+      } else {
+        groupObject.loading = false;
+        groupObject.status = formState.status;
+      }
     }
 
     const groupTabFormsStatus = this.groups.concat(this.dynamicCategoriesGroup);
     // check the condition for every element to see if all groups have valid status
-    const formStatus = groupTabFormsStatus.every(g => (g.status === true || g.status === undefined));
+    // Exclude loading groups from validation check
+    const formStatus = groupTabFormsStatus.every(g => (g.status === true || g.status === undefined || g.loading === true));
     this.formStatusEvent.emit(formStatus);
   }
 
