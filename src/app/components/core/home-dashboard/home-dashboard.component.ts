@@ -759,19 +759,16 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
         if (this.pingData) {
             if (this.pingData['health'] === 'green') {
                 this.pingData['healthInfo'] = 'Healthy';
-                return 'has-text-success';
+                return 'is-success';
             }
             if (this.pingData['health'] === 'amber') {
                 this.pingData['healthInfo'] = 'Degraded';
-                return 'has-text-warning';
+                return 'is-warning';
             }
             if (this.pingData['health'] === 'red' || !ping_info.isAlive) {
                 this.pingData['healthInfo'] = 'Critical';
-                return 'has-text-danger';
+                return 'is-danger';
             }
-        } else {
-            this.pingData['healthInfo'] = 'Critical';
-            return 'has-text-danger';
         }
     }
 
@@ -2069,5 +2066,30 @@ export class HomeDashboardComponent implements OnInit, OnDestroy, AfterViewInit 
             default:
                 return 'HH:mm:ss';
         }
+    }
+
+    // Helper method to calculate character length for responsive font sizing
+    getNumberLength(value: number | string): number {
+        if (value === null || value === undefined || value === '') return 1;
+
+        try {
+            // Convert to number if it's a string
+            const numValue = typeof value === 'string' ? parseFloat(value) : value;
+
+            // Handle invalid numbers
+            if (isNaN(numValue)) return 1;
+
+            // Format the number with commas using Angular's number pipe format
+            const formattedNumber = new Intl.NumberFormat('en-US').format(numValue);
+            return Math.max(1, formattedNumber.length); // Ensure minimum length of 1
+        } catch (error) {
+            console.warn('Error calculating number length:', error);
+            return 1; // Fallback to smallest size
+        }
+    }
+
+    // Method to get data-length attribute value for responsive font sizing
+    getDataLength(value: number | string): string {
+        return this.getNumberLength(value).toString();
     }
 } 

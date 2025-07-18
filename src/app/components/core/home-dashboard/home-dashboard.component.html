@@ -36,7 +36,9 @@
                         </div>
                         <div class="media-content">
                             <div class="title-section">
-                                <p class="title is-4 has-text-dark">{{ statsSummary().totalSouthServices }}</p>
+                                <p class="title is-4 has-text-dark"
+                                    [attr.data-length]="getDataLength(statsSummary().totalSouthServices)">{{
+                                    statsSummary().totalSouthServices }}</p>
                                 <p class="subtitle is-6 has-text-grey-dark">Data Sources</p>
                             </div>
                         </div>
@@ -56,7 +58,9 @@
                         </div>
                         <div class="media-content">
                             <div class="title-section">
-                                <p class="title is-4 has-text-dark">{{ statsSummary().totalAssets }}</p>
+                                <p class="title is-4 has-text-dark"
+                                    [attr.data-length]="getDataLength(statsSummary().totalAssets)">{{
+                                    statsSummary().totalAssets }}</p>
                                 <p class="subtitle is-6 has-text-grey-dark">Total Assets</p>
                             </div>
                         </div>
@@ -74,7 +78,9 @@
                         </div>
                         <div class="media-content">
                             <div class="title-section">
-                                <p class="title is-4 has-text-dark">{{ statsSummary().totalDatapoints | number }}</p>
+                                <p class="title is-4 has-text-dark"
+                                    [attr.data-length]="getDataLength(statsSummary().totalDatapoints)">{{
+                                    statsSummary().totalDatapoints | number }}</p>
                                 <p class="subtitle is-6 has-text-grey-dark">Total Datapoints</p>
                             </div>
                         </div>
@@ -102,7 +108,9 @@
                         </div>
                         <div class="media-content">
                             <div class="title-section">
-                                <p class="title is-4 has-text-dark">{{ statsSummary().totalNorthServices }}</p>
+                                <p class="title is-4 has-text-dark"
+                                    [attr.data-length]="getDataLength(statsSummary().totalNorthServices)">{{
+                                    statsSummary().totalNorthServices }}</p>
                                 <p class="subtitle is-6 has-text-grey-dark">Integrations</p>
                             </div>
                         </div>
@@ -124,13 +132,9 @@
                         </div>
                         <div class="media-content">
                             <div class="title-section">
-                                <p class="title is-4 has-text-dark">
+                                <p class="title is-4 has-text-dark"
+                                    [attr.data-length]="getDataLength(statsSummary().receivedCount)">
                                     {{ statsSummary().receivedCount | number }}
-                                    <!-- <span class="icon is-small ml-2 has-text-info"
-                                        [title]="statsSummary().receivedCount + ' readings received'"
-                                        style="cursor: help;">
-                                        <i class="bi bi-info-circle" style="font-size: 0.8rem;"></i>
-                                    </span> -->
                                 </p>
                                 <p class="subtitle is-6 has-text-grey-dark">Readings Received</p>
                             </div>
@@ -151,7 +155,9 @@
                         </div>
                         <div class="media-content">
                             <div class="title-section">
-                                <p class="title is-4 has-text-dark">{{ statsSummary().alertsCount | number }}</p>
+                                <p class="title is-4 has-text-dark"
+                                    [attr.data-length]="getDataLength(statsSummary().alertsCount)">{{
+                                    statsSummary().alertsCount | number }}</p>
                                 <p class="subtitle is-6 has-text-grey-dark">Active Alerts</p>
                             </div>
                         </div>
@@ -225,12 +231,14 @@
                     <div class="media">
                         <div class="media-left">
                             <span class="icon is-large has-text-danger">
-                                <i class="fa fa-eraser" style="font-size: 2rem;"></i>
+                                <i class="bi bi-eraser" style="font-size: 2rem;"></i>
                             </span>
                         </div>
                         <div class="media-content">
                             <div class="title-section">
-                                <p class="title is-4 has-text-dark">{{ statsSummary().purgedCount | number }}</p>
+                                <p class="title is-4 has-text-dark"
+                                    [attr.data-length]="getDataLength(statsSummary().purgedCount)">{{
+                                    statsSummary().purgedCount | number }}</p>
                                 <p class="subtitle is-6 has-text-grey-dark">Purged Readings</p>
                             </div>
                         </div>
@@ -248,7 +256,9 @@
                         </div>
                         <div class="media-content">
                             <div class="title-section">
-                                <p class="title is-4 has-text-dark">{{ statsSummary().sentCount | number }}</p>
+                                <p class="title is-4 has-text-dark"
+                                    [attr.data-length]="getDataLength(statsSummary().sentCount)">{{
+                                    statsSummary().sentCount | number }}</p>
                                 <p class="subtitle is-6 has-text-grey-dark">Sent Readings</p>
                             </div>
                         </div>
@@ -557,8 +567,8 @@
                     </h2>
                 </div>
                 <div class="column is-narrow" *ngIf="showSystemHealth()">
-                    <span class="tag" [class]="applyPingStatusCustomCss(pingData)">
-                        {{ pingData.healthInfo | titlecase }}
+                    <span class="tag is-light" [class]="applyPingStatusCustomCss(pingData)">
+                        {{ pingData?.healthInfo | titlecase }}
                     </span>
                 </div>
             </div>
@@ -696,7 +706,7 @@
                                             {{ service.lastError.message | slice:0:50 }}{{
                                             service.lastError.message.length > 50 ? '...' : '' }}
                                         </span>
-                                        <span *ngIf="!service.lastError">No recent errors</span>
+                                        <span *ngIf="!service.lastError" class="has-text-grey">No recent errors</span>
                                     </td>
                                 </tr>
                             </tbody>
