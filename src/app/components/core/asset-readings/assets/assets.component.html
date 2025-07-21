@@ -1,11 +1,13 @@
 <div class="container is-fluid">
   <div class="card">
     <div>
-      <span class="icon is-small tooltip has-tooltip-left has-tooltip-arrow tooltip-help is-pulled-right is-hovered" data-tooltip="Help"
-        (click)="goToLink()">
+      <span class="icon is-small tooltip has-tooltip-left has-tooltip-arrow tooltip-help is-pulled-right is-hovered"
+        data-tooltip="Help" (click)="goToLink()">
         <i class="far fa-question-circle"></i>
       </span>
-      <span *ngIf="!isAlive" class="icon is-small is-pulled-right is-hovered assets-control has-tooltip-left has-tooltip-arrow tooltip" data-tooltip="Reload" (click)="getAsset()">
+      <span *ngIf="!isAlive"
+        class="icon is-small is-pulled-right is-hovered assets-control has-tooltip-left has-tooltip-arrow tooltip"
+        data-tooltip="Reload" (click)="getAsset()">
         <i class="fa fa-sm fa-sync-alt" aria-hidden="true"></i>
       </span>
       <ng-container *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()">
@@ -46,21 +48,36 @@
                   <td><span class="is-pulled-right">{{asset.count | number}}</span></td>
                   <td>
                     <a (click)="showAssetChart(asset.assetCode)" class="is-pulled-right">
-                      <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Readings graph">
+                      <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow"
+                        data-tooltip="Readings graph">
                         <i class="fa fa-sm fa-chart-line" aria-hidden="true"></i>
                       </span>
                     </a>
                   </td>
                   <td>
-                    <a (click)="showLatestReading(asset.assetCode)" class="is-pulled-right">
-                      <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Most recent reading">
-                        <i class="fa fa-sm fa-bolt" aria-hidden="true"></i>
-                      </span>
-                    </a>
+                    <div class="popover is-popover-right">
+                      <a class="is-pulled-right popover-trigger" (mouseenter)="loadLatestReading(asset.assetCode)">
+                        <span class="icon is-small">
+                          <i class="fa fa-sm fa-bolt" aria-hidden="true"></i>
+                        </span>
+                      </a>
+                      <div class="popover-content">
+                        <div class="content">
+                          <div class="has-text-weight-medium mb-2">Most recent reading</div>
+                          <ng-container *ngFor="let item of getLatestReadingForDisplay(asset.assetCode)">
+                            <div class="mb-1">
+                              <span class="has-text-weight-medium">{{item.label}}:</span>
+                              <span class="has-text-weight-normal ml-1">{{item.value}}</span>
+                            </div>
+                          </ng-container>
+                        </div>
+                      </div>
+                    </div>
                   </td>
                   <td>
                     <a (click)="getAssetReadings(asset.assetCode, asset.count)" class="is-pulled-right">
-                      <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Export readings">
+                      <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow"
+                        data-tooltip="Export readings">
                         <i class="fa fa-sm fa-download" aria-hidden="true"></i>
                       </span>
                     </a>

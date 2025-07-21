@@ -23,6 +23,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   public isAlive: boolean;
   assetReadings = [];
   selectedAssetName = '';
+  latestReadings: { [key: string]: any } = {};  // Store latest readings for each asset
 
   @ViewChild(ReadingsGraphComponent, { static: true }) readingsGraphComponent: ReadingsGraphComponent;
 
@@ -85,6 +86,60 @@ export class AssetsComponent implements OnInit, OnDestroy {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public loadLatestReading(assetCode: string): void {
+    this.assetService.getLatestReadings(assetCode)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (data: any[]) => {
+          if (data && data.length > 0) {
+            const latestReading = data[0];
+            this.latestReadings[assetCode] = {
+              reading: latestReading.reading || {},
+              timestamp: latestReading.timestamp || new Date().toISOString()
+            };
+          }
+        },
+        error => {
+          console.log('error fetching latest reading', error);
+          // Provide fallback data in case of error
+          this.latestReadings[assetCode] = {
+            reading: { error: "Unable to load" },
+            timestamp: "N/A"
+          };
+        }
+      );
+  }
+
+  public getLatestReadingData(assetCode: string): any {
+    return this.latestReadings[assetCode] || {
+      reading: { loading: "..." },
+      timestamp: "Loading..."
+    };
+  }
+
+  public getLatestReadingForDisplay(assetCode: string): any[] {
+    const data = this.getLatestReadingData(assetCode);
+    const displayItems = [];
+
+    // Add timestamp first
+    displayItems.push({
+      label: 'Timestamp',
+      value: data.timestamp
+    });
+
+    // Add reading values
+    if (data.reading && typeof data.reading === 'object') {
+      Object.keys(data.reading).forEach(key => {
+        displayItems.push({
+          label: key,
+          value: data.reading[key]
+        });
+      });
+    }
+
+    return displayItems;
   }
 
   getAssetReadings(assetCode, recordCount) {
