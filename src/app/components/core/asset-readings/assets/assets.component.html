@@ -12,7 +12,7 @@
         <span *ngIf="assets?.length > 0"
           class="icon is-small tooltip has-tooltip-left has-tooltip-arrow tooltip-help is-pulled-right is-hovered assets-control"
           data-tooltip="Purge assets data" (click)="openModal('purge-all-assets-dialog')">
-          <i class="bi bi-eraser"></i>
+          <i class="bi bi-lg bi-eraser"></i>
         </span>
       </ng-container>
     </div>
@@ -47,21 +47,21 @@
                   <td>
                     <a (click)="showAssetChart(asset.assetCode)" class="is-pulled-right">
                       <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Readings graph">
-                        <i class="fa fa-sm fa-chart-line" aria-hidden="true"></i>
+                        <i class="bi bi-sm bi-graph-up" aria-hidden="true"></i>
                       </span>
                     </a>
                   </td>
                   <td>
                     <a (click)="showLatestReading(asset.assetCode)" class="is-pulled-right">
                       <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Most recent reading">
-                        <i class="fa fa-sm fa-bolt" aria-hidden="true"></i>
+                        <i class="bi bi-lightning-charge" aria-hidden="true"></i>
                       </span>
                     </a>
                   </td>
                   <td>
                     <a (click)="getAssetReadings(asset.assetCode, asset.count)" class="is-pulled-right">
                       <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Export readings">
-                        <i class="fa fa-sm fa-download" aria-hidden="true"></i>
+                        <i class="bi bi-download" aria-hidden="true"></i>
                       </span>
                     </a>
                   </td>
@@ -69,7 +69,7 @@
                     *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()">
                     <a (click)="setAsset(asset);openModal('purge-asset-dialog')" class="is-pulled-right">
                       <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Purge data">
-                        <i class="bi bi-sm bi-eraser" aria-hidden="true"></i>
+                        <i class="bi bi-eraser" aria-hidden="true"></i>
                       </span>
                     </a>
                   </td>
@@ -91,11 +91,11 @@
             </table>
             <app-confirmation-dialog id="purge-all-assets-dialog">
               <header class="modal-card-head">
-                <span class="modal-card-title is-size-6">Delete</span>
+                <span class="modal-card-title is-size-6">Purge assets data</span>
                 <button class="delete" aria-label="close" (click)="closeModal('purge-all-assets-dialog')"></button>
               </header>
               <section class="modal-card-body">
-                Are you sure, All buffered assets will be removed if this action is continued?
+                Are you sure? All stored asset names and associated data will be removed if you continue with this action.
               </section>
               <footer class="modal-card-foot">
                 <button class="button is-small" (click)="closeModal('purge-all-assets-dialog')">Cancel</button>

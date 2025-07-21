@@ -193,7 +193,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
         () => {
           /** request completed */
           this.ngProgress.done();
-          this.alertService.success(`All buffered assets removed successfully.`);
+          this.alertService.success(`Successfully purged all stored asset names and associated data.`);
           this.closeModal('purge-all-assets-dialog');
           this.getAsset();
         }, error => {
