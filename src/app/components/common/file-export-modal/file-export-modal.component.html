@@ -9,36 +9,28 @@
       <button class="delete" aria-label="close" (click)="formReset()"></button>
     </header>
     <section class="modal-card-body pl-1">
-      <!-- Loading indicator during export processing -->
-      <div *ngIf="isExporting" class="has-text-centered p-5">
-        <div class="spinner-small"></div>
-        <p class="mt-3">Processing export...</p>
-      </div>
-
       <!-- Export format selection -->
-      <div *ngIf="!isExporting">
-        <div class="field is-horizontal">
-          <div class="field-label has-text-left column is-4">
-            <label class="label">Format</label>
-          </div>
-          <div class="field-body column is-2">
-            <div [id]="'format-dropdown-' + configuration.key" class="dropdown">
-              <div class="dropdown-trigger">
-                <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                  (click)="toggleDropDown('format-dropdown-' + configuration.key)">
-                  <span>{{format | uppercase}}</span>
-                  <span class="icon is-small">
-                    <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
-                  </span>
-                </button>
-              </div>
-              <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                <div class="dropdown-content">
-                  <a class="dropdown-item"
-                    (click)="toggleDropDown('format-dropdown-' + configuration.key);setformat('csv')">CSV</a>
-                  <a class="dropdown-item"
-                    (click)="toggleDropDown('format-dropdown-' + configuration.key);setformat('json')">JSON</a>
-                </div>
+      <div class="field is-horizontal">
+        <div class="field-label has-text-left column is-4">
+          <label class="label">Format</label>
+        </div>
+        <div class="field-body column is-2">
+          <div [id]="'format-dropdown-' + configuration.key" class="dropdown">
+            <div class="dropdown-trigger">
+              <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
+                (click)="toggleDropDown('format-dropdown-' + configuration.key)">
+                <span>{{format | uppercase}}</span>
+                <span class="icon is-small">
+                  <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                </span>
+              </button>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu" role="menu">
+              <div class="dropdown-content">
+                <a class="dropdown-item"
+                  (click)="toggleDropDown('format-dropdown-' + configuration.key);setformat('csv')">CSV</a>
+                <a class="dropdown-item"
+                  (click)="toggleDropDown('format-dropdown-' + configuration.key);setformat('json')">JSON</a>
               </div>
             </div>
           </div>
@@ -48,7 +40,7 @@
 
     <footer class="modal-card-foot p-4">
       <div class="button-container" style="position: relative; display: inline-block;">
-        <button class="button is-small is-link is-outlined" [disabled]="isExporting" (click)="exportFile()">
+        <button class="button is-small is-link is-outlined" [disabled]="isExporting || !data" (click)="exportFile()">
           Export
         </button>
         <div *ngIf="isExporting" class="loading-overlay">

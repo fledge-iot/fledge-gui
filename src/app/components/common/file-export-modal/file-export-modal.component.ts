@@ -68,6 +68,9 @@ export class FileExportModalComponent {
   }
 
   private processExport() {
+    if (!this.data) {
+      return;
+    }
     if (this.format == 'json') {
       let jsonData;
       if (this.configuration.type == 'list') {
