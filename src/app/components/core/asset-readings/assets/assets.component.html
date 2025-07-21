@@ -12,7 +12,7 @@
         <span *ngIf="assets?.length > 0"
           class="icon is-small tooltip has-tooltip-left has-tooltip-arrow tooltip-help is-pulled-right is-hovered assets-control"
           data-tooltip="Purge assets data" (click)="openModal('purge-all-assets-dialog')">
-          <i class="fa fa-eraser"></i>
+          <i class="bi bi-eraser"></i>
         </span>
       </ng-container>
     </div>
@@ -69,7 +69,7 @@
                     *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()">
                     <a (click)="setAsset(asset);openModal('purge-asset-dialog')" class="is-pulled-right">
                       <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow" data-tooltip="Purge data">
-                        <i class="fa fa-sm fa-eraser" aria-hidden="true"></i>
+                        <i class="bi bi-sm bi-eraser" aria-hidden="true"></i>
                       </span>
                     </a>
                   </td>
