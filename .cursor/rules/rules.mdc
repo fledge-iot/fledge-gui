@@ -1,0 +1,131 @@
+---
+description: Fledge GUI project-specific development rules and patterns for IoT edge computing interface
+globs: src/**/*.ts,src/**/*.html,src/**/*.css
+alwaysApply: true
+---
+
+# Fledge GUI Project Rules
+
+## 🏗️ Application Architecture
+
+### Component Organization
+- Follow feature-based structure: `components/core/{feature}/` for business logic components
+- Use `components/common/` for reusable UI components across features
+- Place layout components in `components/layout/` (navbar, footer, login, etc.)
+- Organize by domain: asset-readings, configuration-manager, north/south services
+
+### Service Layer Patterns
+- Create dedicated services for each Fledge API domain (assets, config, auth, etc.)
+- Use reactive patterns with RxJS for real-time data streams (asset readings, system status)
+- Implement proper error handling for API failures with user-friendly messages
+- Cache configuration data and invalidate appropriately
+
+## 🔌 IoT & Fledge-Specific Patterns
+
+### Real-time Data Handling
+- Use WebSocket connections or polling for live asset readings
+- Implement proper subscription management to prevent memory leaks
+- Buffer and batch updates for high-frequency sensor data
+- Handle connection interruptions gracefully with retry logic
+
+### Configuration Management
+- Validate configuration schemas before submission
+- Provide clear feedback for configuration errors
+- Support dynamic configuration updates without restarts
+- Handle complex nested configuration objects properly
+
+### Asset & Reading Management
+- Display time-series data with appropriate charts and visualizations
+- Implement efficient data pagination for large datasets
+- Support multiple data formats (JSON, CSV export)
+- Handle missing or corrupted reading data gracefully
+
+## 🔐 Security & Authentication
+
+### Access Control
+- Use role-based permissions throughout the application
+- Hide/disable features based on user capabilities
+- Validate permissions on both client and server side
+- Support certificate-based authentication where required
+
+### Data Protection
+- Sanitize all user inputs, especially in configuration forms
+- Use secure communication protocols for sensitive operations
+- Log security events appropriately
+- Handle authentication failures with proper user feedback
+
+## 📊 UI/UX Patterns
+
+### Data Visualization
+- Use consistent chart libraries and styling across features
+- Implement responsive designs for different screen sizes
+- Provide data export capabilities (CSV, JSON, etc.)
+- Show loading states during data fetching operations
+
+### Form Handling
+- Use reactive forms with proper validation
+- Provide real-time validation feedback
+- Handle complex nested form structures (configurations)
+- Support form auto-save where appropriate
+
+### Navigation & Workflow
+- Maintain consistent navigation patterns
+- Provide breadcrumbs for deep navigation
+- Support keyboard navigation where applicable
+- Implement proper routing with guards for protected areas
+
+## 🧪 Testing Strategies
+
+### Component Testing
+- Mock Fledge API services in unit tests
+- Test real-time data scenarios with synthetic data
+- Verify error handling and edge cases
+- Test role-based access control scenarios
+
+### Integration Testing
+- Test complete user workflows (asset creation, configuration, etc.)
+- Verify data flow between components and services
+- Test responsive design across different viewports
+- Validate form submission and error handling
+
+## 🚀 Performance Considerations
+
+### Data Management
+- Implement virtual scrolling for large datasets
+- Use OnPush change detection strategy where possible
+- Lazy load feature modules and components
+- Optimize bundle sizes with proper tree shaking
+
+### Real-time Updates
+- Throttle high-frequency updates to prevent UI blocking
+- Use change detection optimization for live data
+- Implement efficient data structures for time-series data
+- Handle memory management for long-running sessions
+
+## 📝 Code Organization
+
+### File Naming & Structure
+- Use descriptive names that reflect Fledge concepts (south-service, north-task, etc.)
+- Group related files in feature directories
+- Maintain consistent import ordering and structure
+- Use barrel exports (index.ts) for clean imports
+
+### Error Handling
+- Implement consistent error message patterns
+- Provide actionable error messages for users
+- Log detailed errors for debugging while showing user-friendly messages
+- Handle network failures and API timeouts gracefully
+
+## 🔧 Development Workflow
+
+### API Integration
+- Use environment-specific API endpoints
+- Implement proper request/response typing
+- Handle API versioning considerations
+- Mock API responses during development
+
+### Configuration
+- Support multiple deployment environments
+- Use feature flags for experimental functionality
+- Implement proper configuration validation
+- Handle environment-specific settings appropriately 
