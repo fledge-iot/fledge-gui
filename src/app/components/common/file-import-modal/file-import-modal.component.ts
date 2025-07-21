@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { FileImportService } from '../../../services/file-import.service';
 import { ProgressBarService } from '../../../services';
 
@@ -28,6 +28,7 @@ export class FileImportModalComponent {
   @ViewChild('fileImport', { static: true }) fileImport: ElementRef;
   constructor(public fileImportService: FileImportService,
     public ngProgress: ProgressBarService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -50,6 +51,9 @@ export class FileImportModalComponent {
     this.tableData = null;
     this.file = { name: '', extension: '', isLoaded: false, data: null, isValid: true, isValidExtension: true };
     this.fileImport.nativeElement.value = '';
+
+    // Trigger change detection to ensure UI updates immediately
+    this.cdr.detectChanges();
   }
 
   appendFileData() {
@@ -75,12 +79,58 @@ export class FileImportModalComponent {
         // Enable buttons immediately for valid file extensions
         this.file.isLoaded = true;
 
-        try {
-          const fileSizeInMB = files[0].size / (1024 * 1024);
-          const isLargeFile = fileSizeInMB > 1; // Reduced from 5MB to 1MB for more aggressive optimization
+        const fileSizeInMB = files[0].size / (1024 * 1024);
+        const isLargeFile = fileSizeInMB > 1; // Reduced from 5MB to 1MB for more aggressive optimization
 
+        // ALWAYS generate preview data first, regardless of validation
+        try {
           if (this.file.extension == 'csv') {
-            // Use optimized methods for large files
+            // Generate CSV preview
+            const fileContent = await this.fileImportService.getTextFromFile(files);
+            if (isLargeFile) {
+              // For large files, show only first 50 rows
+              const dataRows = fileContent.split('\n').slice(0, 51); // Header + 50 rows
+              this.tableData = dataRows;
+            } else {
+              // For smaller files, show full table data
+              this.tableData = await this.fileImportService.getTableData(files);
+            }
+          } else if (this.file.extension == 'json') {
+            // Generate JSON preview - first parse the file to get preview data
+            try {
+              const jsonText = await this.fileImportService.getTextFromFile(files);
+              const jsonObj = JSON.parse(jsonText);
+
+              if (isLargeFile) {
+                // For large files, show only first 50 entries
+                const limitedData = Array.isArray(jsonObj) ?
+                  jsonObj.slice(0, 50) :
+                  Object.fromEntries(Object.entries(jsonObj).slice(0, 50));
+                this.tableData = this.fileImportService.getJsonTableData(limitedData, this.configuration.type, this.configuration.keyName);
+              } else {
+                // For smaller files, show full data
+                this.tableData = this.fileImportService.getJsonTableData(jsonObj, this.configuration.type, this.configuration.keyName);
+              }
+            } catch (jsonError) {
+              console.warn('JSON parsing error for preview:', jsonError);
+              // Even if JSON is invalid, we can still show something
+              this.tableData = ['Invalid JSON format'];
+            }
+          }
+
+          // Trigger change detection immediately after setting tableData
+          this.cdr.detectChanges();
+        } catch (previewError) {
+          console.warn('Preview generation error:', previewError);
+          this.tableData = ['Error generating preview'];
+          // Trigger change detection even for errors
+          this.cdr.detectChanges();
+        }
+
+        // Now handle validation and data import separately
+        try {
+          if (this.file.extension == 'csv') {
+            // CSV validation and import
             if (isLargeFile) {
               // Use optimized validation with sampling for large files
               try {
@@ -121,11 +171,6 @@ export class FileImportModalComponent {
                   },
                   delayMs // Add delay parameter
                 );
-
-                // Generate limited table data for preview (first 50 rows only)
-                const fileContent = await this.fileImportService.getTextFromFile(files);
-                const dataRows = fileContent.split('\n').slice(0, 51); // Header + 50 rows
-                this.tableData = dataRows;
               } catch (error) {
                 console.warn('CSV import error:', error);
                 this.file.isValid = false;
@@ -140,7 +185,6 @@ export class FileImportModalComponent {
               }
 
               try {
-                this.tableData = await this.fileImportService.getTableData(files);
                 this.file.data = await this.fileImportService.importCsvData(files, this.configuration.type);
               } catch (error) {
                 console.warn('CSV import error:', error);
@@ -148,7 +192,7 @@ export class FileImportModalComponent {
               }
             }
           } else if (this.file.extension == 'json') {
-            // JSON file processing
+            // JSON validation and import
             if (isLargeFile) {
               // Use optimized JSON import for large files
               try {
@@ -178,12 +222,6 @@ export class FileImportModalComponent {
                   },
                   delayMs // Add delay parameter
                 );
-
-                // Generate limited table data for preview (first 50 entries only)
-                const limitedData = Array.isArray(this.file.data) ?
-                  this.file.data.slice(0, 50) :
-                  Object.fromEntries(Object.entries(this.file.data).slice(0, 50));
-                this.tableData = this.fileImportService.getJsonTableData(limitedData, this.configuration.type, this.configuration.keyName);
               } catch (error) {
                 console.warn('JSON import error:', error);
                 this.file.isValid = false;
@@ -199,7 +237,6 @@ export class FileImportModalComponent {
 
               try {
                 this.file.data = await this.fileImportService.importJsonData(files, this.configuration.type);
-                this.tableData = this.fileImportService.getJsonTableData(this.file.data, this.configuration.type, this.configuration.keyName);
               } catch (error) {
                 console.warn('JSON import error:', error);
                 this.file.isValid = false;
@@ -216,6 +253,9 @@ export class FileImportModalComponent {
       }
     }
     this.ngProgress.done();
+
+    // Final change detection to ensure all UI updates are applied
+    this.cdr.detectChanges();
   }
 
   // Utility method for chunked processing delays
