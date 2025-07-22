@@ -6,7 +6,7 @@
         {{service.name}}
         <span *ngIf="isAddFilterWizard">- Add Filter</span>
         <span *ngIf="!isAddFilterWizard">
-          <i class="bi bi-info-circle info-icon" aria-hidden="true" [title]="service?.plugin?.name"></i>
+          <i class="bi bi-sm bi-info-circle info-icon" aria-hidden="true" [title]="service?.plugin?.name"></i>
         </span>
         <p class="help has-text-grey modal-subtitle">South Service</p>
       </span>
@@ -97,7 +97,7 @@
                 <span
                   class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon"
                   data-tooltip="Show logs" (click)="navToSyslogs(service)">
-                  <i class="far fa-file-alt"></i>
+                  <i class="bi bi-file-earmark-text"></i>
                 </span>
               </p>
             </div>

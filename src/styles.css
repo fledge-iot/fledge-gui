@@ -402,7 +402,7 @@ span.tooltip {
 }
 
 .help-pad {
-  margin: 17px 7px;
+  margin: 19px 7px; /* check if this is correct, This is causing issue for header size if > 16px? */
   font-size: 0.9rem;
 }
 
