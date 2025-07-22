@@ -35,9 +35,9 @@
               </div>
             </div>
           </div>
-          <hr class="hr-text">
-          <div class="columns">
-            <div class="column has-text-centered">
+          <div class="hr-container">
+            <hr class="hr-text">
+            <div class="hr-text-content">
               <span class="label is-size-6 add-application" *ngIf="rolesService.hasEditPermissions(); else staticLabel">
                 <a (click)="openAddFilterModal(true)">Applications
                   <span class="icon has-tooltip-right has-tooltip-arrow tooltip" data-tooltip="Add Filters">
@@ -46,13 +46,18 @@
                 </a>
               </span>
               <ng-template #staticLabel>
-                <span class="label is-size-6">Applications</span>
+                <span class="label is-size-6 add-application">Applications</span>
               </ng-template>
             </div>
           </div>
           <app-filter-list #filtersListComponent [service]="service?.name" [filterPipeline]="filterPipeline"
             [from]="'filter'" (formStatus)="filterFormStatus($event)"></app-filter-list>
-          <hr class="hr-text">
+          
+          <div *ngIf="!filterPipeline || filterPipeline.length === 0">
+            <p class="has-text-centered has-text-grey-light is-size-7 my-2">No filters configured</p>
+            <hr class="hr-text">
+          </div>
+         
           <div class="columns margin-bottom">
             <ng-container *ngIf="service != undefined">
               <div class="column is-9">

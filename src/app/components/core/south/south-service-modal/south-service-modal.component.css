@@ -84,6 +84,30 @@ hr {
   margin: 0.75rem 0;
 }
 
+.hr-container {
+  position: relative;
+  margin: 1.5rem 0;
+}
+
+.hr-container .hr-text {
+  border: none;
+  height: 1px;
+  background: #dbdbdb;
+  margin: 0;
+}
+
+.hr-container .hr-text-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .btn-container {
   min-height: 36px;
 }
