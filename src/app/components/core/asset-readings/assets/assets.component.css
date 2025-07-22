@@ -40,3 +40,7 @@
 .tooltip {
   opacity: 1.0 !important;
 }
+
+.popover-table-header {
+  border-bottom: 2px solid #dbdbdb !important;
+}

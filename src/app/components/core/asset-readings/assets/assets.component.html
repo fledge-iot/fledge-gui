@@ -63,13 +63,27 @@
                       </a>
                       <div class="popover-content">
                         <div class="content">
-                          <div class="has-text-weight-medium mb-2">Most recent reading</div>
-                          <ng-container *ngFor="let item of getLatestReadingForDisplay(asset.assetCode)">
-                            <div class="mb-1">
-                              <span class="has-text-weight-medium">{{item.label}}:</span>
-                              <span class="has-text-weight-normal ml-1">{{item.value}}</span>
-                            </div>
-                          </ng-container>
+                          <table class="table is-narrow is-size-7">
+                            <thead>
+                              <tr>
+                                <th class="has-text-weight-normal popover-table-header">Timestamp</th>
+                                <th class="has-text-weight-normal popover-table-header">Reading</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>{{getLatestReadingTimestamp(asset.assetCode)}}</td>
+                                <td *ngIf="getLatestReadingProperties(asset.assetCode).length > 0">
+                                  {{getLatestReadingProperties(asset.assetCode)[0].key}}
+                                  {{getLatestReadingProperties(asset.assetCode)[0].value}}
+                                </td>
+                              </tr>
+                              <tr *ngFor="let reading of getLatestReadingProperties(asset.assetCode).slice(1)">
+                                <td></td>
+                                <td>{{reading.key}} {{reading.value}}</td>
+                              </tr>
+                            </tbody>
+                          </table>
                         </div>
                       </div>
                     </div>

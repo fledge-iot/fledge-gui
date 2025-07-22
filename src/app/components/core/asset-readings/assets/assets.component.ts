@@ -119,27 +119,40 @@ export class AssetsComponent implements OnInit, OnDestroy {
     };
   }
 
-  public getLatestReadingForDisplay(assetCode: string): any[] {
+  public getLatestReadingTimestamp(assetCode: string): string {
     const data = this.getLatestReadingData(assetCode);
-    const displayItems = [];
+    return data.timestamp || 'Loading...';
+  }
 
-    // Add timestamp first
-    displayItems.push({
-      label: 'Timestamp',
-      value: data.timestamp
-    });
+  public getLatestReadingValues(assetCode: string): string {
+    const data = this.getLatestReadingData(assetCode);
+    if (data.reading && typeof data.reading === 'object') {
+      return Object.keys(data.reading)
+        .map(key => `${key} ${data.reading[key]}`)
+        .join(', ');
+    }
+    return 'Loading...';
+  }
 
-    // Add reading values
+  public getLatestReadingProperties(assetCode: string): { key: string, value: any }[] {
+    const data = this.getLatestReadingData(assetCode);
+    const properties = [];
+
     if (data.reading && typeof data.reading === 'object') {
       Object.keys(data.reading).forEach(key => {
-        displayItems.push({
-          label: key,
+        properties.push({
+          key: key,
           value: data.reading[key]
         });
       });
+    } else if (!data.reading || Object.keys(data.reading).length === 0) {
+      properties.push({
+        key: 'No readings',
+        value: 'available'
+      });
     }
 
-    return displayItems;
+    return properties;
   }
 
   getAssetReadings(assetCode, recordCount) {
