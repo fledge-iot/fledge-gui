@@ -11,7 +11,7 @@
       </ul>
     </nav>
     <button *ngIf="editMode" (click)="refresh()" class="button is-small" id="refresh-check" title="Reload">
-      <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+      <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
     </button>
   </div>
   <div class="card">
@@ -19,7 +19,7 @@
       <form #aclForm="ngForm">
         <span (click)="goToLink('access-control-lists')"
           class=" icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon" data-tooltip="Help">
-          <i class="far fa-question-circle"></i>
+          <i class="bi bi-question-circle"></i>
         </span>
         <div class="column is-four-fifths">
           <div class="field is-horizontal acl-name-field">

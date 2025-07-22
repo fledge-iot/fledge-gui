@@ -6,7 +6,7 @@
             <div id="control-api-flow" class="card-header-title">
                 Control API Entry Points
                 <button class="button is-small" id="refresh-check" title="Reload" (click)="getAPIFlows()">
-                    <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+                    <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
                 </button>
             </div>
             <a *ngIf="rolesService.hasControlAccess()" class="button is-small mt-3 is-light"
@@ -20,7 +20,7 @@
             </div>
             <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad"
                 data-tooltip="Help" (click)="goToLink('api-control-invocation')">
-                <i class="far fa-question-circle"></i>
+                <i class="bi bi-question-circle"></i>
             </span>
         </header>
         <div class="card-content api-card-content card-data">

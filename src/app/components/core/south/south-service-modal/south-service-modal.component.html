@@ -41,7 +41,7 @@
               <span class="label is-size-6 add-application" *ngIf="rolesService.hasEditPermissions(); else staticLabel">
                 <a (click)="openAddFilterModal(true)">Applications
                   <span class="icon has-tooltip-right has-tooltip-arrow tooltip" data-tooltip="Add Filters">
-                    <i class="bi bi-plus-circle plus-icon bi-md" aria-hidden="true"></i>
+                    <i class="bi bi-md bi-plus-circle plus-icon" aria-hidden="true"></i>
                   </span>
                 </a>
               </span>
@@ -90,7 +90,7 @@
                 <span
                   class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
                   data-tooltip="Help" (click)="goToLink({name: category?.config?.plugin?.value, type: 'South'})">
-                  <i class="far fa-question-circle"></i>
+                  <i class="bi bi-question-circle"></i>
                 </span>
               </p>
               <p class="control">
