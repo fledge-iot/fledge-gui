@@ -94,16 +94,6 @@
   overscroll-behavior: contain;
 }
 
-.card-viewport {
-  height: 600px;
-  overflow-y: auto;
-  border: 1px solid #e2e8f0;
-  border-radius: 4px;
-  padding: 8px;
-  scroll-behavior: smooth;
-  overscroll-behavior: contain;
-}
-
 /* Performance optimizations */
 .cdk-virtual-scroll-content-wrapper {
   contain: layout style paint;
@@ -124,25 +114,21 @@
 }
 
 /* Scrollbar styling */
-.virtual-scroll-viewport::-webkit-scrollbar,
-.card-viewport::-webkit-scrollbar {
+.virtual-scroll-viewport::-webkit-scrollbar {
   width: 8px;
 }
 
-.virtual-scroll-viewport::-webkit-scrollbar-track,
-.card-viewport::-webkit-scrollbar-track {
+.virtual-scroll-viewport::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 4px;
 }
 
-.virtual-scroll-viewport::-webkit-scrollbar-thumb,
-.card-viewport::-webkit-scrollbar-thumb {
+.virtual-scroll-viewport::-webkit-scrollbar-thumb {
   background: #c1c1c1;
   border-radius: 4px;
 }
 
-.virtual-scroll-viewport::-webkit-scrollbar-thumb:hover,
-.card-viewport::-webkit-scrollbar-thumb:hover {
+.virtual-scroll-viewport::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
 
@@ -152,37 +138,11 @@
   contain: layout;
 }
 
-.custom-viewport {
-  position: relative;
-  overflow: hidden;
-}
-
 .scrollable {
   max-height: 400px;
   overflow-y: auto;
   contain: layout style;
   will-change: scroll-position;
-}
-
-/* Loading state styles */
-.loading-chunk {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  color: #666;
-  font-size: 14px;
-}
-
-.loading-chunk::before {
-  content: '';
-  width: 16px;
-  height: 16px;
-  border: 2px solid #f3f3f3;
-  border-top: 2px solid #3498db;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-right: 8px;
 }
 
 @keyframes spin {

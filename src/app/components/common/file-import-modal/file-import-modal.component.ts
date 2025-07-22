@@ -112,7 +112,6 @@ export class FileImportModalComponent {
                 this.tableData = this.fileImportService.getJsonTableData(jsonObj, this.configuration.type, this.configuration.keyName);
               }
             } catch (jsonError) {
-              console.warn('JSON parsing error for preview:', jsonError);
               // Even if JSON is invalid, we can still show something
               this.tableData = ['Invalid JSON format'];
             }
@@ -121,7 +120,6 @@ export class FileImportModalComponent {
           // Trigger change detection immediately after setting tableData
           this.cdr.detectChanges();
         } catch (previewError) {
-          console.warn('Preview generation error:', previewError);
           this.tableData = ['Error generating preview'];
           // Trigger change detection even for errors
           this.cdr.detectChanges();
@@ -142,7 +140,6 @@ export class FileImportModalComponent {
                   1000 // Sample only 1000 rows for validation
                 );
               } catch (error) {
-                console.warn('CSV validation error:', error);
                 this.file.isValid = false;
               }
 
@@ -172,7 +169,6 @@ export class FileImportModalComponent {
                   delayMs // Add delay parameter
                 );
               } catch (error) {
-                console.warn('CSV import error:', error);
                 this.file.isValid = false;
               }
             } else {
@@ -180,14 +176,12 @@ export class FileImportModalComponent {
               try {
                 this.file.isValid = await this.fileImportService.isCsvFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
               } catch (error) {
-                console.warn('CSV validation error:', error);
                 this.file.isValid = false;
               }
 
               try {
                 this.file.data = await this.fileImportService.importCsvData(files, this.configuration.type);
               } catch (error) {
-                console.warn('CSV import error:', error);
                 this.file.isValid = false;
               }
             }
@@ -198,7 +192,6 @@ export class FileImportModalComponent {
               try {
                 this.file.isValid = await this.fileImportService.isJsonFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
               } catch (error) {
-                console.warn('JSON validation error:', error);
                 this.file.isValid = false;
               }
 
@@ -223,7 +216,6 @@ export class FileImportModalComponent {
                   delayMs // Add delay parameter
                 );
               } catch (error) {
-                console.warn('JSON import error:', error);
                 this.file.isValid = false;
               }
             } else {
@@ -231,20 +223,17 @@ export class FileImportModalComponent {
               try {
                 this.file.isValid = await this.fileImportService.isJsonFileValid(files, this.configuration.properties, this.configuration.type, this.configuration.keyName);
               } catch (error) {
-                console.warn('JSON validation error:', error);
                 this.file.isValid = false;
               }
 
               try {
                 this.file.data = await this.fileImportService.importJsonData(files, this.configuration.type);
               } catch (error) {
-                console.warn('JSON import error:', error);
                 this.file.isValid = false;
               }
             }
           }
         } catch (error) {
-          console.error('File processing error:', error);
           this.file.isValid = false;
         }
 
@@ -256,24 +245,6 @@ export class FileImportModalComponent {
 
     // Final change detection to ensure all UI updates are applied
     this.cdr.detectChanges();
-  }
-
-  // Utility method for chunked processing delays
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => {
-      if (ms > 5 && 'requestIdleCallback' in window) {
-        // Use requestIdleCallback for delays > 5ms for better performance
-        requestIdleCallback(() => {
-          if (ms > 5) {
-            setTimeout(resolve, ms - 5); // Reduce overhead
-          } else {
-            resolve();
-          }
-        }, { timeout: ms + 20 }); // Reduced timeout
-      } else {
-        setTimeout(resolve, ms);
-      }
-    });
   }
 
   onFileChange(event: any) {
