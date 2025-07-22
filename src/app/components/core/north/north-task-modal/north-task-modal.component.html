@@ -92,14 +92,14 @@
                 </a>
               </span>
               <ng-template #staticLabel>
-                <span class="label is-size-6">Applications</span>
+                <span class="label is-size-6 add-application">Applications</span>
               </ng-template>
             </div>
           </div>
           <app-filter-list #filtersListComponent [service]="task?.name" [filterPipeline]="filterPipeline"
             [from]="'filter'" (formStatus)="filterFormStatus($event)"></app-filter-list>
           <div *ngIf="!filterPipeline || filterPipeline.length === 0">
-            <p class="has-text-centered has-text-grey-light is-size-7 my-2">No filters configured</p>
+            <p class="has-text-centered has-text-grey-light is-size-7 mt-1 mb-2">No filters configured</p>
             <hr class="hr-text">
           </div>
           <div class="columns margin-bottom">
