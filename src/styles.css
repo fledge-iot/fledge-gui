@@ -482,7 +482,7 @@ span.tooltip {
 }
 
 .hr-text {
-  background-color: #fff !important;
+  background-color: #fff !important; /* this is for? */
   line-height: 1em;
   position: relative;
   outline: 0;
@@ -510,7 +510,8 @@ span.tooltip {
   padding: 0 .5em;
   line-height: 1.5em;
   color: #818078;
-  background-color: #fff;
+  
+  background-color: #fff; /* this is needed? */
 }
 
 .content table td {
