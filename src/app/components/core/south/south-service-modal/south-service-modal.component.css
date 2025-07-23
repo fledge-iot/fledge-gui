@@ -92,8 +92,9 @@ hr {
 .hr-container .hr-text {
   border: none;
   height: 1px;
-  background: #dbdbdb;
+  background: lightgray;
   margin: 0;
+  opacity: 0.6;
 }
 
 .hr-container .hr-text-content {
