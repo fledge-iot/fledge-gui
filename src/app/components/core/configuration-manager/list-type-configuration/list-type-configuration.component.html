@@ -149,9 +149,12 @@
               <div [id]="'export-dropdown-' + configuration?.key" class="dropdown control mt-1">
                 <div class="dropdown-trigger">
                   <button class="button is-small small-btn export-btn" aria-haspopup="true"
-                    aria-controls="dropdown-menu" (click)=toggleDropdown()>
-                    <span class="icon is-small">
+                    aria-controls="dropdown-menu" (click)=toggleDropdown() [disabled]="isExportingData">
+                    <span *ngIf="!isExportingData" class="icon is-small">
                       <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                    <span *ngIf="isExportingData" class="icon is-small">
+                      <i class="fa fa-spinner fa-spin" aria-hidden="true"></i>
                     </span>
                   </button>
                 </div>
@@ -159,6 +162,13 @@
                   <div class="dropdown-content">
                     <a class="dropdown-item" (click)="openExportFileModal()">Export</a>
                   </div>
+                </div>
+                <!-- Loading indicator for export preparation -->
+                <div *ngIf="isExportingData" class="export-loading-indicator">
+                  <small class="help has-text-info">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Preparing export...
+                  </small>
                 </div>
               </div>
             </div>

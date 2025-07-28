@@ -120,17 +120,20 @@
           </ng-template>
         </ng-container>
         <ng-template #showGroup>
-          <app-bucket-configuration *ngIf="g.type == 'bucket' && selectedGroup.key == g.group.key"
-            [dataModel]="g.config" (changedConfig)="getChangedConfiguration($event)"
-            (formStatusEvent)="formStatus($event)" [from]="from" [group]="g.group.key"></app-bucket-configuration>
+          <app-bucket-configuration *ngIf="g.type == 'bucket'"
+            [style.display]="selectedGroup.key == g.group.key ? 'block' : 'none'" [dataModel]="g.config"
+            (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)" [from]="from"
+            [group]="g.group.key"></app-bucket-configuration>
 
-          <app-list-type-configuration *ngIf="g?.type == 'list' && selectedGroup.key == g.group.key"
-            [configuration]="g.config" [group]="g.group.key" [from]="from" [categoryName]="g.category"
+          <app-list-type-configuration *ngIf="g?.type == 'list'"
+            [style.display]="selectedGroup.key == g.group.key ? 'block' : 'none'" [configuration]="g.config"
+            [group]="g.group.key" [from]="from" [categoryName]="g.category"
             (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)">
           </app-list-type-configuration>
 
-          <app-kv-list-type-configuration *ngIf="g?.type == 'kvlist' && selectedGroup.key == g.group.key"
-            [configuration]="g.config" [group]="g.group.key" [from]="from" [categoryName]="g.category"
+          <app-kv-list-type-configuration *ngIf="g?.type == 'kvlist'"
+            [style.display]="selectedGroup.key == g.group.key ? 'block' : 'none'" [configuration]="g.config"
+            [group]="g.group.key" [from]="from" [categoryName]="g.category"
             (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)">
           </app-kv-list-type-configuration>
 

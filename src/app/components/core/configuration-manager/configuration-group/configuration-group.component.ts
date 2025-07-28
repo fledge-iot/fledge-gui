@@ -242,7 +242,9 @@ export class ConfigurationGroupComponent implements AfterViewInit {
    * Set tab in the group
    * @param tab tab index
    */
-  selectTab(tab) {
+  selectTab(tab: any) {
+    console.log(`🔄 TAB SWITCH: From "${this.selectedGroup.key}" to "${tab.key}"`);
+
     if (tab.key !== this.selectedGroup.key) {
       this.selectedGroup = tab;
     }
@@ -250,6 +252,14 @@ export class ConfigurationGroupComponent implements AfterViewInit {
       const tabIndex = this.groupTabs.findIndex(t => t.key === this.selectedGroup.key);
       this.tabNavigationComponent.setTab(tabIndex);
     }
+
+    // Log status of preserved tabs when switching
+    setTimeout(() => {
+      const preservedGroup = this.groups.find(g => g.group.key === tab.key);
+      if (preservedGroup && (preservedGroup.status !== undefined || preservedGroup.loading !== undefined)) {
+        console.log(`📋 TAB SWITCH STATUS: "${tab.key}" - Status: ${preservedGroup.status}, Loading: ${preservedGroup.loading}`);
+      }
+    }, 10);
   }
 
   selectAdvancedSubTab(tab) {

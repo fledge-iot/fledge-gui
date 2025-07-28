@@ -145,6 +145,34 @@
   will-change: scroll-position;
 }
 
+.dropdown.control {
+  position: relative;
+}
+
+.export-loading-indicator {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin-top: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.export-loading-indicator small {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.export-loading-indicator .fa-spinner {
+  margin-right: 4px;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);

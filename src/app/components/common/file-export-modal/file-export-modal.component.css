@@ -14,17 +14,18 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 4px;
   z-index: 10;
+  backdrop-filter: blur(1px);
 }
 
 .spinner-small {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border: 2px solid #dbdbdb;
   border-top: 2px solid #3273dc;
   border-radius: 50%;
@@ -44,4 +45,13 @@
 .button-container {
   position: relative;
   display: inline-block;
+}
+
+.export-progress-info {
+  margin-top: 8px;
+}
+
+.export-progress-info .help {
+  margin-bottom: 0;
+  font-weight: 500;
 }

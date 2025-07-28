@@ -35,8 +35,14 @@ export class FileExportModalComponent {
   }
 
   exportFile() {
-    // Check data size and decide if async processing is needed
+    // Start timing for export operation
+    const exportStartTime = performance.now();
     const dataSize = this.getDataSize();
+    const format = this.format;
+
+    console.log(`🚀 EXPORT START: Format=${format.toUpperCase()}, Type=${this.configuration.type}, Items=${dataSize}, Category=${this.categoryName}`);
+
+    // Check data size and decide if async processing is needed
     const needsAsyncProcessing = dataSize > 200; // Reduced from 1000 to 200 for more aggressive optimization
 
     if (needsAsyncProcessing) {
@@ -47,7 +53,7 @@ export class FileExportModalComponent {
       this.zone.runOutsideAngular(() => {
         setTimeout(() => {
           this.zone.run(() => {
-            this.processExport();
+            this.processExport(exportStartTime);
             this.isExporting = false;
             this.cdRef.detectChanges();
           });
@@ -55,7 +61,7 @@ export class FileExportModalComponent {
       });
     } else {
       // Process small datasets immediately
-      this.processExport();
+      this.processExport(exportStartTime);
     }
   }
 
@@ -67,11 +73,20 @@ export class FileExportModalComponent {
     }
   }
 
-  private processExport() {
+  private processExport(startTime?: number) {
+    const exportStartTime = startTime || performance.now();
+    const dataSize = this.getDataSize();
+    const format = this.format;
+
     if (!this.data) {
+      console.log(`❌ EXPORT FAILED: No data available for ${this.categoryName}-${this.configuration?.key}`);
       return;
     }
+
     if (this.format == 'json') {
+      const jsonStartTime = performance.now();
+      console.log(`📄 JSON PROCESSING START: Converting ${dataSize} items to JSON`);
+
       let jsonData;
       if (this.configuration.type == 'list') {
         if (this.data.length > 0) {
@@ -100,13 +115,24 @@ export class FileExportModalComponent {
           jsonData = JSON.stringify(jsonObj);
         }
       }
+
+      const jsonEndTime = performance.now();
+      console.log(`✅ JSON PROCESSING COMPLETE: ${jsonEndTime - jsonStartTime}ms for ${dataSize} items`);
+
       let fileName = this.categoryName + '-' + this.configuration?.key;
-      this.downloadFile(jsonData, fileName);
+      this.downloadFile(jsonData, fileName, exportStartTime);
     }
     else {
+      const csvStartTime = performance.now();
+      console.log(`📊 CSV PROCESSING START: Converting ${dataSize} items to CSV`);
+
       let csvData = this.jsonTocsv(this.data);
+
+      const csvEndTime = performance.now();
+      console.log(`✅ CSV PROCESSING COMPLETE: ${csvEndTime - csvStartTime}ms for ${dataSize} items`);
+
       let fileName = this.categoryName + '-' + this.configuration?.key;
-      this.downloadFile(csvData, fileName);
+      this.downloadFile(csvData, fileName, exportStartTime);
     }
   }
 
@@ -134,7 +160,10 @@ export class FileExportModalComponent {
     this.format = format;
   }
 
-  downloadFile(data: any, filename: string) {
+  downloadFile(data: any, filename: string, exportStartTime?: number) {
+    const downloadStartTime = performance.now();
+    console.log(`💾 DOWNLOAD START: Creating blob and initiating download for ${filename}.${this.format}`);
+
     const a: any = document.createElement('a');
     a.setAttribute('style', 'display:none;');
     document.body.appendChild(a);
@@ -148,12 +177,23 @@ export class FileExportModalComponent {
       a.download = filename + '.csv';
     }
     a.click();
+
+    const downloadEndTime = performance.now();
+    const totalExportTime = exportStartTime ? downloadEndTime - exportStartTime : downloadEndTime - downloadStartTime;
+
+    console.log(`💾 DOWNLOAD COMPLETE: ${downloadEndTime - downloadStartTime}ms for file creation`);
+    console.log(`🎉 TOTAL EXPORT TIME: ${totalExportTime}ms - Format=${this.format.toUpperCase()}, Type=${this.configuration.type}, Items=${this.getDataSize()}, File=${filename}.${this.format}`);
+
     setTimeout(() => {
       this.alertService.closeMessage();
     }, 1000);
   }
 
   jsonTocsv(json) {
+    const csvStartTime = performance.now();
+    const dataSize = this.getDataSize();
+    console.log(`🔄 CSV CONVERSION START: Processing ${dataSize} items`);
+
     // Optimized CSV generation for large datasets
     if (this.configuration.type == 'list') {
       let header;
@@ -162,20 +202,31 @@ export class FileExportModalComponent {
 
         // Process in chunks for large datasets to prevent blocking
         if (json.length > 500) { // Reduced from 5000 to 500 for more aggressive optimization
-          return this.processLargeArrayToCsv(json, header);
+          console.log(`⚡ Using chunked CSV processing for ${json.length} items`);
+          const result = this.processLargeArrayToCsv(json, header);
+          const csvEndTime = performance.now();
+          console.log(`✅ CHUNKED CSV CONVERSION COMPLETE: ${csvEndTime - csvStartTime}ms for ${json.length} items`);
+          return result;
         } else {
+          console.log(`🏃 Using standard CSV processing for ${json.length} items`);
           const rows = json.map((obj) => {
             return header.map((key) => {
               const value = obj[key];
               return `${value}`;
             }).join(',');
           });
-          return [header.join(','), ...rows].join('\n');
+          const result = [header.join(','), ...rows].join('\n');
+          const csvEndTime = performance.now();
+          console.log(`✅ STANDARD CSV CONVERSION COMPLETE: ${csvEndTime - csvStartTime}ms for ${json.length} items`);
+          return result;
         }
       }
       else {
         header = Object.keys(this.configuration.properties);
-        return header.join(',');
+        const result = header.join(',');
+        const csvEndTime = performance.now();
+        console.log(`✅ EMPTY CSV CONVERSION COMPLETE: ${csvEndTime - csvStartTime}ms for empty dataset`);
+        return result;
       }
     }
     else {
@@ -186,8 +237,13 @@ export class FileExportModalComponent {
 
         // Process in chunks for large datasets to prevent blocking
         if (entries.length > 500) { // Reduced from 5000 to 500 for more aggressive optimization
-          return this.processLargeObjectToCsv(entries);
+          console.log(`⚡ Using chunked KV CSV processing for ${entries.length} entries`);
+          const result = this.processLargeObjectToCsv(entries);
+          const csvEndTime = performance.now();
+          console.log(`✅ CHUNKED KV CSV CONVERSION COMPLETE: ${csvEndTime - csvStartTime}ms for ${entries.length} entries`);
+          return result;
         } else {
+          console.log(`🏃 Using standard KV CSV processing for ${entries.length} entries`);
           for (let [key, val] of entries) {
             header = Object.keys(val);
             let row = header.map((key) => {
@@ -197,17 +253,28 @@ export class FileExportModalComponent {
             row = key + ',' + row;
             rows.push(row)
           }
+          header = (this.configuration.keyName ? this.configuration.keyName : 'Key') + ',' + header.join(',');
+          const result = [header, ...rows].join('\n');
+          const csvEndTime = performance.now();
+          console.log(`✅ STANDARD KV CSV CONVERSION COMPLETE: ${csvEndTime - csvStartTime}ms for ${entries.length} entries`);
+          return result;
         }
       }
       else {
         header = Object.keys(this.configuration.properties);
+        header = (this.configuration.keyName ? this.configuration.keyName : 'Key') + ',' + header.join(',');
+        const result = header;
+        const csvEndTime = performance.now();
+        console.log(`✅ EMPTY KV CSV CONVERSION COMPLETE: ${csvEndTime - csvStartTime}ms for empty dataset`);
+        return result;
       }
-      header = (this.configuration.keyName ? this.configuration.keyName : 'Key') + ',' + header.join(',');
-      return [header, ...rows].join('\n');
     }
   }
 
   private processLargeArrayToCsv(json: any[], header: string[]): string {
+    const chunkStartTime = performance.now();
+    console.log(`🔄 LARGE ARRAY CSV CHUNKING START: Processing ${json.length} items in chunks of 1000`);
+
     // Process large arrays in chunks to prevent blocking
     let result = header.join(',') + '\n';
     const chunkSize = 1000;
@@ -224,12 +291,22 @@ export class FileExportModalComponent {
       if (i + chunkSize < json.length) {
         result += '\n';
       }
+
+      // Log progress for large operations
+      if (i % 5000 === 0) {
+        console.log(`📊 CSV Chunk Progress: ${i + chunkSize}/${json.length} items processed`);
+      }
     }
 
+    const chunkEndTime = performance.now();
+    console.log(`✅ LARGE ARRAY CSV CHUNKING COMPLETE: ${chunkEndTime - chunkStartTime}ms for ${json.length} items`);
     return result;
   }
 
   private processLargeObjectToCsv(entries: [string, any][]): string {
+    const chunkStartTime = performance.now();
+    console.log(`🔄 LARGE OBJECT CSV CHUNKING START: Processing ${entries.length} entries in chunks of 1000`);
+
     // Process large objects in chunks to prevent blocking
     let header;
     let rows = [];
@@ -248,9 +325,18 @@ export class FileExportModalComponent {
         row = key + ',' + row;
         rows.push(row);
       }
+
+      // Log progress for large operations
+      if (i % 5000 === 0) {
+        console.log(`📊 KV CSV Chunk Progress: ${i + chunkSize}/${entries.length} entries processed`);
+      }
     }
 
     const headerRow = (this.configuration.keyName ? this.configuration.keyName : 'Key') + ',' + header.join(',');
-    return [headerRow, ...rows].join('\n');
+    const result = [headerRow, ...rows].join('\n');
+
+    const chunkEndTime = performance.now();
+    console.log(`✅ LARGE OBJECT CSV CHUNKING COMPLETE: ${chunkEndTime - chunkStartTime}ms for ${entries.length} entries`);
+    return result;
   }
 }

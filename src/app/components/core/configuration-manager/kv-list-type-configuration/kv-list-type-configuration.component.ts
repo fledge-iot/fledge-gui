@@ -42,6 +42,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   isLoadingLargeDataset = false;
   isViewSwitching = false; // Smart view switching indicator
   isLoadingInitialData = false; // For visual loading feedback without disabling buttons
+  isExportingData = false; // Loading indicator for export preparation
   private LARGE_DATASET_THRESHOLD = 100; // Reduced from 2000 - now kicks in at 100+ items
   private FORM_CREATION_THRESHOLD = 200; // Reduced from 3000 - chunking starts at 200+ items
   private DOM_OPERATION_THRESHOLD = 500; // Reduced from 5000 - DOM optimization at 500+ items
@@ -61,6 +62,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   private isFileImportOperation = false; // Track if we're in a file import operation
   private initialLoadDeferred = false; // Track if initial load should be deferred
   private hasInitiallyLoaded = false; // Track if we've completed initial load
+  private componentInitialized = false; // Track if component has been initialized once
 
   constructor(
     public cdRef: ChangeDetectorRef,
@@ -74,14 +76,27 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // Since we're now using true lazy loading with *ngIf, always load data immediately
-    // Components are only created when tab is selected
-    console.log(`KvList: Loading data immediately for tab "${this.group}"`);
-    this.loadDataWithChunking();
-    this.setupValueChangeSubscription();
+    // Only load data if this is the first initialization
+    if (!this.componentInitialized) {
+      console.log(`📋 KV-LIST COMPONENT INIT: Group="${this.group}", Category="${this.categoryName}", Config="${this.configuration.key}"`);
+
+      // Since we're now using true lazy loading with *ngIf, always load data immediately
+      // Components are only created when tab is selected
+      console.log(`KvList: Loading data immediately for tab "${this.group}"`);
+      this.loadDataWithChunking();
+      this.setupValueChangeSubscription();
+
+      // Mark as initialized so subsequent ngOnInit calls (when shown again) won't reload data
+      this.componentInitialized = true;
+    } else {
+      console.log(`📋 KV-LIST COMPONENT SHOWN: Group="${this.group}", Preserving existing state with ${this.kvListItems.length} items`);
+      // Component is being shown again, just trigger change detection to refresh UI
+      this.cdRef.detectChanges();
+    }
   }
 
   ngOnDestroy() {
+    console.log(`📋 KV-LIST COMPONENT DESTROYED: Group="${this.group}"`);
     this.destroy$.next();
     this.destroy$.complete();
 
@@ -874,34 +889,53 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   appendFileData(event) {
+    const appendStartTime = performance.now();
+    const dataLength = event.fileData ? Object.keys(event.fileData).length : 0;
+    console.log(`🚀 KV-LIST APPEND START: Adding ${dataLength} entries to existing ${this.kvListItems.length} entries, Category=${this.categoryName}, Config=${this.configuration.key}`);
+
     // Mark this as a file import operation
     this.isFileImportOperation = true;
 
     // Show loading indicator for large file imports
     if (event.fileData && Object.keys(event.fileData).length > 1000) {
+      console.log(`⚡ Using chunked processing for large KV append operation`);
       this.isLoadingLargeDataset = true;
       this.formStatusEvent.emit({ 'status': false, 'group': this.group, 'loading': true });
       this.cdRef.detectChanges();
 
       // Process large file data in chunks
-      this.processLargeFileData(event.fileData, false);
+      this.processLargeFileData(event.fileData, false, appendStartTime);
     } else {
+      console.log(`🏃 Using standard processing for small KV append operation`);
       // Process normally for smaller files - this fixes the preview issue
+      const processingStartTime = performance.now();
       for (const [key, value] of Object.entries(event.fileData)) {
         this.kvListItems.push(this.initListItem(false, { key, value }));
       }
+      const processingEndTime = performance.now();
+
+      console.log(`✅ Standard KV append processing: ${processingEndTime - processingStartTime}ms for ${dataLength} entries`);
       this.cdRef.detectChanges();
       // Reset file import flag
       this.isFileImportOperation = false;
+
+      const appendEndTime = performance.now();
+      console.log(`🎉 TOTAL KV-LIST APPEND TIME: ${appendEndTime - appendStartTime}ms - Added ${dataLength} entries (Total now: ${this.kvListItems.length})`);
     }
   }
 
   overrideFileData(event) {
+    const overrideStartTime = performance.now();
+    const dataLength = event.fileData ? Object.keys(event.fileData).length : 0;
+    const existingItemCount = this.kvListItems.length;
+    console.log(`🚀 KV-LIST OVERRIDE START: Replacing ${existingItemCount} entries with ${dataLength} new entries, Category=${this.categoryName}, Config=${this.configuration.key}`);
+
     // Mark this as a file import operation
     this.isFileImportOperation = true;
 
     // Show loading indicator for large file imports
     if (event.fileData && Object.keys(event.fileData).length > 1000) {
+      console.log(`⚡ Using chunked processing for large KV override operation`);
       this.isLoadingLargeDataset = true;
       this.kvListItems.clear();
       this.initialProperties = [];
@@ -909,25 +943,39 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
       this.cdRef.detectChanges();
 
       // Process large file data in chunks
-      this.processLargeFileData(event.fileData, true);
+      this.processLargeFileData(event.fileData, true, overrideStartTime);
     } else {
+      console.log(`🏃 Using standard processing for small KV override operation`);
       // Process normally for smaller files - this fixes the preview issue
+      const clearStartTime = performance.now();
       this.kvListItems.clear();
       this.initialProperties = [];
+      const clearEndTime = performance.now();
+      console.log(`🗑️ KV List cleared: ${clearEndTime - clearStartTime}ms`);
+
+      const processingStartTime = performance.now();
       for (const [key, value] of Object.entries(event.fileData)) {
         this.kvListItems.push(this.initListItem(false, { key, value }));
       }
+      const processingEndTime = performance.now();
+
+      console.log(`✅ Standard KV override processing: ${processingEndTime - processingStartTime}ms for ${dataLength} entries`);
       this.cdRef.detectChanges();
       // Reset file import flag
       this.isFileImportOperation = false;
+
+      const overrideEndTime = performance.now();
+      console.log(`🎉 TOTAL KV-LIST OVERRIDE TIME: ${overrideEndTime - overrideStartTime}ms - Replaced ${existingItemCount} with ${dataLength} entries`);
     }
   }
 
-  private processLargeFileData(fileData: any, isOverride: boolean) {
+  private processLargeFileData(fileData: any, isOverride: boolean, operationStartTime?: number) {
+    const chunkingStartTime = performance.now();
+    const entries = Object.entries(fileData);
+    console.log(`🔄 KV-LIST CHUNKED PROCESSING START: ${isOverride ? 'Override' : 'Append'} with ${entries.length} entries`);
+
     this.cdRef.detach();
     this.processingChunk = true;
-
-    const entries = Object.entries(fileData);
 
     // Use optimized chunking for file imports - same as initial loading
     let chunkSize, delay;
@@ -945,7 +993,10 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
       delay = 10;
     }
 
+    console.log(`📊 KV Chunking parameters: ChunkSize=${chunkSize}, Delay=${delay}ms`);
+
     let currentIndex = 0;
+    let processedCount = 0;
 
     const processChunk = () => {
       const endIndex = Math.min(currentIndex + chunkSize, entries.length);
@@ -956,9 +1007,15 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
           this.zone.run(() => {
             const [key, value] = entries[i];
             this.kvListItems.push(this.initListItem(false, { key, value }));
+            processedCount++;
           });
         }
       });
+
+      // Log progress every 5000 entries
+      if (processedCount % 5000 === 0 || endIndex === entries.length) {
+        console.log(`📈 KV Chunk Progress: ${processedCount}/${entries.length} entries processed`);
+      }
 
       currentIndex = endIndex;
 
@@ -977,6 +1034,9 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
         });
       } else {
         // Processing complete
+        const chunkingEndTime = performance.now();
+        console.log(`✅ KV-LIST CHUNKED PROCESSING COMPLETE: ${chunkingEndTime - chunkingStartTime}ms for ${entries.length} entries`);
+
         this.processingChunk = false;
         this.isLoadingLargeDataset = false;
         this.cdRef.reattach();
@@ -986,6 +1046,11 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
         this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group, 'loading': false });
         // Reset file import flag
         this.isFileImportOperation = false;
+
+        if (operationStartTime) {
+          const totalOperationTime = chunkingEndTime - operationStartTime;
+          console.log(`🎉 TOTAL KV-LIST ${isOverride ? 'OVERRIDE' : 'APPEND'} TIME: ${totalOperationTime}ms - Processed ${entries.length} entries (Total now: ${this.kvListItems.length})`);
+        }
       }
     };
 
@@ -999,32 +1064,63 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   openExportFileModal() {
+    const exportPrepStartTime = performance.now();
+    const dataSize = this.kvListItems.length;
+    console.log(`🚀 KV-LIST EXPORT PREPARATION START: ${dataSize} entries, Category=${this.categoryName}, Config=${this.configuration.key}`);
+
+    // Show loading indicator during export preparation
+    this.isExportingData = true;
+    this.cdRef.detectChanges();
+
     this.hideDropDown();
 
     // Check if we have a large dataset that needs async processing
-    const dataSize = this.kvListItems.length;
-
     if (dataSize > 1000) {
+      console.log(`⚡ Using async preparation for large KV dataset`);
       // Process large datasets asynchronously to prevent blocking
       this.zone.runOutsideAngular(() => {
         setTimeout(() => {
           this.zone.run(() => {
-            this.prepareKvListData();
+            this.prepareKvListData(exportPrepStartTime);
+            this.isExportingData = false; // Hide loading indicator
+            this.cdRef.detectChanges();
             this.fileExportModal.toggleModal(true);
           });
         }, 10); // Small delay to let UI update
       });
     } else {
-      // Process small datasets immediately
-      this.prepareKvListData();
-      this.fileExportModal.toggleModal(true);
+      console.log(`🏃 Using sync preparation for small KV dataset`);
+      // Process small datasets immediately but still show loading briefly
+      this.zone.runOutsideAngular(() => {
+        setTimeout(() => {
+          this.zone.run(() => {
+            this.prepareKvListData(exportPrepStartTime);
+            this.isExportingData = false; // Hide loading indicator
+            this.cdRef.detectChanges();
+            this.fileExportModal.toggleModal(true);
+          });
+        }, 50); // Brief delay to show loading indicator
+      });
     }
   }
 
-  private prepareKvListData() {
+  private prepareKvListData(prepStartTime?: number) {
+    const dataStartTime = performance.now();
+    const entryCount = this.kvListItems.value.length;
+    console.log(`🔄 KV-LIST DATA PREPARATION START: Converting ${entryCount} form entries to key-value object`);
+
     this.kvlistValues = {};
     for (let [ind, val] of this.kvListItems.value.entries()) {
       this.kvlistValues[val.key] = val.value;
+    }
+
+    const dataEndTime = performance.now();
+    const finalKeyCount = Object.keys(this.kvlistValues).length;
+    console.log(`✅ KV-LIST DATA PREPARATION COMPLETE: ${dataEndTime - dataStartTime}ms, Converted ${entryCount} entries to ${finalKeyCount} key-value pairs`);
+
+    if (prepStartTime) {
+      const totalPrepTime = dataEndTime - prepStartTime;
+      console.log(`🎯 TOTAL KV-LIST EXPORT PREPARATION TIME: ${totalPrepTime}ms for ${finalKeyCount} entries`);
     }
   }
 

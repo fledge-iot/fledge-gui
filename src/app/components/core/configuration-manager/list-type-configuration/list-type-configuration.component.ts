@@ -46,6 +46,7 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
   isLoadingLargeDataset = false;
   isViewSwitching = false; // Smart view switching indicator
   isLoadingInitialData = false; // For visual loading feedback without disabling buttons
+  isExportingData = false; // Loading indicator for export preparation
   private LARGE_DATASET_THRESHOLD = 100; // Reduced from 2000 - now kicks in at 100+ items
   private FORM_CREATION_THRESHOLD = 200; // Reduced from 3000 - chunking starts at 200+ items
   private DOM_OPERATION_THRESHOLD = 500; // Reduced from 5000 - DOM optimization at 500+ items
@@ -65,6 +66,7 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
   private isFileImportOperation = false; // Track if we're in a file import operation
   private initialLoadDeferred = false; // Track if initial load should be deferred
   private hasInitiallyLoaded = false; // Track if we've completed initial load
+  private componentInitialized = false; // Track if component has been initialized once
 
   constructor(
     private zone: NgZone,
@@ -78,20 +80,33 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (this.configuration.items == 'object') {
-      this.firstKey = Object.keys(this.configuration.properties)[0];
-      // Show first property label as list card header
-      this.listLabel = this.configuration.properties[this.firstKey]?.displayName ?? this.firstKey;
-    }
+    // Only load data if this is the first initialization
+    if (!this.componentInitialized) {
+      console.log(`📋 LIST COMPONENT INIT: Group="${this.group}", Category="${this.categoryName}", Config="${this.configuration.key}"`);
 
-    // Since we're now using true lazy loading with *ngIf, always load data immediately
-    // Components are only created when tab is selected
-    console.log(`List: Loading data immediately for tab "${this.group}"`);
-    this.loadDataWithChunking();
-    this.setupValueChangeSubscription();
+      if (this.configuration.items == 'object') {
+        this.firstKey = Object.keys(this.configuration.properties)[0];
+        // Show first property label as list card header
+        this.listLabel = this.configuration.properties[this.firstKey]?.displayName ?? this.firstKey;
+      }
+
+      // Since we're now using true lazy loading with *ngIf, always load data immediately
+      // Components are only created when tab is selected
+      console.log(`List: Loading data immediately for tab "${this.group}"`);
+      this.loadDataWithChunking();
+      this.setupValueChangeSubscription();
+
+      // Mark as initialized so subsequent ngOnInit calls (when shown again) won't reload data
+      this.componentInitialized = true;
+    } else {
+      console.log(`📋 LIST COMPONENT SHOWN: Group="${this.group}", Preserving existing state with ${this.listItems.length} items`);
+      // Component is being shown again, just trigger change detection to refresh UI
+      this.cdRef.detectChanges();
+    }
   }
 
   ngOnDestroy() {
+    console.log(`📋 LIST COMPONENT DESTROYED: Group="${this.group}"`);
     this.destroy$.next();
     this.destroy$.complete();
 
@@ -992,34 +1007,53 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   appendFileData(event) {
+    const appendStartTime = performance.now();
+    const dataLength = event.fileData ? event.fileData.length : 0;
+    console.log(`🚀 LIST APPEND START: Adding ${dataLength} items to existing ${this.listItems.length} items, Category=${this.categoryName}, Config=${this.configuration.key}`);
+
     // Mark this as a file import operation
     this.isFileImportOperation = true;
 
     // Show loading indicator for large file imports
     if (event.fileData && event.fileData.length > 1000) {
+      console.log(`⚡ Using chunked processing for large append operation`);
       this.isLoadingLargeDataset = true;
       this.formStatusEvent.emit({ status: false, group: this.group, loading: true });
       this.cdRef.detectChanges();
 
       // Process large file data in chunks
-      this.processLargeFileData(event.fileData, false);
+      this.processLargeFileData(event.fileData, false, appendStartTime);
     } else {
+      console.log(`🏃 Using standard processing for small append operation`);
       // Process normally for smaller files - this fixes the preview issue
+      const processingStartTime = performance.now();
       event.fileData.forEach(element => {
         this.initListItem(false, element);
       });
+      const processingEndTime = performance.now();
+
+      console.log(`✅ Standard append processing: ${processingEndTime - processingStartTime}ms for ${dataLength} items`);
       this.cdRef.detectChanges();
       // Reset file import flag
       this.isFileImportOperation = false;
+
+      const appendEndTime = performance.now();
+      console.log(`🎉 TOTAL LIST APPEND TIME: ${appendEndTime - appendStartTime}ms - Added ${dataLength} items (Total now: ${this.listItems.length})`);
     }
   }
 
   overrideFileData(event) {
+    const overrideStartTime = performance.now();
+    const dataLength = event.fileData ? event.fileData.length : 0;
+    const existingItemCount = this.listItems.length;
+    console.log(`🚀 LIST OVERRIDE START: Replacing ${existingItemCount} items with ${dataLength} new items, Category=${this.categoryName}, Config=${this.configuration.key}`);
+
     // Mark this as a file import operation
     this.isFileImportOperation = true;
 
     // Show loading indicator for large file imports
     if (event.fileData && event.fileData.length > 1000) {
+      console.log(`⚡ Using chunked processing for large override operation`);
       this.isLoadingLargeDataset = true;
       this.listItems.clear();
       this.initialProperties = [];
@@ -1027,21 +1061,36 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
       this.cdRef.detectChanges();
 
       // Process large file data in chunks
-      this.processLargeFileData(event.fileData, true);
+      this.processLargeFileData(event.fileData, true, overrideStartTime);
     } else {
+      console.log(`🏃 Using standard processing for small override operation`);
       // Process normally for smaller files - this fixes the preview issue
+      const clearStartTime = performance.now();
       this.listItems.clear();
       this.initialProperties = [];
+      const clearEndTime = performance.now();
+      console.log(`🗑️ List cleared: ${clearEndTime - clearStartTime}ms`);
+
+      const processingStartTime = performance.now();
       event.fileData.forEach(element => {
         this.initListItem(false, element);
       });
+      const processingEndTime = performance.now();
+
+      console.log(`✅ Standard override processing: ${processingEndTime - processingStartTime}ms for ${dataLength} items`);
       this.cdRef.detectChanges();
       // Reset file import flag
       this.isFileImportOperation = false;
+
+      const overrideEndTime = performance.now();
+      console.log(`🎉 TOTAL LIST OVERRIDE TIME: ${overrideEndTime - overrideStartTime}ms - Replaced ${existingItemCount} with ${dataLength} items`);
     }
   }
 
-  private processLargeFileData(fileData: any[], isOverride: boolean) {
+  private processLargeFileData(fileData: any[], isOverride: boolean, operationStartTime?: number) {
+    const chunkingStartTime = performance.now();
+    console.log(`🔄 LIST CHUNKED PROCESSING START: ${isOverride ? 'Override' : 'Append'} with ${fileData.length} items`);
+
     this.cdRef.detach();
     this.processingChunk = true;
 
@@ -1061,7 +1110,10 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
       delay = 10;
     }
 
+    console.log(`📊 Chunking parameters: ChunkSize=${chunkSize}, Delay=${delay}ms`);
+
     let currentIndex = 0;
+    let processedCount = 0;
 
     const processChunk = () => {
       const endIndex = Math.min(currentIndex + chunkSize, fileData.length);
@@ -1071,9 +1123,15 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
         for (let i = currentIndex; i < endIndex; i++) {
           this.zone.run(() => {
             this.initListItem(false, fileData[i]);
+            processedCount++;
           });
         }
       });
+
+      // Log progress every 5000 items
+      if (processedCount % 5000 === 0 || endIndex === fileData.length) {
+        console.log(`📈 Chunk Progress: ${processedCount}/${fileData.length} items processed`);
+      }
 
       currentIndex = endIndex;
 
@@ -1092,6 +1150,9 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
         });
       } else {
         // Processing complete
+        const chunkingEndTime = performance.now();
+        console.log(`✅ LIST CHUNKED PROCESSING COMPLETE: ${chunkingEndTime - chunkingStartTime}ms for ${fileData.length} items`);
+
         this.processingChunk = false;
         this.isLoadingLargeDataset = false;
         this.cdRef.reattach();
@@ -1101,6 +1162,11 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
         this.formStatusEvent.emit({ status: this.listItems.valid, group: this.group, loading: false });
         // Reset file import flag
         this.isFileImportOperation = false;
+
+        if (operationStartTime) {
+          const totalOperationTime = chunkingEndTime - operationStartTime;
+          console.log(`🎉 TOTAL LIST ${isOverride ? 'OVERRIDE' : 'APPEND'} TIME: ${totalOperationTime}ms - Processed ${fileData.length} items (Total now: ${this.listItems.length})`);
+        }
       }
     };
 
@@ -1115,31 +1181,62 @@ export class ListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   openExportFileModal() {
+    const exportPrepStartTime = performance.now();
+    const dataSize = this.listItems.length;
+    console.log(`🚀 LIST EXPORT PREPARATION START: ${dataSize} items, Category=${this.categoryName}, Config=${this.configuration.key}`);
+
+    // Show loading indicator during export preparation
+    this.isExportingData = true;
+    this.cdRef.detectChanges();
+
     this.hideDropDown();
 
     // Check if we have a large dataset that needs async processing
-    const dataSize = this.listItems.length;
-
     if (dataSize > 1000) {
+      console.log(`⚡ Using async preparation for large dataset`);
       // Process large datasets asynchronously to prevent blocking
       this.zone.runOutsideAngular(() => {
         setTimeout(() => {
           this.zone.run(() => {
-            this.prepareListData();
+            this.prepareListData(exportPrepStartTime);
+            this.isExportingData = false; // Hide loading indicator
+            this.cdRef.detectChanges();
             this.fileExportModal.toggleModal(true);
           });
         }, 10); // Small delay to let UI update
       });
     } else {
-      // Process small datasets immediately
-      this.prepareListData();
-      this.fileExportModal.toggleModal(true);
+      console.log(`🏃 Using sync preparation for small dataset`);
+      // Process small datasets immediately but still show loading briefly
+      this.zone.runOutsideAngular(() => {
+        setTimeout(() => {
+          this.zone.run(() => {
+            this.prepareListData(exportPrepStartTime);
+            this.isExportingData = false; // Hide loading indicator
+            this.cdRef.detectChanges();
+            this.fileExportModal.toggleModal(true);
+          });
+        }, 50); // Brief delay to show loading indicator
+      });
     }
   }
 
-  private prepareListData() {
+  private prepareListData(prepStartTime?: number) {
+    const dataStartTime = performance.now();
+    const originalLength = this.listItems.value.length;
+    console.log(`🔄 LIST DATA PREPARATION START: Processing ${originalLength} items`);
+
     this.listValues = this.listItems.value;
     this.listValues = uniqWith(this.listValues, isEqual);
+
+    const dataEndTime = performance.now();
+    const duplicatesRemoved = originalLength - this.listValues.length;
+    console.log(`✅ LIST DATA PREPARATION COMPLETE: ${dataEndTime - dataStartTime}ms, Removed ${duplicatesRemoved} duplicates, Final count: ${this.listValues.length}`);
+
+    if (prepStartTime) {
+      const totalPrepTime = dataEndTime - prepStartTime;
+      console.log(`🎯 TOTAL LIST EXPORT PREPARATION TIME: ${totalPrepTime}ms for ${this.listValues.length} items`);
+    }
   }
 
   toggleDropdown() {
