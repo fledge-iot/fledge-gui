@@ -56,13 +56,16 @@
                   </td>
                   <td>
                     <div class="popover is-popover-right">
-                      <a class="is-pulled-right popover-trigger" (mouseenter)="loadLatestReading(asset.assetCode)">
+                      <a class="is-pulled-right popover-trigger"
+                        (mouseenter)="loadLatestReading(asset.assetCode); keepPopoverOpen()"
+                        (mouseleave)="hidePopoverWithDelay()">
                         <span class="icon is-small">
                           <i class="fa fa-sm fa-bolt" aria-hidden="true"></i>
                         </span>
                       </a>
-                      <div class="popover-content">
-                        <div class="content">
+                      <div class="popover-content" (mouseenter)="keepPopoverOpen()"
+                        (mouseleave)="hidePopoverWithDelay()">
+                        <div class="content popover-scrollable-content">
                           <table class="table is-narrow is-size-7">
                             <thead>
                               <tr>

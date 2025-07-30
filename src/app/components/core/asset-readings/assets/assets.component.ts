@@ -24,6 +24,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   assetReadings = [];
   selectedAssetName = '';
   latestReadings: { [key: string]: any } = {};  // Store latest readings for each asset
+  popoverTimeouts: { [key: string]: any } = {};  // Store timeout references for each popover
 
   @ViewChild(ReadingsGraphComponent, { static: true }) readingsGraphComponent: ReadingsGraphComponent;
 
@@ -153,6 +154,26 @@ export class AssetsComponent implements OnInit, OnDestroy {
     }
 
     return properties;
+  }
+
+  public keepPopoverOpen(): void {
+    // Clear any pending hide timeouts when hovering over popover content
+    Object.keys(this.popoverTimeouts).forEach(key => {
+      if (this.popoverTimeouts[key]) {
+        clearTimeout(this.popoverTimeouts[key]);
+        delete this.popoverTimeouts[key];
+      }
+    });
+  }
+
+  public hidePopoverWithDelay(): void {
+    // Add a small delay before hiding to allow smooth transition between trigger and content
+    const timeoutId = setTimeout(() => {
+      // The popover will hide automatically due to CSS :hover behavior
+    }, 300); // 300ms delay
+
+    // Store timeout reference (though we might not need it for this implementation)
+    this.popoverTimeouts['current'] = timeoutId;
   }
 
   getAssetReadings(assetCode, recordCount) {
