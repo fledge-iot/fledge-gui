@@ -16,7 +16,7 @@ import {
   DomOperationsService,
   FormManagementService,
   FormManagementCallbacks
-} from '../list-type-configuration';
+} from './../list-kvlist/index';
 
 @Component({
   selector: 'app-kv-list-type-configuration',
