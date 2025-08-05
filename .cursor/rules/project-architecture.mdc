@@ -1,0 +1,78 @@
+---
+alwaysApply: true
+description: Fledge GUI project architecture and structure guidelines
+---
+
+# Fledge GUI Project Architecture
+
+## 🏗️ Project Overview
+Fledge GUI is an Angular 16 application for IoT data management and monitoring with the following architecture:
+
+- **Framework**: Angular 16 with TypeScript (strict mode enabled)
+- **Build System**: Angular CLI with ngx-build-plus for module federation
+- **Styling**: Bulma CSS framework with custom components
+- **State Management**: RxJS BehaviorSubjects and services
+- **Testing**: Jasmine/Karma for unit tests, Cypress for e2e testing
+
+## 📁 Directory Structure
+
+### Core Application Structure
+```
+src/app/
+├── components/           # All UI components
+│   ├── common/          # Reusable utility components
+│   ├── core/            # Feature-specific components
+│   └── layout/          # Layout and navigation components
+├── services/            # Business logic and API services
+├── guards/              # Route guards for access control
+├── directives/          # Custom Angular directives
+├── pipes/               # Custom transformation pipes
+├── models/              # TypeScript interfaces and types
+└── microfrontend/       # Module federation setup
+```
+
+### Component Organization Principles
+- **common/**: Reusable UI components (alerts, modals, charts, pagination)
+- **core/**: Feature modules (dashboard, configuration, logs, notifications)
+- **layout/**: App shell components (navbar, sidebar, footer, login)
+
+## 🔧 Key Technologies & Dependencies
+
+### Core Dependencies
+- **@angular/core**: ^16.2.12 (Angular framework)
+- **rxjs**: ~6.6.6 (Reactive programming)
+- **bulma**: ^0.9.4 (CSS framework)
+- **chart.js**: ^4.3.0 (Data visualization)
+- **moment**: ^2.29.3 (Date manipulation)
+
+### Specialized Libraries
+- **rete**: ^2.0.2 (Node-based visual editor)
+- **@ali-hm/angular-tree-component**: Tree views
+- **@ng-select/ng-select**: Enhanced select components
+- **@ctrl/ngx-codemirror**: Code editor integration
+
+## 🚀 Build & Development
+
+### Scripts Reference
+- `npm start`: Development server with git version preprocessing
+- `npm run build`: Production build with optimization
+- `npm run test`: Unit tests with Karma
+- `npm run e2e`: Cypress end-to-end tests
+- `npm run lint`: ESLint code analysis
+
+### Module Federation
+The application uses `@angular-architects/module-federation` for microfrontend architecture, enabling:
+- Dynamic module loading
+- Independent deployment of features
+- Shared dependencies optimization
+
+## 🔐 Authentication & Security
+- Role-based access control (admin/data-view roles)
+- Route guards for protected areas
+- HTTP interceptors for request authentication
+
+## 📊 Data Flow Patterns
+- Services use BehaviorSubjects for reactive state management
+- Components subscribe to service observables using async pipe
+- Shared state via [SharedService](mdc:src/app/services/shared.service.ts)
+- Ping service for connectivity monitoring and health checks
