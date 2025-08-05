@@ -83,9 +83,8 @@
           </div>
           <div class="hr-container">
             <hr class="hr-text">
-            <!-- this should vainsh on ends-->
             <div class="hr-text-content">
-              <span class="label is-size-6 add-application" *ngIf="rolesService.hasEditPermissions(); else staticLabel">
+              <span class="label is-size-6 opacity-07" *ngIf="rolesService.hasEditPermissions(); else staticLabel">
                 <a (click)="openAddFilterModal(true)">Applications
                   <span class="icon has-tooltip-right has-tooltip-arrow tooltip" data-tooltip="Add Filters">
                     <i class="bi bi-plus-circle plus-icon bi-md" aria-hidden="true"></i>
@@ -93,7 +92,7 @@
                 </a>
               </span>
               <ng-template #staticLabel>
-                <span class="label is-size-6 add-application">Applications</span>
+                <span class="label is-size-6 opacity-07">Applications</span>
               </ng-template>
             </div>
           </div>

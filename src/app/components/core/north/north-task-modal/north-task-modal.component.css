@@ -10,6 +10,7 @@
   .modal-card {
     width: 80%;
   }
+
   .field-body {
     flex-grow: 2 !important;
   }
@@ -58,10 +59,6 @@ a {
   opacity: 0.8;
 }
 
-.add-application {
-  opacity: 0.7;
-}
-
 @media screen and (min-width: 769px) {
   .margin-bottom {
     margin-bottom: -0.75rem;
@@ -107,7 +104,7 @@ a {
   margin-top: 0.35rem !important;
 }
 
-.service-info-text{
+.service-info-text {
   flex-grow: 1.6;
 }
 

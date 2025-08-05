@@ -14,6 +14,7 @@
   .modal-card {
     width: 80%;
   }
+
   .field-body {
     flex-grow: 2 !important;
   }
@@ -27,10 +28,6 @@ a {
   .margin-bottom {
     margin-bottom: -0.75rem;
   }
-}
-
-.add-application {
-  opacity: 0.7;
 }
 
 .help-icon {
@@ -65,14 +62,14 @@ a {
   margin-top: 0.35rem !important;
 }
 
-.flow-editor{
+.flow-editor {
   background: none;
   border: none;
   font-size: 14px;
   margin-right: 15px;
 }
 
-.service-info-text{
+.service-info-text {
   flex-grow: 1.6;
 }
 
