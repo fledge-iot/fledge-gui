@@ -54,11 +54,14 @@ src/app/
 ## 🚀 Build & Development
 
 ### Scripts Reference
-- `npm start`: Development server with git version preprocessing
-- `npm run build`: Production build with optimization
-- `npm run test`: Unit tests with Karma
-- `npm run e2e`: Cypress end-to-end tests
-- `npm run lint`: ESLint code analysis
+- `yarn install`: Install project dependencies
+- `yarn start`: Development server with git version preprocessing
+- `yarn build`: Production build with optimization
+- `yarn test`: Unit tests with Karma
+- `yarn e2e`: Cypress end-to-end tests
+- `yarn lint`: ESLint code analysis
+- `yarn clean`: Clean dist and node_modules directories
+- `./build --clean-start`: Production build using build script
 
 ### Module Federation
 The application uses `@angular-architects/module-federation` for microfrontend architecture, enabling:
