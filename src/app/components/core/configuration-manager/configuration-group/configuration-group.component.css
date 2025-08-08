@@ -5,14 +5,14 @@
 }
 
 .highlight {
-  border: 1px solid transparent;
-  border-color: #dbdbdb;
+  border: 1px solid #dbdbdb;
   border-radius: 4px;
   border-top-left-radius: 0 !important;
   border-top-right-radius: 0 !important;
   position: relative;
   padding: 1rem 1rem 0 1rem;
   overflow: visible;
+  margin-top: -0.05rem;
 }
 
 .custom-quickview-configuration {
@@ -20,10 +20,8 @@
 }
 
 .breadcrumb {
-  padding-top: 0.85rem;
-  margin-top: 10px;
-  font-size: 0.95rem;
-  margin-bottom: 0.25rem !important;
+  margin-top: 14px;
+  margin-bottom: 14px !important;
 }
 
 .tabs {
@@ -51,7 +49,7 @@
   position: relative;
 }
 
-.groupNav_contents {
+.nav {
   display: flex;
   float: left;
   padding-right: 20px;
@@ -63,6 +61,7 @@
   top: 0;
   bottom: 0;
   opacity: 0;
+  z-index: 2;
 }
 
 .advancer:focus {
@@ -94,6 +93,11 @@
 .invalid-tab,
 .tabs.is-boxed li.is-active a.invalid-tab {
   border-bottom-color: #f14668 !important;
+}
+
+.tabs .is-active {
+  z-index: 1;
+  position: relative;
 }
 
 .is-small-font {
@@ -132,4 +136,10 @@
 .card-header-title,
 .card-content {
   padding: 0.5rem 1rem !important;
+}
+
+@media (min-width: 1550px) {
+  .custom-max-width {
+    max-width: 1110px !important;
+  }
 }

@@ -55,7 +55,7 @@
         <div class="column">
           <div class="field">
             <button id="set-url-restart-btn" [disabled]="service_port.invalid"
-              class="button is-info is-pulled-left is-small" (click)="resetEndPoint()">Set
+              class="button is-link is-pulled-left is-small" (click)="resetEndPoint()">Set
               the URL &amp; Restart</button>
             <!-- <button id="test-connection-btn" class="button is-text is-small" (click)="testServiceConnection()">Test Connection</button> -->
             <!-- <button id="discover-fledge-btn" class="button is-text is-small" (click)="openServiceDiscoveryModal()">Discover Fledge Instances</button> -->
@@ -196,7 +196,7 @@
           <label class="label">Readings Graph Default Duration</label>
           <div class="field has-addons">
             <div class="control column is-5 no-padding">
-              <input class="input is-small" type="number" #readings_graph_default_time min="1"
+              <input class="input is-small" type="number" #readings_graph_default_time min="1" autocomplete="off"
                 [max]="getMaxTimeForReadings()" appIntegerOnly>
             </div>
             <div id="readings-graph-default-duration" class="dropdown control column is-7 no-padding">

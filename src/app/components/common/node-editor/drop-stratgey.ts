@@ -2,7 +2,7 @@ import { BaseSchemes, ClassicPreset, NodeEditor } from 'rete'
 import { AreaPlugin } from 'rete-area-plugin'
 import { Position } from 'rete-area-plugin/_types/types'
 import { Strategy } from 'rete-dock-plugin/_types/strategy'
-import { Filter } from './filter'
+import { Filter } from './nodes/filter'
 
 
 export class DropStrategy<K> implements Strategy {

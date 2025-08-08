@@ -17,7 +17,6 @@ export class PluginPersistDataComponent implements OnInit {
   public isJsonExtension;
   public jsonParseError = false;
   public plugins = [];
-  public selectedPlugin = '';
   noPersistDataMessage = '';
 
   @ViewChild('fileInput') fileInput: ElementRef;
@@ -62,7 +61,7 @@ export class PluginPersistDataComponent implements OnInit {
   getData(pluginName: string) {
     this.pluginData = '';
     this.noPersistDataMessage = '';
-    this.selectedPlugin = pluginName;
+    this.pluginName = pluginName;
     /** request started */
     this.ngProgress.start();
     this.pluginDataService.getData(this.serviceName, pluginName)
@@ -121,7 +120,7 @@ export class PluginPersistDataComponent implements OnInit {
       type: "application/json;charset=utf-8"
     });
     const url = window.URL.createObjectURL(blob);
-    const fileName = `${this.serviceName.replaceAll(' ', '_')}_${this.pluginName.replaceAll(' ', '_')}_data`;
+    const fileName = `${this.serviceName.replace(/ /g, '_')}_${this.pluginName.replace(/ /g, '_')}_data`;
     // create a custom anchor tag
     const a = document.createElement('a');
     a.href = url;

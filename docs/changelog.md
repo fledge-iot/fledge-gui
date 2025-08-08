@@ -1,6 +1,80 @@
+## v3.1.0 [2025-07-10]
+
+### Added
+
+- [FOGL-9875]: Added a search option to the graph selection dropdown in the dashboard, allowing users to filter available statistics based on search criteria. [#521](https://github.com/fledge-iot/fledge-gui/pull/521)
+
+### Changed
+
+- [FOGL-9708]: The menubar now defaults to narrow mode. [#510](https://github.com/fledge-iot/fledge-gui/pull/510)
+- [FOGL-9452]: Improved submenu operation to reduce accidental selection of incorrect menu items. [#518](https://github.com/fledge-iot/fledge-gui/pull/518)
+- [FOGL-9741]: The collapsed or expanded state of the menubar is now retained between sessions. [#517](https://github.com/fledge-iot/fledge-gui/pull/517)
+- [FOGL-9527]: Removed the confirmation prompt when deleting a connection using the Delete key, making this action consistent with deletion via mouse on flow editor view. [#525](https://github.com/fledge-iot/fledge-gui/pull/525)
+
+### Fixed
+
+- [FOGL-9756]: Resolved an issue where the menu sidebar could behave incorrectly on some screen sizes. [#517](https://github.com/fledge-iot/fledge-gui/pull/517)
+- [FOGL-9625]: Resolved an issue where the entire screen was not hidden during restart if the side menu was collapsed. [#515](https://github.com/fledge-iot/fledge-gui/pull/515)
+- [FOGL-9511]: Prevented tab switching after saving configuration in the configuration panel. [#514](https://github.com/fledge-iot/fledge-gui/pull/514)
+- [FOGL-9925]: Fixed an issue where the last active tab would not scroll into view. [#514](https://github.com/fledge-iot/fledge-gui/pull/514)
+- [FOGL-9679]: Resolved an issue where the scroll arrows on the configuration page of a south service could be incorrectly disabled. [#520](https://github.com/fledge-iot/fledge-gui/pull/520)
+- [FOGL-9969]: Added a tooltip to the notification log page to display the description of the source column. [#532](https://github.com/fledge-iot/fledge-gui/pull/532)
+- [FOGL-9826]: Fixed a bug where the service state icon would incorrectly change color to grey. [#519](https://github.com/fledge-iot/fledge-gui/pull/519)
+- [FOGL-9626]: Resolved an issue where icons appeared incorrectly in a data pipeline when long filter or service names were used. [#505](https://github.com/fledge-iot/fledge-gui/pull/505)
+
+## v3.0.0 [2025-03-13]
+
+### Added
+
+- [FOGL-9300]: The ability to import list content from CSV and JSON files has been added for all configuration items that have object type list or kvlist. [#484](https://github.com/fledge-iot/fledge-gui/pull/484)
+- [FOGL-9270]: A separate tabular view added to see all properties of object type list or kvlist in a single glance. [#492](https://github.com/fledge-iot/fledge-gui/pull/492)
+- [FOGL-9408]: A confirmation dialog has been added to enable/disable the service/task to prevent accidental enabling/disabling. [#493](https://github.com/fledge-iot/fledge-gui/pull/493)
+
+### Changed
+
+- [FOGL-9472]: The appearance of the add filter user interface in the flow based editor has been improved [#486](https://github.com/fledge-iot/fledge-gui/pull/486)
+- [FOGL-9508]: The look and feel of the south and north menu items has been improved with more intuitive icons [#491](https://github.com/fledge-iot/fledge-gui/pull/491)
+- [FOGL-9512]: The default user interface for new installations has been changed to be the flow based editor rather than the tabular view of data pipelines. The user can still chooses either view via the Settings menu option [#495](https://github.com/fledge-iot/fledge-gui/pull/495)
+- [FOGL-8975]: The configuration tab has been improved to include navigation buttons to easily move between tabs [#468](https://github.com/fledge-iot/fledge-gui/pull/468)
+- [FOGL-9480]: The layout of the south service in the tabular view has been improved [#494](https://github.com/fledge-iot/fledge-gui/pull/494)
+- [FOGL-9492]: Performance improvements have been made to the plugin configuration user interface within the flow editor [#498](https://github.com/fledge-iot/fledge-gui/pull/498)
+
+## v2.6.0 [2024-10-24]
+
+### Added
+
+- [FOGL-8841]: Manage Configuration items access for users, per optionally available role based permissions list [#437](https://github.com/fledge-iot/fledge-gui/pull/437)
+
+### Changed
+
+- [FOGL-8942]: Configuration items group tabs are sorted by the minimum order of config item in the group [#471](https://github.com/fledge-iot/fledge-gui/pull/471)
+- [FOGL-8458]: Developer page access through developer sub-menu options [#456](https://github.com/fledge-iot/fledge-gui/pull/456)
+- [FOGL-8990]: Enhanced support for list/kvlist type configuration item [#462](https://github.com/fledge-iot/fledge-gui/pull/462)
+  - Add & Delete
+  - Expand/Collapse individual item
+  - Expand All/Collapse All
+
+### Fixed
+
+- [FOGL-8588]: Filter plugin installation issue where plugin name and package name had a mismatch [#467](https://github.com/fledge-iot/fledge-gui/pull/467)
+- [FOGL-9080]: Missing child categories issue in category dropdown on add control script page [#460](https://github.com/fledge-iot/fledge-gui/pull/460)
+- [FOGL-9083]: Control API entry point access issue for less privileged user [#458](https://github.com/fledge-iot/fledge-gui/pull/458)
+- [FOGL-9068]: Allow retrigger time of 0 for notification [#455](https://github.com/fledge-iot/fledge-gui/pull/455)
+- [FOGL-8803]: Deletion of persisted data in Developer mode [#442](https://github.com/fledge-iot/fledge-gui/pull/442)
+- [FOGL-8891]: Log out active session issue on user profile page [#441](https://github.com/fledge-iot/fledge-gui/pull/441)
+
+### Others
+
+- Visual programming based Flow Editor interface improvements
+  - Delete option on connection line between nodes
+  - Undo/Redo functionality
+  - Filter drag & drop on connection line directly
+- UI/UX improvement and various functional bug fixes
+
 ## v2.5.0 [2024-06-26]
 
 ### Added
+
 - [FOGL-8862]: The ability to create and manage backups has become a privileged operation. Likewise support bundles can only be created by administrators. [#429](https://github.com/fledge-iot/fledge-gui/pull/429)
 - [FOGL-8757]: The user management screen now shows if a user has been blocked due to excessive failed login attempts. [#428](https://github.com/fledge-iot/fledge-gui/pull/428)
 - [FOGL-8684]: Support has been added to the GUI for key/value lists in configuration items. [#422](https://github.com/fledge-iot/fledge-gui/pull/422)
@@ -10,15 +84,15 @@
 - [FOGL-7783]: An option to the graph display to scroll to the most recent reading available. [#306](https://github.com/fledge-iot/fledge-gui/pull/306)
 
 ### Fixed
+
 - [FOGL-8773]: Missing health icon indicator on the north service node to show the service status. [#418](https://github.com/fledge-iot/fledge-gui/pull/418)
 - [FOGL-8825]: Extra GET notifications API call on Notification page load. [#430](https://github.com/fledge-iot/fledge-gui/pull/430)
 - [FOGL-8673]: Notification Service delete issue in disabled mode. [#414](https://github.com/fledge-iot/fledge-gui/pull/414)
 
 ### Others
+
 - New & updated Brand logo & favicon [#403](https://github.com/fledge-iot/fledge-gui/pull/403)
 - UI/UX improvement and various functional bug fixes.
-
-
 
 ## v2.4.0 [2024-04-17]
 
@@ -30,7 +104,7 @@
 
 - [FOGL-8030]: Added visual programming feature for South Pages as Flow Editor [#359](https://github.com/fledge-iot/fledge-gui/pull/359)
 
-- [FOGL-8492]: Added visual programming feature for North Pages as Flow Editor [#382](https://github.com/fledge-iot/fledge-gui/pull/382) 
+- [FOGL-8492]: Added visual programming feature for North Pages as Flow Editor [#382](https://github.com/fledge-iot/fledge-gui/pull/382)
 
 - [FOGL-8375]: Added a new page for managing additional services within an instance [#360](https://github.com/fledge-iot/fledge-gui/pull/360)
 
@@ -41,7 +115,6 @@
 ### Changed
 
 - Added sidebar menu icons and updated internal pages icon with bootstrap icons [#383](https://github.com/fledge-iot/fledge-gui/pull/383) and [#384](https://github.com/fledge-iot/fledge-gui/pull/384)
-
 
 ### Fixed
 

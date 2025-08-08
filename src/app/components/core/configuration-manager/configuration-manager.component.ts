@@ -26,6 +26,7 @@ export class ConfigurationManagerComponent implements OnInit {
   @ViewChild(TreeComponent, { static: true }) private tree: TreeComponent;
   changedConfig: any;
   categoryDataCopy: any;
+  isFormValueChanged = false;
 
   public reenableButton = new EventEmitter<boolean>(false);
 
@@ -51,7 +52,7 @@ export class ConfigurationManagerComponent implements OnInit {
         (data: any) => {
           this.categoryData = data.categories;
           const excludeCategories = this.scheduleNames.concat(["SOUTH", "NORTH", "NOTIFICATIONS"]);
-          
+
           // filter south, north, notification, management, bucket, dispatcher categories
           this.categoryData = this.categoryData.filter((n: any) => {
             return !excludeCategories.includes(n.key.toUpperCase());
@@ -168,6 +169,7 @@ export class ConfigurationManagerComponent implements OnInit {
   getChangedConfig(changedConfiguration: any, category: any) {
     const cat = this.categoryDataCopy.find(cat => cat.key === category.key);
     this.changedConfig = this.configurationControlService.getChangedConfiguration(changedConfiguration, cat);
+    this.isFormValueChanged = !isEmpty(this.changedConfig);
   }
 
   save(catName: string, catDesc: string) {

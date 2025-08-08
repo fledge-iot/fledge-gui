@@ -3,7 +3,7 @@
 }
 
 .description {
-  flex-shrink:initial !important;
+  flex-shrink: initial !important;
 }
 
 .container.is-fluid {
@@ -16,4 +16,8 @@
 
 .enabled-field {
   flex-grow: 0.5;
+}
+
+.box {
+  margin-bottom: 1.5rem !important;
 }

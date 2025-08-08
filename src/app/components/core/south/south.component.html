@@ -8,8 +8,8 @@
           <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
         </button>
       </div>
-      <a *ngIf="rolesService?.hasEditPermissions()" id="add_south_service" class="button is-light"
-        (click)="addSouthService()">
+      <a *ngIf="rolesService?.hasEditPermissions()" id="add_south_service"
+        class="button is-small mt-2 mr-2 pt-2 is-light" (click)="addSouthService()">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
@@ -31,10 +31,12 @@
               cellspacing="0">
               <thead>
                 <tr>
+                  <th class="align-th" *ngIf="southboundServices | hasAttachedDebugger"></th>
                   <th class="align-th">Name</th>
                   <th class="align-th">Status</th>
                   <th class="align-th">Plugin</th>
                   <th class="align-th">Version</th>
+                  <th class="align-th" *ngIf="southboundServices | hasAttachedDebugger"></th>
                   <th class="align-th">
                     <table class="table is-responsive">
                       <tr>
@@ -50,8 +52,18 @@
               <tbody>
                 <tr *ngFor="let svc of southboundServices" [ngClass]="{'fade': (svc.schedule_enabled === false)}"
                   class="parent">
+                  <td class="is-vcentered pr-0" *ngIf="southboundServices | hasAttachedDebugger">
+                    <div class="is-flex is-align-items-center py-0">
+                      <span *ngIf="svc?.debug?.debugger === 'Attached'" class="icon is-small">
+                        <i class="bi bi-bug bi-sm debug"></i>
+                      </span>
+                    </div>
+                  </td>
                   <td class="align-content">
-                    <a class="button is-text service-name" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
+                    <div class="is-flex is-align-items-center">
+                      <a class="button is-ghost is-text py-0 service-name"
+                        (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
+                    </div>
                   </td>
                   <td class="align-content content-pad">
                     <div class="tags has-addons">
@@ -63,6 +75,11 @@
                         <span *ngIf="svc.status == 'failed'" class="tag is-light is-danger">{{svc.status}}</span>
                         <span *ngIf="svc.status == 'unresponsive'" class="tag is-light is-warning">{{svc.status}}</span>
                       </ng-container>
+                      <span *ngIf="svc?.debug?.ingress === 'Suspended'"
+                        class="tag px-1 tooltip has-tooltip-right has-tooltip-arrow"
+                        [attr.data-tooltip]="'This will pause ingesting at South.'">
+                        <i class="bi bi-ban overlay-icon"></i>
+                      </span>
                     </div>
                   </td>
                   <td class="align-content content-pad">
@@ -71,7 +88,14 @@
                   <td class="align-content content-pad">
                     <small>{{svc?.plugin?.version}}</small>
                   </td>
-                  <td class="align-content">
+                  <td class="align-content content-pad" *ngIf="southboundServices | hasAttachedDebugger">
+                    <span *ngIf="svc.debug.egress == 'Isolated'"
+                      class="icon is-small tooltip has-tooltip-right has-tooltip-arrow"
+                      [attr.data-tooltip]="'This will stop writing readings to Storage.'">
+                      <i class="bi bi-database-slash"></i>
+                    </span>
+                  </td>
+                  <td class="align-content pt-2">
                     <table class="table is-narrow is-responsive" [ngClass]="{'is-borderless': !svc.expanded}">
                       <tr *ngFor='let data of svc.assets; let i = index'
                         [ngClass]="{' fade': (svc.schedule_enabled===false)}">
@@ -83,7 +107,7 @@
                               (click)="selectAsset(svc.name, data?.asset);openModal('asset-tracking-dialog')">
                               <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow"
                                 data-tooltip="Deprecate asset">
-                                <i class="fa fa-sm fa-eraser" aria-hidden="true"></i>
+                                <i class="bi bi-sm bi-eraser" aria-hidden="true"></i>
                               </span>
                             </a>
                             <small>{{data.asset}}</small>
@@ -103,7 +127,7 @@
                                 (click)="selectAsset(svc.name, data?.asset);openModal('asset-tracking-dialog')">
                                 <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow"
                                   data-tooltip="Deprecate asset">
-                                  <i class="fa fa-sm fa-eraser" aria-hidden="true"></i>
+                                  <i class="bi bi-sm bi-eraser" aria-hidden="true"></i>
                                 </span>
                               </a>
                               <small>{{data.asset}}</small>
@@ -118,7 +142,7 @@
                       </tr>
                     </table>
                   </td>
-                  <td>
+                  <td class="pt-2">
                     <span *ngIf="svc?.assets?.length > 1" (click)="showHideAsset(svc)"
                       [ngClass]="{'open': svc.expanded}"
                       class="icon is-small tooltip has-tooltip-right has-tooltip-arrow tooltip-help is-pulled-right is-hovered"

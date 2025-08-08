@@ -9,7 +9,7 @@
                     <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
                 </button>
             </div>
-            <a *ngIf="rolesService.hasControlAccess()" class="button is-light"
+            <a *ngIf="rolesService.hasControlAccess()" class="button is-small mt-3 is-light"
                 [routerLink]="['/control-dispatcher/entry-points/add']">
                 <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
                 <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
@@ -96,7 +96,7 @@
 
 <app-confirmation-dialog id="confirmation-execute-dialog">
     <header class="modal-card-head p-3">
-        <span class="modal-card-title title-name">
+        <span class="modal-card-title is-size-6">
             Request {{epName}} Execution
             <p class="help has-text-grey description-text pt-1">{{description}}</p>
         </span>
@@ -146,7 +146,7 @@
     <footer class="modal-card-foot p-3">
         <button class="button is-small" type="button"
             (click)="closeModal('confirmation-execute-dialog')">Cancel</button>
-        <button class="button is-small is-info" type="button" (click)="requestAPIFlow(epName, apiFlowForm.value)"
+        <button class="button is-small is-link" type="button" (click)="requestAPIFlow(epName, apiFlowForm.value)"
             [appDisableUntilResponse]="reenableButton">Execute</button>
     </footer>
 </app-confirmation-dialog>

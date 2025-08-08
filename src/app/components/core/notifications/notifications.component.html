@@ -15,7 +15,7 @@
       </div>
 
       <button *ngIf="rolesService?.hasControlAccess()" [disabled]="!serviceInfo.isEnabled"
-        class="button is-light mr-0 mt-0" (click)="addNotificationInstance()">
+        class="button is-small mt-3 is-light" (click)="addNotificationInstance()">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Create Notification Instance &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </button>
@@ -55,7 +55,8 @@
               <tbody>
                 <tr *ngFor="let instance of notificationInstances" [ngClass]="{'fade': (instance.enable == 'false')}">
                   <td class="align-content">
-                    <a class="button is-text" (click)="openNotificationInstanceModal(instance)">{{instance.name}}</a>
+                    <a class="button is-ghost is-text py-0"
+                      (click)="openNotificationInstanceModal(instance)">{{instance.name}}</a>
                   </td>
                   <td class="align-content">
                     {{instance.channel}}

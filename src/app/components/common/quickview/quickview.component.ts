@@ -1,6 +1,7 @@
 import { Component, HostListener, Input, OnInit, ViewChild, ContentChild } from '@angular/core';
-import * as bulmaQuickview from './../../../../../node_modules/bulma-quickview/dist/js/bulma-quickview.min.js'
 import { FlowEditorService } from './../node-editor/flow-editor.service';
+
+declare const bulmaQuickview: any;
 
 @Component({
   selector: 'app-quickview',
@@ -12,23 +13,23 @@ export class QuickviewComponent implements OnInit {
   @ViewChild('quickView') quickView;
   @ViewChild('quickViewBlock') quickViewBlock;
   @Input() showReadings: boolean;
+  @Input() isDebuggerPage = false;
   @Input() showLogs: boolean;
-  
-  @ContentChild('notificationLogs', {static:false}) notificationLogsComponent;
-  @ContentChild('systemLogs', {static:false}) systemLogsComponent;
+
+  @ContentChild('notificationLogs', { static: false }) notificationLogsComponent;
+  @ContentChild('systemLogs', { static: false }) systemLogsComponent;
 
   constructor(
-    public flowEditorService: FlowEditorService,
-  ) {}
+    public flowEditorService: FlowEditorService
+  ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
-    this.quickView.nativeElement.classList.remove('is-active');
     this.onCloseQuickview();
   }
-  
+
   ngOnInit(): void {
     // this is a work around to attach quickview component after the data is loaded in child component (which is rendered through ng-content)
-    var count = 0;
+    let count = 0;
     let intervalId = setInterval(() => {
       bulmaQuickview.attach();
       count++;
@@ -39,9 +40,12 @@ export class QuickviewComponent implements OnInit {
   }
 
   ngOnChanges() {
+    if (this.isDebuggerPage && this.quickView) {
+      this.quickView.nativeElement.style.width = '35%';
+      return;
+    }
     if (this.showReadings) {
       this.quickView.nativeElement.style.width = '35%';
-      this.quickViewBlock.nativeElement.style.width = '80%';
       return;
     }
     if (this.quickView) {
@@ -59,7 +63,9 @@ export class QuickviewComponent implements OnInit {
   }
 
   onCloseQuickview() {
+    this.quickView.nativeElement.classList.remove('is-active');
     this.flowEditorService.showLogsInQuickview.next({ showLogs: false });
+    this.flowEditorService.openDebuggerInQuickview.next({ openDebuggerPage: false });
     if (this.notificationLogsComponent) {
       this.notificationLogsComponent.ngOnDestroy();
     }

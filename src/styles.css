@@ -70,6 +70,7 @@ table.scroll tbody {
 }
 
 .card-header-title {
+  font-weight: 500;
   font-size: 0.9rem;
   padding: 0.75rem 1.5rem;
   max-height: 48px !important;
@@ -291,10 +292,6 @@ a.dropdown-item:hover {
   box-shadow: none;
 }
 
-.text-btn {
-  font-size: 0.85rem;
-}
-
 .select::after {
   font-size: x-small;
 }
@@ -383,7 +380,9 @@ span.tooltip {
   font-size: 0.75rem;
 }
 
-.bi-sm {
+.bi-sm,
+.text-btn,
+.steps-sm {
   font-size: 0.85rem;
 }
 
@@ -399,7 +398,7 @@ span.tooltip {
   font-size: 1.35rem;
 }
 
-.bi:hover {
+.bi:hover:not(.parent-icon):not(.child-icon) {
   color: rgb(91, 89, 89);
 }
 
@@ -425,8 +424,19 @@ span.tooltip {
   font-size: 0.8rem !important;
 }
 
-.card-header-title {
-  font-weight: 500;
+.modal-card-head {
+  border-top-left-radius: 3px !important;
+  border-top-right-radius: 3px !important;
+}
+
+.modal-card-foot {
+  border-bottom-left-radius: 3px !important;
+  border-bottom-right-radius: 3px !important;
+}
+
+.modal-card-head,
+.modal-card-foot {
+  padding: 15px !important;
 }
 
 .cog-icon {
@@ -449,13 +459,14 @@ span.tooltip {
   padding: 1em 0.75em !important
 }
 
+.is-size-9 {
+  font-size: 0.9rem !important;
+}
+
 .input,
 .textarea,
 .select select,
-.CodeMirror-wrap,
-.card,
-.panel,
-.panel-block {
+.CodeMirror-wrap {
   border-radius: 2px !important;
 }
 
@@ -507,25 +518,39 @@ span.tooltip {
   padding: 0.25em 0.5em;
 }
 
-.card-header a,
-.card-header button,
-.dropdown a,
-nav .button,
-.modal-card-head .button,
-.modal-card-head {
-  box-shadow: none !important;
+
+.steps-content {
+  width: 100%;
 }
 
-.modal-card-foot {
-  border-top: 1px solid #dbdbdb;
+.custom-viewport {
+  max-width: 65vw;
+  max-height: 45vh;
+  overflow: hidden;
 }
 
-.modal-card-head {
-  border-bottom: 1px solid #dbdbdb;
+.scrollable {
+  overflow: auto !important;
 }
 
-.modal-card-foot .button:not(:last-child) {
-  margin-right: .5em;
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
-/*****************/
+.debug {
+  animation: blink 1s infinite;
+}
+
+.button .bi {
+  color: inherit !important;
+}

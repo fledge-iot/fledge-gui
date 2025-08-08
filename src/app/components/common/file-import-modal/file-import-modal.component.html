@@ -1,0 +1,64 @@
+<div [id]="'file-import-modal-' + configuration.key" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title is-size-6">Import File</p>
+      <button class="delete" aria-label="close" (click)="formReset()"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="file has-name is-fullwidth is-small" [ngClass]="{'error': !file.isValidExtension || !file.isValid}"
+        (dragover)="onDragOver($event)" (drop)="onDropSuccess($event)">
+        <label class="file-label">
+          <input #fileImport class="file-input p-5" type="file" (click)="$event.target.value=null;"
+            (change)="onFileChange($event)">
+          <span class="file-cta p-5">
+            <span class="file-icon">
+              <i class="fas fa-upload"></i>
+            </span>
+            <span class="file-label">
+              Browse/Drag & drop
+            </span>
+          </span>
+          <span class="file-name p-5 is-flex">
+            <span>
+              {{file.name}}
+            </span>
+          </span>
+        </label>
+      </div>
+      <template [ngTemplateOutlet]="invalidFileTemplate"></template>
+      <table class="table is-responsive mt-2" *ngIf="tableData">
+        <thead>
+          <tr>
+            <th *ngFor="let prop of tableData[0].split(',')">{{prop}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of tableData; let i = index;">
+            <ng-container *ngIf="i!=0">
+              <td *ngFor="let val of row.split(',')">
+                {{val}}
+              </td>
+            </ng-container>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer class="modal-card-foot">
+      <button class="button is-small is-link is-outlined" (click)="appendFileData()"
+        [disabled]="!file.isLoaded">Append</button>
+      <button class="button is-small is-link is-outlined" (click)="overrideFileData()"
+        [disabled]="!file.isLoaded">Override</button>
+    </footer>
+  </div>
+</div>
+
+<ng-template #invalidFileTemplate>
+  <span *ngIf="!file.isValidExtension" class="invalid has-text-danger mt-1">
+    Only CSV or JSON file is allowed
+  </span>
+  <span *ngIf="file.isValidExtension && !file.isValid" class="invalid has-text-danger mt-1">
+    Invalid file content
+  </span>
+</ng-template>

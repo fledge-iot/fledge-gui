@@ -35,7 +35,6 @@ export class ServicesApiService {
       catchError(error => throwError(error)));
   }
 
-
   /**
   *  POST  | /fledge/service
   */
@@ -116,6 +115,31 @@ export class ServicesApiService {
 
   monitorPluginInstallationStatus(statusURI: string) {
     return this.http.get(`${environment.BASE_URL}${statusURI.substr(statusURI.indexOf('package'))}`).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  manageServiceDebuggerState(name: string, action: string, payload = {}) {
+    let params = new HttpParams().set('action', action);
+    return this.http.put(`${this.GET_SERVICES_URL}/${encodeURIComponent(name)}/debug`, payload, { params }).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  setBufferSize(name: string, payload = {}) {
+    return this.http.put(`${this.GET_SERVICES_URL}/${encodeURIComponent(name)}/debug?action=buffer`, payload).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  setStepSize(name: string, payload = {}) {
+    return this.http.put(`${this.GET_SERVICES_URL}/${encodeURIComponent(name)}/debug?action=step`, payload).pipe(
+      map(response => response),
+      catchError(error => throwError(error)));
+  }
+
+  getBufferedData(name: string) {
+    return this.http.get(`${this.GET_SERVICES_URL}/${encodeURIComponent(name)}/debug?action=buffer`).pipe(
       map(response => response),
       catchError(error => throwError(error)));
   }

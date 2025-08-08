@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
   isServiceRunning = true;
   modalWindow: HTMLElement | null;
 
-  isSidemenuCollapsed = false;
+  isSidemenuCollapsed = true;
 
   private destroySubject: Subject<void> = new Subject();
 
@@ -50,7 +50,17 @@ export class AppComponent implements OnInit {
       .pipe(takeUntil(this.destroySubject))
       .subscribe((isLoginView: boolean) => {
         this.isLoginView = isLoginView;
-      })
+      });
+
+    // Subscribe to user login state to set sidebar collapsed state
+    this.sharedService.isUserLoggedIn
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(userState => {
+        if (userState.loggedIn) {
+          this.isSidemenuCollapsed = true;
+          this.sharedService.isSidebarCollapsed.next(true);
+        }
+      });
 
     this.setPingIntervalOnAppLaunch();
     this.setStasHistoryGraphRefreshIntervalOnAppLaunch();
@@ -135,6 +145,20 @@ export class AppComponent implements OnInit {
   setSidebarState(state) {
     this.isSidemenuCollapsed = state;
     this.sharedService.isSidebarCollapsed.next(state);
+  }
+
+  getMainContentClasses(): string {
+    if (this.isLoginView) {
+      return 'is-12';
+    }
+    return this.isSidemenuCollapsed ? 'is-11 narrow-mode-right-pane' : 'is-10 expanded-mode-right-pane';
+  }
+
+  shouldShowOverlay(): boolean {
+    return !this.isServiceRunning &&
+      !this.url?.includes('setting') &&
+      !this.url?.includes('login') &&
+      !this.modalWindow;
   }
 
   ngOnDestroy() {

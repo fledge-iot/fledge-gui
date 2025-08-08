@@ -305,8 +305,8 @@
         </div>
       </form>
       <ng-container *ngIf="isAddFilterWizard">
-        <app-add-pipeline-filter-modal [pipelineName]="pipelineName"
-          (notify)="addNewFitlerInPipeline($event)"></app-add-pipeline-filter-modal>
+        <app-add-pipeline-filter-modal [pipelineName]="pipelineName" (notify)="addNewFitlerInPipeline($event)">
+        </app-add-pipeline-filter-modal>
       </ng-container>
     </div>
   </div>

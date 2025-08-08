@@ -1,6 +1,7 @@
 import { ClassicPreset } from "rete";
-import { EnabledControl, NameControl, PluginControl } from "./controls/common-custom-control";
-import { FilterColorControl } from "./controls/filter-custom-control";
+import { EnabledControl, NameControl, PluginControl } from "../controls/common-custom-control";
+import { FilterColorControl } from "../controls/filter-custom-control";
+import { Debug } from "../../../../components/core/south/south-service";
 
 export class PseudoNodeControl extends ClassicPreset.Control {
   constructor(public pseudoConnection: boolean) {
@@ -13,6 +14,8 @@ export class Filter extends ClassicPreset.Node {
   width = 198;
   parent?: string;
   pseudoNode?: boolean;
+  type? = "filter";
+  debug?: Debug;
 
   constructor(socket: ClassicPreset.Socket, filter, pseudoNode: boolean) {
     super("Filter");

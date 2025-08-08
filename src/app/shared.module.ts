@@ -26,6 +26,19 @@ import { ListTypeConfigurationComponent } from './components/core/configuration-
 import { KvListTypeConfigurationComponent } from './components/core/configuration-manager/kv-list-type-configuration/kv-list-type-configuration.component';
 import { StaticConfigurationComponent } from './components/core/configuration-manager/static-configuration/static-configuration.component';
 import { ButtonPanelComponent } from './components/core/configuration-manager/button-panel/button-panel.component';
+import { FileImportModalComponent } from './components/common/file-import-modal/file-import-modal.component';
+import { FileExportModalComponent } from './components/common/file-export-modal/file-export-modal.component';
+import { PropertyConfigurationComponent } from './components/core/configuration-manager/property-configuration/property-configuration.component';
+import { ToggleSwitchComponent } from './components/core/configuration-manager/toggle-switch/toggle-switch.component';
+import { ListTableComponent } from './components/core/configuration-manager/list-table/list-table.component';
+import { ListCardComponent } from './components/core/configuration-manager/list-card/list-card.component';
+import { KvlistCardComponent } from './components/core/configuration-manager/kvlist-card/kvlist-card.component';
+import { DynamicGroupComponent } from './components/core/configuration-manager/dynamic-group/dynamic-group.component';
+import { DebuggerComponent } from './components/core/debugger/debugger.component';
+import { DebuggerReadingsComponent } from './components/core/debugger/debugger-readings/debugger-readings.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { BufferActionButtonsComponent } from './components/core/debugger/buffer-action-buttons/buffer-action-buttons.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @NgModule({
   imports: [
@@ -36,6 +49,8 @@ import { ButtonPanelComponent } from './components/core/configuration-manager/bu
     DirectivesModule,
     NgSelectModule,
     ReactiveFormsModule,
+    DragDropModule,
+    ScrollingModule,
     StaticConfigurationComponent
   ],
   declarations: [
@@ -56,7 +71,18 @@ import { ButtonPanelComponent } from './components/core/configuration-manager/bu
     TaskScheduleComponent,
     ServiceWarningComponent,
     ServiceConfigComponent,
-    ButtonPanelComponent
+    ButtonPanelComponent,
+    FileImportModalComponent,
+    FileExportModalComponent,
+    PropertyConfigurationComponent,
+    ToggleSwitchComponent,
+    ListTableComponent,
+    ListCardComponent,
+    KvlistCardComponent,
+    DynamicGroupComponent,
+    DebuggerComponent,
+    DebuggerReadingsComponent,
+    BufferActionButtonsComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -72,7 +98,11 @@ import { ButtonPanelComponent } from './components/core/configuration-manager/bu
     AddTaskWizardComponent,
     TaskScheduleComponent,
     ServiceWarningComponent,
-    ServiceConfigComponent
+    ServiceConfigComponent,
+    DynamicGroupComponent,
+    DebuggerComponent,
+    DebuggerReadingsComponent,
+    BufferActionButtonsComponent
   ]
 })
 export class SharedModule { }

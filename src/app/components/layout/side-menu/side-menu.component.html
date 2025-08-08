@@ -1,4 +1,4 @@
-<aside class="menu" [ngClass]="{'submenu-div is-relative': viewPort == 'desktop'}"
+<aside class="menu collapsed" [ngClass]="{'submenu-div is-relative': viewPort == 'desktop'}"
   [id]="viewPort !== 'desktop' ? 'mobile-sidemenu' : 'sidemenu'">
   <ul class="menu-list">
     <section [ngClass]="{'disabled':  !isServiceRunning}" (click)="toggleSideMenu(); $event.preventDefault()">
@@ -21,14 +21,20 @@
         <li>
           <a class="sidemenu-link" id="south" routerLinkActive="is-active"
             [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/south']: ['/south']">
-            <span class="menu-text"><i class="bi bi-pc-display-horizontal bi-xs sidebar-icon"></i></span>
+            <span class="menu-text">
+              <img src="assets/icons/svg/south-icon.svg" id="south-icon" />
+            </span>
             <span class="sidemenu-text">South</span>
           </a>
         </li>
         <li>
           <a class="sidemenu-link" id="north" routerLinkActive="is-active"
             [routerLink]="flowEditorService.getFlowEditorStatus() ? ['/flow/editor/north']: ['/north']">
-            <span><i class="bi bi-cloud-upload bi-sm"></i></span>
+            <span class="menu-text">
+              <svg id="north-icon">
+                <use xlink:href="assets/icons/svg/north-icon.svg#north-icon" />
+              </svg>
+            </span>
             <span class="sidemenu-text">North</span>
           </a>
         </li>
@@ -61,22 +67,24 @@
           <div class="submenu-div" id="control-submenu" [hidden]="viewPort !== 'desktop' && !isControlListOpen">
             <ul class="submenu-list">
               <li>
-                <a class="submenu-text" id="acl" routerLinkActive="is-active" routerLink='control-dispatcher/acl'>
+                <a class="submenu-text has-text-weight-medium" id="acl" routerLinkActive="is-active"
+                  routerLink='control-dispatcher/acl'>
                   ACLs
                 </a>
               </li>
               <li>
-                <a class="submenu-text" id="entry-point" routerLinkActive="is-active"
+                <a class="submenu-text has-text-weight-medium" id="entry-point" routerLinkActive="is-active"
                   routerLink='control-dispatcher/entry-points'>
                   API Entry Points
                 </a>
               </li>
               <li>
-                <a class="submenu-text" id="pipelines" routerLinkActive="is-active"
+                <a class="submenu-text has-text-weight-medium" id="pipelines" routerLinkActive="is-active"
                   routerLink='control-dispatcher/pipelines'>Pipelines</a>
               </li>
               <li>
-                <a class="submenu-text" id="script" routerLinkActive="is-active" routerLink='control-dispatcher/script'>
+                <a class="submenu-text has-text-weight-medium" id="script" routerLinkActive="is-active"
+                  routerLink='control-dispatcher/script'>
                   Scripts
                 </a>
               </li>
@@ -134,21 +142,24 @@
           <div class="submenu-div" id="logs-submenu" [hidden]="viewPort !== 'desktop' && !isLogsListOpen">
             <ul class="submenu-list" [ngClass]="{'pl-0': isSidemenuCollapsed }">
               <li>
-                <a class="submenu-text" id="audit" routerLinkActive="is-active" routerLink='logs/audit'>Audit</a>
+                <a class="submenu-text has-text-weight-medium" id="audit" routerLinkActive="is-active"
+                  routerLink='logs/audit'>Audit</a>
               </li>
               <li>
-                <a class="submenu-text" id="notification-log" routerLinkActive="is-active"
+                <a class="submenu-text has-text-weight-medium" id="notification-log" routerLinkActive="is-active"
                   routerLink='logs/notifications'>Notifications</a>
               </li>
               <li>
-                <a class="submenu-text" id="packages" routerLinkActive="is-active"
+                <a class="submenu-text has-text-weight-medium" id="packages" routerLinkActive="is-active"
                   routerLink='logs/packages'>Packages</a>
               </li>
               <li>
-                <a class="submenu-text" id="syslog" routerLinkActive="is-active" routerLink='logs/syslog'>System</a>
+                <a class="submenu-text has-text-weight-medium" id="syslog" routerLinkActive="is-active"
+                  routerLink='logs/syslog'>System</a>
               </li>
               <li>
-                <a class="submenu-text" id="tasks" routerLinkActive="is-active" routerLink='logs/tasks'>Tasks</a>
+                <a class="submenu-text has-text-weight-medium" id="tasks" routerLinkActive="is-active"
+                  routerLink='logs/tasks'>Tasks</a>
               </li>
             </ul>
           </div>
@@ -203,8 +214,14 @@
                 </a>
               </li>
               <!-- <li>
-                <a class="submenu-text" id="additional-services" routerLinkActive="is-active"
-                  routerLink='/developer/perfmon'>Performance Monitors
+                <a class="submenu-text has-text-weight-medium" id="perfmon" routerLinkActive="is-active"
+                  routerLink='/developer/perfmon'>
+                  <span class="has-text-weight-medium">
+                    Performance Monitors
+                   </span>
+                  <span class="help has-text-weight-light">
+                    View &amp; analyze performance counters to assist with tuning and optimization
+                  </span>
                 </a>
               </li> -->
             </ul>

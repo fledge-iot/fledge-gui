@@ -1,0 +1,73 @@
+<div class="card mt-0 card-shadow" [ngClass]="{'error': item.invalid || items[i].status == false}" [formGroup]="item">
+  <header class="card-header has-background-white card-header-shadow is-justify-content-space-between"
+    [ngClass]="{'pt-3': i==0}" id="card-header-{{configuration.key}}-{{i}}-{{from}}">
+    <div class="card-header-title">
+      <p class="subtitle is-size-9">{{kvListItems?.controls[i]?.controls['key'].value}}</p>
+    </div>
+    <div class="btn-container">
+      <button class="card-header-icon tooltip has-tooltip-multiline has-tooltip-right has-tooltip-arrow"
+        [attr.data-tooltip]="extractItemValue(item.value.value)" (click)="toggleCard(i)">
+        <span class="icon is-small">
+          <i class="bi bi-three-dots bi-sm" aria-hidden="true"></i>
+        </span>
+      </button>
+      <button class="card-header-icon" (click)="toggleCard(i)">
+        <span class="icon is-small toogle-icon" title="Expand">
+          <i class="fas fa-2xs fa-angle-right" aria-hidden="true"></i>
+        </span>
+      </button>
+    </div>
+  </header>
+  <div class="card-content is-hidden" id="card-content-{{configuration.key}}-{{i}}-{{from}}">
+    <div class="columns mb-0 is-variable is-1">
+      <div class="column mt-2 px-2 pt-2 pb-0 is-10">
+        <div class="field is-horizontal mb-0">
+          <div class="field-label has-text-left">
+            <label class="label tooltip has-tooltip-multiline config-label has-tooltip-right has-tooltip-arrow"
+              [attr.data-tooltip]="configuration.keyDescription"
+              [ngClass]="{'is-inline-block': !rolesService.hasAccessPermission(configuration?.permissions)}">{{configuration.keyName
+              ? configuration.keyName : "Key"}}</label>
+            <span class="ml-1" *ngIf="!rolesService.hasAccessPermission(configuration?.permissions)">
+              <i class="bi bi-xs bi-info-circle info-icon" aria-hidden="true"
+                title="Insufficient privileges to modify this"></i>
+            </span>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="column is-11 p-0">
+                <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticKey">
+                  <input formControlName="key" placeholder="key" class="input is-small is-fullwidth" name="type"
+                    type="text">
+                  <span *ngIf="kvListItems?.controls[i]?.controls['key']?.invalid" class="help is-danger">
+                    <sup>*</sup>required
+                  </span>
+                </ng-container>
+                <ng-template #staticKey>
+                  <span class="help">
+                    {{kvListItems?.controls[i]?.controls['key']?.value}}
+                  </span>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr class="kvlist-divider">
+        <app-show-configuration [groupConfiguration]="initialProperties[i]" [fullConfiguration]="initialProperties[i]"
+          (event)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)" [from]="from"
+          [group]="group"></app-show-configuration>
+      </div>
+      <div class="column is-1 has-text-right"
+        [ngClass]="{'is-invisible': !rolesService.hasAccessPermission(configuration?.permissions)}">
+        <button class="delete my-3 is-small" (click)="removeListItem(i)"></button>
+      </div>
+      <div class="column is-1 has-text-right">
+        <button class="button is-small my-1 collapse-btn" (click)="toggleCard(i)"
+          [ngClass]="{'is-hidden':item.invalid || items[i].status == false}">
+          <span class="icon is-small toogle-icon" title="Collapse">
+            <i class="fas fa-xs fa-angle-up" aria-hidden="true"></i>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -21,9 +21,10 @@ svg path.selected {
 }
 
 .connection-status {
-  position: absolute;
+  position: fixed;
   transform: translate(-50%, -50%);
   border: 0px;
+  opacity: 1;
   width: auto;
   height: auto;
   cursor: pointer;

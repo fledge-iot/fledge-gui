@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AlertService, ConfigurationControlService, ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
 import { chain, cloneDeep, uniqWith, isEmpty } from 'lodash';
@@ -17,6 +17,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   @Input() serviceStatus = false;
   @Input() from: string;
   @Input() sourceName: string;
+  @Input() recalculateTabsOverflow: boolean;
+  @Input() isFilterList: boolean;
 
   @Output() changedConfigEvent = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<boolean>();
@@ -25,6 +27,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   @ViewChild(TabNavigationComponent) tabNavigationComponent: TabNavigationComponent;
 
   selectedGroup = { key: 'Basic', name: 'Basic' };
+  selectedAdvancedGroup = { key: 'Advanced', name: 'Advanced' };
+  selectedSecurityGroup = { key: 'Security', name: 'Security' };
   groups = [];
   tabs: TabHeader;
 
@@ -37,6 +41,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   changedAdvanceConfiguration: any;
   changedSecurityConfiguration: any;
   dynamicCategoriesGroup = [];
+  advancedGroups = [];
+  securityGroups = [];
   groupTabs = [];
 
   constructor(
@@ -48,9 +54,24 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     private cdrf: ChangeDetectorRef
   ) { }
 
+
   ngAfterViewInit() {
-    const groupNavContents = document.getElementById("groupNavContents");
-    this.tabs = new TabHeader(groupNavContents);
+    if (this.from && this.from.includes("control-pipeline")) {
+      const element = document.getElementById(this.from);
+      if (element) {
+        const currentMaxWidthValue = parseFloat(window.getComputedStyle(element).maxWidth);
+
+        // Set the new max-width (65% of the current max-width)
+        element.style.maxWidth = currentMaxWidthValue * 0.65 + 'px';
+      }
+    }
+    const idSuffix = this.from + '_' + this.sourceName;
+    const groupNavContents = document.getElementById("nav_contents_" + idSuffix);
+    const groupNavigation = document.getElementById("group_navigation_" + idSuffix);
+    this.tabs = new TabHeader(groupNavContents, groupNavigation);
+
+    this.selectedGroup = this.groups[0]?.group;
+
     window.addEventListener('resize', () => {
       this.tabs.setOverFlow();
     })
@@ -67,9 +88,48 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     this.tabs.scrollToRight();
   }
 
-  ngOnChanges() {
+  ngOnChanges(simpleChanges: SimpleChanges) {
     this.categeryConfiguration();
-    this.getChildConfigData();
+
+    // Fetch child config data when plugin, category, or sourceName changes (initial load or service switch)
+    if (simpleChanges['plugin'] ||
+      (simpleChanges['category'] && simpleChanges['category'].currentValue?.name !== simpleChanges['category'].previousValue?.name) ||
+      (simpleChanges['sourceName'] && simpleChanges['sourceName'].currentValue !== simpleChanges['sourceName'].previousValue)) {
+      this.getChildConfigData();
+      this.selectedGroup = this.groups[0]?.group;
+    } else {
+      // Update local configurations without API calls
+      if (this.changedAdvanceConfiguration) {
+        this.advanceConfiguration = this.updateLocalConfigurations(this.advanceConfiguration, this.changedAdvanceConfiguration);
+      }
+      if (this.changedSecurityConfiguration) {
+        this.securityConfiguration = this.updateLocalConfigurations(this.securityConfiguration, this.changedSecurityConfiguration);
+      }
+      // Skip tab recalculation and scrolling for configuration updates
+      return;
+    }
+
+    if ((this.isFilterList && this.recalculateTabsOverflow !== undefined) || this.recalculateTabsOverflow) {
+      this.tabs.setOverFlow();
+    }
+    if (simpleChanges?.sourceName?.currentValue || simpleChanges?.category?.currentValue) {
+      this.tabNavigationComponent?.setTab(0);
+    }
+  }
+
+  updateLocalConfigurations(configuration, changedConfiguration) {
+    // Create a deep copy to avoid mutating the original object
+    const updatedConfig = cloneDeep(configuration);
+
+    // Iterate through the changed configuration
+    Object.keys(changedConfiguration).forEach(key => {
+      // Check if the key exists in the original configuration
+      if (updatedConfig.config[key]) {
+        // Update the value property
+        updatedConfig.config[key].value = changedConfiguration[key];
+      }
+    });
+    return updatedConfig;
   }
 
   public updateCategroyConfig(config) {
@@ -93,7 +153,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
     this.groups = chain(configItems).groupBy(x => x.group).map((v, k) => {
       const g = k != "undefined" && k?.toLowerCase() != 'basic' ? k : "Basic";
-      return { category: this.category.name, group: { key: g, name: g }, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })), type: g }
+      return { category: this.category.name ? this.category.name : this.category.key, group: { key: g, name: g }, config: Object.assign({}, ...v.map(vl => { return { [vl.key]: vl } })), type: g }
     }).value();
 
     Object.keys(this.category.config).map(k => {
@@ -110,15 +170,15 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     })
 
     if (modelConfig.length > 0) {
-      this.buildGroupOfItems(modelConfig);
+      this.buildGroupOfItems(this.groups, this.category, modelConfig);
     }
 
     if (listConfig.length > 0) {
-      this.buildGroupOfItems(listConfig);
+      this.buildGroupOfItems(this.groups, this.category, listConfig);
     }
 
     if (kvlistConfig.length > 0) {
-      this.buildGroupOfItems(kvlistConfig);
+      this.buildGroupOfItems(this.groups, this.category, kvlistConfig);
     }
 
     // merge configuration of same group
@@ -156,27 +216,23 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         e.group.key === 'Basic' ? acc.unshift(e) : acc.push(e);
         return acc;
       }, []);
-
-
     this.getGroups();
-    // set initial group
-    this.selectedGroup = this.groups[0]?.group;
   }
 
-  buildGroupOfItems(configItems) {
+  buildGroupOfItems(groups, category, configItems) {
     configItems?.forEach(config => {
-      if(config.readonly != 'true'){
+      if (config.readonly != 'true') {
         if (!config.hasOwnProperty('value')) {
           config.value = config.default;
         }
-        let isGroupNameExist = this.groups.some(obj => Object.values(obj.group).includes(config.displayName ? config.displayName : config.key));
+        let isGroupNameExist = groups.some(obj => Object.values(obj.group).includes(config.displayName ? config.displayName : config.key));
         let group = { key: config.key, name: config.displayName ? config.displayName : config.key, description: config.description };
         if (isGroupNameExist) {
           // If same group exist, create new group with coonfig key and the description of the configuration
           group = { key: config.key, name: config.key, description: config.description }
         }
-  
-        this.groups.push({ category: this.category.name, group, config: config, type: config.type, key: config.key, ...(config.order && { order: config.order }) });
+
+        groups.push({ category: category.name ? category.name : category.key, group, config: config, type: config.type, key: config.key, ...(config.order && { order: config.order }) });
       }
     });
 
@@ -193,6 +249,18 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     if (this.tabNavigationComponent) {
       const tabIndex = this.groupTabs.findIndex(t => t.key === this.selectedGroup.key);
       this.tabNavigationComponent.setTab(tabIndex);
+    }
+  }
+
+  selectAdvancedSubTab(tab) {
+    if (tab.key !== this.selectedAdvancedGroup.key) {
+      this.selectedAdvancedGroup = tab;
+    }
+  }
+
+  selectSecuritySubTab(tab) {
+    if (tab.key !== this.selectedSecurityGroup.key) {
+      this.selectedSecurityGroup = tab;
     }
   }
 
@@ -254,9 +322,13 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         (data: any) => {
           if (category.key == `${this.categoryKey}Advanced`) {
             this.advanceConfiguration = { key: category.key, config: cloneDeep(data) };
+            this.advancedGroups = [];
+            this.processCategoryConfig(this.advanceConfiguration, category, data, this.advancedGroups, 'selectedAdvancedGroup');
           }
           if (category.key == `${this.categoryKey}Security`) {
             this.securityConfiguration = { key: category.key, config: cloneDeep(data) };
+            this.securityGroups = [];
+            this.processCategoryConfig(this.securityConfiguration, category, data, this.securityGroups, 'selectedSecurityGroup');
           }
           this.upsertAdvanceConfiguration(this.dynamicCategoriesGroup, { category: category.key, group: category.group, config: data });
           // check overflow after loading advanced & security group
@@ -273,6 +345,35 @@ export class ConfigurationGroupComponent implements AfterViewInit {
           }
         }
       );
+  }
+
+  processCategoryConfig(configuration, category, data, groupStore, selectedGroupKey) {
+    let listConfig = [];
+    let kvlistConfig = [];
+
+    Object.keys(configuration.config).forEach(k => {
+      configuration.config[k].key = k;
+      if (configuration.config[k].type === 'list') {
+        listConfig.push(configuration.config[k]);
+      } else if (configuration.config[k].type === 'kvlist') {
+        kvlistConfig.push(configuration.config[k]);
+      }
+    });
+
+    if (listConfig.length > 0 || kvlistConfig.length > 0) {
+      data = Object.fromEntries(
+        Object.entries(data).filter(([_, value]: [string, any]) => !['list', 'kvlist'].includes(value.type))
+      );
+      groupStore.push({ category: category.key, group: category.group, config: data });
+      this[selectedGroupKey] = groupStore[0]?.group;
+
+      if (listConfig.length > 0) {
+        this.buildGroupOfItems(groupStore, category, listConfig);
+      }
+      if (kvlistConfig.length > 0) {
+        this.buildGroupOfItems(groupStore, category, kvlistConfig);
+      }
+    }
   }
 
   /**

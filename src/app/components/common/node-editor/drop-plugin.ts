@@ -1,13 +1,14 @@
-import { BaseSchemes, ClassicPreset, GetSchemes, NodeEditor, Root, Scope } from 'rete'
+import { BaseSchemes, GetSchemes, NodeEditor, Root, Scope } from 'rete'
 import { AngularArea2D } from 'rete-angular-plugin';
 import { Area2D, AreaPlugin } from 'rete-area-plugin'
 import { Position } from 'rete-area-plugin/_types/types'
 import { ContextMenuExtra } from 'rete-context-menu-plugin';
 import { DockPlugin } from 'rete-dock-plugin'
-import { Connection } from './editor';
-import { Filter } from './filter';
+
+import { Filter } from './nodes/filter';
 import { MinimapExtra } from 'rete-minimap-plugin';
 import { DropStrategy } from './drop-stratgey';
+import { Connection } from './connection';
 
 type Node = Filter
 type Schemes = GetSchemes<Node, Connection<Node, Node>>;

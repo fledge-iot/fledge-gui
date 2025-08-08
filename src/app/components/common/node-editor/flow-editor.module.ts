@@ -13,6 +13,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { FilterModule } from '../../core/filter/filter.module';
 import { AddServiceWizardComponent } from '../../core/south/add-service-wizard/add-service-wizard.component';
 import { AddNotificationWizardComponent } from '../../core/notifications/add-notification-wizard/add-notification-wizard.component';
+import { PipesModule } from '../../../pipes/pipes.module';
 
 import { RolesGuard } from '../../../guards/roles.gurad';
 import { PluginService, NotificationsService } from '../../../services';
@@ -20,6 +21,7 @@ import { AddTaskWizardComponent } from '../../core/north/add-task-wizard/add-tas
 import { ReadingsCountComponent } from './south/asset-readings/readings-count.component';
 import { DirectivesModule } from '../../../directives/directives.module';
 import { AssetTrackerComponent } from './south/asset-tracker/asset-tracker.component';
+import { ToolbarComponent } from './toolbar/toolbar.component';
 
 const routes: Routes = [
   {
@@ -56,7 +58,8 @@ const routes: Routes = [
     CustomConnectionComponent,
     ReadingsCountComponent,
     RefDirective,
-    AssetTrackerComponent],
+    AssetTrackerComponent,
+    ToolbarComponent],
   imports: [
     RouterModule.forChild(routes),
     CommonModule,
@@ -65,7 +68,8 @@ const routes: Routes = [
     RouterModule,
     FilterModule,
     SharedModule,
-    DirectivesModule
+    DirectivesModule,
+    PipesModule
   ],
   exports: [NodeEditorComponent,
     CustomNodeComponent,

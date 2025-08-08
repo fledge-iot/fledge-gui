@@ -12,7 +12,8 @@ export function createSelector<Schemes extends ExpectedSchemes, K>(area: AreaPlu
 
   function unselectConnection(c: Schemes['Connection']) {
     c.selected = false
-    area.update('connection', c.id)
+    area.update('connection', c.id);
+    flowEditorService.nodeClick.next(c);
   }
 
   function selectConnection(c: Schemes['Connection']) {
@@ -28,6 +29,7 @@ export function createSelector<Schemes extends ExpectedSchemes, K>(area: AreaPlu
     area.update('connection', c.id);
     // pass connection id and state to the node editor component
     flowEditorService.connectionInfo.next({ id: c.id, selected: c.selected });
+    flowEditorService.nodeClick.next(c);
   }
 
   return {

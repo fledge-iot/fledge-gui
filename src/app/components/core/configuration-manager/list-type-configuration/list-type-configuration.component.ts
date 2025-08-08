@@ -1,9 +1,13 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective } from '@angular/forms';
-import { filter, uniqWith, isEqual } from 'lodash';
+import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnInit, Output, ViewChild } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { filter, uniqWith, isEqual, cloneDeep } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
-import { cloneDeep } from 'lodash';
-import { RolesService } from '../../../../services';
+import { ConfigurationControlService, RolesService } from '../../../../services';
+import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
+import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-list-type-configuration',
@@ -12,20 +16,30 @@ import { RolesService } from '../../../../services';
 })
 export class ListTypeConfigurationComponent implements OnInit {
   @Input() configuration;
+  @Input() categoryName;
   @Input() group: string = '';
   @Input() from = '';
   @Output() changedConfig = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
+  @ViewChild(FileImportModalComponent, { static: true }) fileImportModal: FileImportModalComponent;
+  @ViewChild(FileExportModalComponent, { static: true }) fileExportModal: FileExportModalComponent;
   listItemsForm: FormGroup;
   initialProperties = [];
   items = [];
   listLabel: string;
   firstKey: string;
   validConfigurationForm = true;
+  listValues;
+  isListView = true;
+
+  @ViewChild(CdkVirtualScrollViewport, { static: false }) viewport: CdkVirtualScrollViewport;
+  private valueChangeSub: Subscription;
 
   constructor(
+    private zone: NgZone,
     public cdRef: ChangeDetectorRef,
     public rolesService: RolesService,
+    public configControlService: ConfigurationControlService,
     private fb: FormBuilder) {
     this.listItemsForm = this.fb.group({
       listItems: this.fb.array([])
@@ -33,27 +47,57 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   ngOnInit() {
-    if(this.configuration.items == 'object'){
+    if (this.configuration.items == 'object') {
       this.firstKey = Object.keys(this.configuration.properties)[0];
       // Show first property label as list card header
-      this.listLabel = this.configuration.properties[this.firstKey].displayName ? this.configuration.properties[this.firstKey].displayName : this.firstKey;
+      this.listLabel = this.configuration.properties[this.firstKey]?.displayName ?? this.firstKey;
     }
-    let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
-    values = JSON.parse(values) as [];
-    values.forEach(element => {
-      this.initListItem(false, element);
-    });
-    this.onControlValueChanges();
-    if(this.configuration.items == 'object' && this.listItems.length == 1){
-      this.expandListItem(this.listItems.length-1); // Expand the list if only one item is present
+    let values = this.configuration?.value ?? this.configuration.default;
+    const t0 = performance.now();
+    values = JSON.parse(values);
+
+    if (this.configuration.listName) {
+      values = values[this.configuration.listName];
     }
+
+    this.cdRef.detach(); // stop Angular from detecting changes
+    const chunkSize = 20;
+    let i = 0;
+
+    const processChunk = () => {
+      const end = Math.min(i + chunkSize, values.length);
+      for (; i < end; i++) {
+        this.initListItem(false, values[i]);
+      }
+      if (i < values.length) {
+        setTimeout(processChunk, 0); // Yield to browser/UI
+      }
+    };
+
+    processChunk();
+
+    this.cdRef.reattach(); // resume change detection
+    this.cdRef.detectChanges(); // trigger only once
+
+    const t1 = performance.now();
+    console.log(`Form creation took ${t1 - t0} ms`);
+
+    this.valueChangeSub = this.onControlValueChanges();
   }
 
   get listItems() {
     return this.listItemsForm.get('listItems') as FormArray;
   }
 
-  initListItem(isPrepend, v: any = '') {
+  get listItemControls(): AbstractControl[] {
+    return [...this.listItems.controls]; // returns a new reference
+  }
+
+  trackByIndex(index: number, _item: AbstractControl): number {
+    return index;
+  }
+
+  initListItem(isPrepend: boolean, v: any = '') {
     let listItem;
     if (this.configuration.items == 'object') {
       let objectConfig = cloneDeep(this.configuration.properties);
@@ -67,45 +111,72 @@ export class ListTypeConfigurationComponent implements OnInit {
           objectConfig[key].permissions = this.configuration.permissions;
         }
       }
-      if(isPrepend) {
+      if (isPrepend) {
         this.initialProperties.unshift(objectConfig);
-        this.items.unshift({status : true});
+        this.items.unshift({ status: true });
       }
-      else{
+      else {
         this.initialProperties.push(objectConfig);
-        this.items.push({status : true});
+        this.items.push({ status: true });
       }
-      listItem = new FormControl(objectConfig);
+      let groupConfigurations = this.configControlService.createConfigurationBase(objectConfig);
+      listItem = this.configControlService.toFormGroup(objectConfig, groupConfigurations);
     }
     else {
       listItem = new FormControl(v, [CustomValidator.nospaceValidator]);
     }
-    if(isPrepend) {
+    if (isPrepend) {
       this.listItems.insert(0, listItem);
     }
-    else{
+    else {
       this.listItems.push(listItem);
     }
-    this.cdRef.detectChanges();
   }
 
   addListItem(isPrepend) {
     const controlsLength = this.listItems.length;
-    const listSize = this.configuration?.listSize > 0 ? +this.configuration.listSize : 999; // max threshold limit for new item creation
+    const listSize = this.configuration?.listSize > 0 ? +this.configuration.listSize : 9999; // max threshold limit for new item creation
     if (controlsLength > listSize) {
       return;
     }
     this.initListItem(isPrepend);
-    this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
-    if(this.configuration.items == 'object'){
-      // Expand newly added item
-      if(isPrepend){
-        this.expandListItem(0);
-      }
-      else{
-        this.expandListItem(this.listItems.length-1);
+    this.formStatusEvent.emit({ status: this.listItems.valid, group: this.group });
+    if (this.configuration.items === 'object') {
+      const index = isPrepend ? 0 : this.listItems.length - 1;
+      if (this.isListView) {
+        this.scrollToRow(index);
+      } else {
+        this.expandListItem(index);
       }
     }
+
+    // Step 1: Trigger DOM update
+    this.cdRef.detectChanges();
+
+    // Step 2: Wait for rendering to finish
+    this.zone.runOutsideAngular(() => {
+      requestAnimationFrame(() => {
+        if (this.viewport) {
+          this.viewport.checkViewportSize();
+
+          // Step 3: Scroll after layout is fully calculated
+          setTimeout(() => {
+            this.viewport.scrollToIndex(this.listItems.length - 1, 'smooth');
+          }, 0);
+        }
+      });
+    });
+  }
+
+  scrollToRow(i) {
+    setTimeout(() => {
+      let row = document.getElementById(`table-row-${this.configuration.key}-${i}-${this.from}`);
+      let input: HTMLElement = row.querySelector('.input.is-small');
+      if (input) {
+        input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        input.focus();
+      }
+    }, 1);
   }
 
   removeListItem(index: number) {
@@ -115,40 +186,46 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.setChildConfigFormValidity();
   }
 
-  onControlValueChanges(): void {
-    this.listItems.valueChanges.subscribe((value) => {
-      value = filter(value); // remove empty, undefined, null values
-      // float value conversion
-      if (this.configuration?.items == 'float') {
-        value = value?.map((num: any) => {
-          if (Number.isInteger(+num)) {
-            return Number.parseFloat(num).toFixed(1); // update Integer value to single decimal point. e.g. 2 => 2.0
+  onControlValueChanges(): Subscription {
+    return this.listItems.valueChanges
+      .pipe(
+        debounceTime(100), // Avoid unnecessary rapid firing
+        distinctUntilChanged(isEqual), // Prevent duplicate processing
+        map((value: any) => {
+          // Remove empty, undefined, null values
+          let filtered = filter(value);
+
+          // Convert to float if needed
+          if (this.configuration?.items === 'float') {
+            filtered = filtered.map((num: any) => Number.isInteger(+num) ? Number.parseFloat(num).toFixed(1) : num
+            );
           }
-          return num;
+          // Update initial properties if items are objects
+          if (this.configuration.items === 'object') {
+            this.initialProperties.forEach((property, index) => {
+              Object.entries(property).forEach(([key, prop]) => {
+                (prop as any).value = filtered?.[index]?.[key];
+              });
+            });
+          }
+
+          return uniqWith(filtered, isEqual);
+        })
+      )
+      .subscribe((processedValue) => {
+        this.changedConfig.emit({
+          [this.configuration.key]: JSON.stringify(processedValue),
         });
-      }
-      if (this.configuration.items == 'object') {
-        value = this.extractListValues(value);
-      }
-      value = uniqWith(value, isEqual);
-      this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(value) });
-      this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
-    })
+
+        this.formStatusEvent.emit({
+          status: this.listItems.valid,
+          group: this.group,
+        });
+      });
   }
 
-  getChangedConfiguration(index: string, propertyChangedValues: any) {
-    for (let [ind, val] of this.listItems.value.entries()) {
-      for (let property in val) {
-        if (ind == index && property == Object.keys(propertyChangedValues)[0]) {
-          val[property].value = Object.values(propertyChangedValues)[0];
-        }
-      }
-      this.listItems.value[ind] = val;
-    }
-    let listValues = this.extractListValues(this.listItems.value);
-    listValues = uniqWith(listValues, isEqual);
-    this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(listValues) });
-    this.formStatusEvent.emit({ 'status': this.listItems.valid, 'group': this.group });
+  getChangedConfiguration(index, propertyChangedValues: any) {
+    this.listItems.controls[index].patchValue(propertyChangedValues);
   }
 
   formStatus(formState: any, index) {
@@ -165,72 +242,92 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.validConfigurationForm = true;
   }
 
-  extractListValues(value) {
-    let listValues = [];
-    for (let val of value) {
-      let valueObj = this.extractSingleListValue(val);
-      listValues.push(valueObj);
-    }
-    return listValues;
-  }
-
-  extractSingleListValue(val) {
-    let valueObj = {};
-    for (let property in val) {
-      if (val[property].hasOwnProperty('value')) {
-        valueObj[property] = val[property].value;
-      }
-      else {
-        valueObj[property] = val[property].default;
-      }
-      if (val[property].type == 'json') {
-        valueObj[property] = JSON.parse(valueObj[property]);
-      }
-    }
-    return valueObj;
-  }
-
-  toggleCard(index) {
-    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
-    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
-    if(cardBody.classList.contains('is-hidden')){
-      cardBody.classList.remove('is-hidden');
-      cardHeader.classList.add('is-hidden');
-    }
-    else{
-      cardBody.classList.add('is-hidden');
-      cardHeader.classList.remove('is-hidden');
-    }
-  }
-
   expandListItem(index) {
     setTimeout(() => {
-      this.expandCollapseSingleItem(index, true);
+      this.expandCollapseSingleItem(index, true, true);
     }, 1);
   }
 
-  expandCollapseSingleItem(index: number, isExpand: boolean) {
-    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + index);
-    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + index);
-    if(isExpand) {
+  expandCollapseSingleItem(i: number, isExpand: boolean, scrollIntoView = false) {
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
+    if (isExpand) {
       cardHeader.classList.add('is-hidden');
       cardBody.classList.remove('is-hidden');
+      if (scrollIntoView) {
+        let input: HTMLElement = cardBody.querySelector('.input.is-small');
+        if (input) {
+          input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          input.focus();
+        }
+      }
     }
-    else{
+    else {
       cardHeader.classList.remove('is-hidden');
       cardBody.classList.add('is-hidden');
     }
   }
 
   expandAllItems() {
-    for(let i=0; i<this.listItems.length; i++){
+    for (let i = 0; i < this.listItems.length; i++) {
       this.expandCollapseSingleItem(i, true);
     }
   }
-  
+
   collapseAllItems() {
-    for(let i=0; i<this.listItems.length; i++){
+    for (let i = 0; i < this.listItems.length; i++) {
       this.expandCollapseSingleItem(i, false);
     }
+  }
+
+  appendFileData(event) {
+    event.fileData.forEach(element => {
+      this.initListItem(false, element);
+    });
+  }
+
+  overrideFileData(event) {
+    this.listItems.clear();
+    this.initialProperties = [];
+    event.fileData.forEach(element => {
+      this.initListItem(false, element);
+    });
+  }
+
+  openModal() {
+    this.hideDropDown();
+    this.fileImportModal.toggleModal(true);
+  }
+
+  openExportFileModal() {
+    this.hideDropDown();
+    this.listValues = this.listItems.value;
+    this.listValues = uniqWith(this.listValues, isEqual);
+    this.fileExportModal.toggleModal(true);
+  }
+
+  toggleDropdown() {
+    const dropDown = document.getElementById('export-dropdown-' + this.configuration?.key);
+    if (dropDown) {
+      dropDown.classList.toggle('is-active');
+    }
+  }
+
+  hideDropDown() {
+    const dropdown = document.getElementById('export-dropdown-' + this.configuration?.key);
+    if (dropdown && dropdown.classList.contains('is-active')) {
+      dropdown.classList.toggle('is-active');
+    }
+  }
+
+  setCurrentView(event) {
+    this.isListView = event.isListView;
+    if (this.listItems.length == 1 && !this.isListView) {
+      this.expandListItem(0); // Expand the list if only one item is present
+    }
+  }
+
+  ngOnDestroy() {
+    this.valueChangeSub?.unsubscribe();
   }
 }
