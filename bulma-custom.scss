@@ -5,8 +5,9 @@ $fw-500: 500;
 $fw-400: 400;
 $fs-normal: 0.9rem;
 
-// Path to Bulma's sass folder
-@use "bulma/sass" with ($radius-small: $radius-sm,
+// Path to Bulma's sass folder - Updated for v1.0.4 compatibility
+@use "bulma/sass" with ( // Your original v1.0.2 variables
+  $radius-small: $radius-sm,
   $card-header-weight: $fw-500,
   $link: $blue,
   $card-header-color: #363636,
@@ -21,4 +22,15 @@ $fs-normal: 0.9rem;
   $modal-card-head-radius: $radius-medium,
   $modal-card-foot-radius: $radius-medium,
   $modal-card-body-padding: 20px,
-  $button-weight: $fw-400);
+  $button-weight: $fw-400,
+
+  // Minimal additions for v1.0.4 compatibility
+  $primary: $blue, // Fix for button color (was using turquoise in v1.0.4)
+  $info: $blue, // Fix for info color (was probably same as primary in v1.0.2)
+  $success: #23d160, // Restore v1.0.2 success green (#effaf5 light, #257953 text)
+  $warning: #ffdd57, // Restore v1.0.2 warning yellow
+  $danger: #ff3860, // Restore v1.0.2 danger red (#f14668 was close)
+  $radius: $radius-sm, // Fix for general radius (new in v1.0.4)
+  $weight-medium: $fw-400, // Fix for button weight (now uses CSS variables in v1.0.4)
+  $weight-bold: $fw-500 // Fix for label/header weight (now uses CSS variables in v1.0.4)
+);
