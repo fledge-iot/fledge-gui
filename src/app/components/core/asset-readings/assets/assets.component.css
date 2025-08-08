@@ -83,3 +83,11 @@
 .popover-content .content::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
+
+.popover.is-popover-right .popover-content {
+  transform: translate(0.2rem, 95%) !important;
+}
+
+.popover .popover-content::before {
+  border-width: 0rem;
+}
