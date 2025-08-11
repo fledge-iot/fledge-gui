@@ -123,9 +123,8 @@ hr {
 
 .hr-container .hr-text {
   border: none;
-  height: 1px;
-  background: #dbdbdb;
   margin: 0;
+  opacity: 0.5;
 }
 
 .hr-container .hr-text-content {
