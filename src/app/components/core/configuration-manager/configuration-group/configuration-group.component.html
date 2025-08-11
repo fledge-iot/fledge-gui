@@ -11,8 +11,9 @@
   </nav>
   <hr *ngIf="sourceName" class="my-2">
   <div class="configuration_group_wrapper">
-    <nav [id]="'group_navigation_'+from + '_' + sourceName" class="groupNav dragscroll mouse-scroll" role="tablist">
-      <div [id]="'nav_contents_'+from + '_' + sourceName" class="nav">
+    <nav [id]="'group_navigation_'+from + (sourceName ? '_' + sourceName : '')" class="groupNav dragscroll mouse-scroll"
+      role="tablist">
+      <div [id]="'nav_contents_'+from + (sourceName ? '_' + sourceName : '')" class="nav">
         <div class="tabs" *ngIf="from !== 'config-manager'"
           [ngClass]="{'is-fullwidth': sourceName && groupTabs?.length > 1 && from !== 'notifications' && developerTabState(groupTabs), 'is-boxed': !sourceName}">
           <ul>
