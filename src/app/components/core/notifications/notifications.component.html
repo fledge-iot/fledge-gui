@@ -15,7 +15,7 @@
       </div>
 
       <button *ngIf="rolesService?.hasControlAccess()" [disabled]="!serviceInfo.isEnabled"
-        class="button is-small mt-3 is-light" (click)="addNotificationInstance()">
+        class="button is-small mt-2 is-light" (click)="addNotificationInstance()">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Create Notification Instance &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </button>

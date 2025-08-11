@@ -9,7 +9,7 @@
                     <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
                 </button>
             </div>
-            <a *ngIf="rolesService.hasControlAccess()" class="button is-small mt-3 is-light"
+            <a *ngIf="rolesService.hasControlAccess()" class="button is-small mt-2 is-light"
                 [routerLink]="['/control-dispatcher/entry-points/add']">
                 <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
                 <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
