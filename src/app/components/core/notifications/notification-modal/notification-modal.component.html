@@ -63,7 +63,7 @@
     <section class="modal-card-body">
       {{'Deleting this notification instance can not be undone. Continue?'}}
     </section>
-    <footer class="modal-card-foot">
+    <footer class="modal-card-foot buttons">
       <button class="button is-small" (click)="closeModal('delete-notification-dialog')">Cancel</button>
       <button class="button is-small is-danger" (click)="deleteNotification(notification.name)"
         [appDisableUntilResponse]="reenableButton">Delete</button>

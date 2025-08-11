@@ -84,7 +84,7 @@
   <section class="modal-card-body">
     Deleting {{service?.name}} service can not be undone. Continue?
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button type="button" class="button is-small" (click)="closeModal('delete-confirmation-dialog')">Cancel</button>
     <button type="button" class="button is-small is-danger" (click)="deleteService(service?.name)"
       [appDisableUntilResponse]="reenableButton">Delete</button>
@@ -100,7 +100,7 @@
     Are you sure, You want to {{ ["shutdown", "disabled"].includes(service?.state) ? "enable" : "disable" }} the service
     {{service?.name}}?
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button type="button" class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
     <button type="button" class="button is-small"
       [ngClass]="{'is-link': ['shutdown', 'disabled'].includes(service?.state), 'is-danger': !['shutdown', 'disabled'].includes(service?.state)}"

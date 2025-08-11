@@ -80,7 +80,7 @@
         <section class="modal-card-body">
           Are you sure, you want to delete the control script <b>{{script}}</b>?
         </section>
-        <footer class="modal-card-foot">
+        <footer class="modal-card-foot buttons">
           <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
           <button class="button is-small is-danger" (click)="deleteScript(script)"
             [appDisableUntilResponse]="reenableButton">Delete</button>

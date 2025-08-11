@@ -1,36 +1,25 @@
-$blue: #485fc7;
-$radius-sm: 2px;
-$radius-medium: 6px;
-$fw-500: 500;
-$fw-400: 400;
-$fs-normal: 0.9rem;
-
-// Path to Bulma's sass folder - Updated for v1.0.4 compatibility
-@use "bulma/sass" with ( // Your original v1.0.2 variables
-  $radius-small: $radius-sm,
-  $card-header-weight: $fw-500,
-  $link: $blue,
+// Path to Bulma's sass folder
+@use "bulma/sass" with ($radius-small: 2px,
+  $card-header-weight: 500,
+  $link: #485fc7,
   $card-header-color: #363636,
   $card-header-background-color: #f5f5f5,
   $card-radius: 0.25rem,
-  $label-weight: $fw-500,
-  $size-normal: $fs-normal,
-  $body-font-size: $fs-normal,
-  $modal-card-title-size: $fs-normal,
+  $label-weight: 500,
+  $size-normal: 0.9rem,
+  $body-font-size: 0.9rem,
+  $modal-card-title-size: 0.9rem,
   $modal-card-head-padding: 20px,
   $modal-card-head-background-color: #f5f5f5,
-  $modal-card-head-radius: $radius-medium,
-  $modal-card-foot-radius: $radius-medium,
+  $modal-card-head-radius: 6px,
+  $modal-card-foot-radius: 6px,
   $modal-card-body-padding: 20px,
-  $button-weight: $fw-400,
-
-  // Minimal additions for v1.0.4 compatibility
-  $primary: $blue, // Fix for button color (was using turquoise in v1.0.4)
-  $info: $blue, // Fix for info color (was probably same as primary in v1.0.2)
-  $success: #23d160, // Restore v1.0.2 success green (#effaf5 light, #257953 text)
-  $warning: #ffdd57, // Restore v1.0.2 warning yellow
-  $danger: #ff3860, // Restore v1.0.2 danger red (#f14668 was close)
-  $radius: $radius-sm, // Fix for general radius (new in v1.0.4)
-  $weight-medium: $fw-400, // Fix for button weight (now uses CSS variables in v1.0.4)
-  $weight-bold: $fw-500 // Fix for label/header weight (now uses CSS variables in v1.0.4)
-);
+  $button-weight: 400,
+  $primary: #485fc7,
+  $info: #485fc7,
+  $success: #23d160,
+  $warning: #ffdd57,
+  $danger: #ff3860,
+  $radius: 2px,
+  $weight-medium: 400,
+  $weight-bold: 500);

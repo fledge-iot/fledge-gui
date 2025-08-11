@@ -180,7 +180,7 @@
     Deleting {{dialogServiceName}} {{ task && task?.execution == "task"? 'task': (from === 'notifications' ? 'instance'
     : 'service')}} cannot be undone. Continue?
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button class="button is-small" (click)="closeModal('delete-service-dialog')">Cancel</button>
     <button class="button is-small is-danger" (click)="deleteService()"
       [appDisableUntilResponse]="reenableButton">Delete</button>
@@ -195,7 +195,7 @@
   <section class="modal-card-body">
     Deleting {{filterName}} filter cannot be undone. Continue?
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button class="button is-small" (click)="closeModal('delete-filter-dialog')">Cancel</button>
     <button class="button is-small is-danger" (click)="deleteFilterFromPipeline()"
       [appDisableUntilResponse]="reenableButton">Delete</button>
@@ -211,7 +211,7 @@
   <section class="modal-card-body">
     Are you sure, <b>{{selectedAsset}}</b> will be deprecated if this action is continued?
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button class="button is-small" (click)="closeModal('asset-tracking-dialog')">Cancel</button>
     <button class="button is-small is-danger" (click)="deprecateAsset(selectedAsset)">Yes</button>
   </footer>
@@ -225,7 +225,7 @@
   <section class="modal-card-body">
     Are you sure, you want to {{btnText.toLowerCase()}} the <b>{{dialogServiceName}}</b> notification instance?
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button class="button is-small" (click)="closeModal('state-change-dialog')">Cancel</button>
     <button class="button is-small is-outlined is-link" [appDisableUntilResponse]="reenableButton"
       (click)="toggleState(btnText)">{{btnText}}</button>
@@ -254,7 +254,7 @@
     </span>
   </section>
 
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button type="button" class="button is-small" (click)="closeModal('service-status-dialog')">Cancel</button>
     <button *ngIf="service || task" type="button" class="button is-small is-outlined is-link"
       [appDisableUntilResponse]="reenableButton" (click)="toggleServiceState({
@@ -284,7 +284,7 @@
   <section class="modal-card-body">
     Are you sure, You want to delete the selected nodes/connection?
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button class="button is-small" (click)="closeModal('toolbar-dialog')">Cancel</button>
     <button class="button is-small is-danger" (click)="deleteNodes()">Delete</button>
   </footer>

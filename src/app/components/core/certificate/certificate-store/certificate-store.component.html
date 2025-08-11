@@ -82,7 +82,7 @@
     <section class="modal-card-body">
       Are you sure, You want to delete the key <b>{{getName(certName)}}</b>
     </section>
-    <footer class="modal-card-foot">
+    <footer class="modal-card-foot buttons">
       <button class="button is-small" (click)="closeModal('delete-key-dialog')">Cancel</button>
       <button class="button is-small is-danger" (click)="deleteCertificate('key')"
         [appDisableUntilResponse]="reenableButton">Delete</button>
@@ -97,7 +97,7 @@
     <section class="modal-card-body">
       Are you sure, You want to delete the certificate <b>{{getName(certName)}}</b>
     </section>
-    <footer class="modal-card-foot">
+    <footer class="modal-card-foot buttons">
       <button class="button is-small" (click)="closeModal('delete-cert-dialog')">Cancel</button>
       <button class="button is-small is-danger" (click)="deleteCertificate('cert')"
         [appDisableUntilResponse]="reenableButton">Delete</button>
