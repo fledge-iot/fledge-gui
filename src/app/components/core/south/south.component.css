@@ -32,10 +32,6 @@
   max-width: max-content;
 }
 
-.service-name {
-  padding-top: 0;
-}
-
 #deprecate_event_div {
   padding-right: 10px;
   color: #363636;

@@ -259,6 +259,10 @@ table.scroll tbody {
   border-top: 1px solid #dbdbdb;
 }
 
+.button {
+  box-shadow: none !important;
+}
+
 /**
 Custom css for bulma dropdown
 Card Modal dropdown issue(overlapping issue) https://github.com/jgthms/bulma/issues/936

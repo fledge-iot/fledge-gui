@@ -1,5 +1,6 @@
 // Path to Bulma's sass folder
 @use "bulma/sass" with ($radius-small: 2px,
+  $box-radius: 6px,
   $card-header-weight: 500,
   $link: #485fc7,
   $card-header-color: #363636,
@@ -22,4 +23,5 @@
   $danger: #ff3860,
   $radius: 2px,
   $weight-medium: 400,
-  $weight-bold: 500);
+  $weight-bold: 500,
+  $panel-radius: var(--bulma-radius-medium));

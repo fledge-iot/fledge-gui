@@ -3301,7 +3301,7 @@ fieldset[disabled] .file-name, fieldset[disabled] .select select, .select fields
 .box {
   --bulma-box-background-color: var(--bulma-scheme-main);
   --bulma-box-color: var(--bulma-text);
-  --bulma-box-radius: var(--bulma-radius-large);
+  --bulma-box-radius: 6px;
   --bulma-box-shadow: var(--bulma-shadow);
   --bulma-box-padding: 1.25rem;
   --bulma-box-link-hover-shadow: 0 0.5em 1em -0.125em hsla(var(--bulma-scheme-h), var(--bulma-scheme-s), var(--bulma-scheme-invert-l), 0.1), 0 0 0 1px var(--bulma-link);
@@ -8094,7 +8094,7 @@ a.navbar-item.is-active, a.navbar-item.is-selected,
 .panel {
   --bulma-panel-margin: var(--bulma-block-spacing);
   --bulma-panel-item-border: 1px solid var(--bulma-border-weak);
-  --bulma-panel-radius: var(--bulma-radius-large);
+  --bulma-panel-radius: var(--bulma-radius-medium);
   --bulma-panel-shadow: var(--bulma-shadow);
   --bulma-panel-heading-line-height: 1.25;
   --bulma-panel-heading-padding: 1em 1.25em;
