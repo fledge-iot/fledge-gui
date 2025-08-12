@@ -1,0 +1,44 @@
+/* Global popover styles (consolidated) */
+.popover:hover .popover-content,
+.popover .popover-trigger:hover + .popover-content,
+.popover .popover-content:hover {
+  opacity: 1;
+  visibility: visible;
+}
+
+.popover-content {
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.popover-scrollable-content {
+  max-height: 300px;
+  overflow-y: auto;
+  max-width: 400px;
+}
+
+/* Scrollbar styling for better UX */
+.popover-content .content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.popover-content .content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.popover-content .content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.popover-content .content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.popover.is-popover-right .popover-content {
+  transform: translate(0.2rem, 95%) !important;
+}
+
+.popover .popover-content::before {
+  border-width: 0rem;
+} 
