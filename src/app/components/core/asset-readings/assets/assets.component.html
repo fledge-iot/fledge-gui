@@ -3,12 +3,12 @@
     <div>
       <span class="icon is-small tooltip has-tooltip-left has-tooltip-arrow tooltip-help is-pulled-right is-hovered"
         data-tooltip="Help" (click)="goToLink()">
-        <i class="far fa-question-circle"></i>
+        <i class="bi bi-question-circle"></i>
       </span>
       <span *ngIf="!isAlive"
         class="icon is-small is-pulled-right is-hovered assets-control has-tooltip-left has-tooltip-arrow tooltip"
         data-tooltip="Reload" (click)="getAsset()">
-        <i class="fa fa-sm fa-sync-alt" aria-hidden="true"></i>
+        <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
       </span>
       <ng-container *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()">
         <span *ngIf="assets?.length > 0"

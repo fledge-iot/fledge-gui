@@ -3,7 +3,7 @@
   <div class="modal-card">
     <header class="modal-card-head">
       <span *ngIf="notification" class="modal-card-title is-size-6">{{notification.name}}
-        <span><i class="bi bi-info-circle info-icon" aria-hidden="true"
+        <span><i class="bi bi-sm bi-info-circle info-icon" aria-hidden="true"
             [title]="'Rule Plugin: ' + notification.rule + '&#013;Action Plugin: ' + notification.channel"></i></span>
         <p class="help has-text-grey modal-subtitle">Notification Instance</p>
       </span>
@@ -44,7 +44,7 @@
           <p class="buttons is-pulled-left">
             <span class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
               data-tooltip="Help" (click)="goToLink()">
-              <i class="far fa-question-circle"></i>
+              <i class="bi bi-question-circle"></i>
             </span>
           </p>
           <p class="buttons is-pulled-right" *ngIf="rolesService.hasEditPermissions()">

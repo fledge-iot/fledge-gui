@@ -12,7 +12,7 @@
     </nav>
     <button type="button" *ngIf="editMode" (click)="refresh()" class="button is-small" title="Reload"
       id="refresh-check">
-      <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+      <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
     </button>
   </div>
   <ng-container *ngIf="unsavedChangesInFilterForm">
@@ -28,7 +28,7 @@
         <span (click)="goToLink('adding-a-control-pipeline')"
           class=" icon is-small has-tooltip-top has-tooltip-arrow tooltip is-pulled-right is-hovered pl-3 pb-3 help-icon"
           data-tooltip="Help">
-          <i class="far fa-question-circle"></i>
+          <i class="bi bi-question-circle"></i>
         </span>
         <div class="column">
           <div [hidden]="editMode" class="field is-horizontal">

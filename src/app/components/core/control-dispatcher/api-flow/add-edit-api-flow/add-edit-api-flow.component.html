@@ -13,7 +13,7 @@
     <nav>
       <button type="button" *ngIf="editMode" (click)="getAPIFlow()" class="button is-small" title="Reload"
         id="refresh-check">
-        <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
       </button>
     </nav>
   </div>
@@ -24,7 +24,7 @@
         <span (click)="goToLink('adding-a-control-api-entry-point')"
           class=" icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
           data-tooltip="Help">
-          <i class="far fa-question-circle"></i>
+          <i class="bi bi-question-circle"></i>
         </span>
         <div class="column is-four-fifths">
           <div [hidden]="editMode" class="field is-horizontal">
