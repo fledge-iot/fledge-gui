@@ -4,7 +4,7 @@
     <header class="modal-card-head">
       <span *ngIf="serviceInfo.added" class="modal-card-title is-size-6">{{serviceName}}
         <button class="button is-small" id="refresh-check" title="Reload" (click)="refreshService(true)">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+          <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
         </button>
         <p class="help has-text-grey modal-subtitle mt-0">{{serviceInfo.type !== 'BucketStorage' ? serviceInfo.type :
           'Bucket Storage'}} Service</p>
@@ -95,14 +95,14 @@
           <div class="field is-grouped is-pulled-left service-info-text">
             <p class="control">
               <span class="icon is-small tooltip is-pulled-right is-hovered" data-tooltip="Help" (click)="goToLink()">
-                <i class="far fa-question-circle"></i>
+                <i class="bi bi-question-circle"></i>
               </span>
             </p>
             <p class="control">
               <span
                 class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon"
                 data-tooltip="Show logs" (click)="navToSyslogs(serviceName)">
-                <i class="far fa-file-alt"></i>
+                <i class="bi bi-file-earmark-text"></i>
               </span>
             </p>
             <p class="control" *ngIf="serviceInfo.type === 'Management' && pollingScheduleID && isServiceEnabled">

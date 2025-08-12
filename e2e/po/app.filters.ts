@@ -7,7 +7,7 @@ export class Filters {
    * open filter wizard
    */
   openFilterWizard() {
-    return cy.get('.add-application a').click()
+    return cy.get('.opacity-07 a').click()
   }
 
   /**
