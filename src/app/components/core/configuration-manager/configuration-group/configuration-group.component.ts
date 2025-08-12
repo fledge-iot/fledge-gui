@@ -65,7 +65,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
         element.style.maxWidth = currentMaxWidthValue * 0.65 + 'px';
       }
     }
-    const idSuffix = this.from + '_' + this.sourceName;
+    const idSuffix = this.from + (this.sourceName ? '_' + this.sourceName : '');
     const groupNavContents = document.getElementById("nav_contents_" + idSuffix);
     const groupNavigation = document.getElementById("group_navigation_" + idSuffix);
     this.tabs = new TabHeader(groupNavContents, groupNavigation);
