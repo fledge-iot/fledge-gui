@@ -25,6 +25,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   selectedAssetName = '';
   latestReadings: { [key: string]: any } = {};  // Store latest readings for each asset
   popoverTimeouts: { [key: string]: any } = {};  // Store timeout references for each popover
+  currentPopoverAsset = '';  // Track which asset's popover is currently shown
 
   @ViewChild(ReadingsGraphComponent, { static: true }) readingsGraphComponent: ReadingsGraphComponent;
 
@@ -169,11 +170,51 @@ export class AssetsComponent implements OnInit, OnDestroy {
   public hidePopoverWithDelay(): void {
     // Add a small delay before hiding to allow smooth transition between trigger and content
     const timeoutId = setTimeout(() => {
-      // The popover will hide automatically due to CSS :hover behavior
+      this.hidePopover();
     }, 300); // 300ms delay
 
-    // Store timeout reference (though we might not need it for this implementation)
+    // Store timeout reference
     this.popoverTimeouts['current'] = timeoutId;
+  }
+
+  public showPopover(event: MouseEvent, assetCode: string): void {
+    // Clear any existing timeouts
+    this.keepPopoverOpen();
+    
+    // Set current asset for popover content
+    this.currentPopoverAsset = assetCode;
+    
+    // Get the trigger element position
+    const target = event.target as HTMLElement;
+    const trigger = target.closest('.popover-trigger') as HTMLElement;
+    if (!trigger) return;
+    
+    // Get the global popover element
+    const popover = document.getElementById('global-popover') as HTMLElement;
+    if (!popover) return;
+    
+    // Calculate position relative to viewport
+    const triggerRect = trigger.getBoundingClientRect();
+    const popoverRect = popover.getBoundingClientRect();
+    
+    // Position above the trigger, centered horizontally
+    const left = triggerRect.left + (triggerRect.width / 2);
+    const top = triggerRect.top - 10; // 10px above the trigger
+    
+    popover.style.left = `${left}px`;
+    popover.style.top = `${top}px`;
+    popover.style.transform = 'translate(-50%, -100%)';
+    popover.style.opacity = '1';
+    popover.style.visibility = 'visible';
+  }
+
+  public hidePopover(): void {
+    const popover = document.getElementById('global-popover') as HTMLElement;
+    if (popover) {
+      popover.style.opacity = '0';
+      popover.style.visibility = 'hidden';
+    }
+    this.currentPopoverAsset = '';
   }
 
   getAssetReadings(assetCode, recordCount) {
