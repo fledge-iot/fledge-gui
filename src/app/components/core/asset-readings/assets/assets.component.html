@@ -132,7 +132,7 @@
         </thead>
         <tbody>
           <tr>
-            <td>{{getLatestReadingTimestamp(currentPopoverAsset)}}</td>
+            <td>{{getLatestReadingTimestamp(currentPopoverAsset) | dateparser: 'YYYY-MM-DD HH:mm:ss.SSS'}}</td>
             <td *ngIf="getLatestReadingProperties(currentPopoverAsset).length > 0">
               {{getLatestReadingProperties(currentPopoverAsset)[0].key}}
               {{getLatestReadingProperties(currentPopoverAsset)[0].value}}
