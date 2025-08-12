@@ -4,17 +4,17 @@
       <p class="card-header-title">
         Support Bundles &nbsp;
         <button (click)="getBundles()" title="Reload" class="button is-small" id="refresh-check">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+          <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
         </button>
       </p>
       <div *ngIf="rolesService.hasEditPermissions()">
-        <a class="button is-small mt-3 mr-2 is-light" (click)="requestNewBundle()">
+        <a class="button is-small mt-2 mr-2 is-light" (click)="requestNewBundle()">
           <p *ngIf="viewPort !== 'mobile'" class="add-btn">Request New &nbsp;</p>
           <i class="bi bi-file-medical bi-sm" aria-hidden="true"></i>
         </a>
         <span class="icon is-small tooltip has-tooltip-left has-tooltip-arrow is-hovered help-pad" data-tooltip="Help"
           (click)="goToLink()">
-          <i class="far fa-question-circle"></i>
+          <i class="bi bi-question-circle"></i>
         </span>
       </div>
     </header>
