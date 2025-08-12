@@ -154,6 +154,7 @@ yarn start --host 0.0.0.0 --port 4200
 - [Bulma Documentation](https://bulma.io/documentation/)
 - [RxJS Documentation](https://rxjs.dev/)
 - [Chart.js Documentation](https://www.chartjs.org/docs/)
+- [Rete.js Documentation](https://retejs.org/docs/)
 
 ### Internal References
 - Main application component: [AppComponent](mdc:src/app/app.component.ts)

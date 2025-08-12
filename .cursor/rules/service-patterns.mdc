@@ -14,15 +14,13 @@ Business logic and system management services:
 - **[AuthService](mdc:src/app/services/auth.service.ts)**: User authentication and JWT token management
 - **[UserService](mdc:src/app/services/user.service.ts)**: User account operations and profile management
 
-#### Configuration & Settings
+#### Configuration & Certificate
 - **[ConfigurationService](mdc:src/app/services/configuration.service.ts)**: System configuration management
-- **[SettingsService](mdc:src/app/services/settings.service.ts)**: Application settings and preferences
 - **[CertificateService](mdc:src/app/services/certificate.service.ts)**: SSL certificate management
 
 #### Data & Analytics
 - **[StatisticsService](mdc:src/app/services/statistics.service.ts)**: System metrics and analytics
 - **[AssetsService](mdc:src/app/services/assets.service.ts)**: IoT asset data management
-- **[ReadingsService](mdc:src/app/services/readings.service.ts)**: Sensor reading data operations
 
 ### Infrastructure Services
 Application infrastructure and utility services:
