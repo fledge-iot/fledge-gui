@@ -52,7 +52,7 @@
             <p class="control">
               <button *ngIf="isManualRefresh" class="button is-small pl-1" id="refresh-alerts" (click)="getAlerts()">
                 <span class="icon is-small is-pulled-left">
-                  <i class="fa fa-sm fa-sync" title="Reload"></i>
+                  <i class="bi bi-lg bi-arrow-repeat" title="Reload"></i>
                 </span>
               </button>
               <button *ngIf="alertsCount > 1" class="button is-small pl-0 is-ghost" (click)="sortByKey === 'time' ? sortByTimestamp() : groupByUrgencySortedByTime(this.systemAlerts)">Sort by {{sortByKey}}</button>

@@ -6,7 +6,7 @@
         {{service.name}}
         <span *ngIf="isAddFilterWizard">- Add Filter</span>
         <span *ngIf="!isAddFilterWizard">
-          <i class="bi bi-info-circle info-icon" aria-hidden="true" [title]="service?.plugin?.name"></i>
+          <i class="bi bi-sm bi-info-circle info-icon" aria-hidden="true" [title]="service?.plugin?.name"></i>
         </span>
         <p class="help has-text-grey modal-subtitle">South Service</p>
       </span>
@@ -35,24 +35,29 @@
               </div>
             </div>
           </div>
-          <hr class="hr-text">
-          <div class="columns">
-            <div class="column has-text-centered">
-              <span class="label is-size-6 add-application" *ngIf="rolesService.hasEditPermissions(); else staticLabel">
+          <div class="hr-container">
+            <hr class="hr-text">
+            <div class="hr-text-content">
+              <span class="label is-size-6 opacity-07" *ngIf="rolesService.hasEditPermissions(); else staticLabel">
                 <a (click)="openAddFilterModal(true)">Applications
                   <span class="icon has-tooltip-right has-tooltip-arrow tooltip" data-tooltip="Add Filters">
-                    <i class="bi bi-plus-circle plus-icon bi-md" aria-hidden="true"></i>
+                    <i class="bi bi-md bi-plus-circle plus-icon" aria-hidden="true"></i>
                   </span>
                 </a>
               </span>
               <ng-template #staticLabel>
-                <span class="label is-size-6">Applications</span>
+                <span class="label is-size-6 opacity-07">Applications</span>
               </ng-template>
             </div>
           </div>
           <app-filter-list #filtersListComponent [service]="service?.name" [filterPipeline]="filterPipeline"
             [from]="'filter'" (formStatus)="filterFormStatus($event)"></app-filter-list>
-          <hr class="hr-text">
+
+          <div *ngIf="!filterPipeline || filterPipeline.length === 0">
+            <p class="has-text-centered has-text-grey-light is-size-7 mt-1 mb-2">No filters configured</p>
+            <hr class="hr-text">
+          </div>
+
           <div class="columns margin-bottom">
             <ng-container *ngIf="service != undefined">
               <div class="column is-9">
@@ -90,14 +95,14 @@
                 <span
                   class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
                   data-tooltip="Help" (click)="goToLink({name: category?.config?.plugin?.value, type: 'South'})">
-                  <i class="far fa-question-circle"></i>
+                  <i class="bi bi-question-circle"></i>
                 </span>
               </p>
               <p class="control">
                 <span
                   class="icon is-small has-tooltip-right has-tooltip-arrow tooltip is-pulled-left is-hovered help-icon"
                   data-tooltip="Show logs" (click)="navToSyslogs(service)">
-                  <i class="far fa-file-alt"></i>
+                  <i class="bi bi-file-earmark-text"></i>
                 </span>
               </p>
             </div>
