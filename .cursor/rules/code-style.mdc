@@ -1,0 +1,547 @@
+---
+globs: src/app/**/*.ts,src/app/**/*.html,src/app/**/*.css
+description: Code style standards and naming conventions for Fledge GUI
+---
+
+# Code Style & Naming Conventions
+
+## 🎨 TypeScript Style Guidelines
+
+### File Naming Conventions
+Follow Angular style guide naming patterns:
+
+```
+// Components
+user-profile.component.ts
+user-profile.component.html
+user-profile.component.css
+user-profile.component.spec.ts
+
+// Services
+data-management.service.ts
+data-management.service.spec.ts
+
+// Modules
+feature-name.module.ts
+
+// Models/Interfaces
+user-profile.ts
+api-response.ts
+
+// Guards
+auth-required.guard.ts
+
+// Pipes
+date-formatter.pipe.ts
+
+// Directives
+input-validator.directive.ts
+```
+
+### Class and Interface Naming
+```typescript
+// Classes use PascalCase
+export class UserProfileComponent { }
+export class DataManagementService { }
+export class AuthRequiredGuard { }
+
+// Interfaces use PascalCase with descriptive names
+export interface UserProfile {
+  id: number;
+  username: string;
+  email: string;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+// Enums use PascalCase
+export enum UserRole {
+  Admin = 'admin',
+  User = 'user',
+  Viewer = 'viewer'
+}
+
+// Constants use UPPER_SNAKE_CASE
+export const DEFAULT_PAGE_SIZE = 20;
+export const API_ENDPOINTS = {
+  USERS: '/api/users',
+  ASSETS: '/api/assets'
+} as const;
+```
+
+### Variable and Method Naming
+```typescript
+export class ComponentExample {
+  // Public properties use camelCase
+  public isLoading = false;
+  public userProfiles: UserProfile[] = [];
+  public selectedUserId: number | null = null;
+  
+  // Private properties use camelCase with underscore prefix (optional)
+  private readonly destroySubject = new Subject<void>();
+  private apiBaseUrl = environment.API_URL;
+  
+  // Methods use camelCase with descriptive names
+  public loadUserProfiles(): void {
+    this.userService.getProfiles()
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(profiles => {
+        this.userProfiles = profiles;
+      });
+  }
+  
+  public onUserSelected(userId: number): void {
+    this.selectedUserId = userId;
+    this.loadUserDetails(userId);
+  }
+  
+  // Private methods use camelCase
+  private loadUserDetails(userId: number): void {
+    // Implementation
+  }
+  
+  // Boolean methods/properties should be questions
+  public isUserSelected(): boolean {
+    return this.selectedUserId !== null;
+  }
+  
+  public hasAdminRole(): boolean {
+    return this.currentUser?.role === UserRole.Admin;
+  }
+}
+```
+
+## 🏗️ Component Structure Standards
+
+### Component Property Organization
+```typescript
+@Component({
+  selector: 'app-component-name',
+  templateUrl: './component-name.component.html',
+  styleUrls: ['./component-name.component.css']
+})
+export class ComponentNameComponent implements OnInit, OnDestroy {
+  // 1. Static properties
+  public readonly DEFAULT_ITEMS_PER_PAGE = 20;
+  
+  // 2. Input properties
+  @Input() public data: DataType[] = [];
+  @Input() public isReadOnly = false;
+  
+  // 3. Output properties
+  @Output() public itemSelected = new EventEmitter<DataType>();
+  @Output() public dataChanged = new EventEmitter<DataType[]>();
+  
+  // 4. ViewChild/ViewChildren
+  @ViewChild('searchInput') public searchInput: ElementRef<HTMLInputElement>;
+  @ViewChildren('listItems') public listItems: QueryList<ElementRef>;
+  
+  // 5. Public state properties
+  public isLoading = false;
+  public hasError = false;
+  public errorMessage = '';
+  public filteredData: DataType[] = [];
+  
+  // 6. Form properties
+  public searchForm: FormGroup;
+  public filterForm: FormGroup;
+  
+  // 7. Private properties
+  private readonly destroySubject = new Subject<void>();
+  private currentPage = 1;
+  
+  // 8. Constructor
+  constructor(
+    private dataService: DataService,
+    private alertService: AlertService,
+    private formBuilder: FormBuilder
+  ) {
+    this.initializeForms();
+  }
+  
+  // 9. Lifecycle hooks
+  public ngOnInit(): void {
+    this.loadInitialData();
+    this.setupFormSubscriptions();
+  }
+  
+  public ngOnDestroy(): void {
+    this.destroySubject.next();
+    this.destroySubject.complete();
+  }
+  
+  // 10. Public methods (alphabetically ordered)
+  public clearFilters(): void { }
+  public loadData(): void { }
+  public onItemClick(item: DataType): void { }
+  public refreshData(): void { }
+  
+  // 11. Private methods (alphabetically ordered)
+  private applyFilters(): void { }
+  private initializeForms(): void { }
+  private loadInitialData(): void { }
+  private setupFormSubscriptions(): void { }
+}
+```
+
+### Template Style Guidelines
+
+#### HTML Structure
+```html
+<!-- Use semantic HTML elements -->
+<main class="main-content">
+  <!-- Header section -->
+  <header class="page-header">
+    <h1 class="title">{{ pageTitle }}</h1>
+    <div class="actions">
+      <button class="button is-primary" 
+              [disabled]="isLoading"
+              (click)="onCreateNew()">
+        <span class="icon">
+          <i class="fas fa-plus"></i>
+        </span>
+        <span>Create New</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Filters section -->
+  <section class="filters-section" 
+           *ngIf="showFilters">
+    <form [formGroup]="filterForm" 
+          class="filter-form">
+      <div class="field">
+        <label class="label" for="search">Search</label>
+        <div class="control has-icons-left">
+          <input #searchInput
+                 id="search"
+                 class="input"
+                 type="text"
+                 placeholder="Search items..."
+                 formControlName="search">
+          <span class="icon is-left">
+            <i class="fas fa-search"></i>
+          </span>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <!-- Content section -->
+  <section class="content-section">
+    <!-- Loading state -->
+    <div *ngIf="isLoading" 
+         class="loading-container">
+      <app-progress-bar></app-progress-bar>
+    </div>
+
+    <!-- Data display -->
+    <div *ngIf="!isLoading && !hasError" 
+         class="data-container">
+      <div *ngFor="let item of filteredData; trackBy: trackByItemId" 
+           class="data-item"
+           [class.selected]="item.id === selectedItemId"
+           (click)="onItemSelected(item)">
+        <h3 class="item-title">{{ item.name }}</h3>
+        <p class="item-description">{{ item.description }}</p>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="!isLoading && !hasError && filteredData.length === 0" 
+         class="empty-state">
+      <p class="empty-message">No items found.</p>
+    </div>
+
+    <!-- Error state -->
+    <div *ngIf="hasError" 
+         class="error-container">
+      <app-alert type="error" 
+                 [message]="errorMessage">
+      </app-alert>
+    </div>
+  </section>
+</main>
+```
+
+#### Attribute Organization
+```html
+<!-- Order attributes: structural directives, property bindings, event bindings, other attributes -->
+<button *ngIf="showButton"
+        [disabled]="isDisabled"
+        [class.is-loading]="isProcessing"
+        (click)="onButtonClick()"
+        class="button is-primary"
+        type="button"
+        data-cy="action-button">
+  {{ buttonText }}
+</button>
+```
+
+## 🎨 CSS Style Guidelines
+
+### Bulma Integration
+```css
+/* Use Bulma utility classes first */
+.page-container {
+  @apply container;
+}
+
+.main-content {
+  @apply content;
+  padding: 1.5rem;
+}
+
+/* Custom styles follow BEM methodology */
+.data-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.data-list__item {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 1rem;
+  transition: box-shadow 0.2s ease;
+}
+
+.data-list__item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.data-list__item--selected {
+  border-color: #3273dc;
+  background-color: #f5f8ff;
+}
+
+.data-list__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #363636;
+}
+
+.data-list__description {
+  color: #757575;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
+  }
+  
+  .data-list__item {
+    padding: 0.75rem;
+  }
+}
+```
+
+### CSS Variable Usage
+```css
+/* Define custom properties for theming */
+:root {
+  --primary-color: #3273dc;
+  --secondary-color: #48c774;
+  --danger-color: #f14668;
+  --warning-color: #ffdd57;
+  
+  --text-primary: #363636;
+  --text-secondary: #757575;
+  --text-light: #b5b5b5;
+  
+  --border-color: #e0e0e0;
+  --background-color: #fafafa;
+  
+  --shadow-light: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.15);
+  
+  --border-radius: 4px;
+  --transition-speed: 0.2s;
+}
+
+/* Use variables in component styles */
+.custom-card {
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-light);
+  transition: box-shadow var(--transition-speed) ease;
+}
+```
+
+## 📝 Documentation Standards
+
+### JSDoc Comments
+```typescript
+/**
+ * Service for managing user authentication and authorization
+ * 
+ * @example
+ * ```typescript
+ * constructor(private authService: AuthService) {}
+ * 
+ * async login() {
+ *   const result = await this.authService.authenticate(credentials);
+ *   if (result.success) {
+ *     // Handle successful login
+ *   }
+ * }
+ * ```
+ */
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  
+  /**
+   * Authenticates user with provided credentials
+   * 
+   * @param credentials - User login credentials
+   * @param credentials.username - User's username
+   * @param credentials.password - User's password
+   * @returns Promise that resolves to authentication result
+   * 
+   * @throws {AuthenticationError} When credentials are invalid
+   * @throws {NetworkError} When API request fails
+   * 
+   * @example
+   * ```typescript
+   * try {
+   *   const result = await authService.authenticate({
+   *     username: 'john.doe',
+   *     password: 'securePassword123'
+   *   });
+   *   console.log('Login successful:', result.user);
+   * } catch (error) {
+   *   console.error('Login failed:', error.message);
+   * }
+   * ```
+   */
+  public async authenticate(credentials: LoginCredentials): Promise<AuthResult> {
+    // Implementation
+  }
+  
+  /**
+   * Checks if the current user has the specified role
+   * 
+   * @param role - Role to check for
+   * @returns True if user has the role, false otherwise
+   */
+  public hasRole(role: UserRole): boolean {
+    return this.currentUser?.roles.includes(role) ?? false;
+  }
+}
+```
+
+### Component Documentation
+```typescript
+/**
+ * Data table component with sorting, filtering, and pagination
+ * 
+ * @example
+ * ```html
+ * <app-data-table 
+ *   [data]="users"
+ *   [columns]="userColumns"
+ *   [sortable]="true"
+ *   [filterable]="true"
+ *   (rowSelected)="onUserSelected($event)"
+ *   (dataChanged)="onUsersChanged($event)">
+ * </app-data-table>
+ * ```
+ */
+@Component({
+  selector: 'app-data-table',
+  templateUrl: './data-table.component.html',
+  styleUrls: ['./data-table.component.css']
+})
+export class DataTableComponent<T> {
+  /** Data to display in the table */
+  @Input() public data: T[] = [];
+  
+  /** Column configuration for the table */
+  @Input() public columns: TableColumn[] = [];
+  
+  /** Whether the table supports sorting */
+  @Input() public sortable = false;
+  
+  /** Emitted when a row is selected */
+  @Output() public rowSelected = new EventEmitter<T>();
+}
+```
+
+## 🔧 Linting and Formatting
+
+### ESLint Configuration
+```json
+{
+  "extends": [
+    "@angular-eslint/recommended",
+    "@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/explicit-function-return-type": "warn",
+    "@angular-eslint/component-selector": [
+      "error",
+      {
+        "type": "element",
+        "prefix": "app",
+        "style": "kebab-case"
+      }
+    ],
+    "@angular-eslint/directive-selector": [
+      "error",
+      {
+        "type": "attribute",
+        "prefix": "app",
+        "style": "camelCase"
+      }
+    ]
+  }
+}
+```
+
+### Prettier Configuration
+```json
+{
+  "printWidth": 100,
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": true,
+  "singleQuote": true,
+  "quoteProps": "as-needed",
+  "trailingComma": "es5",
+  "bracketSpacing": true,
+  "arrowParens": "avoid"
+}
+```
+
+## 🎯 Code Quality Best Practices
+
+### Type Safety
+- Always use explicit types, avoid `any`
+- Use union types and type guards for better type safety
+- Implement proper interfaces for all data structures
+- Use generic types for reusable components and services
+
+### Performance
+- Use OnPush change detection strategy where appropriate
+- Implement trackBy functions for *ngFor loops
+- Lazy load modules and components
+- Optimize bundle size with proper imports
+
+### Maintainability
+- Keep functions small and focused (max 20-30 lines)
+- Use descriptive variable and function names
+- Follow single responsibility principle
+- Write comprehensive tests for all components and services
