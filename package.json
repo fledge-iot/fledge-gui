@@ -41,7 +41,7 @@
     "@ng-select/ng-select": "^10.0.4",
     "animate.css": "^4.1.1",
     "bootstrap-icons": "^1.11.1",
-    "bulma": "^1.0.0",
+    "bulma": "1.0.4",
     "bulma-quickview": "^2.0.0",
     "bulma-steps": "^2.2.1",
     "bulma-toast": "^2.4.2",
@@ -69,7 +69,6 @@
     "rete-render-utils": "^2.0.1",
     "rete-scopes-plugin": "^2.0.0",
     "rxjs": "~6.6.6",
-    "sass": "^1.80.3",
     "tslib": "^2.3.0",
     "web-worker": "^1.2.0",
     "zone.js": "~0.13.3"
