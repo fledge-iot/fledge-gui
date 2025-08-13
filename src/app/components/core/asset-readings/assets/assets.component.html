@@ -120,7 +120,7 @@
   <app-readings-graph (notify)='onNotify($event)' (refreshAssets)="getAsset(false)"></app-readings-graph>
   
   <!-- Most recent reading popover positioned outside card structure -->
-  <div id="most-recent-reading-popover" class="popover-content" 
+  <div id="global-popover" class="popover-content" 
        (mouseenter)="keepPopoverOpen()"
        (mouseleave)="hidePopoverWithDelay()">
     <div class="content popover-scrollable-content">
@@ -131,7 +131,7 @@
       </div>
       
       <!-- Data points table -->
-      <table class="table is-narrow is-size-7 mb-0" *ngIf="getLatestReadingProperties(currentPopoverAsset).length > 0">
+      <table class="table is-narrow is-striped is-size-7 mb-0" *ngIf="getLatestReadingProperties(currentPopoverAsset).length > 0">
         <tbody>
           <tr *ngFor="let reading of getLatestReadingProperties(currentPopoverAsset)">
             <td>{{reading.key}}</td>
