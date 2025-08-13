@@ -1,7 +1,8 @@
 <div [ngClass]="{'container is-fluid': !sourceName}">
   <div class="card" [ngClass]="{'custom-quickview-card': sourceName}">
     <div class="breadcrumb-container" *ngIf="sourceName; else cardHeaderTemplate">
-      <nav class="breadcrumb" aria-label="breadcrumbs" [ngClass]="{'quickview-breadcrumb': sourceName}">
+      <nav class="breadcrumb" aria-label="breadcrumbs"
+        [ngClass]="{'quickview-breadcrumb has-text-weight-semibold': sourceName}">
         <ul>
           <li class="is-active"><a>{{sourceName}}</a></li>
           <li class="is-active">
@@ -20,7 +21,8 @@
       <header class="card-header">
         <div class="card-header-title">
           <span>Notification Logs</span>
-          <button *ngIf="!isAlive" title="Reload" (click)="getNotificationLogs()" class="button is-small" id="refresh-check">
+          <button *ngIf="!isAlive" title="Reload" (click)="getNotificationLogs()" class="button is-small"
+            id="refresh-check">
             <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
           </button>
         </div>
@@ -107,7 +109,7 @@
               <td><small>{{log.details.name}}</small></td>
               <td><small>{{log.severity}}</small></td>
               <td><small [ngClass]="'tooltip has-tooltip-left has-tooltip-arrow tooltip-help is-hovered'"
-                [attr.data-tooltip]="showtooltip(log.source)">{{log.source}}</small></td>
+                  [attr.data-tooltip]="showtooltip(log.source)">{{log.source}}</small></td>
             </tr>
           </tbody>
         </table>

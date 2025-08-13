@@ -10,28 +10,64 @@
 @import '@fortawesome/fontawesome-free/css/all.min.css';
 @import "~bootstrap-icons/font/bootstrap-icons.css";
 
-/* Runtime overrides for Bulma CSS variables (only works for properties that use them) */
+/* Direct CSS variable overrides - targeting Bulma's actual variables */
 :root {
-  --bulma-primary: #485fc7;
-  --bulma-primary-rgb: 72, 95, 199;
-  --bulma-info: #485fc7;
-  --bulma-info-rgb: 72, 95, 199;
-  --bulma-success: #23d160;
-  --bulma-warning: #ffdd57;
-  --bulma-danger: #ff3860;
+  /* Radius variables - Bulma's actual variable names */
   --bulma-radius-small: 2px;
   --bulma-radius: 2px;
-  --bulma-box-radius: 6px;
+  --bulma-radius-medium: 6px;
+  --bulma-radius-large: 6px;
+  --bulma-panel-radius: 6px;
+
+  /* Color variables - Bulma's actual HSL system */
+  --bulma-primary-h: 229deg;
+  --bulma-primary-s: 53%;
+  --bulma-primary-l: 53%;
+  --bulma-info-h: 229deg;
+  --bulma-info-s: 53%;
+  --bulma-info-l: 53%;
+
+  /* Typography variables */
   --bulma-size-normal: 0.9rem;
   --bulma-body-font-size: 0.9rem;
   --bulma-weight-medium: 400;
   --bulma-weight-bold: 500;
 }
 
-/* Manual static overrides for Sass-built styles */
-.button.is-primary {
-  background-color: #485fc7 !important;
-  border-color: #485fc7 !important;
+/* Additional direct overrides for elements that don't fully use CSS variables */
+.button.is-danger {
+  background-color: #ff3860 !important;
+  border-color: #ff3860 !important;
+  color: white !important;
+}
+
+.button {
+  box-shadow: none !important;
+  font-weight: 400 !important;
+}
+
+.card,
+.card-header,
+.modal-card,
+.modal-card-head {
+  border-radius: 2px !important;
+}
+
+.panel {
+  border-radius: 6px !important;
+}
+
+.panel-heading {
+  border-radius: 6px 6px 0 0 !important;
+}
+
+.panel-block:last-child,
+.panel-tabs:last-child {
+  border-radius: 0 0 6px 6px !important;
+}
+
+.label:not(.lbl-child) {
+  font-weight: 500 !important;
 }
 
 .button.is-primary:hover {
@@ -127,10 +163,6 @@ table.scroll tbody {
 
 .app-navbar {
   box-shadow: 0 2px 3px hsla(0, 0%, 7%, .1), 0 0 0 1px hsla(0, 0%, 7%, .1);
-}
-
-.card-header {
-  background-color: whitesmoke;
 }
 
 .card-content {
@@ -524,6 +556,7 @@ span.tooltip {
   font-size: 0.9rem !important;
 }
 
+.button,
 .input,
 .textarea,
 .select select,
