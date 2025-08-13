@@ -59,7 +59,8 @@
                       <a class="is-pulled-right popover-trigger"
                         (mouseenter)="loadLatestReading(asset.assetCode); showPopover($event, asset.assetCode)"
                         (mouseleave)="hidePopoverWithDelay()">
-                        <span class="icon is-small">
+                        <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow"
+                              data-tooltip="Most recent reading">
                           <i class="bi bi-lightning-charge" aria-hidden="true"></i>
                         </span>
                       </a>
@@ -118,32 +119,33 @@
   </div>
   <app-readings-graph (notify)='onNotify($event)' (refreshAssets)="getAsset(false)"></app-readings-graph>
   
-  <!-- Global popover content positioned outside card structure -->
-  <div id="global-popover" class="popover-content" 
+  <!-- Most recent reading popover positioned outside card structure -->
+  <div id="most-recent-reading-popover" class="popover-content" 
        (mouseenter)="keepPopoverOpen()"
        (mouseleave)="hidePopoverWithDelay()">
     <div class="content popover-scrollable-content">
-      <table class="table is-narrow is-size-7">
-        <thead>
-          <tr>
-            <th class="has-text-weight-normal popover-table-header">Timestamp</th>
-            <th class="has-text-weight-normal popover-table-header">Reading</th>
-          </tr>
-        </thead>
+      <!-- Timestamp header -->
+      <div class="is-size-7 mb-2 has-text-grey-dark">
+        <i class="bi bi-clock mr-1"></i>
+        {{getLatestReadingTimestamp(currentPopoverAsset) | dateparser: 'YYYY-MM-DD HH:mm:ss.SSS'}}
+      </div>
+      
+      <!-- Data points table -->
+      <table class="table is-narrow is-size-7 mb-0" *ngIf="getLatestReadingProperties(currentPopoverAsset).length > 0">
         <tbody>
-          <tr>
-            <td>{{getLatestReadingTimestamp(currentPopoverAsset) | dateparser: 'YYYY-MM-DD HH:mm:ss.SSS'}}</td>
-            <td *ngIf="getLatestReadingProperties(currentPopoverAsset).length > 0">
-              {{getLatestReadingProperties(currentPopoverAsset)[0].key}}
-              {{getLatestReadingProperties(currentPopoverAsset)[0].value}}
-            </td>
-          </tr>
-          <tr *ngFor="let reading of getLatestReadingProperties(currentPopoverAsset).slice(1)">
-            <td></td>
-            <td>{{reading.key}} {{reading.value}}</td>
+          <tr *ngFor="let reading of getLatestReadingProperties(currentPopoverAsset)">
+            <td>{{reading.key}}</td>
+            <td>{{reading.value}}</td>
           </tr>
         </tbody>
       </table>
+      
+      <!-- No data message -->
+      <div *ngIf="getLatestReadingProperties(currentPopoverAsset).length === 0" 
+           class="has-text-grey has-text-centered py-2 is-size-7">
+        <i class="bi bi-info-circle mr-1"></i>
+        No readings available
+      </div>
     </div>
   </div>
 </div>

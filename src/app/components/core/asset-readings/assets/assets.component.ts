@@ -189,8 +189,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
     const trigger = target.closest('.popover-trigger') as HTMLElement;
     if (!trigger) return;
     
-    // Get the global popover element
-    const popover = document.getElementById('global-popover') as HTMLElement;
+    // Get the most recent reading popover element
+    const popover = document.getElementById('most-recent-reading-popover') as HTMLElement;
     if (!popover) return;
     
     // Calculate position relative to viewport
@@ -253,7 +253,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   public hidePopover(): void {
-    const popover = document.getElementById('global-popover') as HTMLElement;
+    const popover = document.getElementById('most-recent-reading-popover') as HTMLElement;
     if (popover) {
       popover.style.opacity = '0';
       popover.style.visibility = 'hidden';
