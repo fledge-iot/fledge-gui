@@ -196,16 +196,60 @@ export class AssetsComponent implements OnInit, OnDestroy {
     // Calculate position relative to viewport
     const triggerRect = trigger.getBoundingClientRect();
     const popoverRect = popover.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
     
-    // Position above the trigger, centered horizontally
-    const left = triggerRect.left + (triggerRect.width / 2);
-    const top = triggerRect.top - 10; // 10px above the trigger
+    // Calculate initial position above the trigger
+    let left = triggerRect.left + (triggerRect.width / 2);
+    let top = triggerRect.top - 10; // 10px above the trigger
+    let transformX = '-50%';
+    let transformY = '-100%';
+    
+    // Check if popover would be clipped at the top
+    const popoverHeight = 200; // Estimated popover height
+    const spaceAbove = triggerRect.top;
+    const spaceBelow = viewportHeight - triggerRect.bottom;
+    
+    // If not enough space above, position below instead
+    if (spaceAbove < popoverHeight && spaceBelow > spaceAbove) {
+      top = triggerRect.bottom + 10; // 10px below the trigger
+      transformY = '0%';
+      popover.classList.remove('above');
+      popover.classList.add('below');
+    } else {
+      popover.classList.remove('below');
+      popover.classList.add('above');
+    }
+    
+    // Check if popover would be clipped horizontally
+    const popoverWidth = 200; // Estimated popover width
+    const spaceRight = viewportWidth - left + (popoverWidth / 2);
+    const spaceLeft = left + (popoverWidth / 2);
+    
+    // Adjust horizontal position if clipped
+    if (spaceRight < 0) {
+      // Too far right, align to right edge
+      left = triggerRect.right;
+      transformX = '-100%';
+    } else if (spaceLeft < 0) {
+      // Too far left, align to left edge
+      left = triggerRect.left;
+      transformX = '0%';
+    }
+    
+    // Ensure minimum margins from viewport edges
+    const minMargin = 10;
+    left = Math.max(minMargin, Math.min(left, viewportWidth - minMargin));
+    top = Math.max(minMargin, Math.min(top, viewportHeight - minMargin));
     
     popover.style.left = `${left}px`;
     popover.style.top = `${top}px`;
-    popover.style.transform = 'translate(-50%, -100%)';
+    popover.style.transform = `translate(${transformX}, ${transformY})`;
     popover.style.opacity = '1';
     popover.style.visibility = 'visible';
+    
+    // Ensure popover is on top of everything
+    popover.style.zIndex = '999999';
   }
 
   public hidePopover(): void {
@@ -213,6 +257,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     if (popover) {
       popover.style.opacity = '0';
       popover.style.visibility = 'hidden';
+      popover.classList.remove('above', 'below');
     }
     this.currentPopoverAsset = '';
   }
