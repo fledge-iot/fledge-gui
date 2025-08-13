@@ -10,6 +10,82 @@
 @import '@fortawesome/fontawesome-free/css/all.min.css';
 @import "~bootstrap-icons/font/bootstrap-icons.css";
 
+/* Runtime overrides for Bulma CSS variables (only works for properties that use them) */
+:root {
+  --bulma-primary: #485fc7;
+  --bulma-primary-rgb: 72, 95, 199;
+  --bulma-info: #485fc7;
+  --bulma-info-rgb: 72, 95, 199;
+  --bulma-success: #23d160;
+  --bulma-warning: #ffdd57;
+  --bulma-danger: #ff3860;
+  --bulma-radius-small: 2px;
+  --bulma-radius: 2px;
+  --bulma-box-radius: 6px;
+  --bulma-size-normal: 0.9rem;
+  --bulma-body-font-size: 0.9rem;
+  --bulma-weight-medium: 400;
+  --bulma-weight-bold: 500;
+}
+
+/* Manual static overrides for Sass-built styles */
+.button.is-primary {
+  background-color: #485fc7 !important;
+  border-color: #485fc7 !important;
+}
+
+.button.is-primary:hover {
+  background-color: #3e53b8 !important;
+  border-color: #3e53b8 !important;
+}
+
+a {
+  color: #485fc7;
+}
+
+.card-header {
+  background-color: #f5f5f5;
+  color: #363636;
+  font-weight: 500;
+  border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.label {
+  font-weight: 500;
+}
+
+.modal-card-head,
+.modal-card-foot {
+  background-color: #f5f5f5;
+  padding: 20px !important;
+  padding: 15px !important;
+}
+
+.modal-card-head {
+  border-radius: 6px 6px 0 0;
+  box-shadow: none !important;
+  border-bottom: 1px solid #dbdbdb;
+}
+
+.modal-card-foot {
+  border-radius: 0 0 6px 6px;
+  border-top: 1px solid #dbdbdb;
+}
+
+.modal-card-title {
+  font-size: 0.9rem;
+}
+
+.card {
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+.button {
+  box-shadow: none !important;
+}
+
+
 html,
 body,
 #app {
@@ -51,10 +127,6 @@ table.scroll tbody {
 
 .app-navbar {
   box-shadow: 0 2px 3px hsla(0, 0%, 7%, .1), 0 0 0 1px hsla(0, 0%, 7%, .1);
-}
-
-.card {
-  margin-top: 10px;
 }
 
 .card-header {
@@ -250,19 +322,6 @@ table.scroll tbody {
   display: block;
 }
 
-.modal-card-head {
-  box-shadow: none !important;
-  border-bottom: 1px solid #dbdbdb;
-}
-
-.modal-card-foot {
-  border-top: 1px solid #dbdbdb;
-}
-
-.button {
-  box-shadow: none !important;
-}
-
 /**
 Custom css for bulma dropdown
 Card Modal dropdown issue(overlapping issue) https://github.com/jgthms/bulma/issues/936
@@ -439,21 +498,6 @@ span.tooltip {
 
 .lbl-child {
   font-size: 0.8rem !important;
-}
-
-.modal-card-head {
-  border-top-left-radius: 3px !important;
-  border-top-right-radius: 3px !important;
-}
-
-.modal-card-foot {
-  border-bottom-left-radius: 3px !important;
-  border-bottom-right-radius: 3px !important;
-}
-
-.modal-card-head,
-.modal-card-foot {
-  padding: 15px !important;
 }
 
 .cog-icon {

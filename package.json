@@ -17,8 +17,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "run:all": "node node_modules/@angular-architects/module-federation/src/server/mf-dev-server.js",
-    "build-bulma": "sass --load-path=node_modules bulma-custom.scss bulma-custom.css"
+    "run:all": "node node_modules/@angular-architects/module-federation/src/server/mf-dev-server.js"
   },
   "private": true,
   "dependencies": {
