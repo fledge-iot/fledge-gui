@@ -5,7 +5,7 @@
         North Instances
         <button *ngIf="!isAlive" (click)="getNorthTasks(true)" class="button is-small" title="Reload"
           id="refresh-check">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+          <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
         </button>
       </div>
       <a *ngIf="rolesService?.hasEditPermissions()" id="add_task" class="button is-small mt-2 mr-2 pt-2 is-light"

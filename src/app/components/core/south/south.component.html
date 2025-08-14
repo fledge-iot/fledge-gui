@@ -5,7 +5,7 @@
         South Services
         <button *ngIf="!isAlive" (click)="getSouthboundServices(true)" title="Reload" class="button is-small"
           id="refresh-check">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+          <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
         </button>
       </div>
       <a *ngIf="rolesService?.hasEditPermissions()" id="add_south_service"
@@ -147,7 +147,7 @@
                       [ngClass]="{'open': svc.expanded}"
                       class="icon is-small tooltip has-tooltip-right has-tooltip-arrow tooltip-help is-pulled-right is-hovered"
                       [attr.data-tooltip]="svc.expanded ? 'Hide other assets' : 'Show all assets'">
-                      <i class="fas fa-xs fa-angle-right"></i>
+                      <i class="bi bi-xs bi-chevron-right"></i>
                     </span>
                   </td>
                 </tr>

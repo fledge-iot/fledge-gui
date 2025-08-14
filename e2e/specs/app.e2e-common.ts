@@ -56,7 +56,7 @@ describe('Fledge gui', () => {
     it('Should Display Profile for Non-Admin', () => {
       nonAdminLogin.navToProfile();
       nonAdminLogin.profileTitle().then(title => {
-        expect(title.trim()).to.equal('Profile')
+        expect(title.trim()).to.equal('My Profile')
       })
       nonAdminLogin.labelUsername().then(username => {
         expect(username.trim()).to.equal('Username')
@@ -248,7 +248,7 @@ describe('Fledge gui', () => {
     it('Should Display Profile for Admin', () => {
       adminLogin.navToProfile();
       adminLogin.profileTitle().then(title => {
-        expect(title.trim()).to.equal('Profile')
+        expect(title.trim()).to.equal('My Profile')
       })
       adminLogin.labelUsername().then(username => {
         expect(username.trim()).to.equal('Username')
