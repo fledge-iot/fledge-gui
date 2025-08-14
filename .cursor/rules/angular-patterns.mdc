@@ -1,0 +1,204 @@
+---
+globs: src/app/**/*.ts,src/app/**/*.html,src/app/**/*.css
+description: Angular development patterns and best practices for Fledge GUI
+---
+
+# Angular Development Patterns
+
+## 🧱 Component Architecture
+
+### Component Structure Convention
+All components follow this standard structure:
+
+```typescript
+@Component({
+  selector: 'app-component-name',
+  templateUrl: './component-name.component.html',
+  styleUrls: ['./component-name.component.css']
+})
+export class ComponentNameComponent implements OnInit, OnDestroy {
+  // Public properties first
+  public property: type;
+  
+  // Private properties
+  private destroySubject: Subject<void> = new Subject();
+  
+  constructor(private service: ServiceName) {}
+  
+  ngOnInit() {
+    // Initialization logic with proper subscription management
+    this.service.data$
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe(data => {
+        // Handle data
+      });
+  }
+  
+  ngOnDestroy() {
+    this.destroySubject.next();
+    this.destroySubject.unsubscribe();
+  }
+}
+```
+
+### Key Patterns Used in Fledge GUI
+
+#### 1. Module-Based Architecture
+- Feature modules for logical grouping ([DashboardModule](mdc:src/app/components/core/dashboard/dashboard.module.ts))
+- Shared modules for common functionality ([SharedModule](mdc:src/app/shared.module.ts))
+
+#### 2. Subscription Management
+Always use the destroy pattern to prevent memory leaks:
+```typescript
+private destroySubject: Subject<void> = new Subject();
+
+// In ngOnInit
+.pipe(takeUntil(this.destroySubject))
+
+// In ngOnDestroy
+this.destroySubject.next();
+this.destroySubject.unsubscribe();
+```
+
+#### 3. Service Injection Patterns
+Use proper dependency injection with typed services:
+```typescript
+constructor(
+  private alertService: AlertService,
+  private sharedService: SharedService,
+  private router: Router
+) {}
+```
+
+## 🔄 State Management Patterns
+
+### BehaviorSubject Usage
+Services use BehaviorSubjects for reactive state management:
+
+```typescript
+@Injectable()
+export class ServiceName {
+  public dataSubject: BehaviorSubject<DataType> = new BehaviorSubject<DataType>(initialValue);
+  
+  public get data$() {
+    return this.dataSubject.asObservable();
+  }
+}
+```
+
+### Shared Service Pattern
+The [SharedService](mdc:src/app/services/shared.service.ts) manages global application state:
+- User authentication state
+- Theme preferences
+- Sidebar collapse state
+- Connection status
+
+## 🛡️ Route Guards & Security
+
+### Guard Implementation
+Route guards protect sensitive areas:
+- `AuthRequiredGuard`: Requires valid authentication token
+- `DataViewRoleGuard`: Restricts access based on user roles
+- `AdminGuard`: Admin-only route protection
+
+### Usage in Routing
+```typescript
+{
+  path: 'admin-area',
+  component: AdminComponent,
+  canActivate: [AuthRequiredGuard, AdminGuard]
+}
+```
+
+## 🎨 Template Patterns
+
+### Reactive Forms
+Use reactive forms for complex form handling:
+```typescript
+this.form = this.formBuilder.group({
+  field: ['', [Validators.required, Validators.email]]
+});
+```
+
+### Async Pipe Usage
+Prefer async pipe over manual subscriptions:
+```html
+<div *ngIf="service.data$ | async as data">
+  {{ data.property }}
+</div>
+```
+
+### Conditional Rendering
+Use proper Angular conditional directives:
+```html
+<div *ngIf="isVisible; else loadingTemplate">
+  Content
+</div>
+<ng-template #loadingTemplate>
+  Loading...
+</ng-template>
+```
+
+## 🔧 Lifecycle Hooks
+
+### OnInit Pattern
+Initialize component data and subscriptions:
+```typescript
+async ngOnInit() {
+  // Async initialization if needed
+  await this.loadInitialData();
+  
+  // Set up subscriptions
+  this.setupSubscriptions();
+}
+```
+
+### OnDestroy Pattern
+Always implement OnDestroy for cleanup:
+```typescript
+ngOnDestroy() {
+  this.destroySubject.next();
+  this.destroySubject.unsubscribe();
+}
+```
+
+## 📡 HTTP & API Patterns
+
+### Service Methods
+API services should return observables:
+```typescript
+getData(): Observable<DataType> {
+  return this.http.get<DataType>(`${this.apiUrl}/data`);
+}
+```
+
+### Error Handling
+Implement proper error handling:
+```typescript
+this.service.getData()
+  .pipe(
+    catchError(error => {
+      this.alertService.error(error.message);
+      return of(null);
+    })
+  )
+  .subscribe(data => {
+    // Handle successful response
+  });
+```
+
+## 🎯 Performance Optimization
+
+### Change Detection
+Use OnPush strategy where appropriate for better performance.
+
+### Lazy Loading
+Implement lazy loading for feature modules to reduce initial bundle size.
+
+### TrackBy Functions
+Use trackBy functions with *ngFor for better list performance:
+```html
+<div *ngFor="let item of items; trackBy: trackByFn">
+  {{ item.name }}
+</div>
+```

@@ -1,0 +1,499 @@
+---
+globs: src/app/**/*.spec.ts,e2e/**/*.ts,cypress/**/*.ts
+description: Testing conventions and best practices for Fledge GUI
+---
+
+# Testing Conventions & Standards
+
+## 🧪 Testing Strategy Overview
+
+Fledge GUI uses a multi-layer testing approach:
+
+### Testing Stack
+- **Unit Tests**: Jasmine + Karma for component and service testing
+- **E2E Tests**: Cypress for end-to-end application testing  
+- **Coverage**: Code coverage reporting and thresholds
+- **CI Integration**: Automated testing in build pipeline
+
+### Test File Organization
+```
+src/app/
+├── components/
+│   └── component-name/
+│       ├── component-name.component.ts
+│       └── component-name.component.spec.ts
+├── services/
+│   ├── service-name.service.ts
+│   └── service-name.service.spec.ts
+e2e/
+├── specs/
+│   └── feature.e2e-spec.ts
+└── po/
+    └── page-object.ts
+```
+
+## 🔬 Unit Testing Patterns
+
+### Component Testing Structure
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { DebugElement } from '@angular/core';
+import { of } from 'rxjs';
+
+import { ComponentNameComponent } from './component-name.component';
+import { ServiceName } from '../../services/service-name.service';
+
+describe('ComponentNameComponent', () => {
+  let component: ComponentNameComponent;
+  let fixture: ComponentFixture<ComponentNameComponent>;
+  let mockService: jasmine.SpyObj<ServiceName>;
+  let debugElement: DebugElement;
+
+  beforeEach(async () => {
+    // Create spy objects for dependencies
+    const serviceSpy = jasmine.createSpyObj('ServiceName', [
+      'getData', 
+      'updateData', 
+      'deleteData'
+    ]);
+
+    await TestBed.configureTestingModule({
+      declarations: [ComponentNameComponent],
+      imports: [
+        HttpClientTestingModule,
+        ReactiveFormsModule,
+        RouterTestingModule
+      ],
+      providers: [
+        { provide: ServiceName, useValue: serviceSpy },
+        { provide: AlertService, useValue: jasmine.createSpyObj('AlertService', ['success', 'error']) }
+      ]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(ComponentNameComponent);
+    component = fixture.componentInstance;
+    debugElement = fixture.debugElement;
+    mockService = TestBed.inject(ServiceName) as jasmine.SpyObj<ServiceName>;
+  });
+
+  describe('Component Initialization', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy();
+    });
+
+    it('should initialize with default values', () => {
+      expect(component.isLoading).toBeFalse();
+      expect(component.data).toEqual([]);
+    });
+
+    it('should load data on init', () => {
+      const mockData = [{ id: 1, name: 'Test' }];
+      mockService.getData.and.returnValue(of(mockData));
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      expect(component.data).toEqual(mockData);
+      expect(mockService.getData).toHaveBeenCalled();
+    });
+  });
+
+  describe('User Interactions', () => {
+    it('should handle button click', () => {
+      spyOn(component, 'onButtonClick');
+      
+      const button = debugElement.query(By.css('.action-button'));
+      button.nativeElement.click();
+      
+      expect(component.onButtonClick).toHaveBeenCalled();
+    });
+
+    it('should emit event on action', () => {
+      spyOn(component.actionEvent, 'emit');
+      
+      component.performAction();
+      
+      expect(component.actionEvent.emit).toHaveBeenCalledWith(expectedValue);
+    });
+  });
+
+  describe('Template Rendering', () => {
+    it('should display loading state', () => {
+      component.isLoading = true;
+      fixture.detectChanges();
+      
+      const loadingElement = debugElement.query(By.css('.loading'));
+      expect(loadingElement).toBeTruthy();
+    });
+
+    it('should display data when loaded', () => {
+      component.data = [{ id: 1, name: 'Test Item' }];
+      component.isLoading = false;
+      fixture.detectChanges();
+      
+      const dataElements = debugElement.queryAll(By.css('.data-item'));
+      expect(dataElements.length).toBe(1);
+      expect(dataElements[0].nativeElement.textContent).toContain('Test Item');
+    });
+  });
+
+  describe('Error Handling', () => {
+    it('should handle service errors', () => {
+      const errorMessage = 'Service error';
+      mockService.getData.and.throwError(errorMessage);
+      
+      component.ngOnInit();
+      
+      expect(component.hasError).toBeTrue();
+      expect(component.errorMessage).toBe(errorMessage);
+    });
+  });
+
+  afterEach(() => {
+    fixture.destroy();
+  });
+});
+```
+
+### Service Testing Pattern
+```typescript
+import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+
+import { DataService } from './data.service';
+import { AlertService } from './alert.service';
+
+describe('DataService', () => {
+  let service: DataService;
+  let httpMock: HttpTestingController;
+  let alertService: jasmine.SpyObj<AlertService>;
+
+  beforeEach(() => {
+    const alertSpy = jasmine.createSpyObj('AlertService', ['success', 'error']);
+
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [
+        DataService,
+        { provide: AlertService, useValue: alertSpy }
+      ]
+    });
+
+    service = TestBed.inject(DataService);
+    httpMock = TestBed.inject(HttpTestingController);
+    alertService = TestBed.inject(AlertService) as jasmine.SpyObj<AlertService>;
+  });
+
+  afterEach(() => {
+    httpMock.verify(); // Verify no outstanding requests
+  });
+
+  describe('Data Operations', () => {
+    it('should fetch data successfully', () => {
+      const mockData = [{ id: 1, name: 'Test' }];
+
+      service.getData().subscribe(data => {
+        expect(data).toEqual(mockData);
+      });
+
+      const req = httpMock.expectOne(`${service.apiUrl}/data`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockData);
+    });
+
+    it('should handle HTTP errors', () => {
+      const errorMessage = 'Server error';
+
+      service.getData().subscribe({
+        next: () => fail('Should have failed'),
+        error: (error) => {
+          expect(error.status).toBe(500);
+        }
+      });
+
+      const req = httpMock.expectOne(`${service.apiUrl}/data`);
+      req.flush(errorMessage, { status: 500, statusText: 'Server Error' });
+    });
+
+    it('should create new item', () => {
+      const newItem = { name: 'New Item' };
+      const createdItem = { id: 1, ...newItem };
+
+      service.createItem(newItem).subscribe(item => {
+        expect(item).toEqual(createdItem);
+      });
+
+      const req = httpMock.expectOne(`${service.apiUrl}/data`);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual(newItem);
+      req.flush(createdItem);
+    });
+  });
+
+  describe('State Management', () => {
+    it('should update data state', () => {
+      const testData = [{ id: 1, name: 'Test' }];
+      
+      service.updateDataState(testData);
+      
+      service.data$.subscribe(data => {
+        expect(data).toEqual(testData);
+      });
+    });
+
+    it('should manage loading state', () => {
+      service.setLoading(true);
+      
+      service.loading$.subscribe(loading => {
+        expect(loading).toBeTrue();
+      });
+    });
+  });
+});
+```
+
+## 🎯 E2E Testing with Cypress
+
+### Test Structure
+```typescript
+// e2e/specs/dashboard.e2e-spec.ts
+import { AppPage } from '../po/app.po';
+import { DashboardPage } from '../po/dashboard.po';
+
+describe('Dashboard Page', () => {
+  let appPage: AppPage;
+  let dashboardPage: DashboardPage;
+
+  beforeEach(() => {
+    appPage = new AppPage();
+    dashboardPage = new DashboardPage();
+    
+    // Setup test data or login
+    cy.login('admin', 'password');
+  });
+
+  it('should display dashboard charts', () => {
+    dashboardPage.navigateTo();
+    
+    dashboardPage.getChartContainer().should('be.visible');
+    dashboardPage.getStatisticsCards().should('have.length.greaterThan', 0);
+  });
+
+  it('should filter data by date range', () => {
+    dashboardPage.navigateTo();
+    
+    dashboardPage.setDateRange('2023-01-01', '2023-12-31');
+    dashboardPage.clickApplyFilter();
+    
+    // Verify filtered results
+    dashboardPage.getFilteredData().should('be.visible');
+  });
+
+  it('should handle real-time updates', () => {
+    dashboardPage.navigateTo();
+    
+    // Wait for real-time update
+    cy.wait(5000);
+    
+    dashboardPage.getLatestReading().should('contain', 'Updated');
+  });
+});
+```
+
+### Page Object Pattern
+```typescript
+// e2e/po/dashboard.po.ts
+export class DashboardPage {
+  navigateTo() {
+    return cy.visit('/dashboard');
+  }
+
+  getChartContainer() {
+    return cy.get('[data-cy=chart-container]');
+  }
+
+  getStatisticsCards() {
+    return cy.get('[data-cy=stats-card]');
+  }
+
+  setDateRange(startDate: string, endDate: string) {
+    cy.get('[data-cy=start-date]').type(startDate);
+    cy.get('[data-cy=end-date]').type(endDate);
+  }
+
+  clickApplyFilter() {
+    return cy.get('[data-cy=apply-filter]').click();
+  }
+
+  getFilteredData() {
+    return cy.get('[data-cy=filtered-results]');
+  }
+
+  getLatestReading() {
+    return cy.get('[data-cy=latest-reading]');
+  }
+}
+```
+
+### Custom Cypress Commands
+```typescript
+// cypress/support/commands.ts
+declare namespace Cypress {
+  interface Chainable {
+    login(username: string, password: string): Chainable<void>;
+    selectMenuItem(item: string): Chainable<void>;
+    waitForApiCall(endpoint: string): Chainable<void>;
+  }
+}
+
+Cypress.Commands.add('login', (username: string, password: string) => {
+  cy.visit('/login');
+  cy.get('[data-cy=username]').type(username);
+  cy.get('[data-cy=password]').type(password);
+  cy.get('[data-cy=login-button]').click();
+  cy.url().should('not.include', '/login');
+});
+
+Cypress.Commands.add('selectMenuItem', (item: string) => {
+  cy.get('[data-cy=side-menu]').within(() => {
+    cy.contains(item).click();
+  });
+});
+
+Cypress.Commands.add('waitForApiCall', (endpoint: string) => {
+  cy.intercept('GET', `**/api/${endpoint}`).as(endpoint);
+  cy.wait(`@${endpoint}`);
+});
+```
+
+## 🏗️ Test Data Management
+
+### Mock Data Setup
+```typescript
+// src/app/testing/mock-data.ts
+export const MockData = {
+  users: [
+    { id: 1, username: 'admin', role: 'admin', isActive: true },
+    { id: 2, username: 'user', role: 'user', isActive: true }
+  ],
+  
+  statistics: {
+    readings: 1000,
+    assets: 50,
+    services: 10
+  },
+  
+  configurations: [
+    { key: 'setting1', value: 'value1', description: 'Test setting' }
+  ]
+};
+
+export class MockServiceBuilder {
+  static createMockService<T>(methods: string[]): jasmine.SpyObj<T> {
+    return jasmine.createSpyObj('MockService', methods);
+  }
+}
+```
+
+### Test Utilities
+```typescript
+// src/app/testing/test-utilities.ts
+export class TestUtilities {
+  static async configureTestingModule(options: {
+    declarations?: any[],
+    imports?: any[],
+    providers?: any[]
+  }) {
+    await TestBed.configureTestingModule({
+      declarations: options.declarations || [],
+      imports: [
+        HttpClientTestingModule,
+        RouterTestingModule,
+        ReactiveFormsModule,
+        ...(options.imports || [])
+      ],
+      providers: options.providers || []
+    }).compileComponents();
+  }
+
+  static triggerChange(fixture: ComponentFixture<any>, selector: string, value: any) {
+    const element = fixture.debugElement.query(By.css(selector));
+    element.nativeElement.value = value;
+    element.nativeElement.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+  }
+
+  static expectElement(fixture: ComponentFixture<any>, selector: string) {
+    const element = fixture.debugElement.query(By.css(selector));
+    return expect(element);
+  }
+}
+```
+
+## 📊 Test Coverage & Quality
+
+### Coverage Requirements
+- Minimum 80% code coverage for services
+- Minimum 70% code coverage for components
+- 100% coverage for critical business logic
+
+### Quality Gates
+```typescript
+// karma.conf.js coverage configuration
+coverageReporter: {
+  type: 'html',
+  dir: 'coverage/',
+  check: {
+    global: {
+      statements: 80,
+      branches: 75,
+      functions: 80,
+      lines: 80
+    }
+  }
+}
+```
+
+### Running Tests
+```bash
+# Unit tests
+yarn test
+
+# Unit tests with coverage
+yarn test --code-coverage
+
+# E2E tests
+yarn e2e
+
+# E2E tests in watch mode (headless false)
+yarn e2e:watch
+
+# All tests (unit + e2e)
+yarn test && yarn e2e
+```
+
+## 🎯 Testing Best Practices
+
+### Do's
+- Write tests before or alongside implementation
+- Use descriptive test names that explain expected behavior
+- Test both success and error scenarios
+- Mock external dependencies
+- Use page objects for E2E tests
+- Keep tests isolated and independent
+
+### Don'ts
+- Don't test Angular framework features
+- Don't test implementation details
+- Avoid complex test setup
+- Don't share state between tests
+- Avoid testing private methods directly
+- Don't ignore failing tests
+
+### Performance Testing
+- Monitor test execution time
+- Parallelize test execution where possible
+- Use efficient selectors in E2E tests
+- Implement test data cleanup
+- Optimize mock services and data

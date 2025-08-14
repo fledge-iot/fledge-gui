@@ -1,0 +1,236 @@
+---
+globs: src/app/components/**/*.ts,src/app/components/**/*.html,src/app/components/**/*.css
+description: Component development guidelines and standards for Fledge GUI
+---
+
+# Component Development Guidelines
+
+## 🎯 Component Categories & Responsibilities
+
+### Common Components (`components/common/`)
+Reusable utility components that can be used across the application:
+
+#### Modal Components
+- **AlertDialogComponent**: Standard alert/confirmation dialogs
+- **ConfirmationDialogComponent**: User confirmation prompts
+- **FileUploadModalComponent**: File upload interactions
+- **RestartModalComponent**: System restart confirmations
+
+#### Form Components  
+- **NumberInputDebounceComponent**: Debounced numeric input
+- **RangeSliderComponent**: Custom range slider controls
+- **TimeDropdownComponent**: Time selection dropdown
+
+#### Display Components
+- **ChartComponent**: Data visualization using Chart.js
+- **PaginationComponent**: Table pagination controls
+- **ProgressBarComponent**: Loading and progress indication
+- **QuickviewComponent**: Side panel quick views
+
+### Core Components (`components/core/`)
+Feature-specific business logic components:
+
+#### Data Management
+- **AssetReadingsComponent**: IoT asset data display
+- **DashboardComponent**: Main analytics dashboard
+- **ConfigurationManagerComponent**: System configuration
+- **LogsComponent**: System and application logs
+
+#### Administration
+- **UserManagementComponent**: User account management
+- **CertificateStoreComponent**: SSL certificate management
+- **BackupRestoreComponent**: System backup operations
+- **NotificationsComponent**: Alert and notification management
+
+### Layout Components (`components/layout/`)
+Application shell and navigation components:
+- **NavbarComponent**: Top navigation bar
+- **SideMenuComponent**: Collapsible sidebar navigation
+- **FooterComponent**: Application footer
+- **LoginComponent**: Authentication interface
+
+## 🏗️ Component Structure Standards
+
+### File Organization
+Each component follows the standard Angular structure:
+```
+component-name/
+├── component-name.component.ts      # Component logic
+├── component-name.component.html    # Template
+├── component-name.component.css     # Styles
+├── component-name.component.spec.ts # Unit tests
+└── component-name.module.ts         # Module (if applicable)
+```
+
+### Component Class Structure
+```typescript
+@Component({
+  selector: 'app-component-name',
+  templateUrl: './component-name.component.html',
+  styleUrls: ['./component-name.component.css']
+})
+export class ComponentNameComponent implements OnInit, OnDestroy {
+  // 1. Public properties (component state)
+  public isLoading = false;
+  public data: DataType[] = [];
+  public selectedItem: DataType | null = null;
+  
+  // 2. Form controls (if applicable)
+  public form: FormGroup;
+  
+  // 3. ViewChild references
+  @ViewChild('elementRef') elementRef: ElementRef;
+  
+  // 4. Input/Output properties
+  @Input() inputProperty: string;
+  @Output() outputEvent = new EventEmitter<any>();
+  
+  // 5. Private properties
+  private destroySubject: Subject<void> = new Subject();
+  
+  // 6. Constructor with dependency injection
+  constructor(
+    private service: ServiceName,
+    private router: Router,
+    private alertService: AlertService
+  ) {}
+  
+  // 7. Lifecycle hooks
+  ngOnInit() {
+    this.initializeComponent();
+  }
+  
+  ngOnDestroy() {
+    this.destroySubject.next();
+    this.destroySubject.unsubscribe();
+  }
+  
+  // 8. Public methods (template-accessible)
+  public onButtonClick(): void {
+    // Method implementation
+  }
+  
+  // 9. Private methods (internal logic)
+  private initializeComponent(): void {
+    // Initialization logic
+  }
+}
+```
+
+## 🎨 Template Guidelines
+
+### Template Structure
+Organize templates with clear sections:
+
+```html
+<!-- Loading state -->
+<div *ngIf="isLoading" class="loading-container">
+  <app-progress-bar></app-progress-bar>
+</div>
+
+<!-- Main content -->
+<div *ngIf="!isLoading" class="content-container">
+  <!-- Header section -->
+  <div class="header">
+    <h1 class="title">{{ pageTitle }}</h1>
+    <div class="actions">
+      <button class="button is-primary" (click)="onAction()">
+        Action
+      </button>
+    </div>
+  </div>
+  
+  <!-- Data display -->
+  <div class="data-section">
+    <div *ngFor="let item of data; trackBy: trackByFn" 
+         class="data-item">
+      {{ item.name }}
+    </div>
+  </div>
+</div>
+
+<!-- Error state -->
+<div *ngIf="hasError" class="error-container">
+  <app-alert type="error" [message]="errorMessage"></app-alert>
+</div>
+```
+
+### Bulma CSS Integration
+Use Bulma classes consistently:
+
+```html
+<!-- Container structure -->
+<div class="container">
+  <div class="columns">
+    <div class="column is-8">
+      <!-- Main content -->
+    </div>
+    <div class="column is-4">
+      <!-- Sidebar content -->
+    </div>
+  </div>
+</div>
+
+<!-- Form styling -->
+<div class="field">
+  <label class="label">Field Label</label>
+  <div class="control">
+    <input class="input" type="text" [(ngModel)]="value">
+  </div>
+</div>
+
+<!-- Button styling -->
+<button class="button is-primary is-loading" 
+        [class.is-loading]="isProcessing"
+        (click)="onSubmit()">
+  Submit
+</button>
+```
+
+## 🔄 Component Communication
+
+### Parent-Child Communication
+```typescript
+// Child component
+@Input() data: DataType;
+@Output() dataChange = new EventEmitter<DataType>();
+
+// Parent template
+<app-child-component 
+  [data]="parentData"
+  (dataChange)="onDataChange($event)">
+</app-child-component>
+```
+
+### Service-Based Communication
+For complex state sharing, use services:
+
+```typescript
+// In component
+constructor(private sharedService: SharedService) {}
+
+ngOnInit() {
+  this.sharedService.data$
+    .pipe(takeUntil(this.destroySubject))
+    .subscribe(data => {
+      this.handleDataUpdate(data);
+    });
+}
+```
+
+## 🎯 Performance Best Practices
+
+### Change Detection Optimization
+- Use OnPush change detection strategy for pure components
+- Implement trackBy functions for *ngFor loops
+- Avoid complex calculations in templates
+
+### Memory Management
+- Always unsubscribe from observables in ngOnDestroy
+- Use takeUntil pattern for subscription management
+- Avoid memory leaks with proper cleanup
+
+### Bundle Optimization
+- Lazy load feature modules where appropriate
+- Use dynamic imports for large dependencies
+- Optimize images and assets
