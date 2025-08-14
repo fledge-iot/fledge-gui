@@ -54,16 +54,16 @@
 }
 
 .panel {
-  border-radius: 6px !important;
+  border-radius: 3px !important;
 }
 
 .panel-heading {
-  border-radius: 6px 6px 0 0 !important;
+  border-radius: 3px 3px 0 0 !important;
 }
 
 .panel-block:last-child,
 .panel-tabs:last-child {
-  border-radius: 0 0 6px 6px !important;
+  border-radius: 0 0 3px 3px !important;
 }
 
 .label:not(.lbl-child) {
