@@ -11,12 +11,13 @@
         </ul>
       </nav>
       <div *ngIf="refreshInterval !== -1" class="fix-pad auto-refresh">
-        <label class="checkbox" [ngClass]="{'quickview-label': sourceName}">
+        <label class="checkbox" [ngClass]="{'has-text-weight-semibold': sourceName}">
           <input class="checkmark" type="checkbox" [checked]='isAlive' (click)="toggleAutoRefresh($event)">
           Auto Refresh
         </label>
       </div>
     </div>
+    <hr *ngIf="sourceName" class="my-2">
     <ng-template #cardHeaderTemplate>
       <header class="card-header">
         <div class="card-header-title">

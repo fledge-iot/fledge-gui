@@ -70,6 +70,10 @@
   font-weight: 500 !important;
 }
 
+.add-btn-small {
+  max-height: 1.5rem !important;
+}
+
 .button.is-primary:hover {
   background-color: #3e53b8 !important;
   border-color: #3e53b8 !important;
