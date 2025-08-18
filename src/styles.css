@@ -15,9 +15,9 @@
   /* Radius variables - Bulma's actual variable names */
   --bulma-radius-small: 2px;
   --bulma-radius: 2px;
-  --bulma-radius-medium: 6px;
+  --bulma-radius-medium: 3px;
   --bulma-radius-large: 6px;
-  --bulma-panel-radius: 6px;
+  --bulma-panel-radius: 3px;
 
   /* Color variables - Bulma's actual HSL system */
   --bulma-primary-h: 229deg;
@@ -35,12 +35,6 @@
 }
 
 /* Additional direct overrides for elements that don't fully use CSS variables */
-.button.is-danger {
-  background-color: #ff3860 !important;
-  border-color: #ff3860 !important;
-  color: white !important;
-}
-
 .button {
   box-shadow: none !important;
   font-weight: 400 !important;
@@ -48,9 +42,8 @@
 
 .card,
 .card-header,
-.modal-card,
-.modal-card-head {
-  border-radius: 2px !important;
+.modal-card {
+  border-radius: 3px !important;
 }
 
 .panel {
@@ -70,45 +63,35 @@
   font-weight: 500 !important;
 }
 
-.add-btn-small {
-  max-height: 1.5rem !important;
-}
-
-.button.is-primary:hover {
-  background-color: #3e53b8 !important;
-  border-color: #3e53b8 !important;
-}
-
-a {
-  color: #485fc7;
-}
-
 .card-header {
   background-color: #f5f5f5;
   color: #363636;
-  font-weight: 500;
   border-radius: 0.25rem 0.25rem 0 0;
 }
 
-.label {
+.label,
+.card-header,
+.card-header-title,
+table thead th {
   font-weight: 500;
 }
 
 .modal-card-head,
 .modal-card-foot {
   background-color: #f5f5f5;
-  padding: 20px !important;
   padding: 15px !important;
 }
 
 .modal-card-head {
-  border-radius: 6px 6px 0 0;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
   box-shadow: none !important;
   border-bottom: 1px solid #dbdbdb;
 }
 
 .modal-card-foot {
-  border-radius: 0 0 6px 6px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
   border-top: 1px solid #dbdbdb;
 }
 
@@ -117,12 +100,7 @@ a {
 }
 
 .card {
-  border-radius: 6px;
   margin-top: 10px;
-}
-
-.button {
-  box-shadow: none !important;
 }
 
 
@@ -178,12 +156,11 @@ table.scroll tbody {
 }
 
 .card-header-title {
-  font-weight: 500;
-  font-size: 0.9rem;
   padding: 0.75rem 1.5rem;
   max-height: 48px !important;
 }
 
+.card-header-title,
 .add-btn,
 .steps,
 .title-name,
@@ -429,7 +406,6 @@ div:has(div.modal-disabled) {
 
 table thead th {
   font-size: 0.9rem !important;
-  font-weight: 500;
 }
 
 .icon-group {
@@ -556,10 +532,6 @@ span.tooltip {
   padding: 1em 0.75em !important
 }
 
-.is-size-9 {
-  font-size: 0.9rem !important;
-}
-
 .button,
 .input,
 .textarea,
@@ -610,6 +582,7 @@ span.tooltip {
   padding: 0 .5em;
   line-height: 1.5em;
   color: #818078;
+  background-color: #fff;
 }
 
 .content table td {
@@ -651,4 +624,8 @@ span.tooltip {
 
 .button .bi {
   color: inherit !important;
+}
+
+.add-btn-small {
+  max-height: 1.5rem !important;
 }
