@@ -19,7 +19,8 @@
   <!-- Show items even if not many for debugging -->
   <div *ngIf="!kvListItems.length && !isLoadingMore" class="has-text-centered p-5">
     <p>No key-value pairs to display</p>
-    <button class="button is-small" (click)="addListItem(false)" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
+    <button class="button is-small" (click)="addListItem(false)"
+      *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
       Add first item
     </button>
   </div>
@@ -30,26 +31,29 @@
       <form [formGroup]="kvListItemsForm">
         <div formArrayName="kvListItems">
           <!-- Simple rendering for debugging - show all items -->
-          <div *ngFor="let ctrl of kvListItems.controls; let i = index; trackBy: trackByIndex"
-               class="kv-item mb-3" [formGroupName]="i">
+          <div *ngFor="let ctrl of kvListItems.controls; let i = index; trackBy: trackByIndex" class="kv-item mb-3"
+            [formGroupName]="i">
             <div class="field">
               <div class="columns is-flex is-vcentered">
                 <div class="column is-5">
-                  <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticKeyView">
-                    <input class="input is-small" type="text" formControlName="key" placeholder="Key" autocomplete="off" />
+                  <ng-container
+                    *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticKeyView">
+                    <input class="input is-small" type="text" formControlName="key" placeholder="Key"
+                      autocomplete="off" />
                   </ng-container>
                   <ng-template #staticKeyView>
                     <span class="help">{{ ctrl.get('key')?.value || 'No key' }}</span>
                   </ng-template>
                 </div>
                 <div class="column is-6">
-                  <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticValueView">
+                  <ng-container
+                    *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticValueView">
                     <input *ngIf="configuration.items === 'integer'" class="input is-small" type="text"
                       formControlName="value" autocomplete="off" appIntegerOnly />
                     <input *ngIf="configuration.items === 'float'" class="input is-small" type="text"
                       formControlName="value" autocomplete="off" appFloatOnly />
-                    <input *ngIf="configuration.items === 'string' || !configuration.items" class="input is-small" type="text"
-                      formControlName="value" placeholder="Value" />
+                    <input *ngIf="configuration.items === 'string' || !configuration.items" class="input is-small"
+                      type="text" formControlName="value" placeholder="Value" />
                   </ng-container>
                   <ng-template #staticValueView>
                     <span class="help">{{ ctrl.get('value')?.value || 'No value' }}</span>
@@ -76,13 +80,13 @@
         <div class="scrollable">
           <app-kvlist-card *ngFor="let ctrl of kvListItems.controls; let i = index; trackBy: trackByIndex"
             [configuration]="configuration" [listItemsForm]="kvListItemsForm" [initialProperties]="initialProperties"
-            [from]="from" [group]="group" [items]="items" [item]="ctrl"
-            [index]="i" (changedConfiguration)="getChangedConfiguration(i, $event)"
-            (formState)="formStatus($event, i)" (removeItem)="removeListItem(i)">
+            [from]="from" [group]="group" [items]="items" [item]="ctrl" [index]="i"
+            (changedConfiguration)="getChangedConfiguration(i, $event)" (formState)="formStatus($event, i)"
+            (removeItem)="removeListItem(i)">
           </app-kvlist-card>
         </div>
       </ng-container>
-      
+
       <ng-container *ngIf="isListView">
         <div class="btn-panel-container is-flex-direction-row-reverse">
           <div class="btn-panel upper-btn-panel">
@@ -94,8 +98,8 @@
         </div>
 
         <app-list-table [configuration]="configuration" [listItemsForm]="kvListItemsForm"
-          [initialProperties]="initialProperties" [from]="from" [group]="group"
-          [items]="items" [listType]="'kvlist'" [validConfigurationForm]="validConfigurationForm"
+          [initialProperties]="initialProperties" [from]="from" [group]="group" [items]="items" [listType]="'kvlist'"
+          [validConfigurationForm]="validConfigurationForm"
           (changedConfiguration)="getChangedConfiguration($event.index, $event.data)"
           (formState)="formStatus($event, $event.index)" (removeItem)="removeListItem($event)"
           (addItem)="addListItem($event)" (openModalEvent)="openModal()" (exportFile)="openExportFileModal()">
@@ -108,8 +112,8 @@
   <ng-container *ngIf="configuration.items !== 'object'">
     <div class="btn-panel-container is-flex-direction-row-reverse mt-3">
       <div class="btn-panel">
-        <app-button-panel [isFormValid]="kvListItems.valid" [isListView]="true"
-          (addnewItem)="addListItem(false)" (importFile)="openModal()" (exportFile)="openExportFileModal()"
+        <app-button-panel [isFormValid]="kvListItems.valid" [isListView]="true" (addnewItem)="addListItem(false)"
+          (importFile)="openModal()" (exportFile)="openExportFileModal()"
           [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions)" />
       </div>
     </div>
@@ -117,9 +121,10 @@
 </div>
 
 <!-- Import/Export Modals -->
-<app-file-import-modal #fileImportModal [configuration]="configuration"
-  (appendFile)="onAppendFile($event)" (overrideFile)="onOverrideFile($event)">
+<app-file-import-modal #fileImportModal [configuration]="configuration" (appendFile)="onAppendFile($event)"
+  (overrideFile)="onOverrideFile($event)">
 </app-file-import-modal>
 
-<app-file-export-modal #fileExportModal [configuration]="configuration" [data]="exportData" [categoryName]="categoryName">
+<app-file-export-modal #fileExportModal [configuration]="configuration" [data]="exportData"
+  [categoryName]="categoryName">
 </app-file-export-modal>

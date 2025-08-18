@@ -18,7 +18,8 @@
 
   <div *ngIf="!listItems.length" class="has-text-centered p-5">
     <p>No items to display</p>
-    <button class="button is-small" (click)="addListItem(false)" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
+    <button class="button is-small" (click)="addListItem(false)"
+      *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
       Add first item
     </button>
   </div>
@@ -28,8 +29,7 @@
       <form [formGroup]="listItemsForm">
         <div formArrayName="listItems">
           <!-- Simple rendering for debugging - show all items -->
-          <div *ngFor="let ctrl of listItems.controls; let i = index; trackBy: trackByIndex"
-               class="list-item mb-3">
+          <div *ngFor="let ctrl of listItems.controls; let i = index; trackBy: trackByIndex" class="list-item mb-3">
             <div class="field">
               <div class="columns is-flex is-vcentered">
                 <div class="column is-11">
@@ -51,14 +51,10 @@
                   <button class="delete my-1 is-small" (click)="removeListItem(i)"></button>
                 </div>
               </div>
-              <span
-                *ngIf="ctrl.hasError && ctrl.hasError('minValue')"
-                class="help is-danger">
+              <span *ngIf="ctrl.hasError && ctrl.hasError('minValue')" class="help is-danger">
                 <sup>*</sup>Value should not be less than {{ configuration?.minimum }}.
               </span>
-              <span
-                *ngIf="ctrl.hasError && ctrl.hasError('maxValue')"
-                class="help is-danger">
+              <span *ngIf="ctrl.hasError && ctrl.hasError('maxValue')" class="help is-danger">
                 <sup>*</sup>Value should not be greater than {{ configuration?.maximum }}.
               </span>
             </div>
@@ -73,12 +69,12 @@
           <app-list-card *ngFor="let ctrl of listItems.controls; let i = index; trackBy: trackByIndex"
             [configuration]="configuration" [listItemsForm]="listItemsForm" [initialProperties]="initialProperties"
             [from]="from" [group]="group" [listLabel]="listLabel" [firstKey]="firstKey" [items]="items" [item]="ctrl"
-            [index]="i" (changedConfiguration)="getChangedConfiguration(i, $event)"
-            (formState)="formStatus($event, i)" (removeItem)="removeListItem(i)">
+            [index]="i" (changedConfiguration)="getChangedConfiguration(i, $event)" (formState)="formStatus($event, i)"
+            (removeItem)="removeListItem(i)">
           </app-list-card>
         </div>
       </ng-container>
-      
+
       <ng-container *ngIf="isListView">
         <div class="btn-panel-container is-flex-direction-row-reverse">
           <div class="btn-panel upper-btn-panel">
@@ -104,8 +100,8 @@
   <ng-container *ngIf="configuration.items !== 'object'">
     <div class="btn-panel-container is-flex-direction-row-reverse mt-3">
       <div class="btn-panel">
-        <app-button-panel [isFormValid]="listItems.valid" [isListView]="true"
-          (addnewItem)="addListItem(false)" (importFile)="openModal()" (exportFile)="openExportFileModal()"
+        <app-button-panel [isFormValid]="listItems.valid" [isListView]="true" (addnewItem)="addListItem(false)"
+          (importFile)="openModal()" (exportFile)="openExportFileModal()"
           [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions)" />
       </div>
     </div>
@@ -113,9 +109,10 @@
 </div>
 
 <!-- Import/Export Modals -->
-<app-file-import-modal #fileImportModal [configuration]="configuration"
-  (appendFile)="onAppendFile($event)" (overrideFile)="onOverrideFile($event)">
+<app-file-import-modal #fileImportModal [configuration]="configuration" (appendFile)="onAppendFile($event)"
+  (overrideFile)="onOverrideFile($event)">
 </app-file-import-modal>
 
-<app-file-export-modal #fileExportModal [configuration]="configuration" [data]="exportData" [categoryName]="categoryName">
+<app-file-export-modal #fileExportModal [configuration]="configuration" [data]="exportData"
+  [categoryName]="categoryName">
 </app-file-export-modal>

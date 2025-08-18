@@ -31,8 +31,8 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
   isListView = true;
 
   // Simplified data storage
-  allFormData: Array<{key: string, value: any}> = [];
-  
+  allFormData: Array<{ key: string, value: any }> = [];
+
   private destroy$ = new Subject<void>();
   private isInitialized = false;
 
@@ -74,6 +74,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
       return;
     }
 
+    const loadStartTime = performance.now();
     let kvlistValue = this.configuration?.value ?? this.configuration.default ?? {};
 
     // Handle string format
@@ -91,29 +92,47 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
     }
 
     const entries = Object.entries(kvlistValue);
+    console.log(`🔑 KV-LIST: Found ${entries.length} key-value pairs for "${this.configuration.key}"`);
 
     // Store all data
     this.allFormData = entries.map(([key, value]) => ({ key, value }));
-    
+
+    const formCreationStartTime = performance.now();
     // Create form controls for all items
     this.createFormControls();
-    
+    const formCreationEndTime = performance.now();
+
+    console.log(`🔧 KV-LIST: Created ${this.kvListItems.controls.length} form controls`);
+    console.log(`⏱️ KV-LIST: Form controls creation took ${(formCreationEndTime - formCreationStartTime).toFixed(2)}ms (${((formCreationEndTime - formCreationStartTime) / 1000).toFixed(3)}s)`);
+
+    const changeDetectionStartTime = performance.now();
     this.cdRef.detectChanges(); // Force change detection
+    const changeDetectionEndTime = performance.now();
+
+    const totalLoadTime = changeDetectionEndTime - loadStartTime;
+    console.log(`⏱️ KV-LIST: Change detection took ${(changeDetectionEndTime - changeDetectionStartTime).toFixed(2)}ms (${((changeDetectionEndTime - changeDetectionStartTime) / 1000).toFixed(3)}s)`);
+    console.log(`🎯 KV-LIST: Total data load and render time: ${totalLoadTime.toFixed(2)}ms (${(totalLoadTime / 1000).toFixed(3)}s) for ${entries.length} records`);
   }
 
   private createFormControls() {
     const formArray = this.kvListItems;
     formArray.clear();
 
-    this.allFormData.forEach(item => {
+    console.log(`🔧 KV-LIST: Creating form controls for ${this.allFormData.length} items`);
+    const controlCreationStartTime = performance.now();
+
+    this.allFormData.forEach((item) => {
       const formGroup = this.createItemFormGroup(item);
       formArray.push(formGroup);
       this.items.push({ status: true });
       this.initialProperties.push({});
     });
+
+    const controlCreationEndTime = performance.now();
+    console.log(`⏱️ KV-LIST: All form controls created in ${(controlCreationEndTime - controlCreationStartTime).toFixed(2)}ms (${((controlCreationEndTime - controlCreationStartTime) / 1000).toFixed(3)}s)`);
   }
 
-  private createItemFormGroup(item: {key: string, value: any}): FormGroup {
+  private createItemFormGroup(item: { key: string, value: any }): FormGroup {
     return this.fb.group({
       key: [item.key, [Validators.required, CustomValidator.nospaceValidator]],
       value: [item.value, [Validators.required]]
@@ -163,7 +182,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
     if (!this.kvListItems || this.kvListItems.length === 0) {
       return {};
     }
-    
+
     const result = {};
     this.kvListItems.controls.forEach(control => {
       const value = control.value;
@@ -171,11 +190,13 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
         result[value.key] = value.value;
       }
     });
-    
+
     return result;
   }
 
   addListItem(isPrepend: boolean = false) {
+    const addItemStartTime = performance.now();
+
     const newItem = { key: '', value: '' };
     const newFormGroup = this.createItemFormGroup(newItem);
 
@@ -192,6 +213,10 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
     }
 
     this.cdRef.markForCheck();
+
+    const addItemEndTime = performance.now();
+    console.log(`🔑 KV-LIST: Added new item. Total: ${this.kvListItems.controls.length}`);
+    console.log(`⏱️ KV-LIST: Add item operation took ${(addItemEndTime - addItemStartTime).toFixed(2)}ms (${((addItemEndTime - addItemStartTime) / 1000).toFixed(6)}s)`);
   }
 
   removeListItem(index: number) {
@@ -200,7 +225,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
       this.kvListItems.removeAt(index);
       this.items.splice(index, 1);
       this.initialProperties.splice(index, 1);
-      
+
       this.cdRef.markForCheck();
     }
   }
@@ -228,15 +253,17 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
   }
 
   private handleFileImport(event: any, mode: 'append' | 'override') {
+    const importStartTime = performance.now();
     const fileData = event.fileData;
     console.log(`📂 KV Import ${mode}:`, fileData);
-    
+    console.log(`⏱️ KV-LIST: Starting ${mode} import operation`);
+
     if (!fileData) {
       console.warn('No file data provided');
       return;
     }
 
-    let importedData: Array<{key: string, value: any}> = [];
+    let importedData: Array<{ key: string, value: any }> = [];
 
     // Handle different data formats
     if (typeof fileData === 'object' && !Array.isArray(fileData)) {
@@ -284,15 +311,24 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
     // Add imported data
     importedData.forEach(item => {
       this.allFormData.push(item);
-      
+
       const formGroup = this.createItemFormGroup(item);
       this.kvListItems.push(formGroup);
       this.items.push({ status: true });
       this.initialProperties.push({});
     });
 
+    const importEndTime = performance.now();
+    const totalImportTime = importEndTime - importStartTime;
+
     console.log(`✅ Import complete: ${mode}ed ${importedData.length} items. Total: ${this.kvListItems.controls.length}`);
+    console.log(`⏱️ KV-LIST: Import operation took ${totalImportTime.toFixed(2)}ms (${(totalImportTime / 1000).toFixed(3)}s)`);
+    console.log(`📊 KV-LIST: Average import time per record: ${(totalImportTime / Math.max(importedData.length, 1)).toFixed(2)}ms (${((totalImportTime / Math.max(importedData.length, 1)) / 1000).toFixed(6)}s)`);
+
+    const changeDetectionStartTime = performance.now();
     this.cdRef.detectChanges();
+    const changeDetectionEndTime = performance.now();
+    console.log(`⏱️ KV-LIST: Post-import change detection took ${(changeDetectionEndTime - changeDetectionStartTime).toFixed(2)}ms (${((changeDetectionEndTime - changeDetectionStartTime) / 1000).toFixed(6)}s)`);
   }
 
   // Legacy methods for template compatibility
@@ -350,41 +386,5 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
   // Properties for debugging and compatibility
   get isLoadingMore() {
     return false; // Simplified - no virtual scrolling for now
-  }
-
-  // Test method to generate large datasets for performance testing
-  generateTestData(count: number = 5000) {
-    console.log(`🧪 Generating ${count} test records for performance testing...`);
-    const startTime = performance.now();
-    
-    // Clear existing data
-    this.allFormData = [];
-    this.kvListItems.clear();
-    this.items = [];
-    this.initialProperties = [];
-
-    // Generate test data
-    for (let i = 1; i <= count; i++) {
-      const testItem = {
-        key: `outstation_${i.toString().padStart(4, '0')}`,
-        value: `station_address_${i}`
-      };
-      
-      this.allFormData.push(testItem);
-      
-      const formGroup = this.createItemFormGroup(testItem);
-      this.kvListItems.push(formGroup);
-      this.items.push({ status: true });
-      this.initialProperties.push({});
-    }
-
-    const endTime = performance.now();
-    console.log(`✅ Generated ${count} test records in ${(endTime - startTime).toFixed(2)}ms`);
-    console.log(`📊 Total KV pairs: ${this.kvListItems.controls.length}`);
-    
-    this.cdRef.detectChanges();
-    
-    // Show success message
-    console.log(`🎯 Test data ready for export. Use the export button to test with ${count} records.`);
   }
 }

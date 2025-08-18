@@ -34,7 +34,7 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
 
   // Simplified data storage
   allFormData: any[] = [];
-  
+
   private destroy$ = new Subject<void>();
   private isInitialized = false;
 
@@ -63,7 +63,6 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
   ngOnInit() {
     console.log(`📋 LIST COMPONENT INIT: Group="${this.group}", Category="${this.categoryName}"`);
     console.log('📋 LIST: Initial configuration:', this.configuration);
-    
     if (this.configuration) {
       if (this.configuration.items == 'object') {
         this.firstKey = Object.keys(this.configuration.properties)[0];
@@ -89,6 +88,7 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
       return;
     }
 
+    const loadStartTime = performance.now();
     let values = this.configuration?.value ?? this.configuration.default ?? [];
     console.log(`📋 Loading data for configuration "${this.configuration.key}":`, values);
 
@@ -117,22 +117,33 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
 
     // Store all data
     this.allFormData = values;
+
     this.createFormControls();
-    
-    console.log(`📋 Created ${this.listItems.controls.length} form controls`);
+    const changeDetectionStartTime = performance.now();
     this.cdRef.detectChanges(); // Force change detection
+    const changeDetectionEndTime = performance.now();
+
+    const totalLoadTime = changeDetectionEndTime - loadStartTime;
+    console.log(`⏱️ LIST: Change detection took ${(changeDetectionEndTime - changeDetectionStartTime).toFixed(2)}ms (${((changeDetectionEndTime - changeDetectionStartTime) / 1000).toFixed(3)}s)`);
+    console.log(`🎯 LIST: Total data load and render time: ${totalLoadTime.toFixed(2)}ms (${(totalLoadTime / 1000).toFixed(3)}s) for ${values.length} records`);
   }
 
   private createFormControls() {
     const formArray = this.listItems;
     formArray.clear();
 
-    this.allFormData.forEach(item => {
+    console.log(`🔧 LIST: Creating form controls for ${this.allFormData.length} items`);
+    const controlCreationStartTime = performance.now();
+
+    this.allFormData.forEach((item) => {
       const control = this.createItemControl(item);
       formArray.push(control);
       this.items.push({ status: true });
       this.initialProperties.push({});
     });
+
+    const controlCreationEndTime = performance.now();
+    console.log(`⏱️ LIST: All form controls created in ${(controlCreationEndTime - controlCreationStartTime).toFixed(2)}ms (${((controlCreationEndTime - controlCreationStartTime) / 1000).toFixed(3)}s)`);
   }
 
   private createItemControl(item: any): AbstractControl {
@@ -161,7 +172,7 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
 
           // Convert to float if needed
           if (this.configuration?.items === 'float') {
-            filtered = filtered.map((num: any) => 
+            filtered = filtered.map((num: any) =>
               Number.isInteger(+num) ? Number.parseFloat(num).toFixed(1) : num
             );
           }
@@ -197,7 +208,7 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
     if (!this.listItems || this.listItems.length === 0) {
       return [];
     }
-    
+
     if (this.configuration.items === 'object') {
       // For object items, extract the values from each form group
       return this.listItems.controls.map(control => {
@@ -210,6 +221,8 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
   }
 
   addListItem(isPrepend: boolean = false) {
+    const addItemStartTime = performance.now();
+
     // Create new item
     let newItem;
     if (this.configuration.items === 'object') {
@@ -236,7 +249,10 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
     }
 
     this.cdRef.markForCheck();
+
+    const addItemEndTime = performance.now();
     console.log(`📋 Added new list item. Total: ${this.listItems.controls.length}`);
+    console.log(`⏱️ LIST: Add item operation took ${(addItemEndTime - addItemStartTime).toFixed(2)}ms (${((addItemEndTime - addItemStartTime) / 1000).toFixed(6)}s)`);
   }
 
   removeListItem(index: number) {
@@ -245,7 +261,7 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
       this.listItems.removeAt(index);
       this.items.splice(index, 1);
       this.initialProperties.splice(index, 1);
-      
+
       this.cdRef.markForCheck();
       console.log(`📋 Removed list item at index ${index}. Total: ${this.listItems.controls.length}`);
     }
@@ -292,9 +308,11 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
   }
 
   private handleFileImport(event: any, mode: 'append' | 'override') {
+    const importStartTime = performance.now();
     const fileData = event.fileData;
     console.log(`📂 List Import ${mode}:`, fileData);
-    
+    console.log(`⏱️ LIST: Starting ${mode} import operation`);
+
     if (!fileData) {
       console.warn('No file data provided');
       return;
@@ -327,15 +345,24 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
     // Add imported data
     importedData.forEach(item => {
       this.allFormData.push(item);
-      
+
       const control = this.createItemControl(item);
       this.listItems.push(control);
       this.items.push({ status: true });
       this.initialProperties.push({});
     });
 
+    const importEndTime = performance.now();
+    const totalImportTime = importEndTime - importStartTime;
+
     console.log(`✅ Import complete: ${mode}ed ${importedData.length} items. Total: ${this.listItems.controls.length}`);
+    console.log(`⏱️ LIST: Import operation took ${totalImportTime.toFixed(2)}ms (${(totalImportTime / 1000).toFixed(3)}s)`);
+    console.log(`📊 LIST: Average import time per record: ${(totalImportTime / Math.max(importedData.length, 1)).toFixed(2)}ms (${((totalImportTime / Math.max(importedData.length, 1)) / 1000).toFixed(6)}s)`);
+
+    const changeDetectionStartTime = performance.now();
     this.cdRef.detectChanges();
+    const changeDetectionEndTime = performance.now();
+    console.log(`⏱️ LIST: Post-import change detection took ${(changeDetectionEndTime - changeDetectionStartTime).toFixed(2)}ms (${((changeDetectionEndTime - changeDetectionStartTime) / 1000).toFixed(6)}s)`);
   }
 
   // Missing methods that template expects
