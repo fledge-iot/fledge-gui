@@ -125,7 +125,19 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
       const formGroup = this.createItemFormGroup(item);
       formArray.push(formGroup);
       this.items.push({ status: true });
-      this.initialProperties.push({});
+
+      // Create proper initial properties for detailed view
+      if (this.configuration.items === 'object') {
+        let objectConfig = cloneDeep(this.configuration.properties);
+        for (let [key, val] of Object.entries(item.value)) {
+          if (objectConfig[key]) {
+            objectConfig[key].value = val;
+          }
+        }
+        this.initialProperties.push(objectConfig);
+      } else {
+        this.initialProperties.push({});
+      }
     });
 
     const controlCreationEndTime = performance.now();
@@ -200,16 +212,28 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
     const newItem = { key: '', value: '' };
     const newFormGroup = this.createItemFormGroup(newItem);
 
+    // Create proper initial properties for new item
+    let newInitialProperty = {};
+    if (this.configuration.items === 'object') {
+      let objectConfig = cloneDeep(this.configuration.properties);
+      for (let [key, val] of Object.entries(newItem.value || {})) {
+        if (objectConfig[key]) {
+          objectConfig[key].value = val;
+        }
+      }
+      newInitialProperty = objectConfig;
+    }
+
     if (isPrepend) {
       this.allFormData.unshift(newItem);
       this.kvListItems.insert(0, newFormGroup);
       this.items.unshift({ status: true });
-      this.initialProperties.unshift({});
+      this.initialProperties.unshift(newInitialProperty);
     } else {
       this.allFormData.push(newItem);
       this.kvListItems.push(newFormGroup);
       this.items.push({ status: true });
-      this.initialProperties.push({});
+      this.initialProperties.push(newInitialProperty);
     }
 
     this.cdRef.markForCheck();
@@ -367,6 +391,10 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
     // Update the form control at the given index
     if (this.kvListItems.controls[index]) {
       this.kvListItems.controls[index].patchValue(data);
+
+      // Emit changes to notify parent component (for save button)
+      const currentValue = this.kvListItems.value;
+      this.emitChanges(currentValue);
     }
   }
 

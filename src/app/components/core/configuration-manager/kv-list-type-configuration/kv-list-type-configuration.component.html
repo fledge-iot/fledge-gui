@@ -19,10 +19,23 @@
   <!-- Show items even if not many for debugging -->
   <div *ngIf="!kvListItems.length && !isLoadingMore" class="has-text-centered p-5">
     <p>No key-value pairs to display</p>
-    <button class="button is-small" (click)="addListItem(false)"
-      *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
-      Add first item
-    </button>
+    <div class="field is-grouped is-grouped-centered mt-4">
+      <!-- Add first item button -->
+      <div class="control">
+        <button class="button is-small" (click)="addListItem(false)"
+          *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
+          Add first item
+        </button>
+      </div>
+
+      <!-- Import button -->
+      <div class="control">
+        <button class="button is-small" (click)="openModal()"
+          *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
+          Import
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Always show content, remove virtual scrolling temporarily to debug -->

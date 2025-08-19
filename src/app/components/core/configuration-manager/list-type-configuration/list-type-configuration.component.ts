@@ -139,7 +139,19 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
       const control = this.createItemControl(item);
       formArray.push(control);
       this.items.push({ status: true });
-      this.initialProperties.push({});
+
+      // Create proper initial properties for detailed view
+      if (this.configuration.items === 'object') {
+        let objectConfig = cloneDeep(this.configuration.properties);
+        for (let [key, val] of Object.entries(item)) {
+          if (objectConfig[key]) {
+            objectConfig[key].value = val;
+          }
+        }
+        this.initialProperties.push(objectConfig);
+      } else {
+        this.initialProperties.push({});
+      }
     });
 
     const controlCreationEndTime = performance.now();
@@ -236,16 +248,28 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
 
     const newControl = this.createItemControl(newItem);
 
+    // Create proper initial properties for new item
+    let newInitialProperty = {};
+    if (this.configuration.items === 'object') {
+      let objectConfig = cloneDeep(this.configuration.properties);
+      for (let [key, val] of Object.entries(newItem)) {
+        if (objectConfig[key]) {
+          objectConfig[key].value = val;
+        }
+      }
+      newInitialProperty = objectConfig;
+    }
+
     if (isPrepend) {
       this.allFormData.unshift(newItem);
       this.listItems.insert(0, newControl);
       this.items.unshift({ status: true });
-      this.initialProperties.unshift({});
+      this.initialProperties.unshift(newInitialProperty);
     } else {
       this.allFormData.push(newItem);
       this.listItems.push(newControl);
       this.items.push({ status: true });
-      this.initialProperties.push({});
+      this.initialProperties.push(newInitialProperty);
     }
 
     this.cdRef.markForCheck();
@@ -370,6 +394,10 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
     // Update the form control at the given index
     if (this.listItems.controls[index]) {
       this.listItems.controls[index].patchValue(data);
+
+      // Emit changes to notify parent component (for save button)
+      const currentValue = this.listItems.value;
+      this.emitChanges(currentValue);
     }
   }
 
