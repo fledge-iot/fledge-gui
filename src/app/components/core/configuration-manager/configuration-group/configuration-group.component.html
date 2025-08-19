@@ -1,7 +1,7 @@
 <div class="container" [ngClass]="{'is-fluid': sourceName, 'custom-max-width': from?.includes('control-pipeline')}"
   [id]="from">
   <nav *ngIf="sourceName && from !== 'rule-modal' && from !== 'delivery-modal'"
-    class="breadcrumb has-text-weight-semibold" aria-label="breadcrumbs">
+    class="breadcrumb has-text-weight-medium" aria-label="breadcrumbs">
     <ul>
       <li class="is-active"><a>{{sourceName}}</a></li>
       <li class="is-active">

@@ -2,15 +2,14 @@
   <app-service-warning [service]="serviceInfo" (serviceConfigureModal)="openServiceConfigureModal()"
     (refreshService)="refreshServiceInfo()" [serviceType]="'Dispatcher'"></app-service-warning>
   <div class="card">
-    <header class="card-header">
+    <header class="card-header is-flex is-justify-content-space-between is-align-items-center">
       <div class="card-header-title">
         Control Pipelines
         <button class="button is-small" id="refresh-check" title="Reload" (click)="getControlPipelines()">
           <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
         </button>
       </div>
-      <a *ngIf="rolesService?.hasControlAccess()" class="button is-small is-light add-btn-small mt-3"
-        (click)="addControlPipeline()">
+      <a *ngIf="rolesService?.hasControlAccess()" class="button is-small is-light" (click)="addControlPipeline()">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>

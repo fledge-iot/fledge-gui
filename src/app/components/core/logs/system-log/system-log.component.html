@@ -2,7 +2,7 @@
   <div class="card" [ngClass]="{'custom-quickview-card': sourceName}">
     <div class="breadcrumb-container" *ngIf="sourceName; else cardHeaderTemplate">
       <nav class="breadcrumb" aria-label="breadcrumbs"
-        [ngClass]="{'quickview-breadcrumb has-text-weight-semibold': sourceName}">
+        [ngClass]="{'quickview-breadcrumb has-text-weight-medium': sourceName}">
         <ul>
           <li class="is-active"><a>{{sourceName}}</a></li>
           <li class="is-active">
