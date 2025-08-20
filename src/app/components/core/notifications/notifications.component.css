@@ -14,10 +14,6 @@
   padding-right: 0;
 }
 
-.is-hidden {
-  display: none;
-}
-
 .custom-pad {
   margin-top: 6px;
 }
@@ -29,8 +25,4 @@
 
 #refresh-check {
   margin: auto;
-}
-
-.fade {
-  background-color: #f5f5f5 !important;
 }

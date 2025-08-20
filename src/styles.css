@@ -58,7 +58,6 @@ body,
 .button {
   box-shadow: none !important;
   font-weight: 400 !important;
-  border-radius: 2px !important;
 }
 
 .button .bi {
@@ -68,14 +67,11 @@ body,
 /* Card overrides */
 .card {
   margin-top: 10px;
-  border-radius: 3px !important;
 }
 
 .card-header {
   background-color: #f5f5f5;
   color: #363636;
-  border-radius: 0.25rem 0.25rem 0 0;
-  border-radius: 3px !important;
   font-weight: 500;
 }
 
@@ -90,21 +86,23 @@ body,
   overflow: auto;
 }
 
-/* Modal overrides */
-.modal-card {
+.modal-card,
+.panel,
+.card,
+.card-header {
   border-radius: 3px !important;
 }
 
 .modal-card-head,
 .modal-card-foot {
   background-color: #f5f5f5;
-  padding: 15px !important;
+  padding: 12px;
 }
 
 .modal-card-head {
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
-  box-shadow: none !important;
+  box-shadow: none;
   border-bottom: 1px solid #dbdbdb;
 }
 
@@ -118,9 +116,8 @@ body,
   font-size: 0.9rem;
 }
 
-/* Panel overrides */
-.panel {
-  border-radius: 3px !important;
+.modal-card-body {
+  padding: 2rem 1rem;
 }
 
 .panel-heading {
@@ -136,7 +133,9 @@ body,
 .input,
 .textarea,
 .select select,
-.CodeMirror-wrap {
+.CodeMirror-wrap,
+.button,
+.tag-syslog {
   border-radius: 2px !important;
 }
 
@@ -455,11 +454,18 @@ div:has(div.modal-disabled) {
 
 .help-pad {
   margin: 16px 7px;
-  font-size: 0.9rem;
 }
 
 .breadcrumb-padding {
   padding: 0 0.75em;
+}
+
+.fade {
+  background-color: #f5f5f5 !important;
+}
+
+.is-hidden {
+  display: none;
 }
 
 /* ================================================
@@ -490,7 +496,6 @@ div:has(div.modal-disabled) {
 }
 
 .tag-syslog {
-  border-radius: 2px;
   font-size: .75rem;
   height: 1.3em;
   line-height: 1.3;

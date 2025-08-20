@@ -17,7 +17,8 @@
         <app-service-config (serviceConfigureModal)="openServiceConfigureModal()" [from]="'dispatcher'">
         </app-service-config>
       </div>
-      <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad"
+      <span
+        class="icon is-size-9 is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad"
         data-tooltip="Help" (click)="goToLink('control-pipeline-management')">
         <i class="bi bi-question-circle"></i>
       </span>
@@ -69,17 +70,17 @@
                   </td>
 
                   <td class="align-content">
-                    <span class="is-small">{{pipeline.source.type}}</span>
+                    <span class="is-small is-size-9">{{pipeline.source.type}}</span>
                     <span class="help src-dest-name">{{pipeline.source.name ? pipeline.source.name : '*'}}</span>
                   </td>
                   <td></td>
                   <td class="align-content">
-                    <span class="is-small">{{pipeline.destination.type}}</span>
+                    <span class="is-small is-size-9">{{pipeline.destination.type}}</span>
                     <span class="help src-dest-name">{{pipeline.destination.name ? pipeline.destination.name :
                       '*'}}</span>
                   </td>
                   <td></td>
-                  <td class="align-content" style="font-size: 0.9rem;">
+                  <td class="align-content is-size-9">
                     {{getFiltersName(pipeline.filters, pipeline.name).join(', ')}}
                   </td>
                   <td><span class="tag is-rounded">{{pipeline.execution}}</span></td>
