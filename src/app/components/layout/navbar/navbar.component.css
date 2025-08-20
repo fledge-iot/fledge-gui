@@ -111,11 +111,6 @@
   color: #485fc7;
 }
 
-.status-icon {
-  position: relative;
-  display: inline-block;
-}
-
 .overlay-icon {
   position: absolute;
   top: 58%;
