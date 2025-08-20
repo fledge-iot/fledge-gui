@@ -261,8 +261,9 @@
                         <table>
                           <tr *ngFor="let s of servicesRecord">
                             <td class="has-text-left">
-                              <span class="icon status-icon" [ngClass]="applyServiceStatusCustomCss(s.status)"
-                                class="has-tooltip-arrow tooltip is-hovered" data-tooltip="Ingest Suspended">
+                              <span class="icon status-icon has-tooltip-arrow tooltip is-hovered"
+                                [ngClass]="applyServiceStatusCustomCss(s.status)"
+                                [attr.data-tooltip]="s?.debug?.ingress === 'Suspended' ? 'Ingest Suspended' : null">
                                 <i class="bi bi-circle-fill child-icon"></i>
                                 <i *ngIf="s?.debug?.ingress === 'Suspended'" class="bi bi-ban overlay-icon"></i>
                               </span>
