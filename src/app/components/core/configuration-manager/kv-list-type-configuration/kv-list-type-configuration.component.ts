@@ -339,7 +339,29 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
       const formGroup = this.createItemFormGroup(item);
       this.kvListItems.push(formGroup);
       this.items.push({ status: true });
-      this.initialProperties.push({});
+
+      // Create proper initial properties for imported items
+      if (this.configuration.items === 'object') {
+        let objectConfig = cloneDeep(this.configuration.properties);
+
+        // Set values from imported item data
+        for (let [key, val] of Object.entries(item.value)) {
+          if (objectConfig[key]) {
+            objectConfig[key].value = val;
+          }
+        }
+
+        // Ensure all properties have values
+        Object.keys(objectConfig).forEach(key => {
+          if (!objectConfig[key].hasOwnProperty('value')) {
+            objectConfig[key].value = objectConfig[key].default || '';
+          }
+        });
+
+        this.initialProperties.push(objectConfig);
+      } else {
+        this.initialProperties.push({});
+      }
     });
 
     const importEndTime = performance.now();
