@@ -36,7 +36,7 @@
     </div>
     <div class="steps-content mb-0 desc-text">
       <form [formGroup]="notificationForm" novalidate>
-        <div class="box step-content  is-active" id="c-1">
+        <div class="box mb-5 step-content  is-active" id="c-1">
           <div class="field is-horizontal form-group">
             <div class="field-label is-normal">
               <label class="label">Name</label>
@@ -68,7 +68,7 @@
             </div>
           </div>
         </div>
-        <div class="box step-content" id="c-2">
+        <div class="box mb-5 step-content" id="c-2">
           <div *ngIf="!notificationRulePlugins || notificationRulePlugins.length === 0" class="has-text-centered">
             <small class="no-rec">No notification rule plugin installed. </small>
             <small>
@@ -120,14 +120,14 @@
             </div>
           </div>
         </div>
-        <div class="box step-content" id="c-3">
+        <div class="box mb-5 step-content" id="c-3">
           <app-configuration-group #ruleConfigView *ngIf="rulePluginConfiguration" [category]="rulePluginConfiguration"
             [plugin]="selectedRulePlugin" [recalculateTabsOverflow]="isTabsNavVisible"
             (changedConfigEvent)="getChangedRuleConfig($event)" [from]="'add-notification-rule-form'"
             (formStatusEvent)="checkRuleFormValidity($event)">
           </app-configuration-group>
         </div>
-        <div class="box step-content" id="c-4">
+        <div class="box mb-5 step-content" id="c-4">
           <div *ngIf="!notificationDeliveryPlugins || notificationDeliveryPlugins.length === 0"
             class="has-text-centered">
             <small class="no-rec">No notification delivery plugin installed. </small>
@@ -181,14 +181,14 @@
             </div>
           </div>
         </div>
-        <div class="box step-content" id="c-5">
+        <div class="box mb-5 step-content" id="c-5">
           <app-configuration-group #deliveryConfigView *ngIf="deliveryPluginConfiguration"
             [plugin]="selectedDeliveryPlugin" [recalculateTabsOverflow]="isTabsNavVisible"
             [category]="deliveryPluginConfiguration" (changedConfigEvent)="getChangedDeliveryConfig($event)"
             [from]="'add-notification-delivery-form'"
             (formStatusEvent)="validDeliveryConfigurationForm = $event"></app-configuration-group>
         </div>
-        <div class="box step-content" id="c-6">
+        <div class="box mb-5 step-content" id="c-6">
           <div class="column">
             <div class="config-div">
               <div class="field is-horizontal">

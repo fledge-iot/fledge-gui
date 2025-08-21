@@ -14,10 +14,6 @@
   color: rgb(178, 34, 34)
 }
 
-.fade {
-  background-color: #f5f5f5 !important
-}
-
 .fa::before {
   display: inline-block;
 }

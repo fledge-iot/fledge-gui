@@ -1,19 +1,21 @@
 <div class="container is-fluid">
-  <div class="navbar-item">
-    <nav class="breadcrumb" aria-label="breadcrumbs">
-      <ul>
-        <li class="breadcrumb-padding">Developer</li>
-        <li class="is-active">
-          <a href="#" aria-current="page">
-            Additional Services
-          </a>
-        </li>
-      </ul>
-    </nav>
-    <button class="button is-small" id="refresh-check" title="Reload"
-      (click)="additionalServicesUtils.getAllServiceStatus(false, 'additional-services')">
-      <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
-    </button>
+  <div class="navbar-item is-flex is-justify-content-space-between is-align-items-center p-0">
+    <div class="is-flex is-align-items-center">
+      <nav class="breadcrumb python-package-breadcrumb mb-0" aria-label="breadcrumbs">
+        <ul>
+          <li class="breadcrumb-padding">Developer</li>
+          <li class="is-active">
+            <a href="#" aria-current="page">
+              Additional Services
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <button class="button is-small" id="refresh-check" title="Reload"
+        (click)="additionalServicesUtils.getAllServiceStatus(false, 'additional-services')">
+        <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
+      </button>
+    </div>
   </div>
   <div class="card">
     <div class="card-content" [ngClass]="{'change-overflow': viewPort !== 'mobile'}">
@@ -84,7 +86,7 @@
   <section class="modal-card-body">
     Deleting {{service?.name}} service can not be undone. Continue?
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button type="button" class="button is-small" (click)="closeModal('delete-confirmation-dialog')">Cancel</button>
     <button type="button" class="button is-small is-danger" (click)="deleteService(service?.name)"
       [appDisableUntilResponse]="reenableButton">Delete</button>
@@ -100,7 +102,7 @@
     Are you sure, You want to {{ ["shutdown", "disabled"].includes(service?.state) ? "enable" : "disable" }} the service
     {{service?.name}}?
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button type="button" class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
     <button type="button" class="button is-small"
       [ngClass]="{'is-link': ['shutdown', 'disabled'].includes(service?.state), 'is-danger': !['shutdown', 'disabled'].includes(service?.state)}"

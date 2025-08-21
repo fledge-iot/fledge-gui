@@ -20,7 +20,7 @@
     </div>
     <div class="steps-content mb-0 desc-text">
       <form [formGroup]="taskForm" validate>
-        <div class="box step-content is-active" id="c-1">
+        <div class="box mb-5 step-content is-active" id="c-1">
           <span *ngIf="plugin"
             class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
             data-tooltip="Help" (click)="goToLink()">
@@ -143,12 +143,12 @@
             </div>
           </div>
         </div>
-        <div class="box step-content" id="c-2">
+        <div class="box mb-5 step-content" id="c-2">
           <app-configuration-group *ngIf="configurationData" [category]="configurationData" [plugin]="plugin"
             [recalculateTabsOverflow]="isTabsNavVisible" (changedConfigEvent)="getChangedConfig($event)"
             [from]="'add-task-form'" (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>
         </div>
-        <div class="box step-content" id="c-3">
+        <div class="box mb-5 step-content" id="c-3">
           <div class="column">
             <div class="config-div">
               <div class="field is-horizontal">

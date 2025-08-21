@@ -1,18 +1,20 @@
 <div class="container is-fluid">
-  <div class="navbar-item">
-    <nav class="breadcrumb python-package-breadcrumb mb-0" aria-label="breadcrumbs">
-      <ul>
-        <li class="breadcrumb-padding">Developer</li>
-        <li class="is-active">
-          <a href="#" aria-current="page">
-            Python Packages
-          </a>
-        </li>
-        <button (click)="getPythonPackages()" class="button is-small" title="Reload" id="refresh-check">
-          <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
-        </button>
-      </ul>
-    </nav>
+  <div class="navbar-item is-flex is-justify-content-space-between is-align-items-center p-0">
+    <div class="is-flex is-align-items-center">
+      <nav class="breadcrumb python-package-breadcrumb mb-0" aria-label="breadcrumbs">
+        <ul>
+          <li class="breadcrumb-padding">Developer</li>
+          <li class="is-active">
+            <a href="#" aria-current="page">
+              Python Packages
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <button (click)="getPythonPackages()" class="button is-small" title="Reload" id="refresh-check">
+        <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
+      </button>
+    </div>
     <a *ngIf="rolesService?.hasEditPermissions()" class="button is-small"
       routerLink="/developer/options/python/package/add">
       <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>

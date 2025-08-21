@@ -121,7 +121,7 @@
     <section class="modal-card-body">
       Are you sure you want to delete the backup <b>{{backup?.date | dateparser:"YYYY-MM-DD HH:mm:ss"}}</b>
     </section>
-    <footer class="modal-card-foot">
+    <footer class="modal-card-foot buttons">
       <button class="button is-small" (click)="closeModal('delete-backup-dialog')">Cancel</button>
       <button class="button is-small is-danger" (click)="deleteBackup(backup?.id)"
         [appDisableUntilResponse]="reenableButton">Delete</button>
@@ -137,7 +137,7 @@
     <section class="modal-card-body">
       Are you sure you want to restore the backup <b>{{backup?.date | dateparser:"YYYY-MM-DD HH:mm:ss"}}</b>
     </section>
-    <footer class="modal-card-foot">
+    <footer class="modal-card-foot buttons">
       <button class="button is-small" (click)="closeModal('restore-backup-dialog')">Cancel</button>
       <button class="button is-small is-warning" (click)="restoreBackup(backup?.id)"
         [appDisableUntilResponse]="reenableButton">Restore</button>

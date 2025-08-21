@@ -53,7 +53,6 @@ hr {
     right: auto;
     left: -50%;
     margin: auto auto -5px -5px;
-    font-size: 0.9rem;
 }
 
 .custom-tooltip:hover .tooltiptext {
