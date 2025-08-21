@@ -238,7 +238,7 @@
         </ng-template>
       </form>
     </section>
-    <footer class="modal-card-foot">
+    <footer class="modal-card-foot buttons">
       <button type="button" id="cancel" class="button is-small" (click)="navToSchedulesPage()">Cancel</button>
       <button *ngIf="rolesService.hasEditPermissions()" id="save" type="submit" class="button is-link is-small"
         [disabled]="form?.invalid || (!form.dirty && form.pristine)" (click)="form?.valid && updateSchedule()"

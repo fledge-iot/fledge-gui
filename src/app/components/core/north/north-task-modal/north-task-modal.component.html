@@ -179,7 +179,7 @@
   <section class="modal-card-body">
     {{'Deleting this ' + btnTxt + ' can not be undone. Continue?'}}
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button class="button is-small" (click)="closeModal('delete-task-dialog')">Cancel</button>
     <button class="button is-small is-danger" (click)="onDelete(task)"
       [appDisableUntilResponse]="reenableButton">Delete</button>

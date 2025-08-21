@@ -23,7 +23,7 @@
     <section *ngIf="notificationServiceRecord" class="modal-card-body">
       {{notificationServiceRecord.message}}?
     </section>
-    <footer class="modal-card-foot">
+    <footer class="modal-card-foot buttons">
       <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
       <button *ngIf="childData" class="button is-small"
         [ngClass]="{'is-danger': childData.actionButtonValue === 'Delete', 'is-warning': childData.actionButtonValue === 'Restore' || 'Clear Sessions' }"

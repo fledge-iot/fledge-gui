@@ -2,19 +2,17 @@
   box-shadow: 0 0 0 0 !important;
 }
 
-.is-hidden {
-  display: none;
-}
-
 .align {
   vertical-align: middle;
 }
 
 .field-body {
-  flex-grow : 2 !important;
+  flex-grow: 2 !important;
 }
 
-a { color: black; }
+a {
+  color: black;
+}
 
 @media screen and (min-width: 769px) {
   .modal-card {
@@ -31,13 +29,6 @@ a { color: black; }
   padding-top: 1rem;
 }
 
-.modal-card-head {
-  padding: 12px !important;
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
-}
-
 .modal-subtitle {
   margin-top: 0.35rem !important;
 }
-

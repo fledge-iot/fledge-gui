@@ -1,7 +1,7 @@
 <div class="container" [ngClass]="{'is-fluid': sourceName, 'custom-max-width': from?.includes('control-pipeline')}"
   [id]="from">
   <nav *ngIf="sourceName && from !== 'rule-modal' && from !== 'delivery-modal'"
-    class="breadcrumb has-text-weight-semibold" aria-label="breadcrumbs">
+    class="breadcrumb has-text-weight-medium" aria-label="breadcrumbs">
     <ul>
       <li class="is-active"><a>{{sourceName}}</a></li>
       <li class="is-active">
@@ -24,7 +24,7 @@
             </li>
             <!-- Advanced and security group -->
             <li *ngFor="let g of dynamicCategoriesGroup" [ngClass]="{'is-active': selectedGroup.key == g.group.key}">
-              <h6 class="is-6 is-small-font">
+              <h6 class="is-6 has-text-weight-medium is-size-9">
                 <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false && !g.loading}">
                   {{g.group.name}}
                 </a>
@@ -33,7 +33,7 @@
             <ng-container *ngIf="!['notifications', 'additional-services'].includes(from)">
               <li [ngClass]="{'is-active': selectedGroup?.key == 'Developer'}"
                 *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissionsOnPage(from)">
-                <h6 class="is-6 is-small-font">
+                <h6 class="is-6 has-text-weight-medium is-size-9">
                   <a (click)="selectTab({key: 'Developer', name: 'Developer'})">Developer</a>
                 </h6>
               </li>

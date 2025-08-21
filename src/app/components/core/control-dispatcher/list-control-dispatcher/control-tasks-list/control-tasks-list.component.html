@@ -78,7 +78,7 @@
   <section class="modal-card-body">
     Are you sure, You want to delete task schedule for control script <b>{{script?.name}}</b>?
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
     <button class="button is-small is-danger" (click)="deleteControlSchedule(script)">Delete</button>
   </footer>
@@ -92,7 +92,7 @@
   <section class="modal-card-body">
     Are you sure, You want to start the task schedule for control script <b>{{script?.name}}</b>?
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button class="button is-small" (click)="closeModal('start-schedule-dialog')">Cancel</button>
     <button class="button is-small is-success" (click)="startSchedule(script?.schedule?.id)">Execute</button>
   </footer>
