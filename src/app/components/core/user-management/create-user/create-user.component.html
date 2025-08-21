@@ -8,7 +8,7 @@
     <section class="modal-card-body">
       <div class="card-content">
         <form name="form" id="ngForm" (ngSubmit)="createUser(f)" #f="ngForm" novalidate>
-          <div class="columns">
+          <div class="columns m-0">
             <div class="column">
               <label class="label is-small">Name</label>
               <p class="control is-fullwidth">
@@ -17,7 +17,7 @@
               </p>
             </div>
           </div>
-          <div class="columns">
+          <div class="columns m-0">
             <div class="column">
               <label class="label is-small">Role</label>
               <div id="create-user-dropdown" class="dropdown">
@@ -41,7 +41,7 @@
               </div>
             </div>
           </div>
-          <div class="columns">
+          <div class="columns m-0">
             <div class="column">
               <label class="label is-small">Authentication Method</label>
               <div id="access-method-dropdown" class="dropdown">
@@ -65,7 +65,7 @@
               </div>
             </div>
           </div>
-          <div class="columns">
+          <div class="columns m-0">
             <div class="column">
               <label class="label is-small">Username</label>
               <p class="control is-fullwidth">
@@ -77,7 +77,7 @@
             </div>
           </div>
           <ng-container *ngIf="selectedAuthMethod !== 'Certificate'">
-            <div class="columns">
+            <div class="columns m-0">
               <div class="column">
                 <label class="label is-small">Password</label>
                 <p class="control is-fullwidth">
@@ -89,7 +89,7 @@
                   (minimum 6 characters)</small>
               </div>
             </div>
-            <div class="columns">
+            <div class="columns m-0">
               <div class="column">
                 <label class="label is-small">Confirm Password</label>
                 <p class="control is-fullwidth">
@@ -102,7 +102,7 @@
               </div>
             </div>
           </ng-container>
-          <div class="columns">
+          <div class="columns m-0">
             <div class="column">
               <label class="label is-small">Description</label>
               <p class="control is-fullwidth">
