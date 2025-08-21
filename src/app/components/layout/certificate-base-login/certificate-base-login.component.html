@@ -19,7 +19,7 @@
                     <label class="file-label">
                       <span class="file-cta is-fullwidth">
                         <span class="file-icon">
-                          <i class="fa fa-sm fa-upload"></i>
+                          <i class="bi bi-sm bi-upload"></i>
                         </span>
                         <input type="file" required id="certificate" (change)="onCertificateChange($event)"
                           formControlName="certificate" #fileInput>
@@ -47,17 +47,13 @@
         </div>
       </form>
     </section>
-    <footer class="modal-card-foot">
-      <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
-      <button id="save" type="submit" form="ngForm" class="button is-link is-small">Log In</button>
-      <div class="container">
-        <div class="columns">
-          <div class="column has-text-right btn-txt">
-            <button class="button is-small is-text"
-              (click)="selectOptionOfCertificateLogin()">{{loginCertButtonText}}</button>
-          </div>
-        </div>
+    <footer class="modal-card-foot is-flex is-justify-content-space-between is-align-items-flex-start">
+      <div class="buttons mb-0">
+        <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
+        <button id="save" type="submit" form="ngForm" class="button is-link is-small">Log In</button>
       </div>
+      <button class="button is-small is-text"
+        (click)="selectOptionOfCertificateLogin()">{{loginCertButtonText}}</button>
     </footer>
   </div>
 </div>

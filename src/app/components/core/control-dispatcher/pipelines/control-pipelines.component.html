@@ -2,14 +2,14 @@
   <app-service-warning [service]="serviceInfo" (serviceConfigureModal)="openServiceConfigureModal()"
     (refreshService)="refreshServiceInfo()" [serviceType]="'Dispatcher'"></app-service-warning>
   <div class="card">
-    <header class="card-header">
+    <header class="card-header is-flex is-justify-content-space-between is-align-items-center">
       <div class="card-header-title">
         Control Pipelines
         <button class="button is-small" id="refresh-check" title="Reload" (click)="getControlPipelines()">
-          <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+          <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
         </button>
       </div>
-      <a *ngIf="rolesService?.hasControlAccess()" class="button is-small mt-3 is-light" (click)="addControlPipeline()">
+      <a *ngIf="rolesService?.hasControlAccess()" class="button is-small is-light" (click)="addControlPipeline()">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
@@ -17,9 +17,10 @@
         <app-service-config (serviceConfigureModal)="openServiceConfigureModal()" [from]="'dispatcher'">
         </app-service-config>
       </div>
-      <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad"
+      <span
+        class="icon is-size-9 is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad"
         data-tooltip="Help" (click)="goToLink('control-pipeline-management')">
-        <i class="far fa-question-circle"></i>
+        <i class="bi bi-question-circle"></i>
       </span>
     </header>
     <div class="card-content">
@@ -69,17 +70,17 @@
                   </td>
 
                   <td class="align-content">
-                    <span class="is-small">{{pipeline.source.type}}</span>
+                    <span class="is-small is-size-9">{{pipeline.source.type}}</span>
                     <span class="help src-dest-name">{{pipeline.source.name ? pipeline.source.name : '*'}}</span>
                   </td>
                   <td></td>
                   <td class="align-content">
-                    <span class="is-small">{{pipeline.destination.type}}</span>
+                    <span class="is-small is-size-9">{{pipeline.destination.type}}</span>
                     <span class="help src-dest-name">{{pipeline.destination.name ? pipeline.destination.name :
                       '*'}}</span>
                   </td>
                   <td></td>
-                  <td class="align-content" style="font-size: 0.9rem;">
+                  <td class="align-content is-size-9">
                     {{getFiltersName(pipeline.filters, pipeline.name).join(', ')}}
                   </td>
                   <td><span class="tag is-rounded">{{pipeline.execution}}</span></td>

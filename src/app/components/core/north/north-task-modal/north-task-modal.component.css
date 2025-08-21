@@ -2,14 +2,11 @@
   box-shadow: 0 0 0 0 !important;
 }
 
-.is-hidden {
-  display: none;
-}
-
 @media screen and (min-width: 769px) {
   .modal-card {
     width: 80%;
   }
+
   .field-body {
     flex-grow: 2 !important;
   }
@@ -58,10 +55,6 @@ a {
   opacity: 0.8;
 }
 
-.add-application {
-  opacity: 0.7;
-}
-
 @media screen and (min-width: 769px) {
   .margin-bottom {
     margin-bottom: -0.75rem;
@@ -97,17 +90,11 @@ a {
   margin: auto;
 }
 
-.modal-card-head {
-  padding: 12px !important;
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
-}
-
 .modal-subtitle {
   margin-top: 0.35rem !important;
 }
 
-.service-info-text{
+.service-info-text {
   flex-grow: 1.6;
 }
 
@@ -117,6 +104,29 @@ a {
 
 hr {
   margin: 0.75rem 0;
+}
+
+.hr-container {
+  position: relative;
+  margin: 1.5rem 0;
+}
+
+.hr-container .hr-text {
+  border: none;
+  margin: 0;
+  opacity: 0.5;
+}
+
+.hr-container .hr-text-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .btn-container {

@@ -12,7 +12,7 @@
     </nav>
     <button type="button" *ngIf="editMode" (click)="refresh()" class="button is-small" title="Reload"
       id="refresh-check">
-      <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+      <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
     </button>
   </div>
   <ng-container *ngIf="unsavedChangesInFilterForm">
@@ -28,7 +28,7 @@
         <span (click)="goToLink('adding-a-control-pipeline')"
           class=" icon is-small has-tooltip-top has-tooltip-arrow tooltip is-pulled-right is-hovered pl-3 pb-3 help-icon"
           data-tooltip="Help">
-          <i class="far fa-question-circle"></i>
+          <i class="bi bi-question-circle"></i>
         </span>
         <div class="column">
           <div [hidden]="editMode" class="field is-horizontal">
@@ -319,7 +319,7 @@
   <section class="modal-card-body">
     Are you sure, You want to delete the control pipeline <b>{{pipelineName}}</b>?
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button class="button is-small" type="button" (click)="closeModal('confirmation-dialog')">Cancel</button>
     <button class="button is-small is-danger" type="button" (click)="deletePipeline(pipelineID)"
       [appDisableUntilResponse]="reenableButton">Delete</button>
@@ -334,7 +334,7 @@
   <section class="modal-card-body">
     Do you want to discard unsaved changes?
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button class="button is-small" type="button" (click)="closeModal('unsaved-changes-dialog')">Cancel</button>
     <button class="button is-small is-warning" type="button" (click)="discardUnsavedChanges()"
       [appDisableUntilResponse]="reenableButton">Discard</button>

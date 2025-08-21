@@ -13,7 +13,7 @@
     <nav>
       <button type="button" *ngIf="editMode" (click)="getAPIFlow()" class="button is-small" title="Reload"
         id="refresh-check">
-        <i class="fa fa-sm fa-sync" aria-hidden="true"></i>
+        <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
       </button>
     </nav>
   </div>
@@ -22,9 +22,9 @@
     <div class="card-content">
       <form [formGroup]="apiFlowForm">
         <span (click)="goToLink('adding-a-control-api-entry-point')"
-          class=" icon is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
+          class="icon is-size-9 is-small has-tooltip-left has-tooltip-arrow tooltip is-pulled-right is-hovered help-icon"
           data-tooltip="Help">
-          <i class="far fa-question-circle"></i>
+          <i class="bi bi-question-circle"></i>
         </span>
         <div class="column is-four-fifths">
           <div [hidden]="editMode" class="field is-horizontal">
@@ -60,7 +60,7 @@
                       <button class="button is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                         (click)="toggleDropdown('type-dropdown')" placeholder="Select">
                         <span>{{selectedType | titlecase}}</span>
-                        <span class="icon is-small">
+                        <span class="icon is-size-9 is-small">
                           <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                         </span>
                       </button>
@@ -254,7 +254,7 @@
                       <ng-template #addVariableTemplate>
                         <button class="button px-0 is-small is-link is-light has-background-white"
                           (click)="addValueControl('variables')">
-                          <span class="icon is-small pt-1 mr-0">
+                          <span class="icon is-size-9 is-small pt-1 mr-0">
                             <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
                           </span>
                           <span>{{getFormControls('variables').length > 0 ? "Add new variable": "Add variable"}}</span>
@@ -324,7 +324,7 @@
                       <ng-template #addConstantTemplate>
                         <button class="button px-0 is-small is-link is-light has-background-white"
                           (click)="addValueControl('constants')">
-                          <span class="icon is-small pt-1 mr-0">
+                          <span class="icon is-size-9 is-small pt-1 mr-0">
                             <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
                           </span>
                           <span>{{getFormControls('constants').length > 0 ? "Add new constant": "Add constant"}}</span>
@@ -454,7 +454,7 @@
                           <div class="dropdown-trigger">
                             <button class="button is-small small-btn" aria-haspopup="true" aria-controls="dropdown-menu"
                               (click)="toggleDropdown('ed-dropdown')">
-                              <span class="icon is-small">
+                              <span class="icon is-size-9 is-small">
                                 <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                               </span>
                             </button>
@@ -537,7 +537,7 @@
       </div>
     </div>
   </section>
-  <footer class="modal-card-foot p-3">
+  <footer class="modal-card-foot buttons p-3">
     <button class="button is-small" type="button" (click)="closeModal('confirmation-execute-dialog')">Cancel</button>
     <button class="button is-small is-link" type="button" (click)="requestAPIFlow(apiFlowForm.value)"
       [appDisableUntilResponse]="reenableButton">Execute</button>
@@ -552,7 +552,7 @@
   <section class="modal-card-body">
     Are you sure, You want to delete the Control Entry Point <b>{{this.af.name}}</b>?
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button type="button" class="button is-small" (click)="closeModal('confirmation-delete-dialog')">Cancel</button>
     <button type="button" class="button is-small is-danger" (click)="deleteAPIFlow()"
       [appDisableUntilResponse]="reenableButton">Delete</button>

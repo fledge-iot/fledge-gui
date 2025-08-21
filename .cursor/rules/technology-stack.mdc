@@ -1,0 +1,364 @@
+---
+globs: src/app/**/*.ts,src/app/**/*.html,package.json,angular.json
+description: Technology stack specific patterns and integrations for Fledge GUI
+---
+
+# Technology Stack & Integrations
+
+## 🛠️ Core Technology Stack
+
+### Angular 16 Ecosystem
+- **Angular Framework**: ^16.2.12 with TypeScript strict mode
+- **Angular CLI**: Build tooling and development server
+- **RxJS**: ^6.6.6 for reactive programming patterns
+- **Angular Router**: Client-side routing and navigation
+- **Angular Forms**: Reactive forms for complex form handling
+
+### UI Framework & Styling
+- **Bulma CSS**: ^0.9.4 - Primary CSS framework
+- **FontAwesome**: ^6.4.0 - Icon library
+- **Animate.css**: ^4.1.1 - CSS animations
+- **Bootstrap Icons**: ^1.11.1 - Additional icons
+
+### Data Visualization
+- **Chart.js**: ^4.3.0 - Primary charting library
+- **Plotly.js**: ^2.12.1 - Advanced data visualization
+- **chartjs-adapter-moment**: Date/time handling for charts
+- **chartjs-plugin-zoom**: Interactive chart zooming
+
+### Specialized Libraries
+
+#### Node Editor System
+Using Rete.js ecosystem for visual node-based editing:
+```typescript
+// Core Rete.js setup pattern
+import { NodeEditor, GetSchemes, ClassicPreset } from 'rete';
+import { AreaPlugin, AreaExtensions } from 'rete-area-plugin';
+import { ConnectionPlugin, Presets as ConnectionPresets } from 'rete-connection-plugin';
+import { AngularPlugin, Presets, AngularArea2D } from 'rete-angular-plugin';
+
+type Schemes = GetSchemes<ClassicPreset.Node, ClassicPreset.Connection<ClassicPreset.Node, ClassicPreset.Node>>;
+type AreaExtra = AngularArea2D<Schemes>;
+
+// Node editor initialization
+const editor = new NodeEditor<Schemes>();
+const area = new AreaPlugin<Schemes, AreaExtra>(container);
+const connection = new ConnectionPlugin<Schemes, AreaExtra>();
+const render = new AngularPlugin<Schemes, AreaExtra>({ injector });
+
+// Setup editor plugins
+editor.use(area);
+area.use(connection);
+area.use(render);
+```
+
+#### Code Editor Integration
+```typescript
+// CodeMirror setup for JSON/code editing
+import { CodemirrorModule } from '@ctrl/ngx-codemirror';
+
+// Component usage
+export class ConfigurationComponent {
+  public codeMirrorOptions = {
+    lineNumbers: true,
+    theme: 'material',
+    mode: 'application/json',
+    lint: true,
+    gutters: ['CodeMirror-lint-markers'],
+    autoCloseBrackets: true,
+    matchBrackets: true
+  };
+  
+  public configData = '{\n  "key": "value"\n}';
+}
+```
+
+## 📊 State Management Patterns
+
+### RxJS Subject Usage
+```typescript
+// Service pattern with BehaviorSubjects
+@Injectable({ providedIn: 'root' })
+export class StateManagementService {
+  private dataSubject = new BehaviorSubject<DataType[]>([]);
+  private loadingSubject = new BehaviorSubject<boolean>(false);
+  private errorSubject = new BehaviorSubject<string | null>(null);
+  
+  public data$ = this.dataSubject.asObservable();
+  public loading$ = this.loadingSubject.asObservable();
+  public error$ = this.errorSubject.asObservable();
+  
+  // Derived state using combineLatest
+  public viewState$ = combineLatest([
+    this.data$,
+    this.loading$,
+    this.error$
+  ]).pipe(
+    map(([data, loading, error]) => ({
+      data,
+      loading,
+      error,
+      hasData: data.length > 0,
+      isEmpty: !loading && data.length === 0 && !error
+    }))
+  );
+}
+```
+
+### Shared State Service Pattern
+```typescript
+// Global application state management
+@Injectable({ providedIn: 'root' })
+export class SharedService {
+  // Authentication state
+  public isUserLoggedIn = new BehaviorSubject<UserState>({ loggedIn: false, user: null });
+  public isAdmin = new BehaviorSubject<boolean>(false);
+  
+  // UI state
+  public theme = new BehaviorSubject<Theme>(this.getStoredTheme());
+  public isSidebarCollapsed = new BehaviorSubject<boolean>(true);
+  public viewport = new BehaviorSubject<ViewportInfo>(null);
+  
+  // System state
+  public connectionInfo = new BehaviorSubject<ConnectionInfo>(null);
+  public installedServicePkgs = new BehaviorSubject<ServicePackage[]>([]);
+  
+  private getStoredTheme(): Theme {
+    return localStorage.getItem('OPTED_THEME') as Theme || 'light';
+  }
+}
+```
+
+## 🎨 Bulma CSS Integration Patterns
+
+### Layout Components
+```html
+<!-- Container and column system -->
+<div class="container">
+  <div class="columns is-gapless">
+    <div class="column is-narrow" [class.is-hidden]="isSidebarCollapsed">
+      <app-side-menu></app-side-menu>
+    </div>
+    <div class="column" [ngClass]="getMainContentClasses()">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+```
+
+### Form Components
+```html
+<!-- Bulma form styling -->
+<form [formGroup]="form" class="form">
+  <div class="field">
+    <label class="label">Username</label>
+    <div class="control has-icons-left">
+      <input class="input" 
+             [class.is-danger]="form.get('username')?.invalid && form.get('username')?.touched"
+             type="text" 
+             formControlName="username"
+             placeholder="Enter username">
+      <span class="icon is-small is-left">
+        <i class="fas fa-user"></i>
+      </span>
+    </div>
+    <p class="help is-danger" 
+       *ngIf="form.get('username')?.invalid && form.get('username')?.touched">
+      Username is required
+    </p>
+  </div>
+</form>
+```
+
+### Modal Components
+```html
+<!-- Bulma modal structure -->
+<div class="modal" [class.is-active]="isModalOpen">
+  <div class="modal-background" (click)="closeModal()"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">{{ modalTitle }}</p>
+      <button class="delete" (click)="closeModal()"></button>
+    </header>
+    <section class="modal-card-body">
+      <ng-content></ng-content>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-success" (click)="onConfirm()">Confirm</button>
+      <button class="button" (click)="closeModal()">Cancel</button>
+    </footer>
+  </div>
+</div>
+```
+
+## 📈 Chart.js Integration
+
+### Chart Component Pattern
+```typescript
+@Component({
+  selector: 'app-chart',
+  template: `
+    <div class="chart-container">
+      <canvas #chartCanvas 
+              [width]="chartWidth" 
+              [height]="chartHeight">
+      </canvas>
+    </div>
+  `
+})
+export class ChartComponent implements OnInit, OnDestroy {
+  @ViewChild('chartCanvas') chartCanvas: ElementRef<HTMLCanvasElement>;
+  @Input() chartData: ChartData;
+  @Input() chartOptions: ChartOptions;
+  
+  private chart: Chart;
+  
+  ngOnInit() {
+    this.initializeChart();
+  }
+  
+  private initializeChart() {
+    const ctx = this.chartCanvas.nativeElement.getContext('2d');
+    
+    this.chart = new Chart(ctx, {
+      type: 'line',
+      data: this.chartData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          zoom: {
+            pan: { enabled: true, mode: 'x' },
+            zoom: { enabled: true, mode: 'x' }
+          }
+        },
+        scales: {
+          x: {
+            type: 'time',
+            time: { unit: 'minute' }
+          }
+        }
+      }
+    });
+  }
+}
+```
+
+## 🔐 Authentication & HTTP Interceptors
+
+### HTTP Request Interceptor
+```typescript
+@Injectable()
+export class HttpsRequestInterceptor implements HttpInterceptor {
+  
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    // Add authentication token
+    const token = sessionStorage.getItem('token');
+    
+    if (token) {
+      req = req.clone({
+        headers: req.headers.set('Authorization', `Bearer ${token}`)
+      });
+    }
+    
+    // Add common headers
+    req = req.clone({
+      headers: req.headers.set('Content-Type', 'application/json')
+    });
+    
+    return next.handle(req).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          // Handle unauthorized access
+          this.handleUnauthorized();
+        }
+        return throwError(error);
+      })
+    );
+  }
+  
+  private handleUnauthorized() {
+    sessionStorage.removeItem('token');
+    // Redirect to login
+  }
+}
+```
+
+## 🧪 Testing Technology Integration
+
+### Cypress Configuration
+```typescript
+// cypress.config.ts
+import { defineConfig } from 'cypress';
+
+export default defineConfig({
+  e2e: {
+    baseUrl: 'http://localhost:4200',
+    supportFile: 'cypress/support/e2e.ts',
+    specPattern: 'e2e/specs/**/*.e2e-spec.ts',
+    viewportWidth: 1280,
+    viewportHeight: 720,
+    video: false,
+    screenshotOnRunFailure: true
+  }
+});
+```
+
+### Karma Configuration for Module Federation
+```javascript
+// karma.conf.js
+module.exports = function (config) {
+  config.set({
+    frameworks: ['jasmine', '@angular-devkit/build-angular'],
+    plugins: [
+      require('karma-jasmine'),
+      require('karma-chrome-headless'),
+      require('karma-coverage'),
+      require('@angular-devkit/build-angular/plugins/karma')
+    ],
+    coverageReporter: {
+      dir: require('path').join(__dirname, './coverage/fledge'),
+      subdir: '.',
+      reporters: [
+        { type: 'html' },
+        { type: 'text-summary' }
+      ]
+    }
+  });
+};
+```
+
+## 🚀 Performance Optimization
+
+### Lazy Loading Configuration
+```typescript
+// app-routing.module.ts
+const routes: Routes = [
+  {
+    path: 'dashboard',
+    loadChildren: () => import('./components/core/dashboard/dashboard.module').then(m => m.DashboardModule)
+  },
+  {
+    path: 'configuration',
+    loadChildren: () => import('./components/core/configuration-manager/configuration.module').then(m => m.ConfigurationModule)
+  }
+];
+```
+
+### Bundle Optimization
+```typescript
+// angular.json build configuration
+"build": {
+  "builder": "ngx-build-plus:browser",
+  "options": {
+    "buildOptimizer": true,
+    "extractCss": true,
+    "optimization": true,
+    "sourceMap": false,
+    "namedChunks": false,
+    "aot": true,
+    "vendorChunk": false,
+    "commonChunk": false
+  }
+}
+```

@@ -7,10 +7,6 @@ table tr td {
     padding-right: 0;
 }
 
-.fade {
-    background-color:#f5f5f5 !important;
-}
-
 .pipeline-name {
     color: #3273dc;
     text-decoration: none;
@@ -27,11 +23,7 @@ table tr td {
 }
 
 .is-hoverable.pipeline-table tr:hover .context-menu {
-    background-color: #fafafa; 
-}
-
-span.is-small {
-    font-size: 0.9rem;
+    background-color: #fafafa;
 }
 
 .pipeline-table {
@@ -41,4 +33,3 @@ span.is-small {
 .fa-plus {
     font-size: .65em;
 }
-

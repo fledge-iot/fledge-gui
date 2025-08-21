@@ -142,7 +142,7 @@ export class SkipLogin {
   }
 
   getSchedulesRefreshButton() {
-    cy.get('#scheduled-process .fa.fa-sync').should('be.visible')
+    cy.get('#scheduled-process #refresh-check i').should('be.visible')
   }
 
   getCreateScheduleButton() {
@@ -155,10 +155,6 @@ export class SkipLogin {
 
   getTasksTitle() {
     return cy.get('app-list-schedules app-list-tasks header > div').invoke('text')
-  }
-
-  getTasksRefreshButton() {
-    cy.get('app-list-schedules > div:nth-child(2) .fa.fa-sync').should('be.visible')
   }
 
   getTasksSelectTag() {

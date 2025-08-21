@@ -12,7 +12,7 @@
           <input class="file-input" type="file" (change)="attachBackupFile($event)">
           <span class="file-cta">
             <span class="file-icon">
-              <i class="fas fa-upload"></i>
+              <i class="bi bi-upload"></i>
             </span>
             <span class="file-label">
               Browse/Drag & drop the backup tarball
@@ -25,7 +25,7 @@
       </div>
     </section>
 
-    <footer class="modal-card-foot">
+    <footer class="modal-card-foot buttons">
       <button class="button is-small" (click)="formReset()">Cancel</button>
       <button [disabled]="!fileName || progress || !file" class="button is-small is-link"
         (click)="uploadBackup()">Upload</button>
