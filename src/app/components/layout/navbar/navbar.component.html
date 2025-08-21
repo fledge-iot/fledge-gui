@@ -8,7 +8,6 @@
     <div *ngIf="viewPort !== 'mobile'">
       <div class="navbar-item">
         <img src="assets/fledge.png" alt="" width="32" />
-        &nbsp;
         <b>
           <a *ngIf="!pingInfo.version" href="/" style="color: #363636;">Fledge</a>
           <a *ngIf="pingInfo.version" id="hover-link" class="tooltip has-tooltip-bottom has-tooltip-arrow"
@@ -251,7 +250,7 @@
                               </span>
                               <ng-container
                                 *ngIf="servicesToShow.includes(s.type.toLowerCase()); else elseServiceTemplate">
-                                <a class="ghost" (click)="navToServiceConfiguration(s)">
+                                <a class="has-text-grey-dark is-underlined" (click)="navToServiceConfiguration(s)">
                                   {{s.name}}
                                 </a>
                               </ng-container>

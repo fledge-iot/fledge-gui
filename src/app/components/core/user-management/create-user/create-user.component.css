@@ -1,3 +1,7 @@
 .user-card-footer {
     padding-left: 3rem;
 }
+
+#user_modal .columns {
+    margin: 0 !important;
+}
