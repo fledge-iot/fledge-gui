@@ -23,17 +23,9 @@
   border: none;
 }
 
-.fade {
-  background-color: #f5f5f5 !important;
-}
-
 .readings-count {
   vertical-align: middle;
   max-width: max-content;
-}
-
-.service-name {
-  padding-top: 0;
 }
 
 #deprecate_event_div {

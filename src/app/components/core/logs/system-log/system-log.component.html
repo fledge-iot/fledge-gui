@@ -1,7 +1,8 @@
 <div class="container is-fluid">
   <div class="card" [ngClass]="{'custom-quickview-card': sourceName}">
     <div class="breadcrumb-container" *ngIf="sourceName; else cardHeaderTemplate">
-      <nav class="breadcrumb" aria-label="breadcrumbs" [ngClass]="{'quickview-breadcrumb': sourceName}">
+      <nav class="breadcrumb" aria-label="breadcrumbs"
+        [ngClass]="{'quickview-breadcrumb has-text-weight-medium': sourceName}">
         <ul>
           <li class="is-active"><a>{{sourceName}}</a></li>
           <li class="is-active">
@@ -10,13 +11,14 @@
         </ul>
       </nav>
       <div *ngIf="refreshInterval !== -1 && page === 1" class="fix-pad auto-refresh">
-        <label class="checkbox" [ngClass]="{'quickview-label': sourceName}">
+        <label class="checkbox" [ngClass]="{'has-text-weight-semibold': sourceName}">
           <input class="checkmark" type="checkbox" [checked]='isAlive'
             (click)="toggleAutoRefresh($event.target.checked)">
           Auto Refresh
         </label>
       </div>
     </div>
+    <hr *ngIf="sourceName" class="my-2">
     <ng-template #cardHeaderTemplate>
       <header class="card-header">
         <div class="card-header-title">

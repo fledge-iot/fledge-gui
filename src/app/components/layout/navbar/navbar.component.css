@@ -76,7 +76,7 @@
   border-color: gray !important;
   right: 1.75em !important;
   border-width: 2.5px !important;
-  font-size: small !important;
+  font-size: 11px !important;
 }
 
 .parent-icon {
@@ -102,13 +102,8 @@
   font-size: 0.6rem;
 }
 
-.ghost {
-  color: #4a4a4a;
-  text-decoration: underline;
-}
-
-.ghost:hover {
-  color: #485fc7;
+.has-text-grey-dark.is-underlined:hover {
+  color: #4258ff !important;
 }
 
 .overlay-icon {

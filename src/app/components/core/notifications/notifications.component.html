@@ -2,7 +2,7 @@
   <app-service-warning [service]="serviceInfo" (serviceConfigureModal)="openServiceConfigureModal()"
     (refreshService)="refreshServiceInfo()" [serviceType]="'Notification'"></app-service-warning>
   <div class="card">
-    <header class="card-header">
+    <header class="card-header is-flex is-justify-content-space-between is-align-items-center">
       <div id="notification-service" class="card-header-title">
         <p>
           Notifications
@@ -15,7 +15,7 @@
       </div>
 
       <button *ngIf="rolesService?.hasControlAccess()" [disabled]="!serviceInfo.isEnabled"
-        class="button is-small mt-2 is-light" (click)="addNotificationInstance()">
+        class="button is-small is-light" (click)="addNotificationInstance()">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Create Notification Instance &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </button>
@@ -23,7 +23,7 @@
         <app-service-config (serviceConfigureModal)="openServiceConfigureModal()" [from]="'notification'">
         </app-service-config>
       </div>
-      <span *ngIf="serviceInfo?.isEnabled" class="icon is-small tooltip is-pulled-right is-hovered help-pad"
+      <span *ngIf="serviceInfo?.isEnabled" class="icon is-small tooltip is-pulled-right is-hovered help-pad is-size-9"
         data-tooltip="Help" (click)="goToLink('using-the-notification-service')">
         <i class="bi bi-question-circle"></i>
       </span>
