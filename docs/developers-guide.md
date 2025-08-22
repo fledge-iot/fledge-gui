@@ -95,8 +95,8 @@ Set API base URL in `environments/environment.prod.ts`, You can always change it
 | Library         | Version | Latest Stable (? Y/n) | License |
 | --------------- | ------- | --------------------- | ------- |
 | Angular         | 16.2.12 | 20.1.0                | MIT     |
-| Angular CLI     | 16.2.12 | 20.1.0                | MIT     |
-| Bulma css       | 0.9.4   | 1.0.1                 | MIT     |
+| Angular CLI     | 16.2.10 | 20.1.0                | MIT     |
+| Bulma css       | 1.0.4   | 1.0.1                 | MIT     |
 | Font-Awesome    | 6.4.0   | 6.4.0                 | MIT     |
 | Bootstrap-Icons | 1.11.1  | 1.11.3                | MIT     |
 
