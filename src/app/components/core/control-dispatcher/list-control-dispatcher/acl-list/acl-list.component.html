@@ -6,7 +6,7 @@
       <div id="control-acl" class="card-header-title">
         Control ACLs
         <button class="button is-small" id="refresh-check" title="Reload" (click)="getACLs()">
-          <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
+          <i class="bi bi-md bi-arrow-repeat" aria-hidden="true"></i>
         </button>
       </div>
       <a *ngIf="sharedService.checkAuth()" class="button is-small is-light" routerLink="add">
@@ -55,7 +55,7 @@
         </tr>
         <tr>
           <td>
-            <a [routerLink]="['/control-dispatcher/acl', acl?.name, 'details']" class="button is-ghost is-text p-0">
+            <a [routerLink]="['/control-dispatcher/acl', acl?.name, 'details']" class="button is-ghost p-0">
               {{acl?.name}}
             </a>
           </td>

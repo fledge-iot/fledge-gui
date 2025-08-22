@@ -5,7 +5,7 @@
         North Instances
         <button *ngIf="!isAlive" (click)="getNorthTasks(true)" class="button is-small" title="Reload"
           id="refresh-check">
-          <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
+          <i class="bi bi-md bi-arrow-repeat" aria-hidden="true"></i>
         </button>
       </div>
       <a *ngIf="rolesService?.hasEditPermissions()" id="add_task" class="button is-small is-light mr-2"
@@ -50,7 +50,7 @@
                     </div>
                   </td>
                   <td class="align-content">
-                    <a class="button is-ghost is-text py-0" (click)="openNorthTaskModal(t)">{{t.name}}</a>
+                    <a class="button is-ghost p-0" (click)="openNorthTaskModal(t)">{{t.name}}</a>
                   </td>
                   <td class="align-content">
                     <span *ngIf="t?.processName === 'north_C'" class="tag is-light is-rounded">Service</span>
