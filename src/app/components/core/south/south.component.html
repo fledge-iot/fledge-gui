@@ -5,7 +5,7 @@
         South Services
         <button *ngIf="!isAlive" (click)="getSouthboundServices(true)" title="Reload" class="button is-small"
           id="refresh-check">
-          <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
+          <i class="bi bi-md bi-arrow-repeat" aria-hidden="true"></i>
         </button>
       </div>
       <a *ngIf="rolesService?.hasEditPermissions()" id="add_south_service" class="button is-small is-light mr-2"
@@ -61,7 +61,7 @@
                   </td>
                   <td class="align-content">
                     <div class="is-flex is-align-items-center">
-                      <a class="button is-ghost is-text" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
+                      <a class="button is-ghost px-0" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
                     </div>
                   </td>
                   <td class="align-content content-pad">
