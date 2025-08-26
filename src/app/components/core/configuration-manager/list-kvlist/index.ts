@@ -1,5 +1,4 @@
-// Shared services for list and kvlist components
-export { PerformanceOptimizationService, PerformanceState, PerformanceThresholds } from './performance-optimization.service';
-export { ChunkedDataProcessorService, ChunkProcessingCallbacks, ChunkProcessingOptions } from './chunked-data-processor.service';
-export { DomOperationsService } from './dom-operations.service';
-export { FormManagementService, FormManagementCallbacks } from './form-management.service'; 
+// This directory previously contained performance optimization services
+// which have been removed in favor of a simpler approach.
+// If complex performance optimizations are needed in the future,
+// they should be implemented as separate, focused services. 
