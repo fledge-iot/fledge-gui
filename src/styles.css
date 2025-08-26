@@ -54,6 +54,12 @@ body,
    BULMA COMPONENT OVERRIDES
    ================================================ */
 
+/* bulma-toast delete button overlap */
+.notification .delete {
+  top: 0.5rem;
+  right: 0.2rem;
+}
+
 /* Button overrides */
 .button {
   box-shadow: none !important;

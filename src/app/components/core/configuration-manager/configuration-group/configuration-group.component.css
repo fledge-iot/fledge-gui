@@ -20,8 +20,10 @@
 }
 
 .breadcrumb {
-  margin-top: 14px;
-  margin-bottom: 14px !important;
+  padding-top: 0.85rem;
+  margin-top: 10px;
+  font-size: 0.95rem;
+  display: inline-block;
 }
 
 .tabs {
@@ -79,6 +81,8 @@
 [data-overflowing="both"]~.advancer_left,
 [data-overflowing="left"]~.advancer_left {
   opacity: 1;
+  background-color: #efefef;
+  width: 18px;
 }
 
 .advancer_right {
@@ -88,6 +92,8 @@
 [data-overflowing="both"]~.advancer_right,
 [data-overflowing="right"]~.advancer_right {
   opacity: 1;
+  background-color: #efefef;
+  width: 18px;
 }
 
 .invalid-tab,
