@@ -106,6 +106,6 @@ table.scroll tr {
 }
 
 /* No data message */
-#global-popover .has-text-centered {
+#global-popover .no-data {
   padding: 1rem;
 }
