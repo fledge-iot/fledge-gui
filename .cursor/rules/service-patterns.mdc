@@ -1,0 +1,302 @@
+---
+globs: src/app/services/**/*.ts
+description: Service architecture and patterns for Fledge GUI application
+---
+
+# Service Architecture & Patterns
+
+## 🏗️ Service Categories
+
+### Core System Services
+Business logic and system management services:
+
+#### Authentication & Security
+- **[AuthService](mdc:src/app/services/auth.service.ts)**: User authentication and JWT token management
+- **[UserService](mdc:src/app/services/user.service.ts)**: User account operations and profile management
+
+#### Configuration & Certificate
+- **[ConfigurationService](mdc:src/app/services/configuration.service.ts)**: System configuration management
+- **[CertificateService](mdc:src/app/services/certificate.service.ts)**: SSL certificate management
+
+#### Data & Analytics
+- **[StatisticsService](mdc:src/app/services/statistics.service.ts)**: System metrics and analytics
+- **[AssetsService](mdc:src/app/services/assets.service.ts)**: IoT asset data management
+
+### Infrastructure Services
+Application infrastructure and utility services:
+
+#### Communication & Monitoring
+- **[PingService](mdc:src/app/services/ping.service.ts)**: System health monitoring and connectivity checks
+- **[SharedService](mdc:src/app/services/shared.service.ts)**: Global state management and component communication
+- **[AlertService](mdc:src/app/services/alert.service.ts)**: User notifications and alert management
+
+#### Logging & Debugging
+- **[SystemLogService](mdc:src/app/services/system-log.service.ts)**: System log retrieval and filtering
+- **[PackagesLogService](mdc:src/app/services/packages-log.service.ts)**: Package installation and update logs
+- **[AuditService](mdc:src/app/services/audit.service.ts)**: System audit trail and activity logging
+
+## 🎯 Service Implementation Patterns
+
+### Standard Service Structure
+```typescript
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+
+@Injectable({
+  providedIn: 'root' // or feature module level
+})
+export class ServiceName {
+  // 1. Private API base URL
+  private readonly apiUrl = environment.BASE_URL;
+  
+  // 2. State management with BehaviorSubjects
+  private dataSubject = new BehaviorSubject<DataType[]>([]);
+  private loadingSubject = new BehaviorSubject<boolean>(false);
+  
+  // 3. Public observables
+  public data$ = this.dataSubject.asObservable();
+  public loading$ = this.loadingSubject.asObservable();
+  
+  // 4. Constructor with dependency injection
+  constructor(
+    private http: HttpClient,
+    private alertService: AlertService
+  ) {}
+  
+  // 5. CRUD operations
+  public getData(): Observable<DataType[]> {
+    this.loadingSubject.next(true);
+    return this.http.get<DataType[]>(`${this.apiUrl}/data`)
+      .pipe(
+        tap(data => {
+          this.dataSubject.next(data);
+          this.loadingSubject.next(false);
+        }),
+        catchError(error => this.handleError(error))
+      );
+  }
+  
+  public createItem(item: DataType): Observable<DataType> {
+    return this.http.post<DataType>(`${this.apiUrl}/data`, item)
+      .pipe(
+        tap(newItem => {
+          const currentData = this.dataSubject.getValue();
+          this.dataSubject.next([...currentData, newItem]);
+        }),
+        catchError(error => this.handleError(error))
+      );
+  }
+  
+  // 6. Error handling
+  private handleError(error: any): Observable<never> {
+    console.error('Service error:', error);
+    this.alertService.error(error.message || 'An error occurred');
+    this.loadingSubject.next(false);
+    throw error;
+  }
+}
+```
+
+### Reactive State Management Pattern
+Services use BehaviorSubjects for state management:
+
+```typescript
+@Injectable()
+export class StateService {
+  // Private state
+  private userStateSubject = new BehaviorSubject<UserState>({
+    loggedIn: false,
+    user: null
+  });
+  
+  private connectionInfoSubject = new BehaviorSubject<ConnectionInfo>(null);
+  
+  // Public observables
+  public userState$ = this.userStateSubject.asObservable();
+  public connectionInfo$ = this.connectionInfoSubject.asObservable();
+  
+  // State update methods
+  public updateUserState(state: UserState): void {
+    this.userStateSubject.next(state);
+  }
+  
+  public updateConnectionInfo(info: ConnectionInfo): void {
+    this.connectionInfoSubject.next(info);
+  }
+  
+  // State getters
+  public getCurrentUserState(): UserState {
+    return this.userStateSubject.getValue();
+  }
+}
+```
+
+## 🔄 Shared Service Pattern
+
+The [SharedService](mdc:src/app/services/shared.service.ts) manages global application state:
+
+```typescript
+@Injectable()
+export class SharedService {
+  // Authentication state
+  public isUserLoggedIn: BehaviorSubject<any> = new BehaviorSubject<any>(false);
+  public isAdmin: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  
+  // UI state
+  public theme: BehaviorSubject<string> = new BehaviorSubject<string>('light');
+  public isSidebarCollapsed: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  public loginScreenSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  
+  // System state
+  public connectionInfo: BehaviorSubject<any> = new BehaviorSubject<any>(false);
+  public viewport: BehaviorSubject<any> = new BehaviorSubject<any>(false);
+  
+  // Utility methods
+  public checkAuth(): boolean {
+    const auth = !JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'));
+    const admin = JSON.parse(sessionStorage.getItem('isAdmin'));
+    return auth ? admin : true;
+  }
+}
+```
+
+## 📡 HTTP Service Patterns
+
+### API Service Base Class
+Create a base class for common HTTP operations:
+
+```typescript
+export abstract class BaseApiService {
+  protected abstract apiUrl: string;
+  
+  constructor(protected http: HttpClient) {}
+  
+  protected get<T>(endpoint: string): Observable<T> {
+    return this.http.get<T>(`${this.apiUrl}${endpoint}`)
+      .pipe(catchError(this.handleError));
+  }
+  
+  protected post<T>(endpoint: string, data: any): Observable<T> {
+    return this.http.post<T>(`${this.apiUrl}${endpoint}`, data)
+      .pipe(catchError(this.handleError));
+  }
+  
+  protected put<T>(endpoint: string, data: any): Observable<T> {
+    return this.http.put<T>(`${this.apiUrl}${endpoint}`, data)
+      .pipe(catchError(this.handleError));
+  }
+  
+  protected delete<T>(endpoint: string): Observable<T> {
+    return this.http.delete<T>(`${this.apiUrl}${endpoint}`)
+      .pipe(catchError(this.handleError));
+  }
+  
+  protected handleError(error: HttpErrorResponse): Observable<never> {
+    console.error('API Error:', error);
+    // Handle specific error codes
+    if (error.status === 401) {
+      // Handle unauthorized
+    }
+    throw error;
+  }
+}
+```
+
+### Specialized Service Implementation
+```typescript
+@Injectable({
+  providedIn: 'root'
+})
+export class DataService extends BaseApiService {
+  protected apiUrl = `${environment.BASE_URL}/api/data`;
+  
+  constructor(
+    http: HttpClient,
+    private alertService: AlertService
+  ) {
+    super(http);
+  }
+  
+  public getItems(): Observable<Item[]> {
+    return this.get<Item[]>('/items')
+      .pipe(
+        tap(items => console.log('Retrieved items:', items.length))
+      );
+  }
+  
+  public createItem(item: CreateItemRequest): Observable<Item> {
+    return this.post<Item>('/items', item)
+      .pipe(
+        tap(newItem => this.alertService.success('Item created successfully'))
+      );
+  }
+}
+```
+
+## 🔧 Service Configuration & Providers
+
+### Service Provider Configuration
+```typescript
+// In app.module.ts
+providers: [
+  {
+    provide: 'ALERT_SERVICE',
+    useExisting: AlertService,
+  },
+  {
+    provide: 'SHARED_SERVICE',
+    useExisting: SharedService
+  },
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: HttpsRequestInterceptor,
+    multi: true,
+  }
+]
+```
+
+### Factory Providers
+Use factory functions for complex service initialization:
+
+```typescript
+export function pingServiceFactory(
+  ping: PingService, 
+  sharedService: SharedService, 
+  router: Router
+): Function {
+  return () => ping.pingService()
+    .then((data) => {
+      sessionStorage.setItem('LOGIN_SKIPPED', JSON.stringify(data['authenticationOptional']));
+      // Handle authentication flow
+    })
+    .catch(error => {
+      // Handle connection errors
+    });
+}
+
+// In providers array
+{
+  provide: APP_INITIALIZER,
+  useFactory: pingServiceFactory,
+  deps: [PingService, SharedService, Router],
+  multi: true
+}
+```
+
+## 🎯 Performance & Best Practices
+
+### Memory Management
+- Properly unsubscribe from observables
+- Use takeUntil pattern in services when needed
+- Clear BehaviorSubject references on service destruction
+
+### Caching Strategies
+- Implement caching for frequently accessed data
+- Consider using HTTP interceptors for response caching
+
+### Error Handling
+- Implement consistent error handling across all services
+- Use centralized error logging
+- Provide meaningful error messages to users

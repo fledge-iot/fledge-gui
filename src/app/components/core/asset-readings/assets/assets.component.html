@@ -8,7 +8,7 @@
       <span *ngIf="!isAlive"
         class="icon is-small is-pulled-right is-hovered assets-control has-tooltip-left has-tooltip-arrow tooltip"
         data-tooltip="Reload" (click)="getAsset()">
-        <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
+        <i class="bi bi-md bi-arrow-repeat" aria-hidden="true"></i>
       </span>
       <ng-container *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()">
         <span *ngIf="assets?.length > 0"
@@ -91,7 +91,7 @@
                   <section class="modal-card-body">
                     Are you sure, You want to purge the <b>{{selectedAssetName}}</b> data?
                   </section>
-                  <footer class="modal-card-foot">
+                  <footer class="modal-card-foot buttons">
                     <button class="button is-small" (click)="closeModal('purge-asset-dialog')">Cancel</button>
                     <button class="button is-small is-danger" (click)="purgeAssetData(selectedAssetName)">Yes</button>
                   </footer>
@@ -106,7 +106,7 @@
                 Are you sure? All stored asset names and associated data will be removed if you continue with this
                 action.
               </section>
-              <footer class="modal-card-foot">
+              <footer class="modal-card-foot buttons">
                 <button class="button is-small" (click)="closeModal('purge-all-assets-dialog')">Cancel</button>
                 <button class="button is-small is-danger" (click)="purgeAllAssetsData()">Yes</button>
               </footer>

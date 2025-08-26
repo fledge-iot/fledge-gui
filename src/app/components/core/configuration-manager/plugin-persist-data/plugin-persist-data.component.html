@@ -109,7 +109,7 @@
       </div>
     </div>
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button class="button is-small" (click)="closeModal('import-plugin-data-dialog');resetFileControl()">Cancel</button>
     <button *ngIf="!serviceStaus" class="button is-small is-success" [disabled]="!isJsonExtension || jsonParseError"
       (click)="importPluginData()">Import</button>
@@ -128,7 +128,7 @@
       {{serviceName}} must be shut down to allow delete the plugin data.
     </ng-template>
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button class="button is-small" (click)="closeModal('delete-plugin-data-confirmation-dialog')">Cancel</button>
     <button *ngIf="!serviceStaus" class="button is-small is-danger" (click)="deleteData()">Yes</button>
   </footer>

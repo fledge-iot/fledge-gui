@@ -7,7 +7,7 @@ table tr td {
     padding-right: 0;
 }
 
-.ep-name{
+.ep-name {
     color: #3273dc;
     text-decoration: none;
 }
@@ -17,11 +17,7 @@ table tr td {
 }
 
 .is-hoverable.ep-tbl tr:hover .context-menu {
-    background-color: #fafafa; 
-}
-
-span.is-small {
-    font-size: 0.9rem;
+    background-color: #fafafa;
 }
 
 .fa-plus {
@@ -38,15 +34,15 @@ span.is-small {
 
 ::ng-deep .select-input .ng-select-container,
 ::ng-deep .select-input.ng-select .ng-select-container {
-  height: 30px !important;
-  font-size: 0.8em;
-  min-height: 28px !important;
+    height: 30px !important;
+    font-size: 0.8em;
+    min-height: 28px !important;
 }
 
 ::ng-deep .select-input .ng-dropdown-panel .ng-dropdown-panel-items {
-  color: #848181 !important;
-  font-size: 0.8rem !important;
-  max-height: 200px !important;
+    color: #848181 !important;
+    font-size: 0.8rem !important;
+    max-height: 200px !important;
 }
 
 .anonymous-warning {

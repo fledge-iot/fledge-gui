@@ -1,0 +1,188 @@
+---
+alwaysApply: true
+description: Overview and index of all Fledge GUI Cursor Rules
+---
+
+# Fledge GUI Cursor Rules Overview
+
+## 📚 Rules Index
+
+This repository contains comprehensive Cursor Rules for the Fledge GUI application. Each rule file focuses on specific aspects of development:
+
+### Core Architecture & Patterns
+- **[Project Architecture](mdc:project-architecture.mdc)** - High-level project structure and organization
+- **[Angular Patterns](mdc:angular-patterns.mdc)** - Angular-specific development patterns and best practices
+- **[Technology Stack](mdc:technology-stack.mdc)** - Technology integrations and framework-specific patterns
+
+### Development Guidelines
+- **[Component Guidelines](mdc:component-guidelines.mdc)** - Component development standards and organization
+- **[Service Patterns](mdc:service-patterns.mdc)** - Service architecture and state management patterns
+- **[Code Style](mdc:code-style.mdc)** - Coding standards, naming conventions, and style guidelines
+
+### Quality Assurance
+- **[Testing Conventions](mdc:testing-conventions.mdc)** - Unit testing, E2E testing, and quality standards
+
+## 🎯 Quick Reference
+
+### File Structure
+```
+src/app/
+├── components/
+│   ├── common/          # Reusable UI components
+│   ├── core/            # Feature-specific components  
+│   └── layout/          # Application shell components
+├── services/            # Business logic and API services
+├── guards/              # Route protection and access control
+├── pipes/               # Data transformation pipes
+├── directives/          # Custom Angular directives
+└── models/              # TypeScript interfaces and types
+```
+
+### Key Technologies
+- **Angular 16** with TypeScript strict mode
+- **Bulma CSS** for styling and layout
+- **RxJS** for reactive state management
+- **Chart.js** for data visualization
+- **Rete.js** for node-based visual editing
+- **Cypress** for end-to-end testing
+
+### Essential Patterns
+
+#### Component Structure
+```typescript
+@Component({
+  selector: 'app-component-name',
+  templateUrl: './component-name.component.html',
+  styleUrls: ['./component-name.component.css']
+})
+export class ComponentNameComponent implements OnInit, OnDestroy {
+  private destroySubject = new Subject<void>();
+  
+  ngOnInit() {
+    // Setup subscriptions with takeUntil pattern
+  }
+  
+  ngOnDestroy() {
+    this.destroySubject.next();
+    this.destroySubject.complete();
+  }
+}
+```
+
+#### Service Pattern
+```typescript
+@Injectable({ providedIn: 'root' })
+export class ServiceName {
+  private dataSubject = new BehaviorSubject<DataType[]>([]);
+  public data$ = this.dataSubject.asObservable();
+  
+  constructor(private http: HttpClient) {}
+}
+```
+
+#### State Management
+```typescript
+// Use SharedService for global state
+constructor(private sharedService: SharedService) {}
+
+ngOnInit() {
+  this.sharedService.userState$
+    .pipe(takeUntil(this.destroySubject))
+    .subscribe(state => {
+      // Handle state changes
+    });
+}
+```
+
+## 🔧 Development Workflow
+
+### Getting Started
+1. Follow [Project Architecture](mdc:project-architecture.mdc) for understanding the codebase
+2. Use [Component Guidelines](mdc:component-guidelines.mdc) when creating new components
+3. Apply [Service Patterns](mdc:service-patterns.mdc) for business logic
+4. Follow [Code Style](mdc:code-style.mdc) for consistent formatting
+5. Implement [Testing Conventions](mdc:testing-conventions.mdc) for quality assurance
+
+### Common Tasks
+
+#### Creating a New Component
+1. Use Angular CLI: `ng generate component feature/component-name`
+2. Follow the component structure from [Component Guidelines](mdc:component-guidelines.mdc)
+3. Implement proper lifecycle management with destroy pattern
+4. Add unit tests following [Testing Conventions](mdc:testing-conventions.mdc)
+
+#### Adding a New Service
+1. Use Angular CLI: `ng generate service services/service-name`
+2. Follow service patterns from [Service Patterns](mdc:service-patterns.mdc)
+3. Use BehaviorSubjects for state management
+4. Implement proper error handling and HTTP interceptors
+
+#### Styling Components
+1. Use Bulma CSS classes as primary styling approach
+3. Use CSS variables for theming
+4. Ensure responsive design for mobile compatibility
+
+## 🚀 Build & Deployment
+
+### Development Commands
+```bash
+yarn install           # Install dependencies
+yarn start             # Development server (http://localhost:4200)
+yarn build             # Production build
+yarn test              # Unit tests with Karma
+yarn e2e               # End-to-end tests with Cypress
+yarn lint              # ESLint code analysis
+yarn clean             # Clean dist and node_modules
+yarn watch             # Development build with watch mode
+
+# Development server with custom host/port
+yarn start --host 0.0.0.0 --port 4200
+
+# Production build using build script
+./build --clean-start  # Production build with clean start
+```
+
+### Quality Gates
+- Unit test coverage: 80% minimum
+- E2E test coverage for critical user flows
+- ESLint passing with zero errors
+
+## 📖 Additional Resources
+
+### External Documentation
+- [Angular Style Guide](https://angular.io/guide/styleguide)
+- [Bulma Documentation](https://bulma.io/documentation/)
+- [RxJS Documentation](https://rxjs.dev/)
+- [Chart.js Documentation](https://www.chartjs.org/docs/)
+- [Rete.js Documentation](https://retejs.org/docs/)
+
+### Internal References
+- Main application component: [AppComponent](mdc:src/app/app.component.ts)
+- Shared service: [SharedService](mdc:src/app/services/shared.service.ts)
+- Configuration: [angular.json](mdc:angular.json)
+- Package dependencies: [package.json](mdc:package.json)
+
+## 🎯 Best Practices Summary
+
+### Code Quality
+- Use TypeScript strict mode
+- Implement proper type safety
+- Follow single responsibility principle
+- Write comprehensive tests
+
+### Performance
+- Use OnPush change detection strategy
+- Implement lazy loading for modules
+- Optimize bundle size
+- Use trackBy functions for *ngFor
+
+### Maintainability
+- Follow consistent naming conventions
+- Use descriptive variable and method names
+- Implement proper error handling
+- Document complex business logic
+
+### Security
+- Validate all user inputs
+- Use HTTP interceptors for authentication
+- Implement proper access controls

@@ -11,7 +11,7 @@
       </ul>
     </nav>
     <button *ngIf="editMode" (click)="refresh()" class="button is-small" title="Reload" id="refresh-check">
-      <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
+      <i class="bi bi-md bi-arrow-repeat" aria-hidden="true"></i>
     </button>
   </div>
   <div class="card">
@@ -130,7 +130,7 @@
   <section class="modal-card-body">
     Are you sure, You want to delete the control script <b>{{scriptName}}</b>?
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button type="button" class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
     <button type="button" class="button is-small is-danger" (click)="deleteScript(scriptName)"
       [appDisableUntilResponse]="reenableButton">Delete</button>
