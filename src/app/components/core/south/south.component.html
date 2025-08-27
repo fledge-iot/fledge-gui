@@ -1,15 +1,15 @@
 <div class="container is-fluid">
   <div class="card">
-    <header class="card-header">
+    <header class="card-header is-flex is-justify-content-space-between is-align-items-center">
       <div id="south-service" class="card-header-title">
         South Services
         <button *ngIf="!isAlive" (click)="getSouthboundServices(true)" title="Reload" class="button is-small"
           id="refresh-check">
-          <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
+          <i class="bi bi-md bi-arrow-repeat" aria-hidden="true"></i>
         </button>
       </div>
-      <a *ngIf="rolesService?.hasEditPermissions()" id="add_south_service"
-        class="button is-small mt-2 mr-2 pt-2 is-light" (click)="addSouthService()">
+      <a *ngIf="rolesService?.hasEditPermissions()" id="add_south_service" class="button is-small is-light mr-2"
+        (click)="addSouthService()">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
@@ -61,8 +61,7 @@
                   </td>
                   <td class="align-content">
                     <div class="is-flex is-align-items-center">
-                      <a class="button is-ghost is-text py-0 service-name"
-                        (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
+                      <a class="button is-ghost px-0" (click)="openSouthServiceModal(svc)">{{svc.name}}</a>
                     </div>
                   </td>
                   <td class="align-content content-pad">
@@ -168,7 +167,7 @@
   <section class="modal-card-body">
     Are you sure, <b>{{selectedAsset}}</b> will be deprecated if this action is continued?
   </section>
-  <footer class="modal-card-foot">
+  <footer class="modal-card-foot buttons">
     <button class="button is-small" (click)="closeModal('asset-tracking-dialog')">Cancel</button>
     <button class="button is-small is-danger" (click)="deprecateAsset(selectedAsset)">Yes</button>
   </footer>

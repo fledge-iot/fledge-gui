@@ -1,9 +1,3 @@
 .modal-card-body {
   overflow: visible;
 }
-
-.modal-card-head {
-  padding: 12px !important;
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
-}

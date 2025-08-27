@@ -1,5 +1,3 @@
-/* You can add global styles to this file, and also import other style files */
-
 @import '~codemirror/lib/codemirror.css';
 @import '~codemirror/addon/fold/foldgutter.css';
 @import '~codemirror/addon/lint/lint.css';
@@ -11,24 +9,230 @@
 @import '@fortawesome/fontawesome-free/css/all.min.css';
 @import "~bootstrap-icons/font/bootstrap-icons.css";
 
+:root {
+  --bulma-radius-small: 2px;
+  --bulma-radius: 2px;
+  --bulma-radius-medium: 3px;
+  --bulma-radius-large: 6px;
+  --bulma-panel-radius: 3px;
+
+  --bulma-primary-h: 229deg;
+  --bulma-primary-s: 53%;
+  --bulma-primary-l: 53%;
+  --bulma-info-h: 229deg;
+  --bulma-info-s: 53%;
+  --bulma-info-l: 53%;
+
+  --bulma-size-normal: 0.9rem;
+  --bulma-body-font-size: 0.9rem;
+  --bulma-weight-medium: 400;
+  --bulma-weight-bold: 500;
+}
+
+/* ================================================
+   BASE ELEMENTS & GLOBAL OVERRIDES
+   ================================================ */
+html {
+  overflow-y: hidden;
+  background-color: #f5f5f5 !important;
+}
+
 html,
 body,
 #app {
   height: 100%;
 }
 
-html {
-  overflow-y: hidden;
+#app {
+  min-height: 100%;
 }
 
-html,
 .footer {
   background-color: #f5f5f5 !important;
 }
 
-#app {
-  min-height: 100%;
+/* ================================================
+   BULMA COMPONENT OVERRIDES
+   ================================================ */
+
+/* Button overrides */
+.button {
+  box-shadow: none !important;
+  font-weight: 400 !important;
 }
+
+.button .bi {
+  color: inherit !important;
+}
+
+/* Card overrides */
+.card {
+  margin-top: 10px;
+}
+
+.card-header {
+  background-color: #f5f5f5;
+  color: #363636;
+  font-weight: 500;
+}
+
+.card-header-title {
+  padding: 0.75rem 1.5rem;
+  max-height: 48px !important;
+  font-weight: 500;
+  font-size: 0.9rem !important;
+}
+
+.card-content {
+  overflow: auto;
+}
+
+.modal-card,
+.panel,
+.card,
+.card-header {
+  border-radius: 3px !important;
+}
+
+.modal-card-head,
+.modal-card-foot {
+  background-color: #f5f5f5;
+  padding: 12px;
+}
+
+.modal-card-head {
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  box-shadow: none;
+  border-bottom: 1px solid #dbdbdb;
+}
+
+.modal-card-foot {
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-top: 1px solid #dbdbdb;
+}
+
+.modal-card-title {
+  font-size: 0.9rem;
+}
+
+.modal-card-body {
+  padding: 2rem 1rem;
+}
+
+.panel-heading {
+  border-radius: 3px 3px 0 0 !important;
+}
+
+.panel-block:last-child,
+.panel-tabs:last-child {
+  border-radius: 0 0 3px 3px !important;
+}
+
+/* Form controls */
+.input,
+.textarea,
+.select select,
+.CodeMirror-wrap,
+.button,
+.tag-syslog {
+  border-radius: 2px !important;
+}
+
+.select::after {
+  font-size: x-small;
+}
+
+.select:not(.is-multiple):not(.is-loading)::after {
+  border-color: grey !important;
+  border-width: 2.25px !important;
+  border-radius: 1px !important;
+}
+
+/* Label overrides */
+.label:not(.lbl-child) {
+  font-weight: 500 !important;
+  font-size: 0.75rem;
+}
+
+.lbl-child {
+  font-size: 0.8rem !important;
+}
+
+/* Dropdown overrides */
+.dropdown {
+  width: 100%;
+}
+
+.dropdown-trigger {
+  width: 100%;
+}
+
+.dropdown-trigger>.button {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.dropdown-content {
+  max-height: 21rem;
+  overflow: auto;
+}
+
+a.dropdown-item {
+  font-weight: normal;
+}
+
+a.dropdown-item:hover {
+  background-color: #3273dc;
+  color: #fff;
+}
+
+/* Navbar overrides */
+.app-navbar {
+  box-shadow: 0 2px 3px hsla(0, 0%, 7%, .1), 0 0 0 1px hsla(0, 0%, 7%, .1);
+}
+
+.navbar-menu {
+  box-shadow: none;
+}
+
+/* Message overrides */
+.message.is-warning {
+  margin-bottom: 0px !important;
+}
+
+.message.is-warning .message-body {
+  padding: 1em 0.75em;
+}
+
+/* ================================================
+   LAYOUT COMPONENTS
+   ================================================ */
+
+.sidebar {
+  z-index: 10 !important;
+  padding-top: 0px;
+}
+
+.page-container {
+  padding-bottom: 20px;
+}
+
+.page-container:after {
+  content: "";
+  display: block;
+}
+
+.fixed-overflow {
+  overflow-x: hidden;
+  height: 100%;
+}
+
+/* ================================================
+   TABLE COMPONENTS
+   ================================================ */
 
 table.scroll {
   overflow-x: auto;
@@ -40,51 +244,20 @@ table.scroll tbody {
   overflow-x: auto;
 }
 
-.fixed-overflow {
-  overflow-x: hidden;
-  height: 100%;
-}
-
-.sidebar {
-  z-index: 10 !important;
-  padding-top: 0px;
-}
-
-.app-navbar {
-  box-shadow: 0 2px 3px hsla(0, 0%, 7%, .1), 0 0 0 1px hsla(0, 0%, 7%, .1);
-}
-
-.card {
-  margin-top: 10px;
-}
-
-.card-header {
-  background-color: whitesmoke;
-}
-
-.card-content {
-  overflow: auto;
-}
-
-.dropdown-list[_ngcontent-c8] {
-  position: relative !important;
-}
-
-.card-header-title {
+table thead th {
   font-weight: 500;
   font-size: 0.9rem;
-  padding: 0.75rem 1.5rem;
-  max-height: 48px !important;
 }
 
-.add-btn {
-  font-size: 0.9rem;
+.content table td {
+  padding: 0.25em 0.5em;
 }
 
-#card-title {
-  overflow: hidden;
-}
+/* ================================================
+   CUSTOM UI COMPONENTS
+   ================================================ */
 
+/* Loading spinner */
 .app-loading {
   position: relative;
   display: flex;
@@ -115,6 +288,282 @@ table.scroll tbody {
   stroke: #ddd;
 }
 
+/* HR with text */
+.hr-text {
+  background-color: #fff !important;
+  line-height: 1em;
+  position: relative;
+  outline: 0;
+  border: 0;
+  color: black;
+  text-align: center;
+  opacity: .3;
+}
+
+.hr-text:before {
+  content: '';
+  background: linear-gradient(to right, transparent, #818078, transparent);
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+}
+
+.hr-text:after {
+  content: attr(data-content);
+  position: relative;
+  display: inline-block;
+  color: #818078;
+  padding: 0 .5em;
+  line-height: 1.5em;
+  background-color: #fff;
+}
+
+/* Node editor components */
+.node-content-wrapper.node-content-wrapper-active:hover,
+.node-content-wrapper-active.node-content-wrapper-focused {
+  background: transparent;
+  font-weight: 500;
+  box-shadow: inset 0 0 0px;
+  color: #707070;
+}
+
+.node-content-wrapper:hover {
+  background: transparent;
+  box-shadow: inset 0 0 0px;
+  color: #707070;
+}
+
+.child-panel {
+  display: none;
+}
+
+/* Custom viewport */
+.custom-viewport {
+  max-width: 65vw;
+  max-height: 45vh;
+  overflow: hidden;
+}
+
+/* Steps content */
+.steps-content {
+  width: 100%;
+}
+
+/* ================================================
+   UTILITY CLASSES
+   ================================================ */
+
+/* Typography utilities */
+.add-btn,
+.steps,
+.title-name,
+.is-horizontal .label:not(.lbl-child),
+.is-size-9 {
+  font-size: 0.9rem !important;
+}
+
+.desc-text {
+  font-size: 0.95rem;
+}
+
+.description-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 32rem;
+}
+
+/* Icon utilities */
+.bi-xs {
+  font-size: 0.75rem;
+}
+
+.bi-sm,
+.text-btn,
+.steps-sm {
+  font-size: 0.85rem;
+}
+
+.bi-md {
+  font-size: 1rem;
+}
+
+.bi-lg {
+  font-size: 1.15rem;
+}
+
+.bi-xl {
+  font-size: 1.35rem;
+}
+
+.bi:hover:not(.parent-icon):not(.child-icon) {
+  color: rgb(91, 89, 89);
+}
+
+.info-icon {
+  color: gray;
+}
+
+.plus-icon {
+  line-height: 1;
+}
+
+.icon:hover {
+  opacity: 0.8;
+}
+
+.icon-group {
+  padding-left: 16px;
+}
+
+/* State utilities */
+.is-hovered {
+  cursor: pointer !important;
+}
+
+.opacity-07 {
+  opacity: 0.7;
+}
+
+.scrollable {
+  overflow: auto !important;
+}
+
+.blur {
+  filter: blur(1px);
+}
+
+.modal-disabled {
+  pointer-events: none;
+}
+
+div:has(div.modal-disabled) {
+  cursor: not-allowed;
+}
+
+/* Visibility utilities */
+[hidden] {
+  display: none !important;
+}
+
+/* Spacing utilities */
+.fix-pad {
+  padding-top: 0.9rem;
+}
+
+.help-pad {
+  margin: 16px 7px;
+}
+
+.breadcrumb-padding {
+  padding: 0 0.75em;
+}
+
+.fade {
+  background-color: #f5f5f5 !important;
+}
+
+.is-hidden {
+  display: none;
+}
+
+/* ================================================
+   SPECIFIC COMPONENT STYLES
+   ================================================ */
+
+.logo {
+  width: 100px;
+  height: 100px;
+  background: url(./assets/favicon.ico) center center no-repeat;
+}
+
+.cat-desc {
+  background-color: whitesmoke;
+  font-weight: bold;
+}
+
+.cat-desc a {
+  font-weight: bold;
+}
+
+.no-rec {
+  color: darkgray;
+}
+
+.required-field {
+  border-color: red;
+}
+
+.tag-syslog {
+  font-size: .75rem;
+  height: 1.3em;
+  line-height: 1.3;
+  padding-left: 0.25em;
+  padding-right: .25em;
+}
+
+.service-info {
+  max-width: 1344px;
+  margin: auto;
+  padding-bottom: 10px;
+}
+
+.service-info-text {
+  padding-left: 16px;
+}
+
+.config-div {
+  margin-top: 1vw;
+  margin-bottom: 1vw;
+}
+
+.cog-icon {
+  margin: auto;
+}
+
+#card-title {
+  overflow: hidden;
+}
+
+#avail-plugin {
+  padding: 0%;
+}
+
+#refresh-check,
+#refresh-tree,
+#config-icon {
+  vertical-align: middle;
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+#confirmation-execute-dialog .modal-card-body {
+  min-height: 22vh;
+}
+
+.CodeMirror {
+  height: auto;
+}
+
+.CodeMirror-scroll {
+  max-height: 300px;
+}
+
+span.tooltip {
+  border-bottom: none;
+}
+
+.dropdown-list[_ngcontent-c8] {
+  position: relative !important;
+}
+
+/* ================================================
+   ANIMATIONS & KEYFRAMES
+   ================================================ */
+
 @keyframes rotate {
   100% {
     transform: rotate(360deg);
@@ -138,66 +587,47 @@ table.scroll tbody {
   }
 }
 
-.logo {
-  width: 100px;
-  height: 100px;
-  background: url(./assets/favicon.ico) center center no-repeat;
-}
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
 
-.cat-desc {
-  background-color: whitesmoke;
-  font-weight: bold;
-}
+  50% {
+    opacity: 0.3;
+  }
 
-.cat-desc a {
-  font-weight: bold;
-}
-
-.child-panel {
-  display: none;
-}
-
-.node-content-wrapper.node-content-wrapper-active:hover,
-.node-content-wrapper-active.node-content-wrapper-focused {
-  background: transparent;
-  font-weight: 500;
-  box-shadow: inset 0 0 0px;
-  color: #707070;
-}
-
-.node-content-wrapper:hover {
-  background: transparent;
-  box-shadow: inset 0 0 0px;
-  color: #707070;
-}
-
-.navbar-menu {
-  box-shadow: none !important;
-}
-
-.fix-pad {
-  padding-top: 1.0rem;
-}
-
-@media only screen and (max-width: 768px) {
-  .modal-card {
-    padding-top: 4.00rem !important;
+  100% {
+    opacity: 1;
   }
 }
 
-.no-rec {
-  color: darkgray;
+.debug {
+  animation: blink 1s infinite;
 }
 
-.tag-syslog {
-  border-radius: 2px !important;
-  font-size: .75rem !important;
-  height: 1.3em !important;
-  line-height: 1.3 !important;
-  padding-left: 0.25em !important;
-  padding-right: .25em !important;
+/* ================================================
+   MEDIA QUERIES
+   ================================================ */
+
+/* Mobile specific */
+@media only screen and (max-width: 768px) {
+  .modal-card {
+    padding-top: 4rem;
+  }
 }
 
+/* Desktop specific */
+@media screen and (min-width: 769px) {
+  .view-content {
+    display: block !important;
+  }
+
+  .last-step-field {
+    flex-grow: 2 !important;
+  }
+}
+
+/* Height-based responsive design */
 @media screen and (min-height: 955px) {
   table.scroll {
     max-height: 72vh;
@@ -236,324 +666,4 @@ table.scroll tbody {
   .page-container {
     min-height: 87%;
   }
-}
-
-.page-container {
-  padding-bottom: 20px;
-}
-
-.page-container:after {
-  content: "";
-  display: block;
-}
-
-/**
-Custom css for bulma dropdown
-Card Modal dropdown issue(overlapping issue) https://github.com/jgthms/bulma/issues/936
-Bulma Burger Dropdown rendering under other elements https://github.com/jgthms/bulma/issues/1655
-*/
-.dropdown {
-  width: 100%;
-}
-
-.dropdown-trigger {
-  width: 100%
-}
-
-.dropdown-trigger>.button {
-  display: flex;
-  width: 100%;
-  justify-content: space-between
-}
-
-a.dropdown-item:hover {
-  background-color: #3273dc;
-  color: #fff;
-}
-
-.dropdown-content {
-  max-height: 21rem;
-  overflow: auto;
-}
-
-#avail-plugin {
-  padding: 0%;
-}
-
-#refresh-check,
-#refresh-tree,
-#config-icon {
-  vertical-align: middle;
-  background: none;
-  border: none;
-}
-
-.select::after {
-  font-size: x-small;
-}
-
-.select:not(.is-multiple):not(.is-loading)::after {
-  border-color: grey !important;
-  border-width: 2.25px !important;
-  border-radius: 1px !important;
-}
-
-.icon:hover {
-  opacity: 0.8;
-}
-
-/* For modal card window */
-.modal-disabled {
-  pointer-events: none;
-}
-
-div:has(div.modal-disabled) {
-  cursor: not-allowed;
-}
-
-.blur {
-  filter: blur(1px);
-}
-
-table thead th {
-  font-size: 0.9rem !important;
-  font-weight: 500;
-}
-
-.icon-group {
-  padding-left: 16px;
-}
-
-.service-info {
-  max-width: 1344px;
-  margin: auto;
-  padding-bottom: 10px;
-}
-
-.service-info-text {
-  padding-left: 16px;
-}
-
-.config-div {
-  margin-top: 1vw;
-  margin-bottom: 1vw;
-}
-
-@media screen and (min-width: 769px) {
-  .view-content {
-    display: block !important;
-  }
-
-  .last-step-field {
-    flex-grow: 2 !important;
-  }
-}
-
-span.tooltip {
-  border-bottom: none;
-}
-
-.description-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 32rem
-}
-
-#confirmation-execute-dialog .modal-card-body {
-  min-height: 22vh;
-}
-
-.info-icon {
-  color: gray;
-}
-
-.plus-icon {
-  line-height: 1;
-}
-
-.bi-xs {
-  font-size: 0.75rem;
-}
-
-.opacity-07 {
-  opacity: 0.7;
-}
-
-.bi-sm,
-.text-btn,
-.steps-sm {
-  font-size: 0.85rem;
-}
-
-.bi-md {
-  font-size: 1rem;
-}
-
-.bi-lg {
-  font-size: 1.15rem;
-}
-
-.bi-xl {
-  font-size: 1.35rem;
-}
-
-.bi:hover:not(.parent-icon):not(.child-icon) {
-  color: rgb(91, 89, 89);
-}
-
-.desc-text {
-  font-size: 0.95rem;
-}
-
-.help-pad {
-  margin: 16px 7px;
-  font-size: 0.9rem;
-}
-
-.is-hovered {
-  cursor: pointer !important;
-}
-
-.is-horizontal .label {
-  font-size: 0.9rem;
-}
-
-.label {
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.lbl-child {
-  font-size: 0.8rem !important;
-}
-
-.modal-card-head {
-  border-top-left-radius: 3px !important;
-  border-top-right-radius: 3px !important;
-}
-
-.modal-card-foot {
-  border-bottom-left-radius: 3px !important;
-  border-bottom-right-radius: 3px !important;
-}
-
-.modal-card-head,
-.modal-card-foot {
-  padding: 15px !important;
-}
-
-.cog-icon {
-  margin: auto;
-}
-
-[hidden] {
-  display: none !important;
-}
-
-.required-field {
-  border-color: red;
-}
-
-.message.is-warning {
-  margin-bottom: 0px !important;
-}
-
-.message.is-warning .message-body {
-  padding: 1em 0.75em !important
-}
-
-.is-size-9 {
-  font-size: 0.9rem !important;
-}
-
-.input,
-.textarea,
-.select select,
-.CodeMirror-wrap {
-  border-radius: 2px !important;
-}
-
-.CodeMirror {
-  height: auto;
-}
-
-.CodeMirror-scroll {
-  max-height: 300px;
-}
-
-.breadcrumb-padding {
-  padding: 0 0.75em;
-}
-
-.hr-text {
-  background-color: #fff !important;
-  /* ensures clean white background for text overlay effect */
-  line-height: 1em;
-  position: relative;
-  outline: 0;
-  border: 0;
-  color: black;
-  text-align: center;
-  opacity: .3;
-}
-
-.hr-text:before {
-  content: '';
-  background: linear-gradient(to right, transparent, #818078, transparent);
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 100%;
-  height: 1px;
-}
-
-.hr-text:after {
-  content: attr(data-content);
-  position: relative;
-  display: inline-block;
-  color: black;
-  padding: 0 .5em;
-  line-height: 1.5em;
-  color: #818078;
-}
-
-.content table td {
-  padding: 0.25em 0.5em;
-}
-
-.steps-content {
-  width: 100%;
-}
-
-.custom-viewport {
-  max-width: 65vw;
-  max-height: 45vh;
-  overflow: hidden;
-}
-
-.scrollable {
-  overflow: auto !important;
-}
-
-@keyframes blink {
-  0% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.3;
-  }
-
-  100% {
-    opacity: 1;
-  }
-}
-
-.debug {
-  animation: blink 1s infinite;
-}
-
-.button .bi {
-  color: inherit !important;
 }

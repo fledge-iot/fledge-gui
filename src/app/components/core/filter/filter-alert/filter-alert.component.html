@@ -9,7 +9,7 @@
       <span *ngIf="filerDialogData.name != ''"
         class="has-text-black has-text-weight-semibold">{{filerDialogData.name}}</span>
     </section>
-    <footer class="modal-card-foot">
+    <footer class="modal-card-foot buttons">
       <button class="button is-small" (click)="toggleModal(false)">Cancel</button>
       <button *ngIf="filerDialogData" class="button is-small is-link"
         [ngClass]="{'is-warning': filerDialogData.actionButtonValue === 'Discard' }"

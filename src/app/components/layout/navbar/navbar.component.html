@@ -8,7 +8,6 @@
     <div *ngIf="viewPort !== 'mobile'">
       <div class="navbar-item">
         <img src="assets/fledge.png" alt="" width="32" />
-        &nbsp;
         <b>
           <a *ngIf="!pingInfo.version" href="/" style="color: #363636;">Fledge</a>
           <a *ngIf="pingInfo.version" id="hover-link" class="tooltip has-tooltip-bottom has-tooltip-arrow"
@@ -82,14 +81,7 @@
                     <table>
                       <tr *ngFor="let s of servicesRecord">
                         <td class="has-text-left">
-                          <!-- <span class="icon status-icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
-                            <i class="bi bi-circle-fill child-icon"></i>
-                            <i *ngIf="s?.debug?.ingress === 'Suspended'"
-                              class="bi bi-ban overlay-icon"></i>
-                          </span> -->
                           {{s.name}}&nbsp;
-
-
                         </td>
 
                         <td>
@@ -184,18 +176,7 @@
                       <table>
                         <tr *ngFor="let s of servicesRecord">
                           <td class="has-text-left">
-                            <!-- <span class="icon status-icon" [ngClass]="applyServiceStatusCustomCss(s.status)">
-                              <i class="bi bi-circle-fill child-icon"></i>
-                              <i *ngIf="s?.debug?.ingress === 'Suspended' || s?.debug?.egress === 'Isolated'"
-                                class="bi bi-ban overlay-icon"></i>
-                            </span> -->
-                            {{s.name.length <= 18 ? s.name : s.name.substr(0,18) + '..' }}&nbsp; <!-- <span
-                              *ngIf="s?.debug?.debugger === 'Attached'"
-                              class="icon is-small has-tooltip-top has-tooltip-arrow tooltip help-icon"
-                              data-tooltip="Debugger Attached">
-                              <i class="bi bi-bug bi-sm debug"></i>
-                              </span> -->
-                          </td>
+                            {{s.name.length <= 18 ? s.name : s.name.substr(0,18) + '..' }}&nbsp; </td>
                           <td>
                             <b>{{s.status}}</b>
                           </td>
@@ -261,14 +242,15 @@
                         <table>
                           <tr *ngFor="let s of servicesRecord">
                             <td class="has-text-left">
-                              <span class="icon status-icon" [ngClass]="applyServiceStatusCustomCss(s.status)"
-                                class="has-tooltip-arrow tooltip is-hovered" data-tooltip="Ingest Suspended">
+                              <span class="has-tooltip-arrow tooltip is-hovered"
+                                [ngClass]="applyServiceStatusCustomCss(s.status)"
+                                [attr.data-tooltip]="s?.debug?.ingress === 'Suspended' ? 'Ingest Suspended' : null">
                                 <i class="bi bi-circle-fill child-icon"></i>
                                 <i *ngIf="s?.debug?.ingress === 'Suspended'" class="bi bi-ban overlay-icon"></i>
                               </span>
                               <ng-container
                                 *ngIf="servicesToShow.includes(s.type.toLowerCase()); else elseServiceTemplate">
-                                <a class="ghost" (click)="navToServiceConfiguration(s)">
+                                <a class="has-text-grey-dark is-underlined" (click)="navToServiceConfiguration(s)">
                                   {{s.name}}
                                 </a>
                               </ng-container>

@@ -2,14 +2,14 @@
   <app-service-warning [service]="serviceInfo" (serviceConfigureModal)="openServiceConfigureModal()"
     (refreshService)="refreshServiceInfo()" [serviceType]="'Dispatcher'"></app-service-warning>
   <div class="card">
-    <header class="card-header">
+    <header class="card-header is-flex is-justify-content-space-between is-align-items-center">
       <div id="control-acl" class="card-header-title">
         Control Scripts
         <button class="button is-small" id="refresh-check" title="Reload" (click)="getControlScripts()">
-          <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
+          <i class="bi bi-md bi-arrow-repeat" aria-hidden="true"></i>
         </button>
       </div>
-      <a *ngIf="rolesService.hasControlAccess()" class="button is-small mt-2 is-light" routerLink="add">
+      <a *ngIf="rolesService.hasControlAccess()" class="button is-small is-light" routerLink="add">
         <p *ngIf="viewPort !== 'mobile'" class="add-btn">Add &nbsp;</p>
         <i class="fa fa-xs fa-plus" aria-hidden="true"></i>
       </a>
@@ -19,7 +19,8 @@
         </app-service-config>
       </div>
 
-      <span class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad"
+      <span
+        class="icon is-small tooltip has-tooltip-bottom has-tooltip-arrow is-pulled-right is-hovered help-pad is-size-9"
         data-tooltip="Help" (click)="goToLink('control-dispatcher-service')">
         <i class="bi bi-question-circle"></i>
       </span>
@@ -80,7 +81,7 @@
         <section class="modal-card-body">
           Are you sure, you want to delete the control script <b>{{script}}</b>?
         </section>
-        <footer class="modal-card-foot">
+        <footer class="modal-card-foot buttons">
           <button class="button is-small" (click)="closeModal('confirmation-dialog')">Cancel</button>
           <button class="button is-small is-danger" (click)="deleteScript(script)"
             [appDisableUntilResponse]="reenableButton">Delete</button>
