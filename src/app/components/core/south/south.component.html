@@ -87,7 +87,7 @@
                       <i class="bi bi-database-slash"></i>
                     </span>
                   </td>
-                  <td class="align-content pt-2">
+                  <td class="align-content pt-3">
                     <div *ngFor='let data of svc.assets; let i = index'
                       [ngClass]="{' fade': (svc.schedule_enabled===false)}"
                       [style.display]="i === 0 || svc.expanded ? 'block' : 'none'">
@@ -114,7 +114,8 @@
                       [ngClass]="{'open': svc.expanded}"
                       class="icon is-small tooltip has-tooltip-right has-tooltip-arrow tooltip-help is-pulled-right is-hovered"
                       [attr.data-tooltip]="svc.expanded ? 'Hide other assets' : 'Show all assets'">
-                      <i class="bi bi-xs bi-chevron-right"></i>
+                      <i *ngIf="svc.expanded" class="bi bi-xs bi-chevron-down"></i>
+                      <i *ngIf="!svc.expanded" class="bi bi-xs bi-chevron-right"></i>
                     </span>
                   </td>
                 </tr>
