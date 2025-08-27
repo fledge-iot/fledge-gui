@@ -95,7 +95,7 @@
             [configuration]="configuration" [listItemsForm]="kvListItemsForm" [initialProperties]="initialProperties"
             [from]="from" [group]="group" [items]="items" [item]="ctrl" [index]="i"
             (changedConfiguration)="getChangedConfiguration(i, $event)" (formState)="formStatus($event, i)"
-            (removeItem)="removeListItem(i)">
+            (removeItem)="removeListItem($event)">
           </app-kvlist-card>
         </div>
       </ng-container>

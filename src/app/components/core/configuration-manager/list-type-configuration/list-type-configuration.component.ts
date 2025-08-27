@@ -286,9 +286,35 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
       this.items.splice(index, 1);
       this.initialProperties.splice(index, 1);
 
-      this.cdRef.markForCheck();
+      // complete DOM recreation
+      this.listRecreation();
+
       console.log(`📋 Removed list item at index ${index}. Total: ${this.listItems.controls.length}`);
     }
+  }
+
+  private listRecreation() {
+    // Temporarily clear the form array
+    const currentData = [...this.allFormData];
+    const currentItems = [...this.items];
+    const currentProperties = [...this.initialProperties];
+
+    // Clear everything
+    this.listItems.clear();
+    this.cdRef.detectChanges();
+
+    // Recreate all form controls
+    currentData.forEach((item, index) => {
+      const control = this.createItemControl(item);
+      this.listItems.push(control);
+    });
+
+    // Update arrays
+    this.items = currentItems;
+    this.initialProperties = currentProperties;
+
+    // Force final render
+    this.cdRef.detectChanges();
   }
 
   trackByIndex(index: number, item: any): number {

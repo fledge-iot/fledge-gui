@@ -83,7 +83,7 @@
             [configuration]="configuration" [listItemsForm]="listItemsForm" [initialProperties]="initialProperties"
             [from]="from" [group]="group" [listLabel]="listLabel" [firstKey]="firstKey" [items]="items" [item]="ctrl"
             [index]="i" (changedConfiguration)="getChangedConfiguration(i, $event)" (formState)="formStatus($event, i)"
-            (removeItem)="removeListItem(i)">
+            (removeItem)="removeListItem($event)">
           </app-list-card>
         </div>
       </ng-container>

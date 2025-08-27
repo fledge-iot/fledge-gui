@@ -250,8 +250,33 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
       this.items.splice(index, 1);
       this.initialProperties.splice(index, 1);
 
-      this.cdRef.markForCheck();
+      // complete DOM recreation
+      this.listRecreation();
     }
+  }
+
+  private listRecreation() {
+    // Temporarily clear the form array
+    const currentData = [...this.allFormData];
+    const currentItems = [...this.items];
+    const currentProperties = [...this.initialProperties];
+
+    // Clear everything
+    this.kvListItems.clear();
+    this.cdRef.detectChanges();
+
+    // Recreate all form controls
+    currentData.forEach((item, index) => {
+      const formGroup = this.createItemFormGroup(item);
+      this.kvListItems.push(formGroup);
+    });
+
+    // Update arrays
+    this.items = currentItems;
+    this.initialProperties = currentProperties;
+
+    // Force final render
+    this.cdRef.detectChanges();
   }
 
   trackByIndex(index: number, item: any): number {
