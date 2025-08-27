@@ -8,7 +8,7 @@
       <span *ngIf="!isAlive"
         class="icon is-small is-pulled-right is-hovered assets-control has-tooltip-left has-tooltip-arrow tooltip"
         data-tooltip="Reload" (click)="getAsset()">
-        <i class="bi bi-lg bi-arrow-repeat" aria-hidden="true"></i>
+        <i class="bi bi-md bi-arrow-repeat" aria-hidden="true"></i>
       </span>
       <ng-container *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()">
         <span *ngIf="assets?.length > 0"
