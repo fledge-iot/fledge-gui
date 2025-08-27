@@ -243,8 +243,6 @@ export class ConfigurationGroupComponent implements AfterViewInit {
    * @param tab tab index
    */
   selectTab(tab: any) {
-    console.log(`🔄 TAB SWITCH: From "${this.selectedGroup.key}" to "${tab.key}"`);
-
     if (tab.key !== this.selectedGroup.key) {
       this.selectedGroup = tab;
     }

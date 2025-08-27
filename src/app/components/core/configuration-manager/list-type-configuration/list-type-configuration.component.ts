@@ -45,7 +45,6 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
     public configControlService: ConfigurationControlService,
     private fb: FormBuilder
   ) {
-    console.log('🔧 LIST CONSTRUCTOR: Component being created');
     this.listItemsForm = this.fb.group({
       listItems: this.fb.array([])
     });
@@ -53,7 +52,6 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.configuration && this.configuration) {
-      console.log('📋 LIST: Configuration changed:', this.configuration);
       if (this.isInitialized) {
         this.loadData();
       }
@@ -61,8 +59,6 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
   }
 
   ngOnInit() {
-    console.log(`📋 LIST COMPONENT INIT: Group="${this.group}", Category="${this.categoryName}"`);
-    console.log('📋 LIST: Initial configuration:', this.configuration);
     if (this.configuration) {
       if (this.configuration.items == 'object') {
         this.firstKey = Object.keys(this.configuration.properties)[0];
@@ -90,7 +86,6 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
 
     const loadStartTime = performance.now();
     let values = this.configuration?.value ?? this.configuration.default ?? [];
-    console.log(`📋 Loading data for configuration "${this.configuration.key}":`, values);
 
     // Handle string format
     if (typeof values === 'string') {
@@ -288,7 +283,6 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
 
       // complete DOM recreation
       this.listRecreation();
-
       console.log(`📋 Removed list item at index ${index}. Total: ${this.listItems.controls.length}`);
     }
   }
