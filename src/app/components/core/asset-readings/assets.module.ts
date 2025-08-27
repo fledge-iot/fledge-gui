@@ -10,6 +10,7 @@ import { SharedModule } from '../../../shared.module';
 import { ChartModule } from '../../common/chart';
 import { NumberInputDebounceModule } from '../../common/number-input-debounce/number-input-debounce.module';
 import { PaginationModule } from '../../common/pagination/pagination.module';
+import { PopoverModule } from '../../common/popover/popover.module';
 import { ReadingsGraphComponent } from '../asset-readings/readings-graph/readings-graph.component';
 import { AssetsComponent } from './assets/assets.component';
 import { AssetReadingSummaryComponent } from './asset-reading-summary/asset-reading-summary.component';
@@ -37,7 +38,8 @@ const routes: Routes = [
     NumberInputDebounceModule,
     PaginationModule,
     NgSelectModule,
-    SharedModule
+    SharedModule,
+    PopoverModule
   ],
   providers: [AssetsService],
   exports: []

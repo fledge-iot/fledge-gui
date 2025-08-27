@@ -62,50 +62,9 @@ table.scroll tr {
   opacity: 1.0 !important;
 }
 
-.popover-table-header {
-  border-bottom: 2px solid #dbdbdb !important;
+/* Popover trigger wrapper styling */
+.popover-trigger-wrapper {
+  position: relative;
+  display: inline-block;
 }
 
-/* Enhanced popover styling for asset readings */
-#global-popover {
-  min-width: 280px;
-  max-width: 400px;
-}
-
-#global-popover .content {
-  padding: 0;
-}
-
-#global-popover .table {
-  background-color: transparent;
-  border: none;
-  margin: 0;
-}
-
-#global-popover .table td {
-  padding: 0.5rem 0.75rem;
-  vertical-align: middle;
-  border: none;
-}
-
-/* Timestamp header styling */
-#global-popover .content > div:first-child {
-  padding: 0.75rem;
-  border-bottom: 1px solid #e9ecef;
-  margin: 0;
-}
-
-/* Data point names */
-#global-popover .table td:first-child {
-  width: 40%;
-}
-
-/* Value column styling */
-#global-popover .table td:last-child {
-  word-break: break-all;
-}
-
-/* No data message */
-#global-popover .no-data {
-  padding: 1rem;
-}

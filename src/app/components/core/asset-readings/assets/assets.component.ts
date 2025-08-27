@@ -9,6 +9,7 @@ import { DocService } from '../../../../services/doc.service';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { ReadingsGraphComponent } from '../readings-graph/readings-graph.component';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
+import { PopoverComponent } from '../../../common/popover/popover.component';
 
 @Component({
   selector: 'app-assets',
@@ -24,8 +25,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
   assetReadings = [];
   selectedAssetName = '';
   latestReadings: { [key: string]: any } = {};  // Store latest readings for each asset
-  popoverTimeouts: { [key: string]: any } = {};  // Store timeout references for each popover
-  currentPopoverAsset = '';  // Track which asset's popover is currently shown
 
   @ViewChild(ReadingsGraphComponent, { static: true }) readingsGraphComponent: ReadingsGraphComponent;
 
@@ -157,109 +156,24 @@ export class AssetsComponent implements OnInit, OnDestroy {
     return properties;
   }
 
-  public keepPopoverOpen(): void {
-    // Clear any pending hide timeouts when hovering over popover content
-    Object.keys(this.popoverTimeouts).forEach(key => {
-      if (this.popoverTimeouts[key]) {
-        clearTimeout(this.popoverTimeouts[key]);
-        delete this.popoverTimeouts[key];
-      }
-    });
+  public showPopover(triggerElement: HTMLElement, assetCode: string, popover: PopoverComponent): void {
+    // Show the popover using the new PopoverComponent
+    popover.show(triggerElement);
   }
 
-  public hidePopoverWithDelay(): void {
-    // Add a small delay before hiding to allow smooth transition between trigger and content
-    const timeoutId = setTimeout(() => {
-      this.hidePopover();
-    }, 300); // 300ms delay
-
-    // Store timeout reference
-    this.popoverTimeouts['current'] = timeoutId;
+  public hidePopoverWithDelay(popover: PopoverComponent): void {
+    // Hide the popover with delay using the new PopoverComponent
+    popover.hideWithDelay();
   }
 
-  public showPopover(event: MouseEvent, assetCode: string): void {
-    // Clear any existing timeouts
-    this.keepPopoverOpen();
-    
-    // Set current asset for popover content
-    this.currentPopoverAsset = assetCode;
-    
-    // Get the trigger element position
-    const target = event.target as HTMLElement;
-    const trigger = target.closest('.popover-trigger') as HTMLElement;
-    if (!trigger) return;
-    
-    // Get the global popover element
-    const popover = document.getElementById('global-popover') as HTMLElement;
-    if (!popover) return;
-    
-    // Calculate position relative to viewport
-    const triggerRect = trigger.getBoundingClientRect();
-    const popoverRect = popover.getBoundingClientRect();
-    const viewportHeight = window.innerHeight;
-    const viewportWidth = window.innerWidth;
-    
-    // Calculate initial position above the trigger
-    let left = triggerRect.left + (triggerRect.width / 2);
-    let top = triggerRect.top - 10; // 10px above the trigger
-    let transformX = '-50%';
-    let transformY = '-100%';
-    
-    // Check if popover would be clipped at the top
-    const popoverHeight = 200; // Estimated popover height
-    const spaceAbove = triggerRect.top;
-    const spaceBelow = viewportHeight - triggerRect.bottom;
-    
-    // If not enough space above, position below instead
-    if (spaceAbove < popoverHeight && spaceBelow > spaceAbove) {
-      top = triggerRect.bottom + 10; // 10px below the trigger
-      transformY = '0%';
-      popover.classList.remove('above');
-      popover.classList.add('below');
-    } else {
-      popover.classList.remove('below');
-      popover.classList.add('above');
-    }
-    
-    // Check if popover would be clipped horizontally
-    const popoverWidth = 200; // Estimated popover width
-    const spaceRight = viewportWidth - left + (popoverWidth / 2);
-    const spaceLeft = left + (popoverWidth / 2);
-    
-    // Adjust horizontal position if clipped
-    if (spaceRight < 0) {
-      // Too far right, align to right edge
-      left = triggerRect.right;
-      transformX = '-100%';
-    } else if (spaceLeft < 0) {
-      // Too far left, align to left edge
-      left = triggerRect.left;
-      transformX = '0%';
-    }
-    
-    // Ensure minimum margins from viewport edges
-    const minMargin = 10;
-    left = Math.max(minMargin, Math.min(left, viewportWidth - minMargin));
-    top = Math.max(minMargin, Math.min(top, viewportHeight - minMargin));
-    
-    popover.style.left = `${left}px`;
-    popover.style.top = `${top}px`;
-    popover.style.transform = `translate(${transformX}, ${transformY})`;
-    popover.style.opacity = '1';
-    popover.style.visibility = 'visible';
-    
-    // Ensure popover is on top of everything
-    popover.style.zIndex = '999999';
+  public onPopoverShown(): void {
+    // Handle popover shown event if needed
+    // console.log('Popover shown');
   }
 
-  public hidePopover(): void {
-    const popover = document.getElementById('global-popover') as HTMLElement;
-    if (popover) {
-      popover.style.opacity = '0';
-      popover.style.visibility = 'hidden';
-      popover.classList.remove('above', 'below');
-    }
-    this.currentPopoverAsset = '';
+  public onPopoverHidden(): void {
+    // Handle popover hidden event if needed  
+    // console.log('Popover hidden');
   }
 
   getAssetReadings(assetCode, recordCount) {

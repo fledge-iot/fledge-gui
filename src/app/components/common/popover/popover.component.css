@@ -1,0 +1,113 @@
+/* Popover component styles */
+.popover-content {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  position: fixed;
+  background: white;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
+  padding: 0.75rem;
+  min-width: 200px;
+  max-width: 400px;
+  z-index: 99999;
+  pointer-events: auto;
+}
+
+/* Position-specific styles */
+.popover-top .popover-content::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid white;
+  transform: translateX(-50%);
+}
+
+.popover-bottom .popover-content::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid white;
+  transform: translateX(-50%);
+}
+
+.popover-left .popover-content::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 8px solid white;
+  transform: translateY(-50%);
+}
+
+.popover-right .popover-content::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 8px solid white;
+  transform: translateY(-50%);
+}
+
+/* Scrollable content styling for content projection */
+:host ::ng-deep .popover-scrollable-content {
+  max-height: 300px;
+  overflow-y: auto;
+  max-width: 400px;
+}
+
+/* Scrollbar styling for better UX */
+.popover-content .popover-scrollable-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.popover-content .popover-scrollable-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.popover-content .popover-scrollable-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.popover-content .popover-scrollable-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Table styling within popover */
+.popover-content .table {
+  background-color: transparent;
+  border: none;
+  margin: 0;
+}
+
+.popover-content .table td {
+  padding: 0.5rem 0.75rem;
+  vertical-align: middle;
+  border: none;
+}
+
+.popover-content .table td:first-child {
+  width: 40%;
+}
+
+.popover-content .table td:last-child {
+  word-break: break-all;
+}
+
+/* No data message */
+.popover-content .no-data {
+  padding: 1rem;
+} 

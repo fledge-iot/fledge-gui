@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import { RolesService } from '../../../../services';
+import { PopoverComponent } from '../../../common/popover/popover.component';
 
 @Component({
   selector: 'app-kvlist-card',
@@ -64,5 +65,21 @@ export class KvlistCardComponent {
       });
     }
     return itemValueArray;
+  }
+
+  showPopover(triggerElement: HTMLElement, popover: PopoverComponent): void {
+    popover.show(triggerElement);
+  }
+
+  hidePopoverWithDelay(popover: PopoverComponent): void {
+    popover.hideWithDelay();
+  }
+
+  onPopoverShown(): void {
+    // Handle popover shown event if needed
+  }
+
+  onPopoverHidden(): void {
+    // Handle popover hidden event if needed
   }
 }

@@ -56,13 +56,48 @@
                   </td>
                   <td>
                     <div class="popover-trigger-wrapper">
-                      <a class="is-pulled-right popover-trigger"
-                        (mouseenter)="loadLatestReading(asset.assetCode); showPopover($event, asset.assetCode)"
-                        (mouseleave)="hidePopoverWithDelay()">
+                      <a class="is-pulled-right popover-trigger" #popoverTrigger
+                        (mouseenter)="loadLatestReading(asset.assetCode); showPopover(popoverTrigger, asset.assetCode, assetPopover)"
+                        (mouseleave)="hidePopoverWithDelay(assetPopover)">
                         <span class="icon is-small">
                           <i class="bi bi-lightning-charge" aria-hidden="true"></i>
                         </span>
                       </a>
+
+                      <app-popover #assetPopover position="top" hideDelay="300" (popoverShown)="onPopoverShown()"
+                        (popoverHidden)="onPopoverHidden()">
+                        <div class="content popover-scrollable-content">
+                          <!-- Timestamp header -->
+                          <div class="is-size-7 mb-2 has-text-grey-dark">
+                            <i class="bi bi-clock mr-1"></i>
+                            {{getLatestReadingTimestamp(asset.assetCode) | dateparser: 'YYYY-MM-DD HH:mm:ss.SSS'}}
+                          </div>
+
+                          <!-- Data points table -->
+                          <table class="table is-narrow is-striped is-size-7 mb-0"
+                            *ngIf="getLatestReadingProperties(asset.assetCode).length > 0">
+                            <tbody>
+                              <tr *ngFor="let reading of getLatestReadingProperties(asset.assetCode)">
+                                <td>{{reading.key}}</td>
+                                <td>{{reading.value}}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+
+                          <!-- No data message -->
+                          <div *ngIf="getLatestReadingProperties(asset.assetCode).length === 0"
+                            class="has-text-grey has-text-centered py-2 is-size-7 no-data">
+                            <i class="bi bi-info-circle mr-1"></i>
+                            No readings available
+                          </div>
+
+                          <!-- Footer with muted text -->
+                          <div class="has-text-grey-light has-text-centered pt-2 is-size-7"
+                            style="border-top: 1px solid #f5f5f5;">
+                            Most recent reading
+                          </div>
+                        </div>
+                      </app-popover>
                     </div>
                   </td>
                   <td>
@@ -117,39 +152,4 @@
     </div>
   </div>
   <app-readings-graph (notify)='onNotify($event)' (refreshAssets)="getAsset(false)"></app-readings-graph>
-
-  <!-- Most recent reading popover positioned outside card structure -->
-  <div id="global-popover" class="popover-content" (mouseenter)="keepPopoverOpen()"
-    (mouseleave)="hidePopoverWithDelay()">
-    <div class="content popover-scrollable-content">
-      <!-- Timestamp header -->
-      <div class="is-size-7 mb-2 has-text-grey-dark">
-        <i class="bi bi-clock mr-1"></i>
-        {{getLatestReadingTimestamp(currentPopoverAsset) | dateparser: 'YYYY-MM-DD HH:mm:ss.SSS'}}
-      </div>
-
-      <!-- Data points table -->
-      <table class="table is-narrow is-striped is-size-7 mb-0"
-        *ngIf="getLatestReadingProperties(currentPopoverAsset).length > 0">
-        <tbody>
-          <tr *ngFor="let reading of getLatestReadingProperties(currentPopoverAsset)">
-            <td>{{reading.key}}</td>
-            <td>{{reading.value}}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- No data message -->
-      <div *ngIf="getLatestReadingProperties(currentPopoverAsset).length === 0"
-        class="has-text-grey has-text-centered py-2 is-size-7 no-data">
-        <i class="bi bi-info-circle mr-1"></i>
-        No readings available
-      </div>
-
-      <!-- Footer with muted text -->
-      <div class="has-text-grey-light has-text-centered pt-2 is-size-7" style="border-top: 1px solid #f5f5f5;">
-        Most recent reading
-      </div>
-    </div>
-  </div>
 </div>

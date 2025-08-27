@@ -8,7 +8,6 @@
 @import 'bulma-steps/dist/css/bulma-steps.min.css';
 @import '@fortawesome/fontawesome-free/css/all.min.css';
 @import "~bootstrap-icons/font/bootstrap-icons.css";
-@import './styles/popover.css';
 
 :root {
   --bulma-radius-small: 2px;

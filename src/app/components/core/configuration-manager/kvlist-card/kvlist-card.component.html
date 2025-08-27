@@ -5,21 +5,22 @@
       <p class="subtitle is-size-9">{{kvListItems?.controls[i]?.controls['key'].value}}</p>
     </div>
     <div class="btn-container">
-      <div class="popover is-popover-right">
-        <button class="card-header-icon popover-trigger" (click)="toggleCard(i)">
-          <span class="icon is-small">
-            <i class="bi bi-three-dots bi-sm" aria-hidden="true"></i>
-          </span>
-        </button>
-        <div class="popover-content">
-          <div class="content popover-scrollable-content">
-            <div *ngFor="let property of extractItemValue(item.value.value)" class="mb-1">
-              <span class="has-text-weight-medium">{{property.label}}:</span>
-              <span class="has-text-weight-normal ml-1">{{property.value}}</span>
-            </div>
+      <button class="card-header-icon" #popoverTrigger (click)="toggleCard(i)"
+        (mouseenter)="showPopover(popoverTrigger, kvlistPopover)" (mouseleave)="hidePopoverWithDelay(kvlistPopover)">
+        <span class="icon is-small">
+          <i class="bi bi-three-dots bi-sm" aria-hidden="true"></i>
+        </span>
+      </button>
+
+      <app-popover #kvlistPopover position="right" trigger="hover" (popoverShown)="onPopoverShown()"
+        (popoverHidden)="onPopoverHidden()">
+        <div class="content popover-scrollable-content">
+          <div *ngFor="let property of extractItemValue(item.value.value)" class="mb-1">
+            <span class="has-text-weight-medium">{{property.label}}:</span>
+            <span class="has-text-weight-normal ml-1">{{property.value}}</span>
           </div>
         </div>
-      </div>
+      </app-popover>
       <button class="card-header-icon" (click)="toggleCard(i)">
         <span class="icon is-small toogle-icon" title="Expand">
           <i class="fas fa-2xs fa-angle-right" aria-hidden="true"></i>
