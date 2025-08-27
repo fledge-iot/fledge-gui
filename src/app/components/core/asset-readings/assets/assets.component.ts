@@ -157,23 +157,11 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   public showPopover(triggerElement: HTMLElement, assetCode: string, popover: PopoverComponent): void {
-    // Show the popover using the new PopoverComponent
     popover.show(triggerElement);
   }
 
   public hidePopoverWithDelay(popover: PopoverComponent): void {
-    // Hide the popover with delay using the new PopoverComponent
     popover.hideWithDelay();
-  }
-
-  public onPopoverShown(): void {
-    // Handle popover shown event if needed
-    // console.log('Popover shown');
-  }
-
-  public onPopoverHidden(): void {
-    // Handle popover hidden event if needed  
-    // console.log('Popover hidden');
   }
 
   getAssetReadings(assetCode, recordCount) {

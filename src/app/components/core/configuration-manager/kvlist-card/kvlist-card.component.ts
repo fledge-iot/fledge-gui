@@ -74,12 +74,4 @@ export class KvlistCardComponent {
   hidePopoverWithDelay(popover: PopoverComponent): void {
     popover.hideWithDelay();
   }
-
-  onPopoverShown(): void {
-    // Handle popover shown event if needed
-  }
-
-  onPopoverHidden(): void {
-    // Handle popover hidden event if needed
-  }
 }
