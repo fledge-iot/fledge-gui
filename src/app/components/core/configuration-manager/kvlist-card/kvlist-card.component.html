@@ -12,7 +12,7 @@
         </span>
       </button>
 
-      <app-popover #kvlistPopover position="right" trigger="hover" hideDelay="0">
+      <app-popover #kvlistPopover position="right" trigger="hover" hideDelay="50" [offset]="-10">
         <div class="content popover-scrollable-content">
           <div *ngFor="let property of extractItemValue(item.value.value)" class="mb-1">
             <span class="has-text-weight-medium">{{property.label}}:</span>
