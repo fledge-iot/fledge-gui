@@ -9,7 +9,7 @@
   border-radius: 4px;
   box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
   padding: 0.75rem;
-  min-width: 200px;
+  min-width: 150px;
   max-width: 400px;
   z-index: 99999;
   pointer-events: auto;
