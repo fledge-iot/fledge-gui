@@ -37,15 +37,8 @@
                   <th class="align-th">Plugin</th>
                   <th class="align-th">Version</th>
                   <th class="align-th" *ngIf="southboundServices | hasAttachedDebugger"></th>
-                  <th class="align-th">
-                    <table class="table is-responsive">
-                      <tr>
-                        <td class="border-fix">Assets</td>
-                        <td *ngIf="developerFeaturesService.getDeveloperFeatureControl()" class="border-fix"></td>
-                        <td class="border-fix align-right">Readings</td>
-                      </tr>
-                    </table>
-                  </th>
+                  <th class="align-th">Assets</th>
+                  <th class="align-th readings-count">Readings</th>
                   <th class="align-th"></th>
                 </tr>
               </thead>
@@ -94,59 +87,35 @@
                       <i class="bi bi-database-slash"></i>
                     </span>
                   </td>
-                  <td class="align-content pt-2">
-                    <table class="table is-narrow is-responsive" [ngClass]="{'is-borderless': !svc.expanded}">
-                      <tr *ngFor='let data of svc.assets; let i = index'
-                        [ngClass]="{' fade': (svc.schedule_enabled===false)}">
-                        <!-- Section to show asset & readings if asset == 1 -->
-                        <ng-container *ngIf="i==0;else expandedTable">
-                          <td>
-                            <a *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()"
-                              id="deprecate_event_div"
-                              (click)="selectAsset(svc.name, data?.asset);openModal('asset-tracking-dialog')">
-                              <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow"
-                                data-tooltip="Deprecate asset">
-                                <i class="bi bi-sm bi-eraser" aria-hidden="true"></i>
-                              </span>
-                            </a>
-                            <small>{{data.asset}}</small>
-                          </td>
-                          <td>
-                          </td>
-                          <td class="readings-count">
-                            <small class="level-right">{{data.count | number}}</small>
-                          </td>
-                        </ng-container>
-                        <!-- Section to show asset & readings if assets > 1 -->
-                        <ng-template #expandedTable>
-                          <ng-container *ngIf="svc.expanded">
-                            <td>
-                              <a *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()"
-                                id="deprecate_event_div"
-                                (click)="selectAsset(svc.name, data?.asset);openModal('asset-tracking-dialog')">
-                                <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow"
-                                  data-tooltip="Deprecate asset">
-                                  <i class="bi bi-sm bi-eraser" aria-hidden="true"></i>
-                                </span>
-                              </a>
-                              <small>{{data.asset}}</small>
-                            </td>
-                            <td>
-                            </td>
-                            <td class="readings-count">
-                              <small class="level-right">{{data.count | number}}</small>
-                            </td>
-                          </ng-container>
-                        </ng-template>
-                      </tr>
-                    </table>
+                  <td class="align-content pt-3">
+                    <div *ngFor='let data of svc.assets; let i = index'
+                      [ngClass]="{' fade': (svc.schedule_enabled===false)}"
+                      [style.display]="i === 0 || svc.expanded ? 'block' : 'none'">
+                      <a *ngIf="developerFeaturesService.getDeveloperFeatureControl() && rolesService.hasEditPermissions()"
+                        id="deprecate_event_div"
+                        (click)="selectAsset(svc.name, data?.asset);openModal('asset-tracking-dialog')">
+                        <span class="icon is-small tooltip has-tooltip-right has-tooltip-arrow"
+                          data-tooltip="Deprecate asset">
+                          <i class="bi bi-sm bi-eraser" aria-hidden="true"></i>
+                        </span>
+                      </a>
+                      <small>{{data.asset}}</small>
+                    </div>
+                  </td>
+                  <td class="align-content pt-2 readings-count">
+                    <div *ngFor='let data of svc.assets; let i = index'
+                      [ngClass]="{' fade': (svc.schedule_enabled===false)}"
+                      [style.display]="i === 0 || svc.expanded ? 'block' : 'none'">
+                      <small>{{data.count | number}}</small>
+                    </div>
                   </td>
                   <td class="pt-2">
                     <span *ngIf="svc?.assets?.length > 1" (click)="showHideAsset(svc)"
                       [ngClass]="{'open': svc.expanded}"
                       class="icon is-small tooltip has-tooltip-right has-tooltip-arrow tooltip-help is-pulled-right is-hovered"
                       [attr.data-tooltip]="svc.expanded ? 'Hide other assets' : 'Show all assets'">
-                      <i class="bi bi-xs bi-chevron-right"></i>
+                      <i *ngIf="svc.expanded" class="bi bi-xs bi-chevron-down"></i>
+                      <i *ngIf="!svc.expanded" class="bi bi-xs bi-chevron-right"></i>
                     </span>
                   </td>
                 </tr>
