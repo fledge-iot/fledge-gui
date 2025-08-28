@@ -25,6 +25,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
   assetReadings = [];
   selectedAssetName = '';
   latestReadings: { [key: string]: any } = {};  // Store latest readings for each asset
+  private isPopoverVisible = false;
+  private popoverAssetCode: string | null = null;
+  private popoverHiddenSubscription: any = null;
 
   @ViewChild(ReadingsGraphComponent, { static: true }) readingsGraphComponent: ReadingsGraphComponent;
 
@@ -57,7 +60,14 @@ export class AssetsComponent implements OnInit, OnDestroy {
     interval(this.refreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
-        this.getAsset();
+        // Skip auto refresh if popover is visible to avoid disrupting user interaction
+        if (!this.isPopoverVisible) {
+          this.getAsset(false);
+        } else {
+          if (this.popoverAssetCode) {
+            this.loadLatestReading(this.popoverAssetCode);
+          }
+        }
       });
   }
 
@@ -158,6 +168,22 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   public showPopover(triggerElement: HTMLElement, assetCode: string, popover: PopoverComponent): void {
     popover.show(triggerElement);
+    this.isPopoverVisible = true;
+    this.popoverAssetCode = assetCode;
+
+    // Clean up any existing subscription
+    if (this.popoverHiddenSubscription) {
+      this.popoverHiddenSubscription.unsubscribe();
+    }
+
+    // Subscribe to popover visibility events to track actual visibility state
+    this.popoverHiddenSubscription = popover.popoverHidden
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.isPopoverVisible = false;
+        this.popoverAssetCode = null;
+        this.popoverHiddenSubscription = null;
+      });
   }
 
   public hidePopoverWithDelay(popover: PopoverComponent): void {
@@ -289,7 +315,14 @@ export class AssetsComponent implements OnInit, OnDestroy {
     interval(this.refreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
-        this.getAsset();
+        // Skip auto refresh if popover is visible to avoid disrupting user interaction
+        if (!this.isPopoverVisible) {
+          this.getAsset(false);
+        } else {
+          if (this.popoverAssetCode) {
+            this.loadLatestReading(this.popoverAssetCode);
+          }
+        }
       });
   }
 
@@ -314,5 +347,6 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.isAlive = false;
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
+    this.popoverHiddenSubscription?.unsubscribe();
   }
 }
