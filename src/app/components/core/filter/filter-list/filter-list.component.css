@@ -61,3 +61,11 @@ a {
 .plugin-name {
   font-weight: initial;
 }
+
+.accordion-icon {
+  transition: transform 0.2s ease;
+}
+
+.accordion.card.is-active .accordion-icon {
+  transform: rotate(90deg);
+}

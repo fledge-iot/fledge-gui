@@ -21,6 +21,7 @@
 .readings-count {
   vertical-align: middle;
   max-width: max-content;
+  text-align: right;
 }
 
 #deprecate_event_div {

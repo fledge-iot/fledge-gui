@@ -1,5 +1,5 @@
 <div class="container is-fluid">
-  <nav class="breadcrumb readings-breadcrumb" aria-label="breadcrumbs">
+  <nav class="breadcrumb has-text-weight-medium readings-breadcrumb" aria-label="breadcrumbs">
     <ul>
       <li class="is-active"><a>{{service?.name}}</a></li>
       <li class="is-active">
@@ -10,7 +10,8 @@
   <button type="button" *ngIf="!isAlive" (click)="reload()" title="Reload" class="button is-small" id="refresh-check">
     <i class="bi bi-md bi-arrow-repeat" aria-hidden="true"></i>
   </button>
-  <table class="table is-responsive mt-6 ml-2">
+  <hr class="my-2">
+  <table class="table is-responsive ml-2">
     <thead>
       <tr>
         <th class="align-th">Asset</th>
