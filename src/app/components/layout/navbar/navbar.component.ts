@@ -11,8 +11,8 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { sortBy } from 'lodash';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { of, Subject, Subscription } from 'rxjs';
+import { switchMap, debounceTime, takeUntil } from 'rxjs/operators';
 import {
   AlertService, AuthService, ConnectedServiceStatus, PingService,
   ProgressBarService, ServicesApiService, RolesService, SchedulesService
@@ -52,6 +52,11 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   isManualRefresh = false;
   servicesToShow = ['northbound', 'southbound', 'dispatcher', 'notification', 'management', 'bucketstorage'];
   schedulesData = [];
+
+  hoverTrigger$ = new Subject<void>();
+  hoverSubscription!: Subscription;
+  hasFetched = false;
+  resetTimeout: any;
 
   @ViewChild(ShutdownModalComponent, { static: true }) child: ShutdownModalComponent;
   @ViewChild(RestartModalComponent, { static: true }) childRestart: RestartModalComponent;
@@ -96,6 +101,17 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
     this.onResize();
+    this.hoverSubscription = this.hoverTrigger$
+      .pipe(
+        debounceTime(300),
+        switchMap(() => {
+          if (this.hasFetched) return of(null);
+          this.hasFetched = true;
+          this.getServiceStatus();
+          return of(null);
+        })
+      )
+      .subscribe();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -136,6 +152,21 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
     this.changeDetectorRef.detectChanges();
+  }
+
+  public triggerServiceStatus(): void {
+    // Clear any existing reset timeout
+    if (this.resetTimeout) {
+      clearTimeout(this.resetTimeout);
+    }
+    this.hoverTrigger$.next();
+  }
+
+  public resetServiceStatusFetch(): void {
+    // Set a timeout to reset the flag after user leaves hover area
+    this.resetTimeout = setTimeout(() => {
+      this.hasFetched = false;
+    }, 500); // 500ms delay before allowing next API call
   }
 
   public getServiceStatus() {
@@ -346,6 +377,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     clearInterval(this.timer);
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
+    this.hoverSubscription.unsubscribe();
   }
 
   toggleClick() {
