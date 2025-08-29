@@ -28,6 +28,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
   private isPopoverVisible = false;
   private popoverAssetCode: string | null = null;
   private popoverHiddenSubscription: any = null;
+  private hoverTimeout: any = null;
+  private HOVER_DELAY = 300; // ms
 
   @ViewChild(ReadingsGraphComponent, { static: true }) readingsGraphComponent: ReadingsGraphComponent;
 
@@ -167,6 +169,37 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   public hidePopoverWithDelay(popover: PopoverComponent): void {
     popover.hideWithDelay();
+  }
+
+  /**
+   * Handles mouse enter with delay - only loads data and shows popover if user hovers for HOVER_DELAY ms
+   */
+  public onHoverEnter(triggerElement: HTMLElement, assetCode: string, popover: PopoverComponent): void {
+    // Clear any existing timeout
+    if (this.hoverTimeout) {
+      clearTimeout(this.hoverTimeout);
+    }
+
+    // Set timeout to show popover after delay
+    this.hoverTimeout = setTimeout(() => {
+      this.loadLatestReading(assetCode);
+      this.showPopover(triggerElement, assetCode, popover);
+      this.hoverTimeout = null;
+    }, this.HOVER_DELAY);
+  }
+
+  /**
+   * Handles mouse leave - cancels pending hover actions and hides popover
+   */
+  public onHoverLeave(popover: PopoverComponent): void {
+    // Cancel pending hover timeout if user leaves before delay completes
+    if (this.hoverTimeout) {
+      clearTimeout(this.hoverTimeout);
+      this.hoverTimeout = null;
+    }
+
+    // Hide popover with its own delay
+    this.hidePopoverWithDelay(popover);
   }
 
   getAssetReadings(assetCode, recordCount) {
@@ -327,5 +360,11 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
     this.popoverHiddenSubscription?.unsubscribe();
+
+    // Clear hover timeout to prevent memory leaks
+    if (this.hoverTimeout) {
+      clearTimeout(this.hoverTimeout);
+      this.hoverTimeout = null;
+    }
   }
 }

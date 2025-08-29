@@ -57,8 +57,8 @@
                   <td>
                     <div class="popover-trigger-wrapper">
                       <a class="is-pulled-right popover-trigger" #popoverTrigger
-                        (mouseenter)="loadLatestReading(asset.assetCode); showPopover(popoverTrigger, asset.assetCode, assetPopover)"
-                        (mouseleave)="hidePopoverWithDelay(assetPopover)">
+                        (mouseenter)="onHoverEnter(popoverTrigger, asset.assetCode, assetPopover)"
+                        (mouseleave)="onHoverLeave(assetPopover)">
                         <span class="icon is-small">
                           <i class="bi bi-lightning-charge" aria-hidden="true"></i>
                         </span>
