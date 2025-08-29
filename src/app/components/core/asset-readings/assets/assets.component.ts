@@ -107,42 +107,27 @@ export class AssetsComponent implements OnInit, OnDestroy {
           if (data && data.length > 0) {
             const latestReading = data[0];
             this.latestReadings[assetCode] = {
-              reading: latestReading.reading || {},
-              timestamp: latestReading.timestamp || new Date().toISOString()
+              reading: latestReading.reading,
+              timestamp: latestReading.timestamp
             };
           }
         },
         error => {
           console.log('error fetching latest reading', error);
-          // Provide fallback data in case of error
-          this.latestReadings[assetCode] = {
-            reading: { error: "Unable to load" },
-            timestamp: "N/A"
-          };
         }
       );
   }
 
   public getLatestReadingData(assetCode: string): any {
     return this.latestReadings[assetCode] || {
-      reading: { loading: "..." },
-      timestamp: "Loading..."
+      reading: {},
+      timestamp: ''
     };
   }
 
   public getLatestReadingTimestamp(assetCode: string): string {
     const data = this.getLatestReadingData(assetCode);
-    return data.timestamp || 'Loading...';
-  }
-
-  public getLatestReadingValues(assetCode: string): string {
-    const data = this.getLatestReadingData(assetCode);
-    if (data.reading && typeof data.reading === 'object') {
-      return Object.keys(data.reading)
-        .map(key => `${key} ${data.reading[key]}`)
-        .join(', ');
-    }
-    return 'Loading...';
+    return data.timestamp;
   }
 
   public getLatestReadingProperties(assetCode: string): { key: string, value: any }[] {
@@ -156,13 +141,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
           value: data.reading[key]
         });
       });
-    } else if (!data.reading || Object.keys(data.reading).length === 0) {
-      properties.push({
-        key: 'No readings',
-        value: 'available'
-      });
     }
-
     return properties;
   }
 
