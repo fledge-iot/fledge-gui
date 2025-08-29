@@ -357,6 +357,11 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
     this.router.navigate(['flow/editor', this.from, 'add'], { queryParams: { source: 'flowEditor' } });
   }
 
+  openDebugPage() {
+    this.flowEditorService.openDebuggerInQuickview.next({ openDebuggerPage: true, debugger: this.data['debug'], serviceName: this.service.name });
+  }
+
+
   showConfigurationInQuickview() {
     if (this.isServiceNode) {
       this.flowEditorService.showItemsInQuickview.next({ showPluginConfiguration: true, serviceName: this.service.name });

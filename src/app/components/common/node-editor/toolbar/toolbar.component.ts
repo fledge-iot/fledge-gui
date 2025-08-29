@@ -44,4 +44,8 @@ export class ToolbarComponent {
   deleteAction() {
     this.delete.emit(true);
   }
+
+  debugService() {
+    this.debug.emit(true);
+  }
 }

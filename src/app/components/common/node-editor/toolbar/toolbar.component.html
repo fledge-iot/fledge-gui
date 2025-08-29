@@ -25,4 +25,12 @@
     <span class="tooltiptext is-size-9"><strong>Delete</strong><br />Press delete</span>
     <i class="bi bi-trash"></i>
   </button>
+  <ng-container *ngIf="debuggerState == 'Attached'">
+    <hr class="m-0">
+    <button type="button" (click)="debugService()" class="button is-small custom-tooltip" [attr.data-show]="'quickview'"
+      [attr.data-target]="'quickviewDefault'">
+      <span class="tooltiptext"><strong>Debug</strong><br />Attach Debugger</span>
+      <i class="bi bi-bug bi-sm"></i>
+    </button>
+  </ng-container>
 </div>
