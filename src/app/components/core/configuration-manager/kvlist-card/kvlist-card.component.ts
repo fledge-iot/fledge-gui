@@ -25,9 +25,10 @@ export class KvlistCardComponent {
     public rolesService: RolesService) {
   }
 
-  toggleCard(i) {
-    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
-    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
+  toggleCard() {
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + this.i + '-' + this.from);
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + this.i + '-' + this.from);
+
     if (cardBody.classList.contains('is-hidden')) {
       cardBody.classList.remove('is-hidden');
       cardHeader.classList.add('is-hidden');
