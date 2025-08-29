@@ -13,7 +13,7 @@
   width: 100%;
 }
 
-.menu-toogle-icon {
+.menu-toggle-icon {
   display: inline-flex;
   height: 0.8em;
   width: 0.8em;
@@ -23,7 +23,6 @@
 
 .disabled {
   opacity: .7;
-  pointer-events: none;
 }
 
 ul:has(section.disabled) {
