@@ -71,7 +71,6 @@
 
   .disabled {
     opacity: .7;
-    pointer-events: none;
   }
 
   .filters {

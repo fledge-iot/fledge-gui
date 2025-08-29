@@ -93,8 +93,10 @@ export class ListTypeConfigurationComponent implements OnInit {
     return [...this.listItems.controls]; // returns a new reference
   }
 
-  trackByIndex(index: number, _item: AbstractControl): number {
-    return index;
+  trackByIndex(index: number, item: AbstractControl): any {
+    // Use the form control reference as the tracking key to prevent DOM reuse issues
+    // This ensures each form control gets its own DOM element that won't be reused
+    return item;
   }
 
   initListItem(isPrepend: boolean, v: any = '') {
@@ -184,6 +186,9 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.initialProperties.splice(index, 1);
     this.items.splice(index, 1);
     this.setChildConfigFormValidity();
+
+    // Force change detection to ensure proper DOM cleanup
+    this.cdRef.detectChanges();
   }
 
   onControlValueChanges(): Subscription {
@@ -251,6 +256,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   expandCollapseSingleItem(i: number, isExpand: boolean, scrollIntoView = false) {
     let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
     let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
+
     if (isExpand) {
       cardHeader.classList.add('is-hidden');
       cardBody.classList.remove('is-hidden');

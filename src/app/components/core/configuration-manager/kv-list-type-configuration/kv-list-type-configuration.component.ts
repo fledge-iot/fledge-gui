@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { filter } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
@@ -49,6 +49,12 @@ export class KvListTypeConfigurationComponent implements OnInit {
 
   get kvListItems() {
     return this.kvListItemsForm.get('kvListItems') as FormArray;
+  }
+
+  trackByIndex(index: number, item: AbstractControl): any {
+    // Use the form control reference as the tracking key to prevent DOM reuse issues
+    // This ensures each form control gets its own DOM element that won't be reused
+    return item;
   }
 
   initListItem(isPrepend, param) {
@@ -131,6 +137,9 @@ export class KvListTypeConfigurationComponent implements OnInit {
     this.initialProperties.splice(index, 1);
     this.items.splice(index, 1);
     this.setChildConfigFormValidity();
+
+    // Force change detection to ensure proper DOM cleanup
+    this.cdRef.detectChanges();
   }
 
   onControlValueChanges(): void {
