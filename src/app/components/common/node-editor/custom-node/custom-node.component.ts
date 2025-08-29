@@ -75,7 +75,6 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
   fetchedService;
   nodeId = '';
   pluginVersion = '';
-  timeoutId;
 
   previousState: boolean;  // To store previous state of checkbox
 
@@ -470,23 +469,6 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
 
   getAssetReadings() {
     this.flowEditorService.exportReading.next({ serviceName: this.service.name });
-  }
-
-  openDropdown() {
-    this.timeoutId = setTimeout(() => {
-      this.flowEditorService.nodeDropdownClick.next({ nodeId: this.nodeId });
-      const dropDown = document.querySelector('#nodeDropdown-' + this.nodeId);
-      dropDown.classList.add('is-active');
-    }, 250);
-  }
-
-
-  closeDropdown() {
-    clearTimeout(this.timeoutId);
-    const dropDown = document.querySelector('#nodeDropdown-' + this.nodeId);
-    if (dropDown.classList.contains('is-active')) {
-      dropDown.classList.remove('is-active');
-    }
   }
 
   ngOnDestroy() {
