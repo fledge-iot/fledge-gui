@@ -474,6 +474,15 @@ div:has(div.modal-disabled) {
   display: none;
 }
 
+.disabled {
+  pointer-events: none;
+}
+
+.disabled-node .plus-icon {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
 /* ================================================
    SPECIFIC COMPONENT STYLES
    ================================================ */

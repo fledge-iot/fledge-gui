@@ -2,11 +2,6 @@ table tr td {
     vertical-align: middle;
 }
 
-.is-text {
-    padding-left: 0;
-    padding-right: 0;
-}
-
 .pipeline-name {
     color: #3273dc;
     text-decoration: none;
