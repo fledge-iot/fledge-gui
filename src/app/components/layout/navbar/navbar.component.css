@@ -94,7 +94,6 @@
 .disabled {
   opacity: .95;
   background-color: whitesmoke;
-  pointer-events: none;
 }
 
 .help {
