@@ -56,7 +56,7 @@
         </span>
       </div>
       <div class="is-custom-center">
-        <span class="help-text">{{notification.notificationType | titlecase}}</span>
+        <span class="help-text">{{notification.notificationType}}</span>
       </div>
       <div class="is-pulled-right">
         <div id="nodeDropdown-{{nodeId}}" class="dropdown" *ngIf="!source || rolesService.hasEditPermissions()"

@@ -203,7 +203,7 @@
                     <div class="dropdown-trigger">
                       <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
                         type="button" (click)="toggleDropDown('notify-type-dropdown')">
-                        <span>{{ getNotificationTypeLabel(notificationType) }}</span>
+                        <span>{{ notificationType }}</span>
                         <span class="icon is-small">
                           <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                         </span>
@@ -215,7 +215,7 @@
                           *ngFor="let type of notificationTypeList; trackBy: trackByNotificationTypeValue"
                           (click)="toggleDropDown('notify-type-dropdown');setNotificationType(type)"
                           [attr.data-value]="type">
-                          {{ getNotificationTypeLabel(type) }}
+                          {{ type }}
                         </a>
                       </div>
                     </div>

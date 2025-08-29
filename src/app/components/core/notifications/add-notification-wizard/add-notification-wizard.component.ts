@@ -430,13 +430,6 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     this.notificationType = type;
   }
 
-  public getNotificationTypeLabel(type: string): string {
-    if (!type) { return ''; }
-    const trimmed = ('' + type).trim();
-    if (trimmed.length === 0) { return ''; }
-    return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
-  }
-
   public trackByNotificationTypeValue(index: number, type: string): string {
     return type;
   }
