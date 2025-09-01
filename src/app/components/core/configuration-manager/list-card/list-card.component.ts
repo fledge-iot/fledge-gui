@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { RolesService } from '../../../../services';
+import { PopoverComponent } from '../../../common/popover/popover.component';
 
 @Component({
   selector: 'app-list-card',
@@ -27,9 +28,10 @@ export class ListCardComponent {
     public rolesService: RolesService) {
   }
 
-  toggleCard(i) {
-    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
-    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
+  toggleCard() {
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + this.i + '-' + this.from);
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + this.i + '-' + this.from);
+
     if (cardBody.classList.contains('is-hidden')) {
       cardBody.classList.remove('is-hidden');
       cardHeader.classList.add('is-hidden');
@@ -53,15 +55,22 @@ export class ListCardComponent {
   }
 
   extractItemValue(value) {
-    let itemValue = {};
+    let itemProperties = [];
     for (let [key, val] of Object.entries(value)) {
       let itemKey = this.configuration.properties[key]?.displayName || key;
-      itemValue[itemKey] = val;
+      itemProperties.push({
+        label: itemKey,
+        value: val || '' // Handle empty values
+      });
     }
-    let jsonString = JSON.stringify(itemValue, null, 2) // Format with indentation and newlines
-      .replace(/[{}"]/g, '')  // Remove {, }, and "
-      .replace(/:/g, ': ')     // Add space after :
-      .replace(/,/g, ', ');    // Add space after ,
-    return jsonString;
+    return itemProperties;
+  }
+
+  showPopover(triggerElement: HTMLElement, popover: PopoverComponent): void {
+    popover.show(triggerElement);
+  }
+
+  hidePopoverWithDelay(popover: PopoverComponent): void {
+    popover.hideWithDelay();
   }
 }
