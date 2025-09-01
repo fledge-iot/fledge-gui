@@ -9,8 +9,8 @@
     <div *ngIf="!isListView" class="btn-panel-container is-flex-direction-row-reverse">
       <div class="btn-panel upper-btn-panel">
         <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm" [isListView]="isListView"
-          (addnewItem)="addListItem(true)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
-          (importFile)="openModal()" (exportFile)="openExportFileModal()"
+          (addnewItem)="addListItem(true)" (expandAll)="expandCollapseAllItems(true)"
+          (collapseAll)="expandCollapseAllItems(false)" (importFile)="openModal()" (exportFile)="openExportFileModal()"
           [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)" />
       </div>
     </div>

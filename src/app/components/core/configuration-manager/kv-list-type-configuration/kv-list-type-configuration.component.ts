@@ -461,12 +461,30 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
     this.cdRef.markForCheck();
   }
 
-  expandAllItems() {
-    // For object items, this would expand all cards
+  expandCollapseAllItems(isExpand: boolean) {
+    for (let i = 0; i < this.kvListItems.length; i++) {
+      this.expandCollapseSingleItem(i, isExpand);
+    }
   }
 
-  collapseAllItems() {
-    // For object items, this would collapse all cards
+  expandCollapseSingleItem(i: number, isExpand: boolean, scrollIntoView = false) {
+    let cardHeader = document.getElementById('card - header -' + this.configuration.key + '-' + i + '-' + this.from);
+    let cardBody = document.getElementById('card - content -' + this.configuration.key + '-' + i + '-' + this.from);
+    if (isExpand) {
+      cardHeader.classList.add('is - hidden');
+      cardBody.classList.remove('is - hidden');
+      if (scrollIntoView) {
+        let input: HTMLElement = cardBody.querySelector('.input.is - small');
+        if (input) {
+          input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          input.focus();
+        }
+      }
+    }
+    else {
+      cardHeader.classList.remove('is - hidden');
+      cardBody.classList.add('is - hidden');
+    }
   }
 
   // Properties for debugging and compatibility
