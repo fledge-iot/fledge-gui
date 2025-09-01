@@ -9,8 +9,8 @@
     <div *ngIf="!isListView" class="btn-panel-container is-flex-direction-row-reverse">
       <div class="btn-panel upper-btn-panel">
         <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm" [isListView]="isListView"
-          (addnewItem)="addListItem(true)" (expandAll)="expandCollapseAllItems(true)"
-          (collapseAll)="expandCollapseAllItems(false)" (importFile)="openModal()" (exportFile)="openExportFileModal()"
+          (addnewItem)="addListItem(true)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+          (importFile)="openModal()" (exportFile)="openExportFileModal()"
           [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)" />
       </div>
     </div>
@@ -101,15 +101,6 @@
       </ng-container>
 
       <ng-container *ngIf="isListView">
-        <div class="btn-panel-container is-flex-direction-row-reverse">
-          <div class="btn-panel upper-btn-panel">
-            <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm" [isListView]="isListView"
-              (addnewItem)="addListItem(true)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
-              (importFile)="openModal()" (exportFile)="openExportFileModal()"
-              [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)" />
-          </div>
-        </div>
-
         <app-list-table [configuration]="configuration" [listItemsForm]="kvListItemsForm"
           [initialProperties]="initialProperties" [from]="from" [group]="group" [items]="items" [listType]="'kvlist'"
           [validConfigurationForm]="validConfigurationForm"
@@ -131,13 +122,20 @@
       </div>
     </div>
   </ng-container>
+
+  <!-- Add button panel at bottom for object items when there are items -->
+  <ng-container *ngIf="configuration.items === 'object' && kvListItems.length > 0">
+    <div class="btn-panel-container is-flex-direction-row">
+      <div class="btn-panel lower-btn-panel">
+        <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm" [isListView]="isListView"
+          (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+          (importFile)="openModal()" (exportFile)="openExportFileModal()"
+          [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)" />
+      </div>
+    </div>
+  </ng-container>
 </div>
 
-<!-- Import/Export Modals -->
-<app-file-import-modal #fileImportModal [configuration]="configuration" (appendFile)="onAppendFile($event)"
-  (overrideFile)="onOverrideFile($event)">
-</app-file-import-modal>
-
-<app-file-export-modal #fileExportModal [configuration]="configuration" [data]="exportData"
-  [categoryName]="categoryName">
-</app-file-export-modal>
+<app-file-import-modal (appendFile)="onAppendFile($event)" (overrideFile)="onOverrideFile($event)"
+  [configuration]="configuration" />
+<app-file-export-modal [data]="exportData" [configuration]="configuration" [categoryName]="categoryName" />
