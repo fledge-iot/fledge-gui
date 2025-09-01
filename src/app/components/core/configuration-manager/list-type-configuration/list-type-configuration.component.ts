@@ -153,6 +153,12 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
     console.log(`⏱️ LIST: All form controls created in ${(controlCreationEndTime - controlCreationStartTime).toFixed(2)}ms (${((controlCreationEndTime - controlCreationStartTime) / 1000).toFixed(3)}s)`);
   }
 
+  trackByIndex(index: number, item: AbstractControl): any {
+    // Use the form control reference as the tracking key to prevent DOM reuse issues
+    // This ensures each form control gets its own DOM element that won't be reused
+    return item;
+  }
+
   private createItemControl(item: any): AbstractControl {
     if (this.configuration.items === 'object') {
       // Create object configuration for form group
@@ -309,10 +315,6 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges, OnDest
 
     // Force final render
     this.cdRef.detectChanges();
-  }
-
-  trackByIndex(index: number, item: any): number {
-    return index;
   }
 
   trackByFormControl(index: number, item: any): any {

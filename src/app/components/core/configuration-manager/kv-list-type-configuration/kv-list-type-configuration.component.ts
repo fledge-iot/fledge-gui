@@ -194,6 +194,21 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
     if (!this.kvListItems || this.kvListItems.length === 0) {
       return {};
     }
+  }
+
+  trackByIndex(index: number, item: AbstractControl): any {
+    // Use the form control reference as the tracking key to prevent DOM reuse issues
+    // This ensures each form control gets its own DOM element that won't be reused
+    return item;
+  }
+
+  initListItem(isPrepend, param) {
+    if (this.configuration.items == 'enumeration') {
+      return this.fb.group({
+        key: [param?.key, [Validators.required, CustomValidator.nospaceValidator]],
+        value: [param?.value ? param?.value : this.configuration.options?.[0]]
+      });
+    }
 
     const result = {};
     this.kvListItems.controls.forEach(control => {
@@ -277,10 +292,6 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
 
     // Force final render
     this.cdRef.detectChanges();
-  }
-
-  trackByIndex(index: number, item: any): number {
-    return index;
   }
 
   // Modal methods

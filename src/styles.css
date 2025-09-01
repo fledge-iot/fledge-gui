@@ -54,6 +54,12 @@ body,
    BULMA COMPONENT OVERRIDES
    ================================================ */
 
+/* bulma-toast delete button overlap */
+.notification .delete {
+  top: 0.5rem;
+  right: 0.2rem;
+}
+
 /* Button overrides */
 .button {
   box-shadow: none !important;
@@ -466,6 +472,15 @@ div:has(div.modal-disabled) {
 
 .is-hidden {
   display: none;
+}
+
+.disabled {
+  pointer-events: none;
+}
+
+.disabled-node .plus-icon {
+  pointer-events: none;
+  opacity: 0.4;
 }
 
 /* ================================================

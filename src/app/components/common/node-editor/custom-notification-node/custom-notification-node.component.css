@@ -147,15 +147,6 @@
   color: #dab600;
 }
 
-.disabled-node .plus-icon {
-  pointer-events: none;
-  opacity: 0.4;
-}
-
-.disabled {
-  pointer-events: none;
-}
-
 :host:has(div.disabled-node) {
   background: whitesmoke;
   cursor: not-allowed !important;
@@ -179,4 +170,13 @@
 .btn-icon:has(.bi-gear-wide-connected):focus {
   outline: none;
   box-shadow: none;
+}
+
+.dropdown.is-hoverable:hover .dropdown-menu {
+  display: block;
+}
+
+.dropdown-menu,
+.dropdown-content {
+  pointer-events: auto;
 }
