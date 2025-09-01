@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import { RolesService } from '../../../../services';
+import { PopoverComponent } from '../../../common/popover/popover.component';
 
 @Component({
   selector: 'app-kvlist-card',
@@ -56,15 +57,22 @@ export class KvlistCardComponent {
   }
 
   extractItemValue(value) {
-    let itemValue = {};
+    let itemValueArray = [];
     for (let [key, val] of Object.entries(value)) {
       let itemKey = this.configuration.properties[key]?.displayName || key;
-      itemValue[itemKey] = val;
+      itemValueArray.push({
+        label: itemKey,
+        value: val
+      });
     }
-    let jsonString = JSON.stringify(itemValue, null, 2) // Format with indentation and newlines
-      .replace(/[{}"]/g, '')  // Remove {, }, and "
-      .replace(/:/g, ': ')     // Add space after :
-      .replace(/,/g, ', ');    // Add space after ,
-    return jsonString;
+    return itemValueArray;
+  }
+
+  showPopover(triggerElement: HTMLElement, popover: PopoverComponent): void {
+    popover.show(triggerElement);
+  }
+
+  hidePopoverWithDelay(popover: PopoverComponent): void {
+    popover.hideWithDelay();
   }
 }

@@ -39,6 +39,7 @@ import { DebuggerReadingsComponent } from './components/core/debugger/debugger-r
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { BufferActionButtonsComponent } from './components/core/debugger/buffer-action-buttons/buffer-action-buttons.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { PopoverModule } from './components/common/popover/popover.module';
 
 @NgModule({
   imports: [
@@ -51,7 +52,8 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     ReactiveFormsModule,
     DragDropModule,
     ScrollingModule,
-    StaticConfigurationComponent
+    StaticConfigurationComponent,
+    PopoverModule
   ],
   declarations: [
     ConfigurationGroupComponent,
