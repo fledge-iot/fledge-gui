@@ -81,7 +81,7 @@
                     <small>{{svc?.plugin?.version}}</small>
                   </td>
                   <td class="align-content content-pad" *ngIf="southboundServices | hasAttachedDebugger">
-                    <span *ngIf="svc.debug.egress == 'Isolated'"
+                    <span *ngIf="svc?.debug?.egress == 'Isolated'"
                       class="icon is-small tooltip has-tooltip-right has-tooltip-arrow"
                       [attr.data-tooltip]="'This will stop writing readings to Storage.'">
                       <i class="bi bi-database-slash"></i>

@@ -106,13 +106,13 @@
               [attr.data-tooltip]="showEgressDataTooltip()">
               <button [disabled]="!rolesService.hasEditPermissions()" class="button is-small is-link is-outlined"
                 (click)="toggleEgressState()">
-                <ng-container *ngIf="debuggerData.debug.egress == 'Storage'">
+                <ng-container *ngIf="debuggerData?.debug?.egress == 'Storage'">
                   <span class="icon is-small">
                     <i class="bi bi-database-slash"></i>
                   </span>
                   <span>Isolate Storage</span>
                 </ng-container>
-                <ng-container *ngIf="debuggerData.debug.egress == 'Isolated'">
+                <ng-container *ngIf="debuggerData?.debug?.egress == 'Isolated'">
                   <span class="icon is-small">
                     <i class="bi bi-database"></i>
                   </span>
@@ -127,13 +127,13 @@
               [attr.data-tooltip]="showIngestDataTooltip()">
               <button [disabled]="!rolesService.hasEditPermissions()" class="button is-small is-link is-outlined"
                 (click)="toggleIngressState()">
-                <ng-container *ngIf="debuggerData.debug.ingress == 'Running'">
+                <ng-container *ngIf="debuggerData?.debug?.ingress == 'Running'">
                   <span class="icon is-small">
                     <i class="bi bi-pause-circle"></i>
                   </span>
                   <span>Suspend Ingress</span>
                 </ng-container>
-                <ng-container *ngIf="debuggerData.debug.ingress == 'Suspended'">
+                <ng-container *ngIf="debuggerData?.debug?.ingress == 'Suspended'">
                   <span class="icon is-small">
                     <i class="bi bi-play-circle"></i>
                   </span>
@@ -147,13 +147,13 @@
               <button [disabled]="!rolesService.hasEditPermissions()" class="button is-small is-link is-outlined"
                 (click)="toggleEgressState()">
                 <ng-container>
-                  <ng-container *ngIf="debuggerData.debug.egress == 'Storage'">
+                  <ng-container *ngIf="debuggerData?.debug?.egress == 'Storage'">
                     <span class="icon is-small">
                       <i class="bi bi-cloud-arrow-up"></i>
                     </span>
                     <span>Isolate Sending</span>
                   </ng-container>
-                  <ng-container *ngIf="debuggerData.debug.egress == 'Isolated'">
+                  <ng-container *ngIf="debuggerData?.debug?.egress == 'Isolated'">
                     <span class="icon is-small">
                       <i class="bi bi-cloud-slash"></i>
                     </span>
