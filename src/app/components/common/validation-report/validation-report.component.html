@@ -1,0 +1,35 @@
+<div class="validation-report" [class.minimized]="minimized" *ngIf="results || loading || error">
+  <div class="validation-title">
+    <span>Validation Report</span>
+    <div class="actions">
+      <button class="button is-white is-small" title="Minimize" (click)="toggleMinimize()">
+        <i class="bi" [ngClass]="minimized ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+      </button>
+      <button class="button is-white is-small" title="Close" (click)="onClose()">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+  </div>
+  <div class="validation-list" *ngIf="!minimized">
+    <div *ngIf="loading" class="validation-item">Running tests...</div>
+    <div *ngIf="error" class="validation-item">{{ error }}</div>
+    <div *ngFor="let key of (results | keyvalue)" class="validation-item">
+      <div class="item-header" (click)="toggleReport(key.key)">
+        <span class="status-icon"
+          [ngClass]="{'pass': key.value?.result === 'pass', 'fail': key.value?.result === 'fail'}"></span>
+        <span class="item-text">{{ key.value?.description || key.key }}</span>
+      </div>
+      <div class="item-details" *ngIf="expandedTests[key.key]">
+        <div *ngIf="key.value?.detail?.reason" class="detail-text">Reason: {{key.value.detail.reason}}</div>
+        <div *ngIf="key.value?.details?.reading" class="detail-text">Sample Reading: {{
+          key.value.details.reading | json }}</div>
+        <div class="values" *ngIf="key.value?.values">
+          <div *ngFor="let v of key.value.values" class="value-row">
+            <span class="value-key">{{ (v | keyvalue)[0].key }}:</span>
+            <span class="value-val">{{ (v | keyvalue)[0].value }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

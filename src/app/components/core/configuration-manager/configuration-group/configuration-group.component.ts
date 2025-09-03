@@ -44,6 +44,10 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   advancedGroups = [];
   securityGroups = [];
   groupTabs = [];
+  // Validation state
+  isValidating = false;
+  validationResults: any = null;
+  expandedTests: { [key: string]: boolean } = {};
 
   constructor(
     public developerFeaturesService: DeveloperFeaturesService,
@@ -269,6 +273,44 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     if (this.developerFeaturesService.getDeveloperFeatureControl() && this.pages.includes(this.from)) {
       this.groupTabs.push({ key: 'Developer', name: 'Developer' });
     }
+  }
+
+  onValidateClick() {
+    if (!this.category || !this.category.config) {
+      return;
+    }
+    const payload = this.buildValidationPayload();
+    this.isValidating = true;
+    this.configService.validatePluginConfiguration(payload)
+      .subscribe(
+        (data: any) => {
+          this.validationResults = data;
+          this.isValidating = false;
+        },
+        (error) => {
+          this.isValidating = false;
+          if (error.status === 0) {
+            console.log('service down ', error);
+          } else {
+            this.alertService.error(error.statusText);
+          }
+        }
+      );
+  }
+
+  private buildValidationPayload() {
+    // Deep clone the category config and overlay any unsaved edits captured in configFormValues
+    const cloned = cloneDeep(this.category.config);
+    Object.keys(this.configFormValues || {}).forEach(k => {
+      if (cloned[k]) {
+        cloned[k].value = this.configFormValues[k];
+      }
+    });
+    return cloned;
+  }
+
+  public toggleReport(key: string) {
+    this.expandedTests[key] = !this.expandedTests[key];
   }
 
   public getChildConfigData() {

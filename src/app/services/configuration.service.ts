@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment';
 export class ConfigurationService {
 
   private CATEGORY_URL = environment.BASE_URL + 'category';
+  private VALIDATE_URL = environment.BASE_URL + 'plugin/validate';
   constructor(private http: HttpClient) { }
 
   /**
@@ -123,5 +124,16 @@ export class ConfigurationService {
     return this.http.put(this.CATEGORY_URL + '/' + categoryName, configItems).pipe(
       map(response => response),
       catchError(error => throwError(error)));
+  }
+
+  /**
+   *  PUT | /fledge/plugin/validate
+   *  Validate plugin configuration using current category contents
+   */
+  validatePluginConfiguration(payload: any) {
+    return this.http.put(this.VALIDATE_URL, payload).pipe(
+      map(response => response),
+      catchError(error => throwError(error))
+    );
   }
 }

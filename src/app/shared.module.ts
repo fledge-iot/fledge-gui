@@ -40,6 +40,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { BufferActionButtonsComponent } from './components/core/debugger/buffer-action-buttons/buffer-action-buttons.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { PopoverModule } from './components/common/popover/popover.module';
+import { ValidationReportComponent } from './components/common/validation-report/validation-report.component';
 
 @NgModule({
   imports: [
@@ -84,7 +85,8 @@ import { PopoverModule } from './components/common/popover/popover.module';
     DynamicGroupComponent,
     DebuggerComponent,
     DebuggerReadingsComponent,
-    BufferActionButtonsComponent
+    BufferActionButtonsComponent,
+    ValidationReportComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -104,7 +106,8 @@ import { PopoverModule } from './components/common/popover/popover.module';
     DynamicGroupComponent,
     DebuggerComponent,
     DebuggerReadingsComponent,
-    BufferActionButtonsComponent
+    BufferActionButtonsComponent,
+    ValidationReportComponent
   ]
 })
 export class SharedModule { }

@@ -14,6 +14,7 @@ export class TabNavigationComponent {
   @Input() sourceName: string;
   activeTab = 0;
   @Output() selectedTabEvent = new EventEmitter<any>();
+  @Output() validateConfig = new EventEmitter<void>();
 
   constructor(private cdrf: ChangeDetectorRef
   ) { }
@@ -50,6 +51,10 @@ export class TabNavigationComponent {
     this.activeTab = index;
     this.currentTab = this.tabs[index];
     this.cdrf.detectChanges();
+  }
+
+  onValidateClick() {
+    this.validateConfig.emit();
   }
 
   private scrollToActiveTab() {
