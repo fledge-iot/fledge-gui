@@ -11,8 +11,8 @@ import { Subject } from 'rxjs';
 @Component({
   selector: 'app-kv-list-type-configuration',
   templateUrl: './kv-list-type-configuration.component.html',
-  styleUrls: ['./kv-list-type-configuration.component.css']
-  // Removed OnPush for debugging
+  styleUrls: ['./kv-list-type-configuration.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDestroy {
   @Input() configuration;
@@ -75,6 +75,8 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
     }
 
     const loadStartTime = performance.now();
+    console.log(`🚀 KV-LIST: Starting to load ${this.configuration.key} configuration...`);
+
     let kvlistValue = this.configuration?.value ?? this.configuration.default ?? {};
 
     // Handle string format
@@ -92,56 +94,79 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
     }
 
     const entries = Object.entries(kvlistValue);
-    console.log(`🔑 KV-LIST: Found ${entries.length} key-value pairs for "${this.configuration.key}"`);
+    const dataParseTime = performance.now() - loadStartTime;
+    console.log(`📊 KV-LIST: Data parsing completed in ${dataParseTime.toFixed(2)}ms for ${entries.length} key-value pairs`);
 
     // Store all data
     this.allFormData = entries.map(([key, value]) => ({ key, value }));
 
-    const formCreationStartTime = performance.now();
-    // Create form controls for all items
-    this.createFormControls();
-    const formCreationEndTime = performance.now();
+    // Use requestAnimationFrame for non-blocking rendering
+    requestAnimationFrame(() => {
+      const formControlStartTime = performance.now();
 
-    console.log(`🔧 KV-LIST: Created ${this.kvListItems.controls.length} form controls`);
-    console.log(`⏱️ KV-LIST: Form controls creation took ${(formCreationEndTime - formCreationStartTime).toFixed(2)}ms (${((formCreationEndTime - formCreationStartTime) / 1000).toFixed(3)}s)`);
+      this.createFormControls();
 
-    const changeDetectionStartTime = performance.now();
-    this.cdRef.detectChanges(); // Force change detection
-    const changeDetectionEndTime = performance.now();
+      const formControlEndTime = performance.now();
+      const formControlTime = formControlEndTime - formControlStartTime;
+      console.log(`⚙️ KV-LIST: Form controls created in ${formControlTime.toFixed(2)}ms`);
 
-    const totalLoadTime = changeDetectionEndTime - loadStartTime;
-    console.log(`⏱️ KV-LIST: Change detection took ${(changeDetectionEndTime - changeDetectionStartTime).toFixed(2)}ms (${((changeDetectionEndTime - changeDetectionStartTime) / 1000).toFixed(3)}s)`);
-    console.log(`🎯 KV-LIST: Total data load and render time: ${totalLoadTime.toFixed(2)}ms (${(totalLoadTime / 1000).toFixed(3)}s) for ${entries.length} records`);
+      // Trigger change detection and measure complete render time
+      requestAnimationFrame(() => {
+        this.cdRef.markForCheck();
+
+        // Wait for next frame to ensure DOM is fully rendered
+        requestAnimationFrame(() => {
+          const totalLoadTime = performance.now() - loadStartTime;
+          const renderTime = performance.now() - formControlEndTime;
+
+          console.log(`📈 KV-LIST: Performance breakdown:
+          - Data parsing: ${dataParseTime.toFixed(2)}ms (${((dataParseTime / totalLoadTime) * 100).toFixed(1)}%)
+          - Form controls: ${formControlTime.toFixed(2)}ms (${((formControlTime / totalLoadTime) * 100).toFixed(1)}%)
+          - DOM rendering: ${renderTime.toFixed(2)}ms (${((renderTime / totalLoadTime) * 100).toFixed(1)}%)
+          - Average per item: ${(totalLoadTime / entries.length).toFixed(2)}ms`);
+        });
+      });
+    });
   }
 
   private createFormControls() {
     const formArray = this.kvListItems;
     formArray.clear();
-
-    console.log(`🔧 KV-LIST: Creating form controls for ${this.allFormData.length} items`);
     const controlCreationStartTime = performance.now();
+    console.log(`🔧 KV-LIST: Creating form controls for ${this.allFormData.length} items`);
 
-    this.allFormData.forEach((item) => {
-      const formGroup = this.createItemFormGroup(item);
-      formArray.push(formGroup);
-      this.items.push({ status: true });
+    // Reset arrays
+    this.items = [];
+    this.initialProperties = [];
 
-      // Create proper initial properties for detailed view
-      if (this.configuration.items === 'object') {
-        let objectConfig = cloneDeep(this.configuration.properties);
-        for (let [key, val] of Object.entries(item.value)) {
-          if (objectConfig[key]) {
-            objectConfig[key].value = val;
+    // Process in batches to prevent blocking
+    const batchSize = 100;
+    let processedItems = 0;
+    for (let i = 0; i < this.allFormData.length; i += batchSize) {
+      const batch = this.allFormData.slice(i, i + batchSize);
+      batch.forEach((item) => {
+        const formGroup = this.createItemFormGroup(item);
+        formArray.push(formGroup);
+        this.items.push({ status: true });
+
+        // Create proper initial properties for detailed view
+        if (this.configuration.items === 'object') {
+          let objectConfig = cloneDeep(this.configuration.properties);
+          for (let [key, val] of Object.entries(item.value)) {
+            if (objectConfig[key]) {
+              objectConfig[key].value = val;
+            }
           }
+          this.initialProperties.push(objectConfig);
+        } else {
+          this.initialProperties.push({});
         }
-        this.initialProperties.push(objectConfig);
-      } else {
-        this.initialProperties.push({});
-      }
-    });
-
+      });
+      processedItems += batch.length;
+    }
     const controlCreationEndTime = performance.now();
-    console.log(`⏱️ KV-LIST: All form controls created in ${(controlCreationEndTime - controlCreationStartTime).toFixed(2)}ms (${((controlCreationEndTime - controlCreationStartTime) / 1000).toFixed(3)}s)`);
+    const totalControlTime = controlCreationEndTime - controlCreationStartTime;
+    console.log(`✅ KV-LIST: All ${this.allFormData.length} form controls created in ${totalControlTime.toFixed(2)}ms`);
   }
 
   private createItemFormGroup(item: { key: string, value: any }): FormGroup {
@@ -181,8 +206,8 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDe
       group: this.group
     });
 
-    // Trigger change detection to update export data
-    this.cdRef.detectChanges();
+    // Use markForCheck instead of detectChanges for better performance
+    this.cdRef.markForCheck();
   }
 
   get kvListItems() {
