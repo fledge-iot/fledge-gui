@@ -9,7 +9,7 @@
       <span>Next: {{tabs[activeTab + 1]?.name}} <i class="bi bi-chevron-right"></i></span>
     </button>
   </div>
-  <div>
+  <div *ngIf="showValidate">
     <button class="button is-small is-light" type="button" (click)="onValidateClick()"
       title="Validate current configuration">Validate</button>
   </div>

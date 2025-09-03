@@ -12,6 +12,7 @@ export class TabNavigationComponent {
   @Input() tabs: string[] = [];
   @Input() from: string;
   @Input() sourceName: string;
+  @Input() showValidate: boolean = false;
   activeTab = 0;
   @Output() selectedTabEvent = new EventEmitter<any>();
   @Output() validateConfig = new EventEmitter<void>();

@@ -174,7 +174,7 @@
       <app-tab-navigation #tabNaigation
         *ngIf="groupTabs && !['notifications', 'config-manager', 'additional-services'].includes(from)" [from]="from"
         [sourceName]="sourceName" [tabs]="groupTabs" (selectedTabEvent)="selectedGroup = $event"
-        (validateConfig)="onValidateClick()"></app-tab-navigation>
+        [showValidate]="['south', 'north'].includes(from)" (validateConfig)="onValidateClick()"></app-tab-navigation>
     </div>
   </ng-template>
 </div>
