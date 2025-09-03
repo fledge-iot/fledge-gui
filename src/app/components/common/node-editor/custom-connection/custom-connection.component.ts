@@ -38,7 +38,6 @@ export class CustomConnectionComponent {
   constructor(private sharedService: SharedService) { }
 
   ngAfterViewInit() {
-    // TODO: Add connection icon position for debugger
     this.sharedService.debuggerStateSubject
       .pipe(
         takeUntil(this.destroy$),
