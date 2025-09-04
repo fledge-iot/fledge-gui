@@ -131,7 +131,7 @@ export class ConfigurationService {
    *  Validate plugin configuration using current category contents
    */
   validatePluginConfiguration(payload: any) {
-    return this.http.put(this.VALIDATE_URL, payload).pipe(
+    return this.http.put(this.VALIDATE_URL, payload, { observe: 'response' }).pipe(
       map(response => response),
       catchError(error => throwError(error))
     );

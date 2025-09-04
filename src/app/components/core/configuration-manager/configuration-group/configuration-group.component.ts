@@ -47,6 +47,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   // Validation state
   isValidating = false;
   validationResults: any = null;
+  validationError: string | null = null;
   expandedTests: { [key: string]: boolean } = {};
 
   constructor(
@@ -281,9 +282,18 @@ export class ConfigurationGroupComponent implements AfterViewInit {
     }
     const payload = this.buildValidationPayload();
     this.isValidating = true;
+    this.validationError = null;
     this.configService.validatePluginConfiguration(payload)
       .subscribe(
-        (data: any) => {
+        (resp: any) => {
+          // Handle 204 No Content as success path
+          if (resp && resp.status === 204) {
+            this.validationError = 'Nothing to validate for the current plugin configuration.';
+            this.validationResults = null;
+            this.isValidating = false;
+            return;
+          }
+          const data = resp?.body ?? resp;
           this.validationResults = data;
           this.isValidating = false;
         },

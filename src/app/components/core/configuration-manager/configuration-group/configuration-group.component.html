@@ -174,10 +174,12 @@
       <app-tab-navigation #tabNaigation
         *ngIf="groupTabs && !['notifications', 'config-manager', 'additional-services'].includes(from)" [from]="from"
         [sourceName]="sourceName" [tabs]="groupTabs" (selectedTabEvent)="selectedGroup = $event"
-        [showValidate]="['south', 'north'].includes(from)" (validateConfig)="onValidateClick()"></app-tab-navigation>
+        [showValidate]="['south', 'north','add-service-form','add-task-form'].includes(from)"
+        (validateConfig)="onValidateClick()"></app-tab-navigation>
     </div>
   </ng-template>
 </div>
 
-<app-validation-report *ngIf="validationResults || isValidating" [results]="validationResults" [loading]="isValidating"
-  (close)="validationResults = null"></app-validation-report>
+<app-validation-report *ngIf="validationResults || isValidating || validationError" [results]="validationResults"
+  [loading]="isValidating" [error]="validationError"
+  (close)="validationResults = null; validationError = null"></app-validation-report>
