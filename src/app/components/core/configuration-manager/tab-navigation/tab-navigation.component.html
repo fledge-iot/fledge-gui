@@ -10,7 +10,7 @@
     </button>
   </div>
   <div *ngIf="showValidate">
-    <button class="button is-small is-light" type="button" (click)="onValidateClick()"
+    <button class="button is-small is-ghost" type="button" (click)="onValidateClick()"
       [ngClass]="{'m-1': from == 'add-service-form' || from == 'add-task-form'}"
       title="Validate current configuration">Validate</button>
   </div>
