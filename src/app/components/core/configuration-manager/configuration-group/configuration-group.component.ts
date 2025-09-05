@@ -271,7 +271,7 @@ export class ConfigurationGroupComponent implements AfterViewInit {
 
   getGroups() {
     this.groupTabs = [...this.groups.map(g => g.group), ...this.dynamicCategoriesGroup.map(g => g.group),];
-    if (this.developerFeaturesService.getDeveloperFeatureControl() && this.pages.includes(this.from)) {
+    if (this.developerFeaturesService.getDeveloperFeatureControl() && this.pages.includes(this.from) && this.rolesService.hasEditPermissions()) {
       this.groupTabs.push({ key: 'Developer', name: 'Developer' });
     }
   }
