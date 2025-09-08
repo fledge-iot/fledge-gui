@@ -19,7 +19,7 @@
   <div class="card-content p-0" *ngIf="!minimized">
     <div class="content validation-list">
       <div *ngIf="loading" class="validation-item">Running tests...</div>
-      <div *ngIf="error" class="validation-item">{{ error }}</div>
+      <div *ngIf="error" class="validation-item p-2">{{ error }}</div>
       <div *ngFor="let key of (results | keyvalue)" class="validation-item">
         <div class="item-header" (click)="toggleReport(key.key)">
           <span class="status-icon"
