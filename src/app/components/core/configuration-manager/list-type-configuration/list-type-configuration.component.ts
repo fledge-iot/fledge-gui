@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnInit, Output, ViewChild, SimpleChanges, OnChanges } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { filter, uniqWith, isEqual, cloneDeep } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
@@ -14,11 +14,12 @@ import { Subscription } from 'rxjs';
   templateUrl: './list-type-configuration.component.html',
   styleUrls: ['./list-type-configuration.component.css']
 })
-export class ListTypeConfigurationComponent implements OnInit {
+export class ListTypeConfigurationComponent implements OnInit, OnChanges {
   @Input() configuration;
   @Input() categoryName;
   @Input() group: string = '';
   @Input() from = '';
+  @Input() fullConfiguration: any;
   @Output() changedConfig = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
   @ViewChild(FileImportModalComponent, { static: true }) fileImportModal: FileImportModalComponent;
@@ -31,6 +32,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   validConfigurationForm = true;
   listValues;
   isListView = true;
+  isListDisabled = false;
 
   @ViewChild(CdkVirtualScrollViewport, { static: false }) viewport: CdkVirtualScrollViewport;
   private valueChangeSub: Subscription;
@@ -52,6 +54,9 @@ export class ListTypeConfigurationComponent implements OnInit {
       // Show first property label as list card header
       this.listLabel = this.configuration.properties[this.firstKey]?.displayName ?? this.firstKey;
     }
+
+    this.updateListValidity();
+
     let values = this.configuration?.value ?? this.configuration.default;
     const t0 = performance.now();
     values = JSON.parse(values);
@@ -83,6 +88,12 @@ export class ListTypeConfigurationComponent implements OnInit {
     console.log(`Form creation took ${t1 - t0} ms`);
 
     this.valueChangeSub = this.onControlValueChanges();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.fullConfiguration && this.fullConfiguration) {
+      this.updateListValidity();
+    }
   }
 
   get listItems() {
@@ -218,6 +229,27 @@ export class ListTypeConfigurationComponent implements OnInit {
         })
       )
       .subscribe((processedValue) => {
+        // Update the configuration value for validity checking
+        if (this.fullConfiguration && this.configuration.key) {
+          this.fullConfiguration[this.configuration.key].value = JSON.stringify(processedValue);
+
+          // Check validity of other config items that might depend on this list's value
+          if (this.fullConfiguration) {
+            Object.keys(this.fullConfiguration).forEach(key => {
+              const config = this.fullConfiguration[key];
+              if (config.validity && key !== this.configuration.key) {
+                // Update validity expression for other config items
+                config.validityExpression = config.validity;
+                Object.keys(this.fullConfiguration).forEach(valueKey => {
+                  const valueConfig = this.fullConfiguration[valueKey];
+                  valueConfig.key = valueKey;
+                  config.validityExpression = this.configControlService.generateValidationExpression(valueConfig, config.validityExpression);
+                });
+              }
+            });
+          }
+        }
+
         this.changedConfig.emit({
           [this.configuration.key]: JSON.stringify(processedValue),
         });
@@ -330,6 +362,38 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.isListView = event.isListView;
     if (this.listItems.length == 1 && !this.isListView) {
       this.expandListItem(0); // Expand the list if only one item is present
+    }
+  }
+
+  /**
+   * Update the validity state of the list based on validity expressions
+   */
+  updateListValidity() {
+    if (this.fullConfiguration && this.configuration.validity) {
+      const tempConfig = { ...this.configuration, key: this.configuration.key };
+      this.isListDisabled = this.configControlService.validateConfigItem(this.fullConfiguration, tempConfig);
+
+      // Update form control states based on validity
+      // this.updateFormControlsState();
+    } else {
+      this.isListDisabled = false;
+    }
+  }
+
+  /**
+   * Update the enabled/disabled state of all form controls
+   */
+  updateFormControlsState() {
+    if (this.listItemsForm && this.listItems) {
+      const shouldDisable = this.isListDisabled || !this.rolesService.hasAccessPermission(this.configuration?.permissions);
+
+      this.listItems.controls.forEach(control => {
+        if (shouldDisable) {
+          control.disable({ emitEvent: false });
+        } else {
+          control.enable({ emitEvent: false });
+        }
+      });
     }
   }
 

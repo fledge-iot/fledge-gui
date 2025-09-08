@@ -11,7 +11,7 @@
           <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm" [isListView]="isListView"
             (addnewItem)="addListItem(true)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
             (importFile)="openModal()" (exportFile)="openExportFileModal()"
-            [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)" />
+            [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)" />
         </div>
       </div>
     </ng-container>
@@ -21,7 +21,8 @@
         <ng-container *ngIf="configuration.items != 'object'; else objectTemplate">
           <div>
             <div class="columns mb-0 is-variable is-1" [formGroupName]="i">
-              <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticView">
+              <ng-container
+                *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled; else staticView">
                 <div class="column is-5">
                   <input formControlName="key" placeholder="key" class="input is-small" name="type" type="text">
                   <span *ngIf="kvListItems?.controls[i]?.controls['key']?.invalid" class="help is-danger">
@@ -57,7 +58,7 @@
                 </div>
               </ng-template>
               <div class="column is-1 pl-2 pt-2 my-2 has-text-right"
-                *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
+                *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled">
                 <span class="icon">
                   <button class="delete is-small" (click)="removeListItem(i)"></button>
                 </span>
@@ -90,7 +91,7 @@
     </ng-container>
     <ng-container *ngIf="configuration.items != 'object'; else objectButtonPanel">
       <ng-container
-        *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
+        *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
         <div class="field">
           <p class="control">
             <button class="button is-small mb-1 px-0 pt-1 is-ghost" (click)="addListItem(false)"
@@ -107,7 +108,7 @@
     <ng-template #objectButtonPanel>
       <ng-container *ngIf="kvListItems.controls.length==0; else buttonPanelTemplate">
         <ng-container
-          *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
+          *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
           <div class="field">
             <span class="control">
               <div class="field has-addons">
@@ -149,13 +150,13 @@
             <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm" [isListView]="isListView"
               (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
               (importFile)="openModal()" (exportFile)="openExportFileModal()"
-              [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)" />
+              [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)" />
           </div>
         </div>
       </ng-template>
     </ng-template>
     <ng-container
-      *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
+      *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
     </ng-container>
   </div>
 </div>

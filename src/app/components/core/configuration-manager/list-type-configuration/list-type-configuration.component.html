@@ -10,7 +10,7 @@
         <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" [isListView]="isListView"
           (addnewItem)="addListItem(true)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
           (importFile)="openModal()" (exportFile)="openExportFileModal()"
-          [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
+          [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
       </div>
     </div>
   </ng-container>
@@ -41,7 +41,8 @@
             <div class="field">
               <div class="columns is-flex is-vcentered">
                 <div class="column is-11">
-                  <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticView">
+                  <ng-container
+                    *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled; else staticView">
                     <input *ngIf="configuration.items === 'integer'" class="input is-small" type="text"
                       [formControl]="ctrl" [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum"
                       autocomplete="off" appIntegerOnly />
@@ -55,7 +56,8 @@
                     <span class="help">{{ ctrl.value }}</span>
                   </ng-template>
                 </div>
-                <div class="column is-1" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
+                <div class="column is-1"
+                  *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled">
                   <button class="delete my-1 is-small" (click)="removeListItem(i)"></button>
                 </div>
               </div>
@@ -100,7 +102,7 @@
   </ng-container>
   <ng-container *ngIf="configuration.items != 'object'; else objectButtonPanel">
     <ng-container
-      *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)">
+      *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != listItems.controls.length)">
       <div class="field">
         <p class="control">
           <button class="button is-small px-0 pt-1 is-ghost" (click)="addListItem(false)"
@@ -117,7 +119,7 @@
   <ng-template #objectButtonPanel>
     <ng-container *ngIf="listItems.controls.length==0; else buttonPanelTemplate">
       <ng-container
-        *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)">
+        *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != listItems.controls.length)">
         <div class="field">
           <span class="control">
             <div class="field has-addons">
@@ -159,7 +161,7 @@
           <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" [isListView]="isListView"
             (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
             (importFile)="openModal()" (exportFile)="openExportFileModal()"
-            [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
+            [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
         </div>
       </div>
     </ng-template>
