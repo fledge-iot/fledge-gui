@@ -112,4 +112,77 @@
 /* No data message */
 .popover-content .no-data {
   padding: 1rem;
+}
+
+/* Popover image styling */
+.popover-content .popover-image {
+  display: block;
+  margin: 0 auto;
+  max-width: 200px;
+  max-height: 150px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.popover-content .popover-image:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.popover-content .image-container {
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+  margin-top: 0.25rem;
+}
+
+/* Enhanced popover content styling */
+:host ::ng-deep .popover-scrollable-content {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 1rem;
+  max-width: 400px;
+}
+
+/* Reading type indicators */
+.popover-content .has-text-info {
+  font-weight: 500;
+}
+
+.popover-content .has-text-success {
+  font-family: monospace;
+  font-size: 0.85em;
+}
+
+/* Improved table styling for readings */
+.popover-content .table {
+  background: transparent;
+  border: none;
+  margin: 0;
+}
+
+.popover-content .table td {
+  border: none;
+  padding: 0.25rem 0.5rem;
+  vertical-align: middle;
+}
+
+.popover-content .table td:first-child {
+  width: 40%;
+}
+
+.popover-content .table td:last-child {
+  word-break: break-all;
+}
+
+.popover-content .table tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Image reading header styling */
+.popover-content .image-reading-header {
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 0.25rem;
 } 

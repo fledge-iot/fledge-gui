@@ -3,6 +3,7 @@ import { orderBy, chain, map, groupBy, mapValues, omit, uniq } from 'lodash';
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeWhile, takeUntil } from 'rxjs/operators';
 import { AlertService, AssetsService, PingService, SharedService } from '../../../../services';
+import { ImageProcessingService } from '../../../../services/image-processing.service';
 import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, MAX_INT_SIZE, POLLING_INTERVAL, TIME_FORMAT } from '../../../../utils';
 import { KeyValue } from '@angular/common';
 import { DateFormatterPipe } from '../../../../pipes';
@@ -75,7 +76,8 @@ export class ReadingsGraphComponent implements OnDestroy {
     private ping: PingService,
     private sharedService: SharedService,
     private dateFormatter: DateFormatterPipe,
-    public rangeSliderService: RangeSliderService) {
+    public rangeSliderService: RangeSliderService,
+    private imageProcessingService: ImageProcessingService) {
 
     this.assetChartType = 'line';
     this.assetReadingValues = {};
@@ -312,99 +314,10 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   getImage(readings) {
-    readings.map((read) => {
-      const imageData = read.imageData.replace('__DPIMAGE:', '').split('_');
-      // Get base64 raw string
-      const base64Str_ = imageData[1];
-      // Get width, height and depth of the image and convert values into Number
-      const [width, height, depth] = imageData[0].split(',').map(Number);
-      // split image data
-
-      let arrayBufferView = null;
-      if (depth === 8) {
-        arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0));
-        read.image = this.process8bitBitmap(arrayBufferView.buffer, { width, height });
-      } else if (depth === 16) {
-        //16 bit raw image array
-        arrayBufferView = Uint16Array.from(atob(base64Str_), c => c.charCodeAt(0));
-        read.image = this.process16bitBitmap(arrayBufferView, { width, height });
-      } else if (depth === 24) {
-        // 24 bit raw image array
-        arrayBufferView = Uint8Array.from(atob(base64Str_), c => c.charCodeAt(0));
-        read.image = this.process24bitBitmap(arrayBufferView.buffer, { width, height });
-      } else {
-        console.log(`Not supported, found ${depth}`);
-        return;
-      }
-      return read;
-    });
-    return readings;
+    return this.imageProcessingService.processImageReadings(readings);
   }
 
-  process8bitBitmap(buffer, options: any = {}) {
-    const view = new Uint8ClampedArray(buffer);
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    ctx.canvas.width = options.width;
-    ctx.canvas.height = options.height;
-    const imgData = ctx.createImageData(canvas.width, canvas.height);
-    let x = 0;
-    for (let i = 0; i < imgData.data.length; i += 4) {
-      imgData.data[i] = view[x];
-      imgData.data[i + 1] = view[x];
-      imgData.data[i + 2] = view[x++];
-      imgData.data[i + 3] = 255;
-    }
 
-    ctx.putImageData(imgData, 0, 0);
-    return canvas.toDataURL("image/png");
-  }
-
-  process16bitBitmap(data, options: any = {}) {
-    const view = new Uint16Array(data.buffer);
-    // set up canvas
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    ctx.canvas.width = options.width;
-    ctx.canvas.height = options.height;
-    const imgData = ctx.createImageData(canvas.width, canvas.height);
-
-    const max_uint16 = Math.pow(2, 16) - 1;
-    const max_uint8 = Math.pow(2, 8) - 1;
-    let uint16_to_uint8 = max_uint8 / max_uint16;
-    let x = 0;
-    for (let i = 0; i < imgData.data.length; i += 4) {
-      const num_16 = (view[x + 1] * 256) + view[x];
-      const num_scaled_8 = Math.round(num_16 * uint16_to_uint8);
-      imgData.data[i] = num_scaled_8;
-      imgData.data[i + 1] = num_scaled_8;
-      imgData.data[i + 2] = num_scaled_8;
-      imgData.data[i + 3] = 255;
-      x += 2;
-    }
-
-    ctx.putImageData(imgData, 0, 0);
-    return canvas.toDataURL("image/png");
-  }
-
-  process24bitBitmap(buffer, options: any = {}) {
-    const view = new Uint8ClampedArray(buffer);
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext("2d");
-    ctx.canvas.width = options.width;
-    ctx.canvas.height = options.height;
-    const imgData = ctx.createImageData(options.width, options.height);
-    let x = 0;
-    for (let i = 0; i < imgData.data.length; i += 4) {
-      imgData.data[i + 0] = view[x++];
-      imgData.data[i + 1] = view[x++];
-      imgData.data[i + 2] = view[x++];
-      imgData.data[i + 3] = 255;
-    }
-
-    ctx.putImageData(imgData, 0, 0);
-    return canvas.toDataURL("image/png");
-  }
 
   public showAssetReadingsSummary(assetCode, limit: number = 0, time: number = 0, previous: number = 0) {
     this.isReadingsFetched = false;
@@ -443,7 +356,7 @@ export class ReadingsGraphComponent implements OnDestroy {
         });
   }
 
-  public plotReadingsGraph(assetCode, limit = null, time = null, previous:number = 0, previous_ts:string = '') {
+  public plotReadingsGraph(assetCode, limit = null, time = null, previous: number = 0, previous_ts: string = '') {
     this.zoomConfig.isZoomed = false;
     if (assetCode === '') {
       return false;
@@ -975,7 +888,7 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   moveInReadingsGraph(move: string) {
-    if(this.backwardReadingCounter === 0) {
+    if (this.backwardReadingCounter === 0) {
       this.mostRecentReadingTimestamp = this.timestamps[this.timestamps.length - 1];
     }
     if (move === "back") {
@@ -1024,12 +937,10 @@ export class ReadingsGraphComponent implements OnDestroy {
   }
 
   getImageReadingsDimensions(value) {
-    let val = value.replace('__DPIMAGE:', '');
-    let index = val.indexOf('_');
-    let dimensions = val.slice(0, index).split(',');
-    this.imageReadingsDimensions.width = dimensions[0];
-    this.imageReadingsDimensions.height = dimensions[1];
-    this.imageReadingsDimensions.depth = dimensions[2];
+    const dimensions = this.imageProcessingService.getImageDimensions(value);
+    this.imageReadingsDimensions.width = dimensions.width;
+    this.imageReadingsDimensions.height = dimensions.height;
+    this.imageReadingsDimensions.depth = dimensions.depth;
   }
 
   resetZoom() {
@@ -1044,7 +955,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     let ts_length = this.timestamps.length;
     if (ts_length != 0) {
       let graphStartingTimestamp: Date;
-      if(!this.fromMostRecent){
+      if (!this.fromMostRecent) {
         let currentTime = Date.now();
         if (!this.isAlive) {
           let timeDifference = Math.floor(currentTime - this.pauseTime);
@@ -1055,9 +966,9 @@ export class ReadingsGraphComponent implements OnDestroy {
         graphStartingTimestamp = new Date(currentTime - optedTime * 1000);
         this.graphStartTimestamp = this.dateFormatter.transform(graphStartingTimestamp.toISOString(), 'YYYY-MM-DD HH:mm:ss');
       }
-      else{
-        let latestReadingTimestamp = new Date(this.timestamps[ts_length-1]);
-        let graphStartingTimestamp = new Date(latestReadingTimestamp.valueOf() - this.optedTime*1000);
+      else {
+        let latestReadingTimestamp = new Date(this.timestamps[ts_length - 1]);
+        let graphStartingTimestamp = new Date(latestReadingTimestamp.valueOf() - this.optedTime * 1000);
         let formattedTimestamp = moment(graphStartingTimestamp.valueOf()).format('YYYY-MM-DD HH:mm:ss.SSS');
         this.graphStartTimestamp = this.dateFormatter.transform(formattedTimestamp, 'YYYY-MM-DD HH:mm:ss');
       }
@@ -1085,17 +996,17 @@ export class ReadingsGraphComponent implements OnDestroy {
     }
   }
 
-  showGraphFromMostRecentReading(){
+  showGraphFromMostRecentReading() {
     this.fromMostRecent = true;
     this.toggleBetweenMostRecentAndCurrent();
   }
 
-  showGraphFromCurrentTime(){
+  showGraphFromCurrentTime() {
     this.fromMostRecent = false;
     this.toggleBetweenMostRecentAndCurrent();
   }
 
-  toggleBetweenMostRecentAndCurrent(){
+  toggleBetweenMostRecentAndCurrent() {
     this.backwardReadingCounter = 0;
     this.pauseTime = Date.now();
 
