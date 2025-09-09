@@ -39,7 +39,7 @@
         <div class="column is-10 px-3 py-0">
           <app-show-configuration [groupConfiguration]="initialProperties[i]" [fullConfiguration]="initialProperties[i]"
             (event)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)" [from]="from"
-            [group]="group"></app-show-configuration>
+            [group]="group" [isListDisabled]="isListDisabled"></app-show-configuration>
         </div>
         <div class="column is-1 has-text-right"
           [ngClass]="{'is-invisible': !rolesService.hasAccessPermission(configuration?.permissions) || isListDisabled}">
