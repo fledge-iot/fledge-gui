@@ -18,3 +18,9 @@
     padding-top: 40px;
     padding-bottom: 48px;
 }
+
+.certificate-input-container {
+    min-height: 120px;
+    display: flex;
+    align-items: flex-start;
+}

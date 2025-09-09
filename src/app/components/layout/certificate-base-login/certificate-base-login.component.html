@@ -7,40 +7,27 @@
     </header>
     <section class="modal-card-body">
       <form [formGroup]="form" id="ngForm" (ngSubmit)="LoginWithCertificate()" novalidate>
-        <div class="columns browse-crt-modal" *ngIf="showBrowseCertificate">
+        <div class="columns">
           <div class="column">
-            <div class="field is-horizontal">
-              <div class="field-label has-text-left">
-                <label *ngIf="showBrowseCertificate" class="label">Certificate</label>
-              </div>
-              <div class="field-body">
-                <div class="field">
-                  <div class="file is-fullwidth">
-                    <label class="file-label">
-                      <span class="file-cta is-fullwidth">
-                        <span class="file-icon">
-                          <i class="bi bi-sm bi-upload"></i>
-                        </span>
-                        <input type="file" required id="certificate" (change)="onCertificateChange($event)"
-                          formControlName="certificate" #fileInput>
-                        <small *ngIf="!isCertificateExt" class="help is-danger level-left">Not a 'certificate'
-                          file.</small>
+            <div class="field">
+              <label class="label is-size-9">{{ showBrowseCertificate ? 'Certificate' : 'Certificate Content' }}</label>
+              <div class="certificate-input-container">
+                <div *ngIf="showBrowseCertificate" class="file is-fullwidth">
+                  <label class="file-label">
+                    <span class="file-cta is-fullwidth">
+                      <span class="file-icon">
+                        <i class="bi bi-sm bi-upload"></i>
                       </span>
-                    </label>
-                  </div>
+                      <input type="file" required id="certificate" (change)="onCertificateChange($event)"
+                        formControlName="certificate" #fileInput>
+                      <small *ngIf="!isCertificateExt" class="help is-danger level-left">Not a 'certificate'
+                        file.</small>
+                    </span>
+                  </label>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div *ngIf="!showBrowseCertificate" class="columns">
-          <div class="column">
-            <div class="field is-horizontal">
-              <div class="field-label is-grouped has-text-left">
-                <label class="label">Certificate Content</label>
-              </div>
-              <div class="field-body">
-                <textarea class="textarea" cols="30" formControlName="certificateText"></textarea>
+                <textarea *ngIf="!showBrowseCertificate" class="textarea" cols="30"
+                  style="height: 120px; resize: vertical;" formControlName="certificateText">
+                </textarea>
               </div>
             </div>
           </div>

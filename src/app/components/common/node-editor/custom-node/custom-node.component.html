@@ -97,8 +97,12 @@
       <ng-container *ngIf="isServiceNode && from == 'north'">
         <div class="is-flex is-justify-content-space-between is-align-items-center">
           <ng-container *ngIf="service.readingCount > 0; else emptySpan">
-            <small class="reading has-tooltip-right has-tooltip-arrow"
-              data-tooltip="Readings Sent">{{service.readingCount}}</small>
+            <div class="is-flex-grow-2">
+              <div class="reading-details">
+                <small class="reading has-tooltip-right has-tooltip-arrow"
+                  data-tooltip="Readings Sent">{{service.readingCount}}</small>
+              </div>
+            </div>
           </ng-container>
           <ng-template #emptySpan>
             <span class="reading p-1">&nbsp;</span>
