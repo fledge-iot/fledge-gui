@@ -12,6 +12,7 @@ export class PropertyConfigurationComponent {
   @Input() control: FormControl;
   @Input() configuration
   @Input() permissions = [];
+  @Input() isDisabled = false;
 
   constructor(public rolesService: RolesService) { }
 

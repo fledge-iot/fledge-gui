@@ -374,7 +374,7 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges {
       this.isListDisabled = this.configControlService.validateConfigItem(this.fullConfiguration, tempConfig);
 
       // Update form control states based on validity
-      // this.updateFormControlsState();
+      this.updateFormControlsState();
     } else {
       this.isListDisabled = false;
     }

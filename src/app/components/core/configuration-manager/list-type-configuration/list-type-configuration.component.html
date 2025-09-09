@@ -79,8 +79,8 @@
           <app-list-card *cdkVirtualFor="let ctrl of listItemControls; let i = index; trackBy: trackByIndex"
             [configuration]="configuration" [listItemsForm]="listItemsForm" [initialProperties]="initialProperties"
             [from]="from" [group]="group" [listLabel]="listLabel" [firstKey]="firstKey" [items]="items" [item]="ctrl"
-            [index]="i" (changedConfig)="getChangedConfiguration(i, $event)" (formStatusEvent)="formStatus($event, i)"
-            (removeItem)="removeListItem($event)">
+            [index]="i" [isListDisabled]="isListDisabled" (changedConfig)="getChangedConfiguration(i, $event)"
+            (formStatusEvent)="formStatus($event, i)" (removeItem)="removeListItem($event)">
           </app-list-card>
         </cdk-virtual-scroll-viewport>
         <!-- Normal *ngFor rendering for <= 3 items -->
@@ -88,8 +88,8 @@
           <app-list-card *ngFor="let ctrl of listItemControls; let i = index; trackBy: trackByIndex"
             [configuration]="configuration" [listItemsForm]="listItemsForm" [initialProperties]="initialProperties"
             [from]="from" [group]="group" [listLabel]="listLabel" [firstKey]="firstKey" [items]="items" [item]="ctrl"
-            [index]="i" (changedConfig)="getChangedConfiguration(i, $event)" (formStatusEvent)="formStatus($event, i)"
-            (removeItem)="removeListItem($event)" />
+            [index]="i" [isListDisabled]="isListDisabled" (changedConfig)="getChangedConfiguration(i, $event)"
+            (formStatusEvent)="formStatus($event, i)" (removeItem)="removeListItem($event)" />
         </ng-template>
 
       </ng-container>
@@ -97,8 +97,9 @@
   </div>
   <ng-container *ngIf="configuration.items == 'object' && isListView">
     <app-list-table [configuration]="configuration" [listItemsForm]="listItemsForm" [listType]="'list'" [from]="from"
-      [validConfigurationForm]="validConfigurationForm" (removeItem)="removeListItem($event)"
-      (addItem)="addListItem(true)" (openModalEvent)="openModal()" (exportFile)="openExportFileModal()" />
+      [validConfigurationForm]="validConfigurationForm" [isListDisabled]="isListDisabled"
+      (removeItem)="removeListItem($event)" (addItem)="addListItem(true)" (openModalEvent)="openModal()"
+      (exportFile)="openExportFileModal()" />
   </ng-container>
   <ng-container *ngIf="configuration.items != 'object'; else objectButtonPanel">
     <ng-container

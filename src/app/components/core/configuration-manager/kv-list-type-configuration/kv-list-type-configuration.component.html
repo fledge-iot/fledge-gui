@@ -78,16 +78,17 @@
           <ng-container *ngIf="!isListView">
             <app-kvlist-card [configuration]="configuration" [listItemsForm]="kvListItemsForm"
               [initialProperties]="initialProperties" [from]="from" [group]="group" [items]="items" [item]="item"
-              [index]="i" (changedConfig)="getChangedConfiguration(i, $event)" (formStatusEvent)="formStatus($event, i)"
-              (removeItem)="removeListItem($event)" />
+              [index]="i" [isListDisabled]="isListDisabled" (changedConfig)="getChangedConfiguration(i, $event)"
+              (formStatusEvent)="formStatus($event, i)" (removeItem)="removeListItem($event)" />
           </ng-container>
         </ng-template>
       </ng-container>
     </div>
     <ng-container *ngIf="configuration.items == 'object' && isListView">
       <app-list-table [configuration]="configuration" [listItemsForm]="kvListItemsForm" [listType]="'kvlist'"
-        [from]="from" [validConfigurationForm]="validConfigurationForm" (removeItem)="removeListItem($event)"
-        (addItem)="addListItem(true)" (openModalEvent)="openModal()" (exportFile)="openExportFileModal()" />
+        [from]="from" [validConfigurationForm]="validConfigurationForm" [isListDisabled]="isListDisabled"
+        (removeItem)="removeListItem($event)" (addItem)="addListItem(true)" (openModalEvent)="openModal()"
+        (exportFile)="openExportFileModal()" />
     </ng-container>
     <ng-container *ngIf="configuration.items != 'object'; else objectButtonPanel">
       <ng-container
