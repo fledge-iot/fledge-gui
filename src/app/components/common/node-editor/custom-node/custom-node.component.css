@@ -202,15 +202,6 @@
   visibility: hidden !important;
 }
 
-.disabled-node .plus-icon {
-  pointer-events: none;
-  opacity: 0.4;
-}
-
-.disabled {
-  pointer-events: none;
-}
-
 :host:has(div.disabled-node) {
   background: whitesmoke;
   cursor: not-allowed !important;
@@ -290,8 +281,22 @@
 .dropdown-content {
   overflow: visible !important;
   position: relative;
+  pointer-events: auto;
 }
 
 .has-submenu:hover {
   background-color: #f5f5f5;
+}
+
+.dropdown.is-hoverable:hover .dropdown-menu {
+  display: block;
+}
+
+.dropdown-menu {
+  pointer-events: auto;
+}
+
+.reading-details {
+  display: flex;
+  justify-content: center;
 }

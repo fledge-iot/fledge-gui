@@ -9,15 +9,15 @@
       </li>
     </ul>
   </nav>
-  <hr *ngIf="sourceName" class="my-2">
+  <hr *ngIf="sourceName && from !== 'rule-modal' && from !== 'delivery-modal'" class="my-2">
   <div class="configuration_group_wrapper">
     <nav [id]="'group_navigation_'+from + (sourceName ? '_' + sourceName : '')" class="groupNav dragscroll mouse-scroll"
-      role="tablist">
+      aria-label="Configuration Groups">
       <div [id]="'nav_contents_'+from + (sourceName ? '_' + sourceName : '')" class="nav">
         <div class="tabs" *ngIf="from !== 'config-manager'"
           [ngClass]="{'is-fullwidth': sourceName && groupTabs?.length > 1 && from !== 'notifications' && developerTabState(groupTabs), 'is-boxed': !sourceName}">
-          <ul>
-            <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup.key == g.group.key}">
+          <ul role="list">
+            <li *ngFor="let g of groups" [ngClass]="{'is-active': selectedGroup.key == g.group.key}" role="listitem">
               <h6 class="is-6 has-text-weight-medium is-size-9">
                 <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false}">
                   <span class="group-desc">
@@ -30,7 +30,8 @@
               </h6>
             </li>
             <!-- Advanced and security group -->
-            <li *ngFor="let g of dynamicCategoriesGroup" [ngClass]="{'is-active': selectedGroup.key == g.group.key}">
+            <li *ngFor="let g of dynamicCategoriesGroup" [ngClass]="{'is-active': selectedGroup.key == g.group.key}"
+              role="listitem">
               <h6 class="is-6 has-text-weight-medium is-size-9">
                 <a (click)="selectTab(g.group)" [ngClass]="{'invalid-tab': g.status == false}">
                   {{g.group.name}}
@@ -38,7 +39,7 @@
               </h6>
             </li>
             <ng-container *ngIf="!['notifications', 'additional-services'].includes(from)">
-              <li [ngClass]="{'is-active': selectedGroup?.key == 'Developer'}"
+              <li [ngClass]="{'is-active': selectedGroup?.key == 'Developer'}" role="listitem"
                 *ngIf="developerFeaturesService.getDeveloperFeatureControl() && pages.includes(from) && rolesService.hasEditPermissionsOnPage(from)">
                 <h6 class="is-6 has-text-weight-medium is-size-9">
                   <a (click)="selectTab({key: 'Developer', name: 'Developer'})">Developer</a>
@@ -49,10 +50,10 @@
         </div>
       </div>
     </nav>
-    <button (click)="left()" id="leftScroll" class="advancer advancer_left" type="button">
+    <button (click)="left()" id="leftScroll" class="advancer advancer_left" type="button" title="Scroll left">
       <i class="fas fa-angle-left fa-xs"></i>
     </button>
-    <button (click)="right()" id="rightScroll" class="advancer advancer_right" type="button">
+    <button (click)="right()" id="rightScroll" class="advancer advancer_right" type="button" title="Scroll right">
       <i class="fas fa-angle-right fa-xs"></i>
     </button>
   </div>
@@ -88,7 +89,7 @@
                   <span class="help is-italic has-text-grey mt-0">Pending Changes</span>
                 </div>
                 <div class="is-align-self-center">
-                  <button class="card-header-icon" (click)="toggleCard(i)">
+                  <button class="card-header-icon" (click)="toggleCard(i)" title="Toggle">
                     <span class="icon is-small toogle-icon" id="card-span-{{i}}" title="'Expand'">
                       <i id="card-icon-{{i}}" class="fas fa-2xs fa-chevron-right" aria-hidden="true"></i>
                     </span>
@@ -172,7 +173,13 @@
       </ng-container>
       <app-tab-navigation #tabNaigation
         *ngIf="groupTabs && !['notifications', 'config-manager', 'additional-services'].includes(from)" [from]="from"
-        [sourceName]="sourceName" [tabs]="groupTabs" (selectedTabEvent)="selectedGroup = $event"></app-tab-navigation>
+        [sourceName]="sourceName" [tabs]="groupTabs" (selectedTabEvent)="selectedGroup = $event"
+        [showValidate]="['south', 'north','add-service-form','add-task-form'].includes(from)"
+        (validateConfig)="onValidateClick()"></app-tab-navigation>
     </div>
   </ng-template>
 </div>
+
+<app-validation-report *ngIf="validationResults || isValidating || validationError" [results]="validationResults"
+  [loading]="isValidating" [error]="validationError"
+  (close)="validationResults = null; validationError = null"></app-validation-report>

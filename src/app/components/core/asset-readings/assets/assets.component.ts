@@ -9,6 +9,7 @@ import { DocService } from '../../../../services/doc.service';
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 import { ReadingsGraphComponent } from '../readings-graph/readings-graph.component';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
+import { PopoverComponent } from '../../../common/popover/popover.component';
 
 @Component({
   selector: 'app-assets',
@@ -23,6 +24,12 @@ export class AssetsComponent implements OnInit, OnDestroy {
   public isAlive: boolean;
   assetReadings = [];
   selectedAssetName = '';
+  latestReadings: { [key: string]: any } = {};  // Store latest readings for each asset
+  private isPopoverVisible = false;
+  private popoverAssetCode: string | null = null;
+  private popoverHiddenSubscription: any = null;
+  private hoverTimeout: any = null;
+  private HOVER_DELAY = 300; // ms
 
   @ViewChild(ReadingsGraphComponent, { static: true }) readingsGraphComponent: ReadingsGraphComponent;
 
@@ -55,7 +62,14 @@ export class AssetsComponent implements OnInit, OnDestroy {
     interval(this.refreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
-        this.getAsset();
+        // Skip auto refresh if popover is visible to avoid disrupting user interaction
+        if (!this.isPopoverVisible) {
+          this.getAsset(false);
+        } else {
+          if (this.popoverAssetCode) {
+            this.loadLatestReading(this.popoverAssetCode);
+          }
+        }
       });
   }
 
@@ -85,6 +99,107 @@ export class AssetsComponent implements OnInit, OnDestroy {
             this.alertService.error(error.statusText);
           }
         });
+  }
+
+  public loadLatestReading(assetCode: string): void {
+    this.assetService.getLatestReadings(assetCode)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (data: any[]) => {
+          if (data && data.length > 0) {
+            const latestReading = data[0];
+            this.latestReadings[assetCode] = {
+              reading: latestReading.reading,
+              timestamp: latestReading.timestamp
+            };
+          }
+        },
+        error => {
+          console.log('error fetching latest reading', error);
+        }
+      );
+  }
+
+  public getLatestReadingData(assetCode: string): any {
+    return this.latestReadings[assetCode] || {
+      reading: {},
+      timestamp: ''
+    };
+  }
+
+  public getLatestReadingTimestamp(assetCode: string): string {
+    const data = this.getLatestReadingData(assetCode);
+    return data.timestamp;
+  }
+
+  public getLatestReadingProperties(assetCode: string): { key: string, value: any }[] {
+    const data = this.getLatestReadingData(assetCode);
+    const properties = [];
+
+    if (data.reading && typeof data.reading === 'object') {
+      Object.keys(data.reading).forEach(key => {
+        properties.push({
+          key: key,
+          value: data.reading[key]
+        });
+      });
+    }
+    return properties;
+  }
+
+  public showPopover(triggerElement: HTMLElement, assetCode: string, popover: PopoverComponent): void {
+    popover.show(triggerElement);
+    this.isPopoverVisible = true;
+    this.popoverAssetCode = assetCode;
+
+    // Clean up any existing subscription
+    if (this.popoverHiddenSubscription) {
+      this.popoverHiddenSubscription.unsubscribe();
+    }
+
+    // Subscribe to popover visibility events to track actual visibility state
+    this.popoverHiddenSubscription = popover.popoverHidden
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.isPopoverVisible = false;
+        this.popoverAssetCode = null;
+        this.popoverHiddenSubscription = null;
+      });
+  }
+
+  public hidePopoverWithDelay(popover: PopoverComponent): void {
+    popover.hideWithDelay();
+  }
+
+  /**
+   * Handles mouse enter with delay - only loads data and shows popover if user hovers for HOVER_DELAY ms
+   */
+  public onHoverEnter(triggerElement: HTMLElement, assetCode: string, popover: PopoverComponent): void {
+    // Clear any existing timeout
+    if (this.hoverTimeout) {
+      clearTimeout(this.hoverTimeout);
+    }
+
+    // Set timeout to show popover after delay
+    this.hoverTimeout = setTimeout(() => {
+      this.loadLatestReading(assetCode);
+      this.showPopover(triggerElement, assetCode, popover);
+      this.hoverTimeout = null;
+    }, this.HOVER_DELAY);
+  }
+
+  /**
+   * Handles mouse leave - cancels pending hover actions and hides popover
+   */
+  public onHoverLeave(popover: PopoverComponent): void {
+    // Cancel pending hover timeout if user leaves before delay completes
+    if (this.hoverTimeout) {
+      clearTimeout(this.hoverTimeout);
+      this.hoverTimeout = null;
+    }
+
+    // Hide popover with its own delay
+    this.hidePopoverWithDelay(popover);
   }
 
   getAssetReadings(assetCode, recordCount) {
@@ -212,7 +327,14 @@ export class AssetsComponent implements OnInit, OnDestroy {
     interval(this.refreshInterval)
       .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
       .subscribe(() => {
-        this.getAsset();
+        // Skip auto refresh if popover is visible to avoid disrupting user interaction
+        if (!this.isPopoverVisible) {
+          this.getAsset(false);
+        } else {
+          if (this.popoverAssetCode) {
+            this.loadLatestReading(this.popoverAssetCode);
+          }
+        }
       });
   }
 
@@ -237,5 +359,12 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.isAlive = false;
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
+    this.popoverHiddenSubscription?.unsubscribe();
+
+    // Clear hover timeout to prevent memory leaks
+    if (this.hoverTimeout) {
+      clearTimeout(this.hoverTimeout);
+      this.hoverTimeout = null;
+    }
   }
 }

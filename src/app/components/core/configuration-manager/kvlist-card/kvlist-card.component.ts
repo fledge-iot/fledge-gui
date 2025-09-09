@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import { RolesService } from '../../../../services';
+import { PopoverComponent } from '../../../common/popover/popover.component';
 
 @Component({
   selector: 'app-kvlist-card',
@@ -25,9 +26,10 @@ export class KvlistCardComponent {
     public rolesService: RolesService) {
   }
 
-  toggleCard(i) {
-    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + i + '-' + this.from);
-    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + i + '-' + this.from);
+  toggleCard() {
+    let cardHeader = document.getElementById('card-header-' + this.configuration.key + '-' + this.i + '-' + this.from);
+    let cardBody = document.getElementById('card-content-' + this.configuration.key + '-' + this.i + '-' + this.from);
+
     if (cardBody.classList.contains('is-hidden')) {
       cardBody.classList.remove('is-hidden');
       cardHeader.classList.add('is-hidden');
@@ -55,15 +57,22 @@ export class KvlistCardComponent {
   }
 
   extractItemValue(value) {
-    let itemValue = {};
+    let itemValueArray = [];
     for (let [key, val] of Object.entries(value)) {
       let itemKey = this.configuration.properties[key]?.displayName || key;
-      itemValue[itemKey] = val;
+      itemValueArray.push({
+        label: itemKey,
+        value: val
+      });
     }
-    let jsonString = JSON.stringify(itemValue, null, 2) // Format with indentation and newlines
-      .replace(/[{}"]/g, '')  // Remove {, }, and "
-      .replace(/:/g, ': ')     // Add space after :
-      .replace(/,/g, ', ');    // Add space after ,
-    return jsonString;
+    return itemValueArray;
+  }
+
+  showPopover(triggerElement: HTMLElement, popover: PopoverComponent): void {
+    popover.show(triggerElement);
+  }
+
+  hidePopoverWithDelay(popover: PopoverComponent): void {
+    popover.hideWithDelay();
   }
 }

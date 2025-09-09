@@ -2,6 +2,27 @@
   padding: 1rem;
 }
 
+/* Override global table scrolling to fix design and only show scrollbars when needed */
+table.scroll {
+  overflow-x: auto;
+  overflow-y: auto;
+  display: block;
+}
+
+table.scroll tbody {
+  overflow-y: auto;
+  overflow-x: auto;
+  display: table-row-group;
+}
+
+table.scroll thead {
+  display: table-header-group;
+}
+
+table.scroll tr {
+  display: table-row;
+}
+
 @media screen and (min-height: 955px) {
   table.scroll {
     max-height: 75vh;
@@ -40,3 +61,10 @@
 .tooltip {
   opacity: 1.0 !important;
 }
+
+/* Popover trigger wrapper styling */
+.popover-trigger-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
