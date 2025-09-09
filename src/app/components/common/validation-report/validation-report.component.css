@@ -1,0 +1,73 @@
+.validation-report {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  width: 400px;
+  max-height: 50vh;
+  overflow: auto;
+  z-index: 1000;
+}
+
+.validation-report.minimized {
+  height: auto;
+  max-height: none;
+}
+
+.validation-report-header {
+  color: white;
+  background: white;
+  height: 40px;
+}
+
+.action-buttons {
+  gap: 0.1rem;
+}
+
+.validation-item {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.validation-item:last-child {
+  border-bottom: 0;
+}
+
+.item-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: #363636;
+  padding: 0.4rem;
+}
+
+.status-icon {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-icon.pass {
+  background: #48c774;
+}
+
+.status-icon.fail {
+  background: #f14668;
+}
+
+.item-details {
+  padding: 0.25rem 0.75rem 0.5rem 1.25rem;
+  color: #363636;
+  background: #fafafa;
+}
+
+.value-row {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.json-pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  background: #f8f8f8;
+}

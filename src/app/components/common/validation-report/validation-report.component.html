@@ -1,0 +1,45 @@
+<div class="card validation-report" [class.minimized]="minimized" *ngIf="results || loading || error">
+  <header class="card-header validation-report-header p-0">
+    <p class="card-header-title py-0 px-2 h-10">Validation Report</p>
+    <div class="card-header-icon">
+      <div class="buttons action-buttons">
+        <button class="button is-white is-small" title="Minimize" (click)="toggleMinimize()">
+          <span class="icon">
+            <i class="bi" [ngClass]="minimized ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+          </span>
+        </button>
+        <button class="button is-white is-small" title="Close" (click)="onClose()">
+          <span class="icon">
+            <i class="bi bi-x"></i>
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="card-content p-0" *ngIf="!minimized">
+    <div class="content validation-list">
+      <div *ngIf="loading" class="validation-item">Running tests...</div>
+      <div *ngIf="error" class="validation-item p-2">{{ error }}</div>
+      <div *ngFor="let key of (results | keyvalue)" class="validation-item">
+        <div class="item-header" (click)="toggleReport(key.key)">
+          <span class="status-icon"
+            [ngClass]="{'pass': key.value?.result === 'pass', 'fail': key.value?.result === 'fail'}"></span>
+          <span class="item-text">{{ key.value?.description || key.key }}</span>
+        </div>
+        <div class="item-details" *ngIf="expandedTests[key.key]">
+          <div *ngIf="key.value?.detail?.reason" class="detail-text">
+            <span>{{key.value.detail.reason}}</span>
+          </div>
+          <div *ngIf="key.value?.details?.reading" class="detail-text">
+            <pre class="json-pre">{{ key.value.details.reading | json}}</pre>
+          </div>
+          <div class="values" *ngIf="key.value?.values">
+            <div *ngFor="let v of key.value.values" class="value-row">
+              <pre class="json-pre">{{ v | json}}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
