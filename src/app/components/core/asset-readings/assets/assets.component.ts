@@ -31,6 +31,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   private popoverHiddenSubscription: any = null;
   private hoverTimeout: any = null;
   private HOVER_DELAY = 300; // ms
+  private imageUrlCache: Map<string, string> = new Map<string, string>();
 
   @ViewChild(ReadingsGraphComponent, { static: true }) readingsGraphComponent: ReadingsGraphComponent;
 
@@ -114,6 +115,8 @@ export class AssetsComponent implements OnInit, OnDestroy {
               reading: latestReading.reading,
               timestamp: latestReading.timestamp
             };
+          } else {
+            this.latestReadings[assetCode] = { reading: {}, timestamp: '' };
           }
         },
         error => {
@@ -136,14 +139,19 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   public getLatestReadingProperties(assetCode: string): { key: string, value: any, type?: string, imageUrl?: string }[] {
     const data = this.getLatestReadingData(assetCode);
-    const properties = [];
+    const properties: { key: string, value: any, type?: string, imageUrl?: string }[] = [];
 
     if (data.reading && typeof data.reading === 'object') {
       Object.keys(data.reading).forEach(key => {
         const value = data.reading[key];
 
         if (typeof value === 'string' && value.includes('__DPIMAGE:')) {
-          const imageUrl = this.imageProcessingService.processImageReading(value);
+          // Use cache to avoid repeated base64 decoding and canvas work
+          let imageUrl = this.imageUrlCache.get(value);
+          if (!imageUrl) {
+            imageUrl = this.imageProcessingService.processImageReading(value);
+            this.imageUrlCache.set(value, imageUrl);
+          }
           properties.push({
             key: key,
             value: value,

@@ -124,6 +124,7 @@
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
+  object-fit: contain;
 }
 
 .popover-content .popover-image:hover {
@@ -136,6 +137,9 @@
   background: #f8f9fa;
   border-radius: 4px;
   margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Enhanced popover content styling */

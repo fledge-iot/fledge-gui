@@ -80,10 +80,7 @@
                                 <tr *ngFor="let reading of getLatestReadingProperties(asset.assetCode)">
                                   <td *ngIf="reading.type !== 'image'">{{reading.key}}</td>
                                   <td *ngIf="reading.type !== 'image'">
-                                    <span [ngClass]="{
-                                      'has-text-info': reading.type === 'number',
-                                      'has-text-success': reading.type === 'object'
-                                    }">
+                                    <span class="has-text-info">
                                       {{reading.value}}
                                     </span>
                                   </td>
@@ -100,7 +97,9 @@
                                 </div>
                                 <div class="image-container has-text-centered">
                                   <img *ngIf="reading.imageUrl" [src]="reading.imageUrl" [alt]="reading.key"
-                                    class="popover-image">
+                                    class="popover-image" loading="lazy">
+                                  <span *ngIf="!reading.imageUrl" class="is-size-7 has-text-grey">Image
+                                    unavailable</span>
                                 </div>
                               </div>
                             </div>
