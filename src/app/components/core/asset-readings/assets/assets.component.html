@@ -43,7 +43,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let asset of assets">
+                <tr *ngFor="let asset of assets; trackBy: trackByAssetCode">
                   <td>{{asset.assetCode}}</td>
                   <td><span class="is-pulled-right">{{asset.count | number}}</span></td>
                   <td>
@@ -97,7 +97,7 @@
                                 </div>
                                 <div class="image-container has-text-centered">
                                   <img *ngIf="reading.imageUrl" [src]="reading.imageUrl" [alt]="reading.key"
-                                    class="popover-image" loading="lazy">
+                                    class="popover-image" title="{{reading.key}}">
                                   <span *ngIf="!reading.imageUrl" class="is-size-7 has-text-grey">Image
                                     unavailable</span>
                                 </div>
@@ -113,8 +113,7 @@
                           </div>
 
                           <!-- Footer with muted text -->
-                          <div class="has-text-grey-light has-text-centered pt-2 is-size-7"
-                            style="border-top: 1px solid #f5f5f5;">
+                          <div class="has-text-grey-light has-text-centered pt-2 is-size-7 popover-muted-top-border">
                             Most recent reading
                           </div>
                         </div>

@@ -17,6 +17,11 @@
   overflow-y: auto;
 }
 
+/* Utility for muted top border previously inlined */
+.popover-muted-top-border {
+  border-top: 1px solid #f5f5f5;
+}
+
 /* Position-specific styles */
 .popover-top .popover-content::before {
   content: '';
@@ -189,4 +194,4 @@
 .popover-content .image-reading-header {
   border-bottom: 1px solid #e0e0e0;
   padding-bottom: 0.25rem;
-} 
+}

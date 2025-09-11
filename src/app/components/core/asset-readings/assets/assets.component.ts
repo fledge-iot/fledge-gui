@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { orderBy } from 'lodash';
-import { interval, Subject } from 'rxjs';
-import { takeWhile, takeUntil } from 'rxjs/operators';
+import { interval, Subject, Subscription } from 'rxjs';
+import { takeWhile, takeUntil, finalize } from 'rxjs/operators';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 
 import { AlertService, AssetsService, SharedService, PingService, GenerateCsvService, ProgressBarService, RolesService } from '../../../../services';
@@ -32,6 +32,11 @@ export class AssetsComponent implements OnInit, OnDestroy {
   private hoverTimeout: any = null;
   private HOVER_DELAY = 300; // ms
   private imageUrlCache: Map<string, string> = new Map<string, string>();
+  private refreshSubscription: Subscription | null = null;
+  private latestReadingInFlight: Set<string> = new Set<string>();
+  private latestReadingPropsCache: Map<string, { timestamp: string, props: { key: string, value: any, type?: string, imageUrl?: string }[] }>
+    = new Map<string, { timestamp: string, props: { key: string, value: any, type?: string, imageUrl?: string }[] }>();
+  private activePopover: PopoverComponent | null = null;
 
   @ViewChild(ReadingsGraphComponent, { static: true }) readingsGraphComponent: ReadingsGraphComponent;
 
@@ -62,18 +67,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.showLoadingSpinner();
     this.getAsset();
-    interval(this.refreshInterval)
-      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
-      .subscribe(() => {
-        // Skip auto refresh if popover is visible to avoid disrupting user interaction
-        if (!this.isPopoverVisible) {
-          this.getAsset(false);
-        } else {
-          if (this.popoverAssetCode) {
-            this.loadLatestReading(this.popoverAssetCode);
-          }
-        }
-      });
+    this.startRefreshInterval();
   }
 
   public getAsset(showProgressBar = true): void {
@@ -105,8 +99,14 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   public loadLatestReading(assetCode: string): void {
+    // Prevent overlapping requests per asset
+    if (this.latestReadingInFlight.has(assetCode)) {
+      return;
+    }
+    this.latestReadingInFlight.add(assetCode);
+
     this.assetService.getLatestReadings(assetCode)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$), finalize(() => this.latestReadingInFlight.delete(assetCode)))
       .subscribe(
         (data: any[]) => {
           if (data && data.length > 0) {
@@ -115,8 +115,14 @@ export class AssetsComponent implements OnInit, OnDestroy {
               reading: latestReading.reading,
               timestamp: latestReading.timestamp
             };
+            // Invalidate cached props for this asset if timestamp changed
+            const cached = this.latestReadingPropsCache.get(assetCode);
+            if (!cached || cached.timestamp !== latestReading.timestamp) {
+              this.latestReadingPropsCache.delete(assetCode);
+            }
           } else {
             this.latestReadings[assetCode] = { reading: {}, timestamp: '' };
+            this.latestReadingPropsCache.delete(assetCode);
           }
         },
         error => {
@@ -139,45 +145,40 @@ export class AssetsComponent implements OnInit, OnDestroy {
 
   public getLatestReadingProperties(assetCode: string): { key: string, value: any, type?: string, imageUrl?: string }[] {
     const data = this.getLatestReadingData(assetCode);
-    const properties: { key: string, value: any, type?: string, imageUrl?: string }[] = [];
+    const currentTimestamp: string = data.timestamp || '';
 
+    const cached = this.latestReadingPropsCache.get(assetCode);
+    if (cached && cached.timestamp === currentTimestamp) {
+      return cached.props;
+    }
+
+    const properties: { key: string, value: any, type?: string, imageUrl?: string }[] = [];
     if (data.reading && typeof data.reading === 'object') {
       Object.keys(data.reading).forEach(key => {
         const value = data.reading[key];
 
         if (typeof value === 'string' && value.includes('__DPIMAGE:')) {
-          // Use cache to avoid repeated base64 decoding and canvas work
           let imageUrl = this.imageUrlCache.get(value);
           if (!imageUrl) {
             imageUrl = this.imageProcessingService.processImageReading(value);
             this.imageUrlCache.set(value, imageUrl);
           }
-          properties.push({
-            key: key,
-            value: value,
-            type: 'image',
-            imageUrl: imageUrl
-          });
+          properties.push({ key, value, type: 'image', imageUrl });
         } else {
-          // Handle regular readings
           let displayValue = value;
           let type = 'text';
-
           if (typeof value === 'object') {
             displayValue = JSON.stringify(value);
             type = 'object';
           } else if (typeof value === 'number') {
             type = 'number';
           }
-
-          properties.push({
-            key: key,
-            value: displayValue,
-            type: type
-          });
+          properties.push({ key, value: displayValue, type });
         }
       });
     }
+
+    this.latestReadingPropsCache.set(assetCode, { timestamp: currentTimestamp, props: properties });
     return properties;
   }
 
@@ -192,6 +193,7 @@ export class AssetsComponent implements OnInit, OnDestroy {
     popover.show(triggerElement);
     this.isPopoverVisible = true;
     this.popoverAssetCode = assetCode;
+    this.activePopover = popover;
 
     // Clean up any existing subscription
     if (this.popoverHiddenSubscription) {
@@ -205,6 +207,9 @@ export class AssetsComponent implements OnInit, OnDestroy {
         this.isPopoverVisible = false;
         this.popoverAssetCode = null;
         this.popoverHiddenSubscription = null;
+        this.activePopover = null;
+        // Clear cached image URLs to avoid unbounded growth
+        this.imageUrlCache.clear();
       });
   }
 
@@ -323,11 +328,13 @@ export class AssetsComponent implements OnInit, OnDestroy {
   * Open asset chart modal dialog
   */
   public showAssetChart(assetCode) {
+    this.hideActivePopover();
     this.readingsGraphComponent.getAssetCode(assetCode);
     this.readingsGraphComponent.toggleModal(true);
   }
 
   public showLatestReading(assetCode) {
+    this.hideActivePopover();
     this.readingsGraphComponent.getAssetLatestReadings(assetCode);
     this.readingsGraphComponent.toggleModal(true);
   }
@@ -364,19 +371,26 @@ export class AssetsComponent implements OnInit, OnDestroy {
   }
 
   onNotify(event) {
-    this.isAlive = event;
-    interval(this.refreshInterval)
-      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$)) // only fires when component is alive
-      .subscribe(() => {
-        // Skip auto refresh if popover is visible to avoid disrupting user interaction
-        if (!this.isPopoverVisible) {
-          this.getAsset(false);
-        } else {
-          if (this.popoverAssetCode) {
-            this.loadLatestReading(this.popoverAssetCode);
-          }
-        }
-      });
+    // Update alive state and (re)configure interval safely without duplicating subscriptions
+    if (event === false) {
+      this.isAlive = false;
+      if (this.refreshSubscription) {
+        this.refreshSubscription.unsubscribe();
+        this.refreshSubscription = null;
+      }
+      return;
+    }
+
+    if (event === true && this.isAlive) {
+      // Already alive; ensure only one interval is running
+      if (!this.refreshSubscription) {
+        this.startRefreshInterval();
+      }
+      return;
+    }
+
+    this.isAlive = true;
+    this.startRefreshInterval();
   }
 
   goToLink() {
@@ -401,11 +415,37 @@ export class AssetsComponent implements OnInit, OnDestroy {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
     this.popoverHiddenSubscription?.unsubscribe();
+    this.refreshSubscription?.unsubscribe();
 
     // Clear hover timeout to prevent memory leaks
     if (this.hoverTimeout) {
       clearTimeout(this.hoverTimeout);
       this.hoverTimeout = null;
     }
+  }
+
+  private startRefreshInterval(): void {
+    // Avoid duplicate intervals
+    this.refreshSubscription?.unsubscribe();
+    this.refreshSubscription = interval(this.refreshInterval)
+      .pipe(takeWhile(() => this.isAlive), takeUntil(this.destroy$))
+      .subscribe(() => {
+        // Skip auto refresh if popover is visible to avoid disrupting user interaction
+        if (!this.isPopoverVisible) {
+          this.getAsset(false);
+        } else if (this.popoverAssetCode) {
+          this.loadLatestReading(this.popoverAssetCode);
+        }
+      });
+  }
+
+  private hideActivePopover(): void {
+    if (this.activePopover && this.activePopover.visible) {
+      this.activePopover.hide(0);
+    }
+  }
+
+  public trackByAssetCode(index: number, asset: any): string {
+    return asset.assetCode;
   }
 }
