@@ -12,7 +12,6 @@ import {
   ApplicationRef,
   EmbeddedViewRef,
   OnInit,
-  SimpleChanges
 } from '@angular/core';
 
 @Component({
@@ -53,10 +52,6 @@ export class PopoverComponent implements OnInit, OnDestroy {
     // Component initialization
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    // no-op
-  }
-
   ngOnDestroy() {
     this.hide();
     if (this.hideTimeout) {
@@ -82,7 +77,6 @@ export class PopoverComponent implements OnInit, OnDestroy {
     this.createPopover();
     this.isVisible = true;
     this.popoverShown.emit();
-
   }
 
   /**
