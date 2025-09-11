@@ -31,3 +31,4 @@ export * from './file-uploader.service';
 export * from './control-pipelines.service';
 export * from './control-api-flow.service';
 export * from './system-alert.service';
+export * from './image-processing.service';

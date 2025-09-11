@@ -43,7 +43,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let asset of assets">
+                <tr *ngFor="let asset of assets; trackBy: trackByAssetCode">
                   <td>{{asset.assetCode}}</td>
                   <td><span class="is-pulled-right">{{asset.count | number}}</span></td>
                   <td>
@@ -72,16 +72,38 @@
                             {{getLatestReadingTimestamp(asset.assetCode) | dateparser: 'YYYY-MM-DD HH:mm:ss.SSS'}}
                           </div>
 
-                          <!-- Data points table -->
-                          <table class="table is-fullwidth is-striped is-size-7 mb-0"
-                            *ngIf="getLatestReadingProperties(asset.assetCode).length > 0">
-                            <tbody>
-                              <tr *ngFor="let reading of getLatestReadingProperties(asset.assetCode)">
-                                <td>{{reading.key}}</td>
-                                <td>{{reading.value}}</td>
-                              </tr>
-                            </tbody>
-                          </table>
+                          <div *ngIf="getLatestReadingProperties(asset.assetCode).length > 0">
+                            <!-- Regular readings table -->
+                            <table class="table is-fullwidth is-striped is-size-7 mb-2"
+                              *ngIf="hasNonImageReadings(asset.assetCode)">
+                              <tbody>
+                                <tr *ngFor="let reading of getLatestReadingProperties(asset.assetCode)">
+                                  <td *ngIf="reading.type !== 'image'">{{reading.key}}</td>
+                                  <td *ngIf="reading.type !== 'image'">
+                                    <span class="has-text-info">
+                                      {{reading.value}}
+                                    </span>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+
+                            <!-- Image readings -->
+                            <div *ngFor="let reading of getLatestReadingProperties(asset.assetCode)" class="mb-3">
+                              <div *ngIf="reading.type === 'image'">
+                                <div class="is-size-7 has-text-weight-semibold mb-1 has-text-grey-dark">
+                                  <i class="bi bi-image mr-1"></i>
+                                  {{reading.key}}
+                                </div>
+                                <div class="image-container has-text-centered">
+                                  <img *ngIf="reading.imageUrl" [src]="reading.imageUrl" [alt]="reading.key"
+                                    class="popover-image" title="{{reading.key}}">
+                                  <span *ngIf="!reading.imageUrl" class="is-size-7 has-text-grey">Image
+                                    unavailable</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
 
                           <!-- No data message -->
                           <div *ngIf="getLatestReadingProperties(asset.assetCode).length === 0"
