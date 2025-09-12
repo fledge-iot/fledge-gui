@@ -104,7 +104,8 @@
                   <div class="content">
                     <app-bucket-configuration *ngIf="g.type == 'bucket'" [dataModel]="g.config"
                       (changedConfig)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)"
-                      [from]="from" [group]="g.group.key"></app-bucket-configuration>
+                      [from]="from" [group]="g.group.key"
+                      [fullConfiguration]="category.config"></app-bucket-configuration>
 
                     <app-list-type-configuration *ngIf="g?.type == 'list'" [configuration]="g.config"
                       [categoryName]="g.category" [group]="g.group.key" [from]="from"
@@ -132,7 +133,8 @@
         <ng-template #showGroup>
           <app-bucket-configuration *ngIf="g.type == 'bucket' && selectedGroup.key == g.group.key"
             [dataModel]="g.config" (changedConfig)="getChangedConfiguration($event)"
-            (formStatusEvent)="formStatus($event)" [from]="from" [group]="g.group.key"></app-bucket-configuration>
+            (formStatusEvent)="formStatus($event)" [from]="from" [group]="g.group.key"
+            [fullConfiguration]="category.config"></app-bucket-configuration>
 
           <app-list-type-configuration *ngIf="g?.type == 'list'" [hidden]="selectedGroup.key !== g.group.key"
             [configuration]="g.config" [group]="g.group.key" [from]="from" [categoryName]="g.category"
