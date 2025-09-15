@@ -232,22 +232,6 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges {
         // Update the configuration value for validity checking
         if (this.fullConfiguration && this.configuration.key) {
           this.fullConfiguration[this.configuration.key].value = JSON.stringify(processedValue);
-
-          // Check validity of other config items that might depend on this list's value
-          if (this.fullConfiguration) {
-            Object.keys(this.fullConfiguration).forEach(key => {
-              const config = this.fullConfiguration[key];
-              if (config.validity && key !== this.configuration.key) {
-                // Update validity expression for other config items
-                config.validityExpression = config.validity;
-                Object.keys(this.fullConfiguration).forEach(valueKey => {
-                  const valueConfig = this.fullConfiguration[valueKey];
-                  valueConfig.key = valueKey;
-                  config.validityExpression = this.configControlService.generateValidationExpression(valueConfig, config.validityExpression);
-                });
-              }
-            });
-          }
         }
 
         this.changedConfig.emit({
