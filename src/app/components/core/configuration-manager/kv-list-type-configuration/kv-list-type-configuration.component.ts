@@ -56,8 +56,6 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges {
     }
   }
 
-
-
   get kvListItems() {
     return this.kvListItemsForm.get('kvListItems') as FormArray;
   }

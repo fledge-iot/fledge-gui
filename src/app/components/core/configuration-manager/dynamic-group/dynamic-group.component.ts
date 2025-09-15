@@ -36,7 +36,6 @@ export class DynamicGroupComponent implements OnInit, OnChanges {
       return;
     }
 
-    // Merge all configurations from different category groups into a single shared object
     this.categoryGroups.forEach(categoryGroup => {
       if (categoryGroup?.config) {
         if (categoryGroup.key) {
@@ -62,8 +61,6 @@ export class DynamicGroupComponent implements OnInit, OnChanges {
         }
       });
 
-      // Create a new reference to trigger ngOnChanges in child components
-      // This is crucial for triggering validity updates in list/kvlist components
       this.sharedFullConfiguration = { ...this.sharedFullConfiguration };
       this.updateCategoryGroupConfigurations(event);
       this.getChangedConfiguration.emit(event);
