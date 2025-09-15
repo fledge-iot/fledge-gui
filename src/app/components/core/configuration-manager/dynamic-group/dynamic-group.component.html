@@ -1,7 +1,7 @@
 <ng-container *ngIf="categoryGroups.length == 0; else tabsTemplate">
   <app-show-configuration [hidden]="selectedGroup.key !== group.group.key" [groupConfiguration]="group.config"
-    [group]="group.group.key" [selectedGroup]="selectedGroup.key" [fullConfiguration]="group.config" [from]="from"
-    (event)="getChangedConfig($event)" (formStatusEvent)="formStatus($event)">
+    [group]="group.group.key" [selectedGroup]="selectedGroup.key" [fullConfiguration]="sharedFullConfiguration"
+    [from]="from" (event)="getChangedConfig($event)" (formStatusEvent)="formStatus($event)">
   </app-show-configuration>
 </ng-container>
 <ng-template #tabsTemplate>
@@ -31,18 +31,20 @@
         <app-show-configuration *ngIf="!['list', 'kvlist'].includes(categoryGroup?.type)"
           [hidden]="selectedCategoryGroup?.key !== categoryGroup?.group.key"
           [groupConfiguration]="categoryGroup?.config" [group]="categoryGroup?.group.key"
-          [selectedGroup]="selectedCategoryGroup?.key" [fullConfiguration]="categoryGroup?.config" [from]="from"
+          [selectedGroup]="selectedCategoryGroup?.key" [fullConfiguration]="sharedFullConfiguration" [from]="from"
           (event)="getChangedConfig($event)" (formStatusEvent)="formStatus($event)">
         </app-show-configuration>
         <app-list-type-configuration *ngIf="categoryGroup?.type == 'list'"
           [hidden]="selectedCategoryGroup?.key !== categoryGroup?.group.key" [configuration]="categoryGroup?.config"
           [group]="categoryGroup?.group.key" [from]="from" [categoryName]="categoryGroup?.category"
-          (changedConfig)="getChangedConfig($event)" (formStatusEvent)="formStatus($event)">
+          [fullConfiguration]="sharedFullConfiguration" (changedConfig)="getChangedConfig($event)"
+          (formStatusEvent)="formStatus($event)">
         </app-list-type-configuration>
         <app-kv-list-type-configuration *ngIf="categoryGroup?.type == 'kvlist'"
           [hidden]="selectedCategoryGroup?.key !== categoryGroup?.group.key" [configuration]="categoryGroup?.config"
           [group]="categoryGroup?.group.key" [from]="from" [categoryName]="categoryGroup?.category"
-          (changedConfig)="getChangedConfig($event)" (formStatusEvent)="formStatus($event)">
+          [fullConfiguration]="sharedFullConfiguration" (changedConfig)="getChangedConfig($event)"
+          (formStatusEvent)="formStatus($event)">
         </app-kv-list-type-configuration>
       </ng-container>
     </div>
