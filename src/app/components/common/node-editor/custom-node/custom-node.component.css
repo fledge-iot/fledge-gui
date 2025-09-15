@@ -295,3 +295,8 @@
 .dropdown-menu {
   pointer-events: auto;
 }
+
+.reading-details {
+  display: flex;
+  justify-content: center;
+}
