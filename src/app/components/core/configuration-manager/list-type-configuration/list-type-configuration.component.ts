@@ -355,7 +355,7 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges {
   updateListValidity() {
     if (this.fullConfiguration && this.configuration.validity) {
       const tempConfig = { ...this.configuration, key: this.configuration.key };
-      this.isListDisabled = this.configControlService.validateConfigItem(this.fullConfiguration, tempConfig);
+      this.isListDisabled = !!this.configControlService.validateConfigItem(this.fullConfiguration, tempConfig);
 
       // Update form control states based on validity
       this.updateFormControlsState();

@@ -65,7 +65,7 @@ export class BucketConfigurationComponent implements OnInit, OnChanges {
   private updateBucketValidityState(): void {
     if (this.fullConfiguration && this.dataModel?.validity) {
       const tempConfig = { ...this.dataModel, key: this.dataModel.key };
-      this.isBucketDisabled = this.configControlService.validateConfigItem(this.fullConfiguration, tempConfig) as unknown as boolean;
+      this.isBucketDisabled = !!this.configControlService.validateConfigItem(this.fullConfiguration, tempConfig);
     } else {
       this.isBucketDisabled = false;
     }
