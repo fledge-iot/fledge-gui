@@ -159,7 +159,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.resetTimeout) {
       clearTimeout(this.resetTimeout);
     }
-    this.hoverTrigger$.next();
+    this.hoverTrigger$.next(undefined);
   }
 
   public resetServiceStatusFetch(): void {

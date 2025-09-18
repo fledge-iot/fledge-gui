@@ -1,4 +1,6 @@
-const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
+// Use the same webpack instance that the Angular builder uses to avoid mismatches
+const angularBuilderWebpack = require("@angular-devkit/build-angular/node_modules/webpack");
+const ModuleFederationPlugin = angularBuilderWebpack.container.ModuleFederationPlugin;
 
 const mf = require("@angular-architects/module-federation/webpack");
 const path = require("path");

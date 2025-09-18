@@ -118,7 +118,7 @@ export class SideMenuComponent implements OnInit {
     submenuWrapper.style.top = (menuItemPosition.top - addedMargin).toString() + 'px';
     submenuWrapper.style.left = (menuItemPosition.width + 4).toString() + 'px';
     setTimeout(function () {
-      // If mouse is not over the menu or child sub-menu then return and don't open the sub-menu   
+      // If mouse is not over the menu or child sub-menu then return and don't open the sub-menu
       if (!sidemenuLink.matches(':hover')) {
         return;
       }
@@ -126,7 +126,7 @@ export class SideMenuComponent implements OnInit {
         this.toggleSubmenuState(menuLink);
       }
       submenuWrapper.classList.add('show');
-    }.bind(this), 500); // Added a delay to prevent the submenu from opening too quickly 
+    }.bind(this), 500); // Added a delay to prevent the submenu from opening too quickly
     // when hovering over the parent menu item, and ensured it only opens when focused for some milliseconds
   }
 
@@ -146,7 +146,7 @@ export class SideMenuComponent implements OnInit {
     }
     const menuOption = document.getElementById(menuLink + '-submenu') as HTMLDivElement;
     setTimeout(function () {
-      // If mouse is over the menu or child sub-menu then return and don't close the sub-menu   
+      // If mouse is over the menu or child sub-menu then return and don't close the sub-menu
       if (menuOption.matches(':hover')) {
         return;
       }
@@ -219,7 +219,7 @@ export class SideMenuComponent implements OnInit {
 
   ngOnDestroy() {
     // Unsubscribe from all observables
-    this.destroySubject.next();
+    this.destroySubject.next(undefined);
     this.destroySubject.unsubscribe();
   }
 }

@@ -122,14 +122,14 @@ export class ReadingsGraphComponent implements OnDestroy {
     const chart_modal = <HTMLDivElement>document.getElementById('chart_modal');
     if (shouldOpen) {
       this.additionalAssets.push(this.assetCode);
-      // clear legend from session store 
+      // clear legend from session store
       this.clearLegendSelection();
       chart_modal.classList.add('is-active');
       return;
     }
 
     if (this.destroy$) {
-      this.destroy$.next();
+      this.destroy$.next(true);
     }
 
     if (this.subscription) {
@@ -239,7 +239,7 @@ export class ReadingsGraphComponent implements OnDestroy {
           this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
         } else {
           this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
-          this.refreshAssets.next();
+          this.refreshAssets.next(true);
         }
       });
   }
@@ -249,7 +249,7 @@ export class ReadingsGraphComponent implements OnDestroy {
     this.pauseTime = Date.now();
     if (asset) {
       /**
-       * clear legend object from session store 
+       * clear legend object from session store
        *  for an asset removed from selection list
        */
       sessionStorage.removeItem(asset);
@@ -749,7 +749,7 @@ export class ReadingsGraphComponent implements OnDestroy {
             mode: 'x',
             onZoomComplete: () => {
               if (this.destroy$) {
-                this.destroy$.next();
+                this.destroy$.next(true);
               }
               this.zoomConfig.isZoomed = true;
               this.toggleAutoRefresh(false);
@@ -882,7 +882,7 @@ export class ReadingsGraphComponent implements OnDestroy {
           this.showAssetReadingsSummary(this.assetCode, this.limit, this.optedTime);
         } else {
           this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
-          this.refreshAssets.next();
+          this.refreshAssets.next(true);
         }
       });
   }
@@ -1024,7 +1024,7 @@ export class ReadingsGraphComponent implements OnDestroy {
       .subscribe(() => {
         this.autoRefresh = true;
         this.plotReadingsGraph(this.assetCode, this.limit, this.optedTime, 0);
-        this.refreshAssets.next();
+        this.refreshAssets.next(true);
       });
   }
 
