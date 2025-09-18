@@ -93,11 +93,11 @@
           "builder": "ngx-build-plus:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "fledge:build:production",
+              "buildTarget": "fledge:build:production",
               "extraWebpackConfig": "webpack.prod.config.js"
             },
             "development": {
-              "browserTarget": "fledge:build:development"
+              "buildTarget": "fledge:build:development"
             }
           },
           "defaultConfiguration": "development",
@@ -110,7 +110,7 @@
         "extract-i18n": {
           "builder": "ngx-build-plus:extract-i18n",
           "options": {
-            "browserTarget": "fledge:build",
+            "buildTarget": "fledge:build",
             "extraWebpackConfig": "webpack.config.js"
           }
         },

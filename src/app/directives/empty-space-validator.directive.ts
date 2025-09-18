@@ -2,8 +2,9 @@ import { Directive } from '@angular/core';
 import { NG_VALIDATORS, Validator, AbstractControl } from '@angular/forms';
 
 @Directive({
-  selector: '[nospaceValidator]',
-  providers: [{ provide: NG_VALIDATORS, useExisting: EmptySpaceValidatorDirective, multi: true }]
+    selector: '[nospaceValidator]',
+    providers: [{ provide: NG_VALIDATORS, useExisting: EmptySpaceValidatorDirective, multi: true }],
+    standalone: false
 })
 export class EmptySpaceValidatorDirective implements Validator {
 

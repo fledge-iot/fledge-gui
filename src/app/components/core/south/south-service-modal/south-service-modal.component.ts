@@ -28,9 +28,10 @@ import { Service } from '../south-service';
 import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
 
 @Component({
-  selector: 'app-south-service-modal',
-  templateUrl: './south-service-modal.component.html',
-  styleUrls: ['./south-service-modal.component.css']
+    selector: 'app-south-service-modal',
+    templateUrl: './south-service-modal.component.html',
+    styleUrls: ['./south-service-modal.component.css'],
+    standalone: false
 })
 export class SouthServiceModalComponent implements OnInit {
 

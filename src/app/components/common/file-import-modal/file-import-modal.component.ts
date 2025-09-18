@@ -12,9 +12,10 @@ export interface FileData {
 }
 
 @Component({
-  selector: 'app-file-import-modal',
-  templateUrl: './file-import-modal.component.html',
-  styleUrls: ['./file-import-modal.component.css']
+    selector: 'app-file-import-modal',
+    templateUrl: './file-import-modal.component.html',
+    styleUrls: ['./file-import-modal.component.css'],
+    standalone: false
 })
 export class FileImportModalComponent {
 

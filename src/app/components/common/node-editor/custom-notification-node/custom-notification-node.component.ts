@@ -9,12 +9,13 @@ import { FlowEditorService } from "../flow-editor.service";
 import { Subject, Subscription } from "rxjs";
 
 @Component({
-  selector: 'app-custom-notification-node',
-  templateUrl: './custom-notification-node.component.html',
-  styleUrls: ['./custom-notification-node.component.css'],
-  host: {
-    "data-testid": "notification-node"
-  }
+    selector: 'app-custom-notification-node',
+    templateUrl: './custom-notification-node.component.html',
+    styleUrls: ['./custom-notification-node.component.css'],
+    host: {
+        "data-testid": "notification-node"
+    },
+    standalone: false
 })
 export class CustomNotificationNodeComponent implements OnChanges {
 

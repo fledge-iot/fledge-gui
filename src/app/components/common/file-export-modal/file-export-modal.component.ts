@@ -2,9 +2,10 @@ import { Component, HostListener, Input } from '@angular/core';
 import { AlertService } from '../../../services';
 
 @Component({
-  selector: 'app-file-export-modal',
-  templateUrl: './file-export-modal.component.html',
-  styleUrls: ['./file-export-modal.component.css']
+    selector: 'app-file-export-modal',
+    templateUrl: './file-export-modal.component.html',
+    styleUrls: ['./file-export-modal.component.css'],
+    standalone: false
 })
 export class FileExportModalComponent {
   @Input() data;

@@ -3,10 +3,11 @@ import { FormGroup } from '@angular/forms';
 import { RolesService } from '../../../../services';
 
 @Component({
-  selector: 'buffer-action-buttons',
-  templateUrl: './buffer-action-buttons.component.html',
-  styleUrls: ['./buffer-action-buttons.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'buffer-action-buttons',
+    templateUrl: './buffer-action-buttons.component.html',
+    styleUrls: ['./buffer-action-buttons.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BufferActionButtonsComponent {
   onReplay() {

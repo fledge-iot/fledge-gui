@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-dynamic-group',
-  templateUrl: './dynamic-group.component.html',
-  styleUrls: ['./dynamic-group.component.css']
+    selector: 'app-dynamic-group',
+    templateUrl: './dynamic-group.component.html',
+    styleUrls: ['./dynamic-group.component.css'],
+    standalone: false
 })
 export class DynamicGroupComponent {
   @Input() categoryGroups: any[] = [];

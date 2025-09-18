@@ -5,9 +5,10 @@ import Utils from '../../../../utils';
 import { NgForm } from '@angular/forms';
 
 @Component({
-  selector: 'app-task-schedule',
-  templateUrl: './task-schedule.component.html',
-  styleUrls: ['./task-schedule.component.css']
+    selector: 'app-task-schedule',
+    templateUrl: './task-schedule.component.html',
+    styleUrls: ['./task-schedule.component.css'],
+    standalone: false
 })
 export class TaskScheduleComponent {
   @Input() taskSchedule = { id: '', name: '', exclusive: false, repeatTime: '', repeatDays: 0 };

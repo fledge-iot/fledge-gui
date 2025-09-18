@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 
 @Component({
-  selector: 'app-validation-report',
-  templateUrl: './validation-report.component.html',
-  styleUrls: ['./validation-report.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-validation-report',
+    templateUrl: './validation-report.component.html',
+    styleUrls: ['./validation-report.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ValidationReportComponent {
   @Input() results: any;

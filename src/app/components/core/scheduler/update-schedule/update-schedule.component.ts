@@ -11,7 +11,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-update-schedule',
   templateUrl: './update-schedule.component.html',
-  styleUrls: ['./update-schedule.component.css']
+  styleUrls: ['./update-schedule.component.css'],
+  standalone: false
 })
 export class UpdateScheduleComponent implements OnInit {
   public scheduleTypes = [];
@@ -78,11 +79,11 @@ export class UpdateScheduleComponent implements OnInit {
 
     if (type.name == 'TIMED') {
       const time = Utils.convertTimeToSec(this.form.get('time').value);
-      // Set time control value when type is TIMED 
+      // Set time control value when type is TIMED
       if (time == 0) { this.form.controls['time'].patchValue('00:00:01') }
     }
 
-    // Enable repeat & time control 
+    // Enable repeat & time control
     this.form.controls['time'].enable();
     this.form.controls['day'].enable();
     this.form.controls['repeat'].enable();
@@ -130,7 +131,7 @@ export class UpdateScheduleComponent implements OnInit {
     const day = this.days.find(day => day.index == index);
     this.form.controls['day'].patchValue(day);
     this.form.controls['day'].updateValueAndValidity();
-    // set default time 
+    // set default time
     this.form.controls['time'].patchValue('00:00:01');
     this.form.controls['time'].updateValueAndValidity();
     return day;
@@ -203,8 +204,9 @@ export class UpdateScheduleComponent implements OnInit {
     let repeatTime = 0;
     // If schedule type is Interval
     if (['TIMED', 'INTERVAL'].includes(this.scheduleType())) {
-      repeatTime = this.form.get('repeat').value !== ('None' || undefined) ? Utils.convertTimeToSec(
-        this.form.get('repeat').value, this.form.get('repeatDay').value) : 0;
+      const repeatVal = this.form.get('repeat').value;
+      repeatTime = (repeatVal !== 'None' && repeatVal !== undefined) ? Utils.convertTimeToSec(
+        repeatVal, this.form.get('repeatDay').value) : 0;
     }
     return repeatTime;
   }

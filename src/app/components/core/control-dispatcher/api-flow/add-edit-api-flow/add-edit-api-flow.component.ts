@@ -30,7 +30,8 @@ import {
 @Component({
     selector: 'app-add-edit-api-flow',
     templateUrl: './add-edit-api-flow.component.html',
-    styleUrls: ['./add-edit-api-flow.component.css']
+    styleUrls: ['./add-edit-api-flow.component.css'],
+    standalone: false
 })
 
 export class AddEditAPIFlowComponent implements OnInit {

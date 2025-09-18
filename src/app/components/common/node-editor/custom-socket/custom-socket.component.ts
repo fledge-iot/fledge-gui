@@ -1,9 +1,10 @@
 import { Component, Input, ChangeDetectorRef, OnChanges } from '@angular/core';
 
 @Component({
-  selector: 'app-custom-socket',
-  template: ``,
-  styleUrls: ['./custom-socket.component.css']
+    selector: 'app-custom-socket',
+    template: ``,
+    styleUrls: ['./custom-socket.component.css'],
+    standalone: false
 })
 export class CustomSocketComponent implements OnChanges {
 

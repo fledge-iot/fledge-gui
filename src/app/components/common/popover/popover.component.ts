@@ -15,16 +15,17 @@ import {
 } from '@angular/core';
 
 @Component({
-  selector: 'app-popover',
-  template: `<ng-template #popoverTemplate>
+    selector: 'app-popover',
+    template: `<ng-template #popoverTemplate>
     <div class="popover-content"
          (mouseenter)="onPopoverMouseEnter()"
          (mouseleave)="onPopoverMouseLeave()">
       <ng-content></ng-content>
     </div>
   </ng-template>`,
-  styleUrls: ['./popover.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    styleUrls: ['./popover.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PopoverComponent implements OnInit, OnDestroy {
   @ViewChild('popoverTemplate', { static: true }) popoverTemplate: TemplateRef<any>;

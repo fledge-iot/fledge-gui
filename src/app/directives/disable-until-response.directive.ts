@@ -2,7 +2,8 @@ import { Directive, Input, EventEmitter, HostListener, Renderer2, ElementRef } f
 import { Subscription } from 'rxjs';
 
 @Directive({
-  selector: '[appDisableUntilResponse]'
+    selector: '[appDisableUntilResponse]',
+    standalone: false
 })
 export class DisableUntilResponseDirective {
 

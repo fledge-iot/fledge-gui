@@ -21,9 +21,10 @@ export interface Property {
 }
 
 @Component({
-  selector: 'app-bucket-configuration',
-  templateUrl: './bucket-configuration.component.html',
-  styleUrls: ['./bucket-configuration.component.css']
+    selector: 'app-bucket-configuration',
+    templateUrl: './bucket-configuration.component.html',
+    styleUrls: ['./bucket-configuration.component.css'],
+    standalone: false
 })
 export class BucketConfigurationComponent implements OnInit {
   @Input() dataModel: any;

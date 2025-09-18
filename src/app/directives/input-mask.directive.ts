@@ -19,7 +19,8 @@ interface IState {
 }
 
 @Directive({
-  selector: '[mask]'
+    selector: '[mask]',
+    standalone: false
 })
 export class InputMaskDirective implements OnInit {
 

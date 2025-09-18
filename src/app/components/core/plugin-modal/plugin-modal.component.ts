@@ -7,9 +7,10 @@ import { concatMap, delayWhen, retryWhen, take, tap } from 'rxjs/operators';
 import { of, Subscription, throwError, timer } from 'rxjs';
 
 @Component({
-  selector: 'app-plugin-modal',
-  templateUrl: './plugin-modal.component.html',
-  styleUrls: ['./plugin-modal.component.css']
+    selector: 'app-plugin-modal',
+    templateUrl: './plugin-modal.component.html',
+    styleUrls: ['./plugin-modal.component.css'],
+    standalone: false
 })
 export class PluginModalComponent implements OnInit, OnChanges {
 

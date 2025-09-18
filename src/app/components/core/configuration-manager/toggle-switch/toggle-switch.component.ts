@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-toggle-switch',
-  templateUrl: './toggle-switch.component.html',
-  styleUrls: ['./toggle-switch.component.css']
+    selector: 'app-toggle-switch',
+    templateUrl: './toggle-switch.component.html',
+    styleUrls: ['./toggle-switch.component.css'],
+    standalone: false
 })
 export class ToggleSwitchComponent {
   @Output() currentView = new EventEmitter<any>();

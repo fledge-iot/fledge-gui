@@ -6,9 +6,10 @@ import Utils, { weekDays } from '../../../../utils';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-list-schedules',
-  templateUrl: './list-schedules.component.html',
-  styleUrls: ['./list-schedules.component.css']
+    selector: 'app-list-schedules',
+    templateUrl: './list-schedules.component.html',
+    styleUrls: ['./list-schedules.component.css'],
+    standalone: false
 })
 
 export class ListSchedulesComponent implements OnInit {

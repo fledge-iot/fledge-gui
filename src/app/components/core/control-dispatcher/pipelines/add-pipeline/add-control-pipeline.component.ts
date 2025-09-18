@@ -43,9 +43,10 @@ export interface Destination {
 }
 
 @Component({
-  selector: 'app-add-control-pipeline',
-  templateUrl: './add-control-pipeline.component.html',
-  styleUrls: ['./add-control-pipeline.component.css'],
+    selector: 'app-add-control-pipeline',
+    templateUrl: './add-control-pipeline.component.html',
+    styleUrls: ['./add-control-pipeline.component.css'],
+    standalone: false
 })
 export class AddControlPipelineComponent implements OnInit {
   @ViewChild('pipelineForm') pipelineForm: NgForm;

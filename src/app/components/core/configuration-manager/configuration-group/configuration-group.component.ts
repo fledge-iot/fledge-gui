@@ -6,9 +6,10 @@ import { TabHeader } from './tab-header-slider';
 import { TabNavigationComponent } from '../tab-navigation/tab-navigation.component';
 
 @Component({
-  selector: 'app-configuration-group',
-  templateUrl: './configuration-group.component.html',
-  styleUrls: ['./configuration-group.component.css']
+    selector: 'app-configuration-group',
+    templateUrl: './configuration-group.component.html',
+    styleUrls: ['./configuration-group.component.css'],
+    standalone: false
 })
 export class ConfigurationGroupComponent implements AfterViewInit {
 

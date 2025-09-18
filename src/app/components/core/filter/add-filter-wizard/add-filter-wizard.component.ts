@@ -16,9 +16,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FlowEditorService } from '../../../common/node-editor/flow-editor.service';
 
 @Component({
-  selector: 'app-add-filter-wizard',
-  templateUrl: './add-filter-wizard.component.html',
-  styleUrls: ['./add-filter-wizard.component.css']
+    selector: 'app-add-filter-wizard',
+    templateUrl: './add-filter-wizard.component.html',
+    styleUrls: ['./add-filter-wizard.component.css'],
+    standalone: false
 })
 export class AddFilterWizardComponent implements OnInit {
 

@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'caseInsensitiveSearch'
+    name: 'caseInsensitiveSearch',
+    standalone: false
 })
 export class CaseInsensitiveSearchPipe implements PipeTransform {
   transform(items: any[], searchText: string, field: string): any[] {

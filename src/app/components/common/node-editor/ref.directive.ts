@@ -1,7 +1,8 @@
 import { Directive, ElementRef, Input, OnChanges } from '@angular/core';
 
 @Directive({
-  selector: '[refComponent]'
+    selector: '[refComponent]',
+    standalone: false
 })
 export class RefDirective implements OnChanges {
   @Input() data!: any

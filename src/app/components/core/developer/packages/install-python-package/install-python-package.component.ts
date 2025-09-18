@@ -5,9 +5,10 @@ import { AlertService, ProgressBarService } from '../../../../../services';
 import { PackageManagerService } from '../../../../../services/package-manager.service';
 
 @Component({
-  selector: 'app-install-python-package',
-  templateUrl: './install-python-package.component.html',
-  styleUrls: ['./install-python-package.component.css']
+    selector: 'app-install-python-package',
+    templateUrl: './install-python-package.component.html',
+    styleUrls: ['./install-python-package.component.css'],
+    standalone: false
 })
 export class InstallPythonPackageComponent implements OnInit {
   installationForm: UntypedFormGroup;

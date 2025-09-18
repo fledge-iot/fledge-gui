@@ -12,9 +12,10 @@ import { AdditionalServicesContextMenuComponent } from './additional-services-co
 import { AdditionalServicesUtils } from './additional-services-utils.service';
 
 @Component({
-  selector: "app-list-additional-services",
-  templateUrl: "./list-additional-services.component.html",
-  styleUrls: ["./list-additional-services.component.css"],
+    selector: "app-list-additional-services",
+    templateUrl: "./list-additional-services.component.html",
+    styleUrls: ["./list-additional-services.component.css"],
+    standalone: false
 })
 export class ListAdditionalServicesComponent implements OnInit, OnDestroy {
   installedServicePkgs = [];

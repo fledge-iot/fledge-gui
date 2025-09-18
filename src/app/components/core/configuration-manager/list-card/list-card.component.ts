@@ -4,9 +4,10 @@ import { RolesService } from '../../../../services';
 import { PopoverComponent } from '../../../common/popover/popover.component';
 
 @Component({
-  selector: 'app-list-card',
-  templateUrl: './list-card.component.html',
-  styleUrls: ['./list-card.component.css']
+    selector: 'app-list-card',
+    templateUrl: './list-card.component.html',
+    styleUrls: ['./list-card.component.css'],
+    standalone: false
 })
 export class ListCardComponent {
   @Input() configuration: any;

@@ -4,9 +4,10 @@ import { SystemAlert, SystemAlerts } from './../../../models/system-alert';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-system-alert',
-  templateUrl: './system-alert.component.html',
-  styleUrls: ['./system-alert.component.css']
+    selector: 'app-system-alert',
+    templateUrl: './system-alert.component.html',
+    styleUrls: ['./system-alert.component.css'],
+    standalone: false
 })
 
 export class SystemAlertComponent {

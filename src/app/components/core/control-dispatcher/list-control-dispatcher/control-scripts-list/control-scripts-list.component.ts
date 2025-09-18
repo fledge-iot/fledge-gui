@@ -11,9 +11,10 @@ import { DocService } from '../../../../../services/doc.service';
 import { AdditionalServicesUtils } from '../../../developer/additional-services/additional-services-utils.service';
 
 @Component({
-  selector: 'app-control-scripts-list',
-  templateUrl: './control-scripts-list.component.html',
-  styleUrls: ['./control-scripts-list.component.css']
+    selector: 'app-control-scripts-list',
+    templateUrl: './control-scripts-list.component.html',
+    styleUrls: ['./control-scripts-list.component.css'],
+    standalone: false
 })
 export class ControlScriptsListComponent implements OnInit {
   controlScripts: any = [];

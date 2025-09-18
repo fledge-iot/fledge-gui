@@ -8,9 +8,10 @@ import {
 } from '../../../services';
 
 @Component({
-  selector: 'app-configuration-manager',
-  templateUrl: './configuration-manager.component.html',
-  styleUrls: ['./configuration-manager.component.css']
+    selector: 'app-configuration-manager',
+    templateUrl: './configuration-manager.component.html',
+    styleUrls: ['./configuration-manager.component.css'],
+    standalone: false
 })
 
 export class ConfigurationManagerComponent implements OnInit {

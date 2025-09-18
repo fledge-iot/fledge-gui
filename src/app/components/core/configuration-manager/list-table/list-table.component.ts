@@ -4,9 +4,10 @@ import { RolesService } from '../../../../services';
 import { FormArray, FormGroup } from '@angular/forms';
 
 @Component({
-  selector: 'app-list-table',
-  templateUrl: './list-table.component.html',
-  styleUrls: ['./list-table.component.css']
+    selector: 'app-list-table',
+    templateUrl: './list-table.component.html',
+    styleUrls: ['./list-table.component.css'],
+    standalone: false
 })
 export class ListTableComponent {
   @Input() from;

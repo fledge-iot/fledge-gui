@@ -15,9 +15,10 @@ import { DocService } from '../../../../services/doc.service';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 
 @Component({
-  selector: 'app-add-notification-wizard',
-  templateUrl: './add-notification-wizard.component.html',
-  styleUrls: ['./add-notification-wizard.component.css']
+    selector: 'app-add-notification-wizard',
+    templateUrl: './add-notification-wizard.component.html',
+    styleUrls: ['./add-notification-wizard.component.css'],
+    standalone: false
 })
 export class AddNotificationWizardComponent implements OnInit, OnDestroy {
   @ViewChild('retriggerTime') retriggerTime: ElementRef;

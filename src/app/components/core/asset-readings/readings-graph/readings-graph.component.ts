@@ -13,9 +13,10 @@ import * as moment from 'moment';
 declare var Plotly: any;
 
 @Component({
-  selector: 'app-readings-graph',
-  templateUrl: './readings-graph.component.html',
-  styleUrls: ['./readings-graph.component.css']
+    selector: 'app-readings-graph',
+    templateUrl: './readings-graph.component.html',
+    styleUrls: ['./readings-graph.component.css'],
+    standalone: false
 })
 export class ReadingsGraphComponent implements OnDestroy {
   @Output() refreshAssets = new EventEmitter<boolean>();

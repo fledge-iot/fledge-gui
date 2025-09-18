@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output, HostListener } from '@angular/core';
 
 @Component({
-  selector: 'app-restart-modal',
-  templateUrl: './restart-modal.component.html',
-  styleUrls: ['./restart-modal.component.css']
+    selector: 'app-restart-modal',
+    templateUrl: './restart-modal.component.html',
+    styleUrls: ['./restart-modal.component.css'],
+    standalone: false
 })
 export class RestartModalComponent implements OnInit {
   @Input() restartData: { key: any, message: any };

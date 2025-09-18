@@ -26,7 +26,8 @@ import { FilterListComponent } from '../../filter/filter-list/filter-list.compon
 @Component({
   selector: 'app-north-task-modal',
   templateUrl: './north-task-modal.component.html',
-  styleUrls: ['./north-task-modal.component.css']
+  styleUrls: ['./north-task-modal.component.css'],
+  standalone: false
 })
 export class NorthTaskModalComponent implements OnInit, OnChanges {
   category: any;
@@ -253,7 +254,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
     if (this.task.processName !== 'north_C') {
       updatePayload.repeat = 0;
-      if (form.controls['repeatTime'].value !== ('None' || undefined)) {
+      if (form.controls['repeatTime'].value !== 'None' && form.controls['repeatTime'].value !== undefined) {
         updatePayload.repeat = Utils.convertTimeToSec(form.controls['repeatTime'].value, form.controls['repeatDays'].value);
       }
       updatePayload.exclusive = form.controls['exclusive'].value;

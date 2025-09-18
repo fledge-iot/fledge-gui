@@ -18,9 +18,10 @@ type Connection = ClassicPreset.Connection<
 }
 
 @Component({
-  selector: 'app-custom-connection',
-  templateUrl: './custom-connection.component.html',
-  styleUrls: ['./custom-connection.component.css']
+    selector: 'app-custom-connection',
+    templateUrl: './custom-connection.component.html',
+    styleUrls: ['./custom-connection.component.css'],
+    standalone: false
 })
 export class CustomConnectionComponent {
   @Input() data!: Connection

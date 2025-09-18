@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, HostListener } from '@angular/core';
 
 @Component({
-  selector: 'app-alert-dialog',
-  templateUrl: './alert-dialog.component.html',
-  styleUrls: ['./alert-dialog.component.css']
+    selector: 'app-alert-dialog',
+    templateUrl: './alert-dialog.component.html',
+    styleUrls: ['./alert-dialog.component.css'],
+    standalone: false
 })
 export class AlertDialogComponent implements OnInit, OnChanges {
   @Input() notificationRecord: { name: string, message: string, key: string, headerTextValue: any };

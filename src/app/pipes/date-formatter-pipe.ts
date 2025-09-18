@@ -8,7 +8,10 @@ import { TimezoneService } from '../services/timezone.service';
  *   timestamp | dateparser:'DD.MM.YYYY'
  * Defaults to 'L' - locale ie. '01/24/2017'
 */
-@Pipe({ name: 'dateparser' })
+@Pipe({
+    name: 'dateparser',
+    standalone: false
+})
 export class DateFormatterPipe implements PipeTransform {
   constructor(private timezoneService: TimezoneService) { }
   transform(value: string, arg: string): string {

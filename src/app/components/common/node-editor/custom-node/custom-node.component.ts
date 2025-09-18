@@ -19,12 +19,13 @@ import { catchError, distinctUntilChanged, map, switchMap, take, takeUntil } fro
 import { Filter, North, Notification, South, Storage } from '../nodes';
 
 @Component({
-  selector: 'app-custom-node',
-  templateUrl: './custom-node.component.html',
-  styleUrls: ['./custom-node.component.css'],
-  host: {
-    "data-testid": "node"
-  }
+    selector: 'app-custom-node',
+    templateUrl: './custom-node.component.html',
+    styleUrls: ['./custom-node.component.css'],
+    host: {
+        "data-testid": "node"
+    },
+    standalone: false
 })
 export class CustomNodeComponent implements OnChanges, OnDestroy {
 

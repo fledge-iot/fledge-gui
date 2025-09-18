@@ -6,9 +6,9 @@ import { SharedService } from '../../../../../services/shared.service';
 import { map } from 'lodash';
 
 @Component({
-  selector: 'tabuate-performance-monitors',
-  templateUrl: './table.component.html',
-  // styleUrls: ['./table.component.css']
+    selector: 'tabuate-performance-monitors',
+    templateUrl: './table.component.html',
+    standalone: false
 })
 export class PerfMonComponent implements OnInit {
   public showSpinner = false;

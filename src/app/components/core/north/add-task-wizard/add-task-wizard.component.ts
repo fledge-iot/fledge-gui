@@ -16,7 +16,8 @@ import { CustomValidator } from '../../../../directives/custom-validator';
 @Component({
   selector: 'app-add-task-wizard',
   templateUrl: './add-task-wizard.component.html',
-  styleUrls: ['./add-task-wizard.component.css']
+  styleUrls: ['./add-task-wizard.component.css'],
+  standalone: false
 })
 export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
@@ -249,7 +250,7 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
 
   private addScheduledTask() {
 
-    const repeatTime = this.taskForm.value['repeatTime'] !== ('' || undefined) ? Utils.convertTimeToSec(
+    const repeatTime = (this.taskForm.value['repeatTime'] !== '' && this.taskForm.value['repeatTime'] !== undefined) ? Utils.convertTimeToSec(
       this.taskForm.value['repeatTime'], this.taskForm.value['repeatDays']) : 0;
     const config = this.taskForm.value['config'];
     const payload = {

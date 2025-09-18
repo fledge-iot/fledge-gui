@@ -2,9 +2,10 @@ import { Component, Input } from '@angular/core';
 import { Debug } from '../../south/south-service';
 
 @Component({
-  selector: 'debugger-readings',
-  templateUrl: './debugger-readings.component.html',
-  styleUrls: ['./debugger-readings.component.css']
+    selector: 'debugger-readings',
+    templateUrl: './debugger-readings.component.html',
+    styleUrls: ['./debugger-readings.component.css'],
+    standalone: false
 })
 export class DebuggerReadingsComponent {
   @Input() serviceName = '';

@@ -10,9 +10,10 @@ import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-list-type-configuration',
-  templateUrl: './list-type-configuration.component.html',
-  styleUrls: ['./list-type-configuration.component.css']
+    selector: 'app-list-type-configuration',
+    templateUrl: './list-type-configuration.component.html',
+    styleUrls: ['./list-type-configuration.component.css'],
+    standalone: false
 })
 export class ListTypeConfigurationComponent implements OnInit {
   @Input() configuration;

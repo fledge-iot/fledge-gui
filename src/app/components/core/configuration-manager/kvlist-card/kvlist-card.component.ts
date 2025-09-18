@@ -4,9 +4,10 @@ import { RolesService } from '../../../../services';
 import { PopoverComponent } from '../../../common/popover/popover.component';
 
 @Component({
-  selector: 'app-kvlist-card',
-  templateUrl: './kvlist-card.component.html',
-  styleUrls: ['./kvlist-card.component.css']
+    selector: 'app-kvlist-card',
+    templateUrl: './kvlist-card.component.html',
+    styleUrls: ['./kvlist-card.component.css'],
+    standalone: false
 })
 export class KvlistCardComponent {
   @Input() configuration: any;

@@ -3,9 +3,10 @@ import { UntypedFormGroup, NgForm } from '@angular/forms';
 import { RolesService } from '../../../../../../services';
 
 @Component({
-  selector: 'app-add-delay',
-  templateUrl: './add-delay.component.html',
-  styleUrls: ['./add-delay.component.css'],
+    selector: 'app-add-delay',
+    templateUrl: './add-delay.component.html',
+    styleUrls: ['./add-delay.component.css'],
+    standalone: false
 })
 export class AddDelayComponent implements OnInit {
 
