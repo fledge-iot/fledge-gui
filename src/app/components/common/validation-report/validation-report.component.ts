@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, SimpleChanges, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-validation-report',
@@ -6,22 +6,30 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, Simple
   styleUrls: ['./validation-report.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ValidationReportComponent {
+export class ValidationReportComponent implements OnInit {
   @Input() results: any;
   @Input() loading: boolean = false;
   @Input() error: string | null = null;
   @Output() close = new EventEmitter<void>();
 
-  ngOnChanges(changes: SimpleChanges): void {
-    
-    if (changes['results']) {
-     
-      this.results = changes['results'].currentValue;
-    }
-  }
-
   public expandedTests: { [key: string]: boolean } = {};
   public minimized = false;
+  
+  // Report icon state object
+  public reportIcon = {
+    classes: 'bi bi-ui-checks',
+    tooltip: 'Validation status'
+  };
+
+  ngOnInit(): void {
+    this.updateIconState();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['results'] || changes['loading'] || changes['error']) {
+      this.updateIconState();
+    }
+  }
 
   public toggleReport(key: string) {
     this.expandedTests[key] = !this.expandedTests[key];
@@ -36,10 +44,59 @@ export class ValidationReportComponent {
   }
 
   /**
+   * Update icon state based on current validation results
+   * This method is called only when inputs change, not on every change detection
+   */
+  private updateIconState(): void {
+    const state = this.getValidationState();
+    
+    const baseClass = 'bi bi-ui-checks';
+    
+    // Update reportIcon object based on validation state
+    switch (state) {
+      case 'loading':
+        this.reportIcon = {
+          classes: `${baseClass} has-text-primary blink`,
+          tooltip: 'Running validation checks...'
+        };
+        break;
+      case 'success':
+        this.reportIcon = {
+          classes: `${baseClass} has-text-success`,
+          tooltip: 'All checks passed'
+        };
+        break;
+      case 'danger':
+        this.reportIcon = {
+          classes: `${baseClass} has-text-danger`,
+          tooltip: 'All checks failed'
+        };
+        break;
+      case 'error':
+        this.reportIcon = {
+          classes: `${baseClass} has-text-danger`,
+          tooltip: 'Validation error occurred'
+        };
+        break;
+      case 'warning':
+        this.reportIcon = {
+          classes: `${baseClass} has-text-warning`,
+          tooltip: 'Some checks failed'
+        };
+        break;
+      default:
+        this.reportIcon = {
+          classes: baseClass,
+          tooltip: 'Validation status'
+        };
+    }
+  }
+
+  /**
    * Get the validation state based on results
    * @returns The current validation state
    */
-  public getValidationState(): 'loading' | 'success' | 'danger' | 'warning' | 'error' {
+  private getValidationState(): 'loading' | 'success' | 'danger' | 'warning' | 'error' {
     if (this.loading) {
       return 'loading';
     }
@@ -67,52 +124,6 @@ export class ValidationReportComponent {
       return 'danger';
     } else {
       return 'warning';
-    }
-  }
-
-  /**
-   * Get the icon classes based on validation state
-   * @returns CSS classes for the validation icon
-   */
-  public getIconClasses(): string {
-    const state = this.getValidationState();
-    const baseClass = 'bi bi-ui-checks';
-    
-    switch (state) {
-      case 'loading':
-        return `${baseClass} has-text-primary blink`;
-      case 'success':
-        return `${baseClass} has-text-success`;
-      case 'danger':
-      case 'error':
-        return `${baseClass} has-text-danger`;
-      case 'warning':
-        return `${baseClass} has-text-warning`;
-      default:
-        return baseClass;
-    }
-  }
-
-  /**
-   * Get the tooltip text based on validation state
-   * @returns Tooltip text for the validation icon
-   */
-  public getIconTooltip(): string {
-    const state = this.getValidationState();
-    
-    switch (state) {
-      case 'loading':
-        return 'Running validation checks...';
-      case 'success':
-        return 'All checks passed';
-      case 'danger':
-        return 'All checks failed';
-      case 'error':
-        return 'Validation error occurred';
-      case 'warning':
-        return 'Some checks failed';
-      default:
-        return 'Validation status';
     }
   }
 }

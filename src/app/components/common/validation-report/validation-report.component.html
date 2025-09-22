@@ -1,8 +1,8 @@
 <div class="card validation-report" [class.minimized]="minimized" *ngIf="results || loading || error">
   <header class="card-header validation-report-header p-0">
-    <p class="card-header-title py-0 px-2 h-10">
+    <p class="card-header-title py-0 px-1 h-10">
       <span class="icon">
-        <i [ngClass]="getIconClasses()" [title]="getIconTooltip()"></i>
+        <i [ngClass]="reportIcon.classes" [title]="reportIcon.tooltip"></i>
       </span>
       Validation Report
     </p>
@@ -15,7 +15,7 @@
         </button>
         <button class="button is-white is-small" title="Close" (click)="onClose()">
           <span class="icon">
-            <i class="bi bi-x"></i>
+            <i class="bi bi-sm bi-x"></i>
           </span>
         </button>
       </div>
