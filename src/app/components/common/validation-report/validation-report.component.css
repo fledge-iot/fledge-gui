@@ -48,11 +48,11 @@
 }
 
 .status-icon.pass {
-  background: #48c774;
+  background-color: var(--bulma-success);
 }
 
 .status-icon.fail {
-  background: #f14668;
+  background-color: var(--bulma-danger);
 }
 
 .item-details {
