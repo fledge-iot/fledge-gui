@@ -1,4 +1,4 @@
-<fieldset *ngIf="rolesService.hasAccessPermission(permissions); else staticConfig">
+<fieldset *ngIf="rolesService.hasAccessPermission(permissions) && !isDisabled; else staticConfig">
   <div [ngSwitch]="configuration.type">
     <input
       *ngSwitchCase="['string','IPv4','IPv6'].includes(configuration.type) ? configuration.type : !configuration.type"
@@ -26,7 +26,7 @@
       </div>
       <div class="control">
         <button type="button" class="button is-small" (click)="togglePassword(pwd)"
-          [disabled]="control?.status === 'DISABLED'">
+          [disabled]="control?.status === 'DISABLED' || isDisabled">
           <span class="icon is-small">
             <i class="{{pwd.type === 'password'? 'fa fa-sm fa-eye-slash' : 'fa fa-sm fa-eye'}}"></i>
           </span>

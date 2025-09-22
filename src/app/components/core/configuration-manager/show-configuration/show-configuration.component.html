@@ -1,5 +1,5 @@
 <div class="view-content columns">
-  <ng-container *ngIf="rolesService?.hasEditPermissionsOnPage(from); else staticView">
+  <ng-container *ngIf="rolesService?.hasEditPermissionsOnPage(from) && !isListDisabled; else staticView">
     <div class="column p-2">
       <ng-container *ngFor="let configuration of configurations$ | async">
         <ng-container *ngIf="configuration?.permissions && !rolesService?.hadEditPermissionsOnConfigItem(configuration?.permissions);
@@ -141,7 +141,7 @@
   <ng-template #staticView>
     <div class="column p-2">
       <ng-container *ngFor="let configuration of configurations$ | async">
-        <app-static-configuration [configuration]="configuration" />
+        <app-static-configuration [configuration]="configuration" [isListDisabled]="isListDisabled" />
       </ng-container>
     </div>
   </ng-template>

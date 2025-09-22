@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, SimpleChanges, OnChanges } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { filter } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
@@ -12,11 +12,12 @@ import { FileExportModalComponent } from '../../../common/file-export-modal/file
   templateUrl: './kv-list-type-configuration.component.html',
   styleUrls: ['./kv-list-type-configuration.component.css']
 })
-export class KvListTypeConfigurationComponent implements OnInit {
+export class KvListTypeConfigurationComponent implements OnInit, OnChanges {
   @Input() configuration;
   @Input() categoryName;
   @Input() group: string = '';
   @Input() from = '';
+  @Input() fullConfiguration: any;
   @Output() changedConfig = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
   @ViewChild(FileImportModalComponent, { static: true }) fileImportModal: FileImportModalComponent;
@@ -27,6 +28,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
   validConfigurationForm = true;
   kvlistValues = {};
   isListView = true;
+  isListDisabled = false;
 
   constructor(
     public cdRef: ChangeDetectorRef,
@@ -41,10 +43,17 @@ export class KvListTypeConfigurationComponent implements OnInit {
   ngOnInit() {
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
     values = JSON.parse(values) as [];
+    this.updateListValidity();
     for (const [key, value] of Object.entries(values)) {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
     this.onControlValueChanges();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.fullConfiguration && this.fullConfiguration) {
+      this.updateListValidity();
+    }
   }
 
   get kvListItems() {
@@ -167,6 +176,12 @@ export class KvListTypeConfigurationComponent implements OnInit {
         }
         transformedObject[item.key] = itemValue;
       });
+
+      // Update the configuration value for validity checking
+      if (this.fullConfiguration && this.configuration.key) {
+        this.fullConfiguration[this.configuration.key].value = JSON.stringify(transformedObject);
+      }
+
       this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(transformedObject) });
       this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
     })
@@ -273,6 +288,37 @@ export class KvListTypeConfigurationComponent implements OnInit {
     this.isListView = event.isListView;
     if (this.kvListItems.length == 1 && !this.isListView) {
       this.expandListItem(0); // Expand the list if only one item is present
+    }
+  }
+  /**
+ * Update the validity state of the list based on validity expressions
+ */
+  updateListValidity() {
+    if (this.fullConfiguration && this.configuration.validity) {
+      const tempConfig = { ...this.configuration, key: this.configuration.key };
+      this.isListDisabled = !!this.configControlService.validateConfigItem(this.fullConfiguration, tempConfig);
+
+      // Update form control states based on validity
+      this.updateFormControlsState();
+    } else {
+      this.isListDisabled = false;
+    }
+  }
+
+  /**
+   * Update the enabled/disabled state of all form controls
+   */
+  updateFormControlsState() {
+    if (this.kvListItemsForm && this.kvListItems) {
+      const shouldDisable = this.isListDisabled || !this.rolesService.hasAccessPermission(this.configuration?.permissions);
+
+      this.kvListItems.controls.forEach(control => {
+        if (shouldDisable) {
+          control.disable({ emitEvent: false });
+        } else {
+          control.enable({ emitEvent: false });
+        }
+      });
     }
   }
 }

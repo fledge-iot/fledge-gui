@@ -44,7 +44,8 @@
           <div class="field-body">
             <div class="field">
               <div class="column is-11 p-0">
-                <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticKey">
+                <ng-container
+                  *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled; else staticKey">
                   <input formControlName="key" placeholder="key" class="input is-small is-fullwidth" name="type"
                     type="text">
                   <span *ngIf="kvListItems?.controls[i]?.controls['key']?.invalid" class="help is-danger">
@@ -62,12 +63,12 @@
         </div>
         <hr class="kvlist-divider">
         <app-show-configuration [groupConfiguration]="initialProperties[i]" [fullConfiguration]="initialProperties[i]"
-          (event)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)" [from]="from"
-          [group]="group"></app-show-configuration>
+          (event)="getChangedConfiguration($event)" (formStatusEvent)="formStatus($event)" [from]="from" [group]="group"
+          [isListDisabled]="isListDisabled"></app-show-configuration>
       </div>
       <div class="column is-1 has-text-right"
-        [ngClass]="{'is-invisible': !rolesService.hasAccessPermission(configuration?.permissions)}">
-        <button class="delete my-3 is-small" (click)="removeListItem(i)"></button>
+        [ngClass]="{'is-invisible': !rolesService.hasAccessPermission(configuration?.permissions) || isListDisabled}">
+        <button class="delete my-3 is-small" (click)="removeListItem(i)" [disabled]="isListDisabled"></button>
       </div>
       <div class="column is-1 has-text-right">
         <button class="button is-small my-1 collapse-btn" (click)="toggleCard()"
