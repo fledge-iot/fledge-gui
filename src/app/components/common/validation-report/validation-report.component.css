@@ -71,3 +71,17 @@
   word-wrap: break-word;
   background: #f8f8f8;
 }
+
+/* Blinking animation for loading state */
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0.3;
+  }
+}
+
+.blink {
+  animation: blink 1s infinite;
+}
