@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as bulmaToast from 'bulma-toast'
 
 export const toastDefaultProperties: bulmaToast.Options = {
+  message: '',
   position: 'bottom-right',
   closeOnClick: false,
   dismissible: true,
