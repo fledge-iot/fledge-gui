@@ -10,7 +10,7 @@
         <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" [isListView]="isListView"
           (addnewItem)="addListItem(true)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
           (importFile)="openModal()" (exportFile)="openExportFileModal()"
-          [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
+          [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
       </div>
     </div>
   </ng-container>
@@ -41,7 +41,8 @@
             <div class="field">
               <div class="columns is-flex is-vcentered">
                 <div class="column is-11">
-                  <ng-container *ngIf="rolesService.hasAccessPermission(configuration?.permissions); else staticView">
+                  <ng-container
+                    *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled; else staticView">
                     <input *ngIf="configuration.items === 'integer'" class="input is-small" type="text"
                       [formControl]="ctrl" [minValue]="configuration?.minimum" [maxValue]="configuration?.maximum"
                       autocomplete="off" appIntegerOnly />
@@ -55,7 +56,8 @@
                     <span class="help">{{ ctrl.value }}</span>
                   </ng-template>
                 </div>
-                <div class="column is-1" *ngIf="rolesService.hasAccessPermission(configuration?.permissions)">
+                <div class="column is-1"
+                  *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled">
                   <button class="delete my-1 is-small" (click)="removeListItem(i)"></button>
                 </div>
               </div>
@@ -77,8 +79,8 @@
           <app-list-card *cdkVirtualFor="let ctrl of listItemControls; let i = index; trackBy: trackByIndex"
             [configuration]="configuration" [listItemsForm]="listItemsForm" [initialProperties]="initialProperties"
             [from]="from" [group]="group" [listLabel]="listLabel" [firstKey]="firstKey" [items]="items" [item]="ctrl"
-            [index]="i" (changedConfig)="getChangedConfiguration(i, $event)" (formStatusEvent)="formStatus($event, i)"
-            (removeItem)="removeListItem($event)">
+            [index]="i" [isListDisabled]="isListDisabled" (changedConfig)="getChangedConfiguration(i, $event)"
+            (formStatusEvent)="formStatus($event, i)" (removeItem)="removeListItem($event)">
           </app-list-card>
         </cdk-virtual-scroll-viewport>
         <!-- Normal *ngFor rendering for <= 3 items -->
@@ -86,8 +88,8 @@
           <app-list-card *ngFor="let ctrl of listItemControls; let i = index; trackBy: trackByIndex"
             [configuration]="configuration" [listItemsForm]="listItemsForm" [initialProperties]="initialProperties"
             [from]="from" [group]="group" [listLabel]="listLabel" [firstKey]="firstKey" [items]="items" [item]="ctrl"
-            [index]="i" (changedConfig)="getChangedConfiguration(i, $event)" (formStatusEvent)="formStatus($event, i)"
-            (removeItem)="removeListItem($event)" />
+            [index]="i" [isListDisabled]="isListDisabled" (changedConfig)="getChangedConfiguration(i, $event)"
+            (formStatusEvent)="formStatus($event, i)" (removeItem)="removeListItem($event)" />
         </ng-template>
 
       </ng-container>
@@ -95,12 +97,13 @@
   </div>
   <ng-container *ngIf="configuration.items == 'object' && isListView">
     <app-list-table [configuration]="configuration" [listItemsForm]="listItemsForm" [listType]="'list'" [from]="from"
-      [validConfigurationForm]="validConfigurationForm" (removeItem)="removeListItem($event)"
-      (addItem)="addListItem(true)" (openModalEvent)="openModal()" (exportFile)="openExportFileModal()" />
+      [validConfigurationForm]="validConfigurationForm" [isListDisabled]="isListDisabled"
+      (removeItem)="removeListItem($event)" (addItem)="addListItem(true)" (openModalEvent)="openModal()"
+      (exportFile)="openExportFileModal()" />
   </ng-container>
   <ng-container *ngIf="configuration.items != 'object'; else objectButtonPanel">
     <ng-container
-      *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)">
+      *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != listItems.controls.length)">
       <div class="field">
         <p class="control">
           <button class="button is-small px-0 pt-1 is-ghost" (click)="addListItem(false)"
@@ -117,7 +120,7 @@
   <ng-template #objectButtonPanel>
     <ng-container *ngIf="listItems.controls.length==0; else buttonPanelTemplate">
       <ng-container
-        *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)">
+        *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != listItems.controls.length)">
         <div class="field">
           <span class="control">
             <div class="field has-addons">
@@ -159,7 +162,7 @@
           <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" [isListView]="isListView"
             (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
             (importFile)="openModal()" (exportFile)="openExportFileModal()"
-            [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
+            [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
         </div>
       </div>
     </ng-template>

@@ -14,6 +14,7 @@ export class ListTableComponent {
   @Input() configuration;
   @Input() validConfigurationForm;
   @Input() listItemsForm: FormGroup;
+  @Input() isListDisabled = false;
   @Output() removeItem = new EventEmitter<any>();
   @Output() addItem = new EventEmitter<any>();
   @Output() openModalEvent = new EventEmitter<any>();

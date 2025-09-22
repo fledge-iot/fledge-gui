@@ -1,5 +1,6 @@
 import {
   Component,
+  ChangeDetectionStrategy,
   Input,
   Output,
   EventEmitter,
@@ -10,19 +11,20 @@ import {
   Injector,
   ApplicationRef,
   EmbeddedViewRef,
-  OnInit
+  OnInit,
 } from '@angular/core';
 
 @Component({
   selector: 'app-popover',
   template: `<ng-template #popoverTemplate>
-    <div class="popover-content" 
+    <div class="popover-content"
          (mouseenter)="onPopoverMouseEnter()"
          (mouseleave)="onPopoverMouseLeave()">
       <ng-content></ng-content>
     </div>
   </ng-template>`,
-  styleUrls: ['./popover.component.css']
+  styleUrls: ['./popover.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PopoverComponent implements OnInit, OnDestroy {
   @ViewChild('popoverTemplate', { static: true }) popoverTemplate: TemplateRef<any>;
@@ -158,79 +160,74 @@ export class PopoverComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const triggerRect = this.triggerElement.getBoundingClientRect();
-    const popoverRect = popoverElement.getBoundingClientRect();
-    const viewportHeight = window.innerHeight;
-    const viewportWidth = window.innerWidth;
+    // Defer DOM reads/writes to the next animation frame to avoid layout thrashing
+    requestAnimationFrame(() => {
+      const triggerRect = this.triggerElement!.getBoundingClientRect();
+      const popoverRect = popoverElement.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const viewportWidth = window.innerWidth;
 
-    let top = 0;
-    let left = 0;
-    let transformX = '0%';
-    let transformY = '0%';
-    let finalPosition = this.position;
+      let top = 0;
+      let left = 0;
+      let transformX = '0%';
+      let transformY = '0%';
+      let finalPosition = this.position;
 
-    // Auto position if needed
-    if (this.position === 'auto') {
-      const spaceAbove = triggerRect.top;
-      const spaceBelow = viewportHeight - triggerRect.bottom;
-      const spaceLeft = triggerRect.left;
-      const spaceRight = viewportWidth - triggerRect.right;
+      if (this.position === 'auto') {
+        const spaceAbove = triggerRect.top;
+        const spaceBelow = viewportHeight - triggerRect.bottom;
+        const spaceLeft = triggerRect.left;
+        const spaceRight = viewportWidth - triggerRect.right;
 
-      // Determine best position based on available space
-      if (spaceAbove >= popoverRect.height + this.offset && spaceAbove >= spaceBelow) {
-        finalPosition = 'top';
-      } else if (spaceBelow >= popoverRect.height + this.offset) {
-        finalPosition = 'bottom';
-      } else if (spaceRight >= popoverRect.width + this.offset) {
-        finalPosition = 'right';
-      } else {
-        finalPosition = 'left';
+        if (spaceAbove >= popoverRect.height + this.offset && spaceAbove >= spaceBelow) {
+          finalPosition = 'top';
+        } else if (spaceBelow >= popoverRect.height + this.offset) {
+          finalPosition = 'bottom';
+        } else if (spaceRight >= popoverRect.width + this.offset) {
+          finalPosition = 'right';
+        } else {
+          finalPosition = 'left';
+        }
       }
-    }
 
-    // Calculate position based on final position
-    switch (finalPosition) {
-      case 'top':
-        left = triggerRect.left + (triggerRect.width / 2);
-        top = triggerRect.top - this.offset;
-        transformX = '-50%';
-        transformY = '-100%';
-        break;
+      switch (finalPosition) {
+        case 'top':
+          left = triggerRect.left + (triggerRect.width / 2);
+          top = triggerRect.top - this.offset;
+          transformX = '-50%';
+          transformY = '-100%';
+          break;
+        case 'bottom':
+          left = triggerRect.left + (triggerRect.width / 2);
+          top = triggerRect.bottom + this.offset;
+          transformX = '-50%';
+          transformY = '0%';
+          break;
+        case 'left':
+          left = triggerRect.left - this.offset;
+          top = triggerRect.top + (triggerRect.height / 2);
+          transformX = '-100%';
+          transformY = '-50%';
+          break;
+        case 'right':
+          left = triggerRect.right + this.offset;
+          top = triggerRect.top + (triggerRect.height / 2);
+          transformX = '0%';
+          transformY = '-50%';
+          break;
+      }
 
-      case 'bottom':
-        left = triggerRect.left + (triggerRect.width / 2);
-        top = triggerRect.bottom + this.offset;
-        transformX = '-50%';
-        transformY = '0%';
-        break;
+      const margin = 10;
+      left = Math.max(margin, Math.min(left, viewportWidth - margin));
+      top = Math.max(margin, Math.min(top, viewportHeight - margin));
 
-      case 'left':
-        left = triggerRect.left - this.offset;
-        top = triggerRect.top + (triggerRect.height / 2);
-        transformX = '-100%';
-        transformY = '-50%';
-        break;
-
-      case 'right':
-        left = triggerRect.right + this.offset;
-        top = triggerRect.top + (triggerRect.height / 2);
-        transformX = '0%';
-        transformY = '-50%';
-        break;
-    }
-
-    // Ensure popover stays within viewport
-    const margin = 10;
-    left = Math.max(margin, Math.min(left, viewportWidth - margin));
-    top = Math.max(margin, Math.min(top, viewportHeight - margin));
-
-    // Apply styles
-    this.renderer.setStyle(popoverElement, 'position', 'fixed');
-    this.renderer.setStyle(popoverElement, 'left', `${left}px`);
-    this.renderer.setStyle(popoverElement, 'top', `${top}px`);
-    this.renderer.setStyle(popoverElement, 'transform', `translate(${transformX}, ${transformY})`);
-    this.renderer.setStyle(popoverElement, 'z-index', '99999');
-    this.renderer.addClass(popoverElement, `popover-${finalPosition}`);
+      this.renderer.setStyle(popoverElement, 'position', 'fixed');
+      this.renderer.setStyle(popoverElement, 'left', `${left}px`);
+      this.renderer.setStyle(popoverElement, 'top', `${top}px`);
+      this.renderer.setStyle(popoverElement, 'transform', `translate(${transformX}, ${transformY})`);
+      this.renderer.setStyle(popoverElement, 'z-index', '99999');
+      this.renderer.addClass(popoverElement, `popover-${finalPosition}`);
+    });
   }
 
   /**
@@ -262,4 +259,4 @@ export class PopoverComponent implements OnInit, OnDestroy {
   get visible(): boolean {
     return this.isVisible;
   }
-} 
+}
