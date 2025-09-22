@@ -2399,12 +2399,12 @@
     "@emnapi/runtime" "^1.5.0"
     "@tybys/wasm-util" "^0.10.1"
 
-"@ng-select/ng-select@^10.0.4":
-  version "10.0.4"
-  resolved "https://registry.yarnpkg.com/@ng-select/ng-select/-/ng-select-10.0.4.tgz#46ab5e7bfcf6473868d1584cf5d7f63291346217"
-  integrity sha512-Vc/JIgcFkSgf47cX7+pQQo9HYhDktfqrY7o/ZPGMvu63P7E9d1MibVipqmcLbgms6Ac9lu621CDZPGHdxag7hA==
+"@ng-select/ng-select@^20.2.0":
+  version "20.2.0"
+  resolved "https://registry.yarnpkg.com/@ng-select/ng-select/-/ng-select-20.2.0.tgz#41a80b19750e407e12c9c4700e91bdb756c018bf"
+  integrity sha512-+uKq2GwhObTgTQsoEv0AnJWSGRLUthWuF9S3bM8R0pfSAYtLTzQ1HEVOrzp42MCVGnvdKCr+Ls81rroFJtSS3Q==
   dependencies:
-    tslib "^2.3.1"
+    tslib "^2.8.1"
 
 "@ngtools/webpack@20.3.2":
   version "20.3.2"
@@ -9234,10 +9234,10 @@ restore-cursor@^5.0.0:
     onetime "^7.0.0"
     signal-exit "^4.1.0"
 
-rete-angular-plugin@^2.0.2:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/rete-angular-plugin/-/rete-angular-plugin-2.1.1.tgz#eda86610513dacc630216125fdba07a8797d606b"
-  integrity sha512-oaGJ+y6RyLTXBtrzQdxlubZf2q1Zau+3cuLq1cwgG8ZVsaS72GsE8prLhxBa/PsODye1GGXyenxzzn8R0TV2tA==
+rete-angular-plugin@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/rete-angular-plugin/-/rete-angular-plugin-2.5.0.tgz#a73f81ee7aa8f14cfefa538cbd803191b3c0cce8"
+  integrity sha512-ZgwrIwsEVIsp6hSmK8jsshV78Z7I5lazdHS0VTuCOZ0WiQKyrEOr8XXoWScirsrXZQmKrwgP9nQhdmHa5Faxjg==
   dependencies:
     tslib "^2.3.0"
 
@@ -10418,7 +10418,7 @@ tslib@2.4.0:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.0.tgz#7cecaa7f073ce680a05847aa77be941098f36dc3"
   integrity sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==
 
-tslib@2.8.1, tslib@^2.4.0, tslib@^2.6.2:
+tslib@2.8.1, tslib@^2.4.0, tslib@^2.6.2, tslib@^2.8.1:
   version "2.8.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.8.1.tgz#612efe4ed235d567e8aba5f2a5fab70280ade83f"
   integrity sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==
@@ -10428,7 +10428,7 @@ tslib@^1.13.0, tslib@^1.8.1, tslib@^1.9.0:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.0.0, tslib@^2.1.0, tslib@^2.3.0, tslib@^2.3.1:
+tslib@^2.0.0, tslib@^2.1.0, tslib@^2.3.0:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.6.2.tgz#703ac29425e7b37cd6fd456e92404d46d1f3e4ae"
   integrity sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==
