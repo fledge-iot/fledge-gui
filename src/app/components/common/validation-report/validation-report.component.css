@@ -48,11 +48,11 @@
 }
 
 .status-icon.pass {
-  background: #48c774;
+  background-color: var(--bulma-success);
 }
 
 .status-icon.fail {
-  background: #f14668;
+  background-color: var(--bulma-danger);
 }
 
 .item-details {
@@ -70,4 +70,18 @@
   white-space: pre-wrap;
   word-wrap: break-word;
   background: #f8f8f8;
+}
+
+/* Blinking animation for loading state */
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0.3;
+  }
+}
+
+.blink {
+  animation: blink 1s infinite;
 }
