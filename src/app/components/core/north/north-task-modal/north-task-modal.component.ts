@@ -23,6 +23,12 @@ import { catchError, map, takeUntil } from 'rxjs/operators';
 import { NorthTask } from '../north-task';
 import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
 
+export enum FilterPipelineType {
+  Empty = 'empty',
+  Simple = 'simple',
+  Complex = 'complex'
+}
+
 @Component({
   selector: 'app-north-task-modal',
   templateUrl: './north-task-modal.component.html',
@@ -38,9 +44,12 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   isAddFilterWizard = false;
   public applicationTagClicked = false;
 
-  public filterPipeline: string[] = [];
+  public filterPipeline: any[] = [];
   public confirmationDialogData = {};
   public btnTxt = '';
+  
+  // Make enum accessible in template
+  public readonly FilterPipelineType = FilterPipelineType;
 
   @ViewChild('fg') form: NgForm;
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
@@ -253,7 +262,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
     if (this.task.processName !== 'north_C') {
       updatePayload.repeat = 0;
-      if (form.controls['repeatTime'].value !== ('None' || undefined)) {
+      if (form.controls['repeatTime'].value !== 'None' && form.controls['repeatTime'].value !== undefined) {
         updatePayload.repeat = Utils.convertTimeToSec(form.controls['repeatTime'].value, form.controls['repeatDays'].value);
       }
       updatePayload.exclusive = form.controls['exclusive'].value;
@@ -266,6 +275,30 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   getTimeIntervalValue(event) {
     this.repeatTime = event.target.value;
+  }
+
+  /**
+   * Get the filter pipeline type based on current pipeline structure
+   */
+  public get filterPipelineType(): FilterPipelineType {
+    if (!this.filterPipeline || this.filterPipeline.length === 0) {
+      return FilterPipelineType.Empty;
+    }
+    
+    if (this.isNestedArray(this.filterPipeline)) {
+      return FilterPipelineType.Complex;
+    }
+    
+    return FilterPipelineType.Simple;
+  }
+
+  /**
+   * Check if the array contains nested arrays
+   * @param arr array to check
+   * @returns true if array contains nested arrays, false otherwise
+   */
+  private isNestedArray(arr: any[]): boolean {
+    return arr.some(item => Array.isArray(item));
   }
 
   onDelete(payload) {

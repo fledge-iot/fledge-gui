@@ -27,6 +27,12 @@ import { catchError, map, takeUntil } from 'rxjs/operators';
 import { Service } from '../south-service';
 import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
 
+export enum FilterPipelineType {
+  Empty = 'empty',
+  Simple = 'simple',
+  Complex = 'complex'
+}
+
 @Component({
   selector: 'app-south-service-modal',
   templateUrl: './south-service-modal.component.html',
@@ -36,9 +42,12 @@ export class SouthServiceModalComponent implements OnInit {
 
   public category: any;
   svcCheckbox: UntypedFormControl = new UntypedFormControl();
-  public filterPipeline: string[] = [];
+  public filterPipeline: any[] = [];
   public applicationTagClicked = false;
   public unsavedChangesInFilterForm = false;
+  
+  // Make enum accessible in template
+  public readonly FilterPipelineType = FilterPipelineType;
 
   assetReadings = [];
   public isAddFilterWizard;
@@ -184,6 +193,30 @@ export class SouthServiceModalComponent implements OnInit {
     this.category = null;
     this.notify.emit(false);
     modalWindow.classList.remove('is-active');
+  }
+
+  /**
+   * Get the filter pipeline type based on current pipeline structure
+   */
+  public get filterPipelineType(): FilterPipelineType {
+    if (!this.filterPipeline || this.filterPipeline.length === 0) {
+      return FilterPipelineType.Empty;
+    }
+    
+    if (this.isNestedArray(this.filterPipeline)) {
+      return FilterPipelineType.Complex;
+    }
+    
+    return FilterPipelineType.Simple;
+  }
+
+  /**
+   * Check if the array contains nested arrays
+   * @param arr array to check
+   * @returns true if array contains nested arrays, false otherwise
+   */
+  private isNestedArray(arr: any[]): boolean {
+    return arr.some(item => Array.isArray(item));
   }
 
   public getCategory(): void {

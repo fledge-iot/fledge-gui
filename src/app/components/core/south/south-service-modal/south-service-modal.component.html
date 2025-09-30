@@ -50,10 +50,17 @@
               </ng-template>
             </div>
           </div>
-          <app-filter-list #filtersListComponent [service]="service?.name" [filterPipeline]="filterPipeline"
+          <app-filter-list #filtersListComponent *ngIf="filterPipelineType === FilterPipelineType.Simple" [service]="service?.name" [filterPipeline]="filterPipeline"
             [from]="'filter'" (formStatus)="filterFormStatus($event)"></app-filter-list>
-
-          <div *ngIf="!filterPipeline || filterPipeline.length === 0">
+          <div *ngIf="filterPipelineType === FilterPipelineType.Complex">
+            <p class="has-text-centered has-text-grey-light is-size-7 mt-1 mb-2">
+              Complex filter pipeline detected. Please 
+              <a [routerLink]="['/setting']">enable Flow Editor from settings</a> 
+              to view and manage this pipeline.
+            </p>
+            <hr class="hr-text">
+          </div>
+          <div *ngIf="filterPipelineType === FilterPipelineType.Empty">
             <p class="has-text-centered has-text-grey-light is-size-7 mt-1 mb-2">No filters configured</p>
             <hr class="hr-text">
           </div>
