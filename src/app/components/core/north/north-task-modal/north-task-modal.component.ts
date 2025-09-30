@@ -22,12 +22,7 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { catchError, map, takeUntil } from 'rxjs/operators';
 import { NorthTask } from '../north-task';
 import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
-
-export enum FilterPipelineType {
-  Empty = 'empty',
-  Simple = 'simple',
-  Complex = 'complex'
-}
+import { FilterPipelineType } from '../../../../services/filter.service';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -281,24 +276,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
    * Get the filter pipeline type based on current pipeline structure
    */
   public get filterPipelineType(): FilterPipelineType {
-    if (!this.filterPipeline || this.filterPipeline.length === 0) {
-      return FilterPipelineType.Empty;
-    }
-    
-    if (this.isNestedArray(this.filterPipeline)) {
-      return FilterPipelineType.Complex;
-    }
-    
-    return FilterPipelineType.Simple;
-  }
-
-  /**
-   * Check if the array contains nested arrays
-   * @param arr array to check
-   * @returns true if array contains nested arrays, false otherwise
-   */
-  private isNestedArray(arr: any[]): boolean {
-    return arr.some(item => Array.isArray(item));
+    return this.filterService.getFilterPipelineType(this.filterPipeline);
   }
 
   onDelete(payload) {
