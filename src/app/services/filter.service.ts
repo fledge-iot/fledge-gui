@@ -118,11 +118,11 @@ export class FilterService {
   }
 
   /**
-   * Get the filter pipeline type based on pipeline structure
+   * Detect the filter pipeline type based on pipeline structure
    * @param filterPipeline the filter pipeline array
    * @returns FilterPipelineType enum value
    */
-  public getFilterPipelineType(filterPipeline: any[]): FilterPipelineType {
+  public detectFilterPipelineType(filterPipeline: any[]): FilterPipelineType {
     if (!filterPipeline || filterPipeline.length === 0) {
       return FilterPipelineType.Empty;
     }

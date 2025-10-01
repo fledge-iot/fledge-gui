@@ -43,6 +43,7 @@ export class SouthServiceModalComponent implements OnInit {
   
   // Make enum accessible in template
   public readonly FilterPipelineType = FilterPipelineType;
+  public filterPipelineType: FilterPipelineType = FilterPipelineType.Empty;
 
   assetReadings = [];
   public isAddFilterWizard;
@@ -111,7 +112,9 @@ export class SouthServiceModalComponent implements OnInit {
     }
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.filterPipelineType = this.filterService.detectFilterPipelineType(this.filterPipeline);
+  }
 
   public getSouthboundServices(caching: boolean) {
     this.servicesApiService.getSouthServices(caching)
@@ -188,13 +191,6 @@ export class SouthServiceModalComponent implements OnInit {
     this.category = null;
     this.notify.emit(false);
     modalWindow.classList.remove('is-active');
-  }
-
-  /**
-   * Get the filter pipeline type based on current pipeline structure
-   */
-  public get filterPipelineType(): FilterPipelineType {
-    return this.filterService.getFilterPipelineType(this.filterPipeline);
   }
 
   public getCategory(): void {
@@ -392,10 +388,12 @@ export class SouthServiceModalComponent implements OnInit {
     this.filterService.getFilterPipeline(this.service.name)
       .subscribe((data: any) => {
         this.filterPipeline = data.result.pipeline as string[];
+        this.filterPipelineType = this.filterService.detectFilterPipelineType(this.filterPipeline);
       },
         error => {
           if (error.status === 404) {
             this.filterPipeline = [];
+            this.filterPipelineType = this.FilterPipelineType.Empty;
           } else {
             console.log('Error ', error);
           }
