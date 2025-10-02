@@ -23,9 +23,20 @@ export class FileImportService {
     return fileContent;
   }
 
+  /**
+   * Normalizes line endings to handle both LF and CRLF formats
+   * @param text - The text content to normalize
+   * @returns Text with normalized LF line endings
+   */
+  private normalizeLineEndings(text: string): string {
+    return text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  }
+
   importDataFromCSV(csvText: string, type) {
-    const propertyNames = csvText.slice(0, csvText.indexOf('\n')).split(',');
-    const dataRows = csvText.slice(csvText.indexOf('\n') + 1).split('\n');
+    // Normalize line endings to handle both LF and CRLF
+    const normalizedText = this.normalizeLineEndings(csvText);
+    const propertyNames = normalizedText.slice(0, normalizedText.indexOf('\n')).split(',');
+    const dataRows = normalizedText.slice(normalizedText.indexOf('\n') + 1).split('\n');
     if (type == 'kvlist') {
       let dataObj = {};
       dataRows.forEach((row) => {
@@ -60,13 +71,17 @@ export class FileImportService {
 
   async getTableData(files: File[]) {
     let csvText = await this.getTextFromFile(files);
-    const dataRows = csvText.split('\n');
+    // Normalize line endings to handle both LF and CRLF
+    const normalizedText = this.normalizeLineEndings(csvText);
+    const dataRows = normalizedText.split('\n');
     return dataRows;
   }
 
   async isCsvFileValid(files: File[], properties, type, keyName = 'Key') {
     let csvText = await this.getTextFromFile(files);
-    const propertyNames = csvText.slice(0, csvText.indexOf('\n')).split(',');
+    // Normalize line endings to handle both LF and CRLF
+    const normalizedText = this.normalizeLineEndings(csvText);
+    const propertyNames = normalizedText.slice(0, normalizedText.indexOf('\n')).split(',');
     let propertiesLength = Object.keys(properties).length;
     if (type == 'kvlist') {
       if (propertyNames.length != propertiesLength + 1) {
@@ -80,7 +95,7 @@ export class FileImportService {
       if (propertyNames.indexOf(keyName) == -1) {
         return false;
       }
-      const dataRows = csvText.slice(csvText.indexOf('\n') + 1).split('\n');
+      const dataRows = normalizedText.slice(normalizedText.indexOf('\n') + 1).split('\n');
       for (let row of dataRows) {
         if (row) {
           let values = row.split(',');
@@ -100,7 +115,7 @@ export class FileImportService {
           return false;
         }
       }
-      const dataRows = csvText.slice(csvText.indexOf('\n') + 1).split('\n');
+      const dataRows = normalizedText.slice(normalizedText.indexOf('\n') + 1).split('\n');
       for (let row of dataRows) {
         if (row) {
           let values = row.split(',');
@@ -115,7 +130,9 @@ export class FileImportService {
 
   async isJsonFileValid(files: File[], properties, type, keyName = 'Key') {
     let jsonText = await this.getTextFromFile(files);
-    let jsonObj = JSON.parse(jsonText);
+    // Normalize line endings to handle both LF and CRLF
+    const normalizedText = this.normalizeLineEndings(jsonText);
+    let jsonObj = JSON.parse(normalizedText);
     let propertiesLength = Object.keys(properties).length;
     if (type == 'kvlist') {
       if (Array.isArray(jsonObj)) {
@@ -156,7 +173,9 @@ export class FileImportService {
 
   async importJsonData(files: File[], type) {
     let jsonText = await this.getTextFromFile(files);
-    return JSON.parse(jsonText);
+    // Normalize line endings to handle both LF and CRLF
+    const normalizedText = this.normalizeLineEndings(jsonText);
+    return JSON.parse(normalizedText);
   }
 
   getFileName(files: File[]) {
