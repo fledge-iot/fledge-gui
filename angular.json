@@ -30,7 +30,8 @@
               "jsonlint-mod",
               "moment",
               "elkjs",
-              "@babel/runtime/regenerator"
+              "@babel/runtime/regenerator",
+              "@angular-architects/module-federation"
             ],
             "outputPath": "dist",
             "index": "src/fledge.html",
