@@ -2,11 +2,22 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title is-size-6">Import File</p>
+      <p class="modal-card-title is-size-6">
+        {{isManualMode ? 'Import Content' : 'Import File'}}
+      </p>
       <button class="delete" aria-label="close" (click)="formReset()"></button>
     </header>
     <section class="modal-card-body">
-      <div class="file has-name is-fullwidth is-small" [ngClass]="{'error': !file.isValidExtension || !file.isValid}"
+      <!-- Progress Bar -->
+      <div *ngIf="isLoading" class="loading-container mb-4">
+        <div class="progress-container">
+          <progress class="progress is-small is-primary" max="100"></progress>
+        </div>
+        <p class="has-text-centered has-text-grey">Processing file...</p>
+      </div>
+
+      <!-- File Upload Mode -->
+      <div *ngIf="!isManualMode" class="file has-name is-fullwidth is-small" [ngClass]="{'error': !file.isValidExtension || !file.isValid}"
         (dragover)="onDragOver($event)" (drop)="onDropSuccess($event)">
         <label class="file-label">
           <input #fileImport class="file-input p-5" type="file" (click)="$event.target.value=null;"
@@ -26,6 +37,26 @@
           </span>
         </label>
       </div>
+
+      <!-- Manual Paste Mode -->
+      <div *ngIf="isManualMode" class="manual-paste-container">
+        <div class="field">
+          <div class="control">
+            <ngx-codemirror 
+              name="manualContent"
+              [(ngModel)]="manualContent"
+              [options]="codeMirrorOptions"
+              (ngModelChange)="onManualContentChange($event)"
+              placeholder="Paste CSV or JSON content here...">
+            </ngx-codemirror>
+          </div>
+          <p class="help" *ngIf="detectedFormat">
+            <i class="fas fa-info-circle"></i>
+            Detected format: <strong>{{detectedFormat}}</strong>
+          </p>
+        </div>
+      </div>
+
       <template [ngTemplateOutlet]="invalidFileTemplate"></template>
       <table class="table is-responsive mt-2" *ngIf="tableData">
         <thead>
@@ -45,11 +76,21 @@
       </table>
     </section>
 
-    <footer class="modal-card-foot buttons">
-      <button class="button is-small is-link is-outlined" (click)="appendFileData()"
-        [disabled]="!file.isLoaded">Append</button>
-      <button class="button is-small is-link is-outlined" (click)="overrideFileData()"
-        [disabled]="!file.isLoaded">Override</button>
+    <footer class="modal-card-foot">
+      <div class="buttons">
+        <button class="button is-small is-link is-outlined" (click)="appendFileData()"
+          [disabled]="!file.isLoaded">Append</button>
+        <button class="button is-small is-link is-outlined" (click)="overrideFileData()"
+          [disabled]="!file.isLoaded">Override</button>
+      </div>
+      <div class="buttons">
+        <button class="button is-small is-ghost" (click)="toggleManualMode()">
+          <span class="icon">
+            <i class="fas" [ngClass]="isManualMode ? 'fa-upload' : 'fa-paste'"></i>
+          </span>
+          <span>{{isManualMode ? 'Upload File' : 'Paste Content'}}</span>
+        </button>
+      </div>
     </footer>
   </div>
 </div>
@@ -59,6 +100,6 @@
     Only CSV or JSON file is allowed
   </span>
   <span *ngIf="file.isValidExtension && !file.isValid" class="invalid has-text-danger mt-1">
-    Invalid file content
+    Invalid content
   </span>
 </ng-template>
