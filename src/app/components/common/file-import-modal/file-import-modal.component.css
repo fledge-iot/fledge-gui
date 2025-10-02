@@ -25,17 +25,46 @@
   margin-right: 0.25rem;
 }
 
+.manual-paste-container .help.has-text-danger {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 4px;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Delimiter selection styling */
+.manual-paste-container .field:first-child {
+  margin-bottom: 1rem;
+}
+
+.manual-paste-container .label.is-small {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4a4a4a;
+  margin-bottom: 0.25rem;
+}
+
+.manual-paste-container .select.is-small select {
+  font-size: 0.875rem;
+  padding: 0.25rem 2rem 0.25rem 0.5rem;
+}
+
 /* CodeMirror styling */
 .manual-paste-container ngx-codemirror {
   border: 1px solid #dbdbdb;
   border-radius: 4px;
-  height: 300px; /* Fixed height for better visibility */
+  height: 300px;
   display: block;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .manual-paste-container ngx-codemirror .CodeMirror {
   height: 300px !important;
   min-height: 300px !important;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 .manual-paste-container ngx-codemirror:hover {
@@ -67,6 +96,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 }
 
 .modal-card-foot .buttons {
