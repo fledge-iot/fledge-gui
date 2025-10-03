@@ -14,8 +14,8 @@ export class FileImportService {
   }
 
   importDataFromCSV(csvText: string, type: 'kvlist' | 'array') {
-    // 🔑 Normalize line endings
-    csvText = csvText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    // Normalize line endings
+    csvText = this.normalizeLineEndings(csvText);
 
     // Split into rows
     const lines = csvText.split('\n').filter(line => line.trim() !== '');
