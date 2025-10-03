@@ -22,6 +22,7 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { catchError, map, takeUntil } from 'rxjs/operators';
 import { NorthTask } from '../north-task';
 import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
+import { FilterPipelineType } from '../../../../services/filter.service';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -38,9 +39,13 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   isAddFilterWizard = false;
   public applicationTagClicked = false;
 
-  public filterPipeline: string[] = [];
+  public filterPipeline: any[] = [];
   public confirmationDialogData = {};
   public btnTxt = '';
+  
+  // Make enum accessible in template
+  public readonly FilterPipelineType = FilterPipelineType;
+  public filterPipelineType: FilterPipelineType = FilterPipelineType.Empty;
 
   @ViewChild('fg') form: NgForm;
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
@@ -103,7 +108,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.filterPipelineType = this.filterService.detectFilterPipelineType(this.filterPipeline);
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes?.task?.previousValue !== changes?.task?.currentValue) {
@@ -253,7 +260,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
     if (this.task.processName !== 'north_C') {
       updatePayload.repeat = 0;
-      if (form.controls['repeatTime'].value !== ('None' || undefined)) {
+      if (form.controls['repeatTime'].value !== 'None' && form.controls['repeatTime'].value !== undefined) {
         updatePayload.repeat = Utils.convertTimeToSec(form.controls['repeatTime'].value, form.controls['repeatDays'].value);
       }
       updatePayload.exclusive = form.controls['exclusive'].value;
@@ -344,10 +351,12 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.filterService.getFilterPipeline(this.task.name)
       .subscribe((data: any) => {
         this.filterPipeline = data.result.pipeline as string[];
+        this.filterPipelineType = this.filterService.detectFilterPipelineType(this.filterPipeline);
       },
         error => {
           if (error.status === 404) {
             this.filterPipeline = [];
+            this.filterPipelineType = this.FilterPipelineType.Empty;
           } else {
             console.log('Error ', error);
           }

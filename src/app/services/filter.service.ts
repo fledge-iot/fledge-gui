@@ -5,6 +5,12 @@ import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
+export enum FilterPipelineType {
+  Empty = 'empty',
+  Simple = 'simple',
+  Complex = 'complex'
+}
+
 @Injectable()
 export class FilterService {
 
@@ -100,5 +106,31 @@ export class FilterService {
     return this.http.delete(this.FILTER_URL + '/' + encodeURIComponent(filterName)).pipe(
       map(response => response),
       catchError(error => throwError(error)));
+  }
+
+  /**
+   * Check if the array contains nested arrays (complex filter pipeline)
+   * @param arr array to check
+   * @returns true if array contains nested arrays, false otherwise
+   */
+  public isNestedArray(arr: any[]): boolean {
+    return arr && arr.some(item => Array.isArray(item));
+  }
+
+  /**
+   * Detect the filter pipeline type based on pipeline structure
+   * @param filterPipeline the filter pipeline array
+   * @returns FilterPipelineType enum value
+   */
+  public detectFilterPipelineType(filterPipeline: any[]): FilterPipelineType {
+    if (!filterPipeline || filterPipeline.length === 0) {
+      return FilterPipelineType.Empty;
+    }
+    
+    if (this.isNestedArray(filterPipeline)) {
+      return FilterPipelineType.Complex;
+    }
+    
+    return FilterPipelineType.Simple;
   }
 }

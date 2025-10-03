@@ -26,6 +26,7 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { catchError, map, takeUntil } from 'rxjs/operators';
 import { Service } from '../south-service';
 import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
+import { FilterPipelineType } from '../../../../services/filter.service';
 
 @Component({
   selector: 'app-south-service-modal',
@@ -36,9 +37,13 @@ export class SouthServiceModalComponent implements OnInit {
 
   public category: any;
   svcCheckbox: UntypedFormControl = new UntypedFormControl();
-  public filterPipeline: string[] = [];
+  public filterPipeline: any[] = [];
   public applicationTagClicked = false;
   public unsavedChangesInFilterForm = false;
+  
+  // Make enum accessible in template
+  public readonly FilterPipelineType = FilterPipelineType;
+  public filterPipelineType: FilterPipelineType = FilterPipelineType.Empty;
 
   assetReadings = [];
   public isAddFilterWizard;
@@ -107,7 +112,9 @@ export class SouthServiceModalComponent implements OnInit {
     }
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.filterPipelineType = this.filterService.detectFilterPipelineType(this.filterPipeline);
+  }
 
   public getSouthboundServices(caching: boolean) {
     this.servicesApiService.getSouthServices(caching)
@@ -381,10 +388,12 @@ export class SouthServiceModalComponent implements OnInit {
     this.filterService.getFilterPipeline(this.service.name)
       .subscribe((data: any) => {
         this.filterPipeline = data.result.pipeline as string[];
+        this.filterPipelineType = this.filterService.detectFilterPipelineType(this.filterPipeline);
       },
         error => {
           if (error.status === 404) {
             this.filterPipeline = [];
+            this.filterPipelineType = this.FilterPipelineType.Empty;
           } else {
             console.log('Error ', error);
           }
