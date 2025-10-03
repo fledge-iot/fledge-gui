@@ -13,101 +13,108 @@ export class FileImportService {
     return importedData;
   }
 
-  async getTextFromFile(files: File[]) {
-    const file: File = files[0];
-    let fileContent = await file.text();
-    let lastCharacter = fileContent.slice(-1);
-    if (lastCharacter == '\n') {
-      fileContent = fileContent.slice(0, -1);
-    }
-    return fileContent;
-  }
+  importDataFromCSV(csvText: string, type: 'kvlist' | 'array') {
+    // Normalize line endings
+    csvText = this.normalizeLineEndings(csvText);
 
-  importDataFromCSV(csvText: string, type) {
-    const propertyNames = csvText.slice(0, csvText.indexOf('\n')).split(',');
-    const dataRows = csvText.slice(csvText.indexOf('\n') + 1).split('\n');
-    if (type == 'kvlist') {
-      let dataObj = {};
-      dataRows.forEach((row) => {
-        let values = row.split(',');
-        let obj = new Object();
-        for (let index = 0; index < propertyNames.length; index++) {
-          if (index != 0) {
-            const propertyName = propertyNames[index];
-            let val = values[index];
-            obj[propertyName] = val;
-          }
+    // Split into rows
+    const lines = csvText.split('\n').filter(line => line.trim() !== '');
+    if (lines.length === 0) return type === 'kvlist' ? {} : [];
+
+    // Header
+    const propertyNames = lines[0].split(',');
+
+    // Data rows
+    const dataRows = lines.slice(1);
+
+    if (type === 'kvlist') {
+      const dataObj: Record<string, any> = {};
+
+      dataRows.forEach(row => {
+        const values = row.split(',');
+        if (values.length !== propertyNames.length) return; // skip invalid row
+
+        const obj: Record<string, any> = {};
+        for (let i = 1; i < propertyNames.length; i++) {
+          obj[propertyNames[i]] = values[i] ?? "";
         }
-        dataObj[values[0]] = obj;
+        dataObj[values[0]] = obj; // first column is the key
       });
+
       return dataObj;
-    }
-    else {
-      let dataArray = [];
-      dataRows.forEach((row) => {
-        let values = row.split(',');
-        let obj = new Object();
-        for (let index = 0; index < propertyNames.length; index++) {
-          const propertyName = propertyNames[index];
-          let val = values[index];
-          obj[propertyName] = val;
-        }
+    } else {
+      const dataArray: any[] = [];
+
+      dataRows.forEach(row => {
+        const values = row.split(',');
+        if (values.length !== propertyNames.length) return; // skip invalid row
+
+        const obj: Record<string, any> = {};
+        propertyNames.forEach((prop, i) => {
+          obj[prop] = values[i] ?? "";
+        });
         dataArray.push(obj);
       });
+
       return dataArray;
     }
   }
 
+  private normalizeLineEndings(text: string): string {
+    return text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  }
+
   async getTableData(files: File[]) {
     let csvText = await this.getTextFromFile(files);
-    const dataRows = csvText.split('\n');
+    // Normalize line endings to handle both LF and CRLF
+    csvText = this.normalizeLineEndings(csvText);
+
+    const dataRows = csvText.split('\n').filter(row => row.trim() !== ''); // optional: remove empty lines
     return dataRows;
   }
 
   async isCsvFileValid(files: File[], properties, type, keyName = 'Key') {
     let csvText = await this.getTextFromFile(files);
-    const propertyNames = csvText.slice(0, csvText.indexOf('\n')).split(',');
-    let propertiesLength = Object.keys(properties).length;
-    if (type == 'kvlist') {
-      if (propertyNames.length != propertiesLength + 1) {
-        return false;
-      }
+
+    // 🔑 Normalize all line endings to LF
+    csvText = this.normalizeLineEndings(csvText);
+
+    // Split into lines
+    const lines = csvText.split('\n').filter(line => line.trim() !== '');
+    if (lines.length === 0) return false;
+
+    // Header row
+    const propertyNames = lines[0].split(',');
+    const propertiesLength = Object.keys(properties).length;
+
+    if (type === 'kvlist') {
+      // Must contain all properties + keyName
+      if (propertyNames.length !== propertiesLength + 1) return false;
+
       for (let key of Object.keys(properties)) {
-        if (propertyNames.indexOf(key) == -1) {
-          return false;
-        }
+        if (!propertyNames.includes(key)) return false;
       }
-      if (propertyNames.indexOf(keyName) == -1) {
-        return false;
-      }
-      const dataRows = csvText.slice(csvText.indexOf('\n') + 1).split('\n');
-      for (let row of dataRows) {
-        if (row) {
-          let values = row.split(',');
-          if (values.length !== propertiesLength + 1) {
-            return false;
-          }
-        }
+      if (!propertyNames.includes(keyName)) return false;
+
+      // Validate rows
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',');
+        if (values.length !== propertiesLength + 1) return false;
       }
       return true;
-    }
-    else {
-      if (propertiesLength != propertyNames.length) {
-        return false;
-      }
+
+    } else {
+      // Regular type
+      if (propertyNames.length !== propertiesLength) return false;
+
       for (let key of Object.keys(properties)) {
-        if (propertyNames.indexOf(key) == -1) {
-          return false;
-        }
+        if (!propertyNames.includes(key)) return false;
       }
-      const dataRows = csvText.slice(csvText.indexOf('\n') + 1).split('\n');
-      for (let row of dataRows) {
-        if (row) {
-          let values = row.split(',');
-          if (values.length !== propertiesLength) {
-            return false;
-          }
-        }
+
+      // Validate rows
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',');
+        if (values.length !== propertiesLength) return false;
       }
       return true;
     }
@@ -154,10 +161,26 @@ export class FileImportService {
     }
   }
 
+  async getTextFromFile(files: File[], removeTrailingNewline = true) {
+    const file: File = files[0];
+    let fileContent = await file.text();
+
+    // Normalize all line endings to \n
+    fileContent = this.normalizeLineEndings(fileContent);
+
+    // Only remove trailing newline if requested (useful for CSV)
+    if (removeTrailingNewline && fileContent.endsWith('\n')) {
+      fileContent = fileContent.slice(0, -1);
+    }
+
+    return fileContent;
+  }
+
   async importJsonData(files: File[], type) {
-    let jsonText = await this.getTextFromFile(files);
+    let jsonText = await this.getTextFromFile(files, false); // keep trailing \n
     return JSON.parse(jsonText);
   }
+
 
   getFileName(files: File[]) {
     const file: File = files[0];
@@ -176,30 +199,33 @@ export class FileImportService {
     return false;
   }
 
-  getJsonTableData(json, type, keyName = 'Key') {
-    if (type == 'list') {
+
+  escapeCsvValue(value: any): string {
+    if (value == null) return '';
+    const str = `${value}`;
+    if (/[,"\n]/.test(str)) {
+      return `"${str.replace(/"/g, '""')}"`; // escape quotes
+    }
+    return str;
+  }
+
+  getJsonTableData(json: any, type: 'list' | 'kvlist', keyName = 'Key'): string[] {
+    if (type === 'list') {
       const header = Object.keys(json[0]);
-      const rows = json.map((obj) => {
-        return header.map((key) => {
-          const value = obj[key];
-          return `${value}`;
-        }).join(',');
+      const rows = json.map(obj => {
+        return header.map(key => this.escapeCsvValue(obj[key])).join(',');
       });
       return [header.join(','), ...rows];
-    }
-    else {
-      let rows = [];
-      let header;
+    } else {
+      const rows: string[] = [];
+      const headerKeys: string[] = [];
       for (let [key, val] of Object.entries(json)) {
-        header = Object.keys(val);
-        let row = header.map((key) => {
-          const value = val[key];
-          return `${value}`;
-        }).join(',');
-        row = key + ',' + row;
-        rows.push(row)
+        const valKeys = Object.keys(val);
+        if (headerKeys.length === 0) headerKeys.push(...valKeys); // capture header only once
+        const row = valKeys.map(k => this.escapeCsvValue(val[k])).join(',');
+        rows.push(`${key},${row}`);
       }
-      header = keyName + ',' + header.join(',');
+      const header = `${keyName},${headerKeys.join(',')}`; // separate string variable
       return [header, ...rows];
     }
   }
