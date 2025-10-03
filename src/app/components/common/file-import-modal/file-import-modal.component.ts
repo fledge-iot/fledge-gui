@@ -367,6 +367,10 @@ export class FileImportModalComponent {
     this.codeMirrorOptions = { ...this.codeMirrorOptions, mode };
   }
 
+  private getListConfigurationType(): 'list' | 'kvlist' {
+    return this.configuration?.type === 'kvlist' ? 'kvlist' : 'list';
+  }
+
   /**
    * Processes manually pasted content and validates it
    * @private
@@ -430,7 +434,7 @@ export class FileImportModalComponent {
         this.file.data = jsonData;
         this.tableData = this.fileImportService.getJsonTableData(
           jsonData,
-          this.configuration.type,
+          this.getListConfigurationType(),
           this.configuration.keyName
         );
         this.file.isLoaded = true;
@@ -654,7 +658,7 @@ export class FileImportModalComponent {
       this.file.data = await this.fileImportService.importJsonData(files, this.configuration.type);
       this.tableData = this.fileImportService.getJsonTableData(
         this.file.data,
-        this.configuration.type,
+        this.getListConfigurationType(),
         this.configuration.keyName
       );
       this.file.isLoaded = true;
