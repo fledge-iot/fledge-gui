@@ -11,17 +11,21 @@
           <div class="column">
             <div class="field">
               <div class="certificate-input-container">
-                <div *ngIf="showBrowseCertificate" class="file is-fullwidth">
+                <div *ngIf="showBrowseCertificate" class="file has-name is-fullwidth">
                   <label class="file-label">
-                    <span class="file-cta is-fullwidth">
+                    <input class="file-input" type="file" required id="certificate" (change)="onCertificateChange($event)"
+                      formControlName="certificate" #fileInput>
+                    <span class="file-cta">
                       <span class="file-icon">
                         <i class="bi bi-sm bi-upload"></i>
                       </span>
-                      <input type="file" required id="certificate" (change)="onCertificateChange($event)"
-                        formControlName="certificate" #fileInput>
-                      <small *ngIf="!isCertificateExt" class="help is-danger level-left">Not a valid certificate file.</small>
+                      <span class="file-label">Drag and Drop a File or Browse</span>
+                    </span>
+                    <span class="file-name">
+                      {{ fileInput?.files?.length ? fileInput.files[0].name : 'No file chosen' }}
                     </span>
                   </label>
+                  <small *ngIf="!isCertificateExt" class="help is-danger level-left"> &nbsp; Invalid file</small>
                 </div>
                 <textarea *ngIf="!showBrowseCertificate" placeholder="Certificate text..." cols="60" style="height: 120px; resize: vertical;" formControlName="certificateText"></textarea>
               </div>
