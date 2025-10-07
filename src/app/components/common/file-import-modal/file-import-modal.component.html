@@ -66,12 +66,12 @@
             </ngx-codemirror>
           </div>
           <p class="help" *ngIf="detectedFormat && !validationError">
-            <i class="fas fa-info-circle"></i>
+            <i class="bi bi-info-circle"></i>
             Detected format: <strong>{{detectedFormat}}</strong><span *ngIf="detectedFormat === 'CSV'"> with
               {{getDelimiterDisplayName()}} delimiter</span>
           </p>
           <p class="help has-text-danger" *ngIf="validationError">
-            <i class="fas fa-exclamation-triangle"></i>
+            <i class="bi bi-exclamation-triangle"></i>
             {{validationError}}
           </p>
         </div>
@@ -106,7 +106,7 @@
       <div class="buttons">
         <button class="button is-small is-ghost" (click)="toggleManualMode()">
           <span class="icon">
-            <i class="fas" [ngClass]="isManualMode ? 'fa-upload' : 'fa-paste'"></i>
+            <i class="bi" [ngClass]="isManualMode ? 'bi-upload' : 'bi-copy'"></i>
           </span>
           <span>{{isManualMode ? 'Upload File' : 'Paste Content'}}</span>
         </button>
