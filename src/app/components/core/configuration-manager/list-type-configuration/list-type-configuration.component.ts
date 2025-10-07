@@ -31,8 +31,10 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges {
   firstKey: string;
   validConfigurationForm = true;
   listValues;
-  isListView = true;
+  currentView: 'list' | 'detailed' | 'json' | 'csv' = 'list';
   isListDisabled = false;
+  jsonEditorData = '';
+  csvEditorData = '';
 
   @ViewChild(CdkVirtualScrollViewport, { static: false }) viewport: CdkVirtualScrollViewport;
   private valueChangeSub: Subscription;
@@ -156,7 +158,7 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges {
     this.formStatusEvent.emit({ status: this.listItems.valid, group: this.group });
     if (this.configuration.items === 'object') {
       const index = isPrepend ? 0 : this.listItems.length - 1;
-      if (this.isListView) {
+      if (this.currentView === 'list') {
         this.scrollToRow(index);
       } else {
         this.expandListItem(index);
@@ -343,8 +345,13 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges {
   }
 
   setCurrentView(event) {
-    this.isListView = event.isListView;
-    if (this.listItems.length == 1 && !this.isListView) {
+    this.currentView = event as 'list' | 'detailed' | 'json' | 'csv';
+    if (this.currentView === 'json') {
+      this.jsonEditorData = this.getJsonFromForm();
+    } else if (this.currentView === 'csv') {
+      this.csvEditorData = this.getCsvFromForm();
+    }
+    if (this.listItems.length == 1 && this.currentView === 'detailed') {
       this.expandListItem(0); // Expand the list if only one item is present
     }
   }
@@ -383,5 +390,82 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges {
 
   ngOnDestroy() {
     this.valueChangeSub?.unsubscribe();
+  }
+
+  // ===== Synchronization helpers =====
+  private getJsonFromForm(): string {
+    if (this.configuration.items === 'object') {
+      const arr = this.listItems.value || [];
+      return JSON.stringify(arr, null, 2);
+    }
+    // primitives
+    return JSON.stringify(this.listItems.value || [], null, 2);
+  }
+
+  private getCsvFromForm(): string {
+    const values = this.listItems.value || [];
+    if (this.configuration.items === 'object') {
+      const headers = Object.keys(this.configuration.properties);
+      const rows = values.map(v => headers.map(h => `${v?.[h] ?? ''}`).join(','));
+      return [headers.join(','), ...rows].join('\n');
+    }
+    // primitives -> single column CSV with header "value"
+    const header = 'value';
+    const rows = (values as any[]).map(v => `${v ?? ''}`);
+    return [header, ...rows].join('\n');
+  }
+
+  public onJsonEditorChange(text: string) {
+    this.jsonEditorData = text;
+    try {
+      const parsed = JSON.parse(text || '[]');
+      if (this.configuration.items === 'object') {
+        if (!Array.isArray(parsed)) { return; }
+        this.listItems.clear();
+        this.initialProperties = [];
+        this.items = [];
+        parsed.forEach(el => this.initListItem(false, el));
+        this.cdRef.detectChanges();
+      } else {
+        if (!Array.isArray(parsed)) { return; }
+        this.listItems.clear();
+        (parsed as any[]).forEach(el => this.initListItem(false, el));
+        this.cdRef.detectChanges();
+      }
+    } catch (_) {
+      // ignore invalid JSON while typing
+    }
+  }
+
+  public onCsvEditorChange(text: string) {
+    this.csvEditorData = text ?? '';
+    const lines = (this.csvEditorData || '').trim().split(/\r?\n/).filter(l => l.length > 0);
+    if (lines.length === 0) { return; }
+    const headers = (lines.shift() || '').split(',');
+    if (this.configuration.items === 'object') {
+      const expected = Object.keys(this.configuration.properties);
+      // simple header validation
+      if (headers.length !== expected.length || !expected.every(h => headers.indexOf(h) > -1)) {
+        return;
+      }
+      const arr = lines.map(line => {
+        const cols = line.split(',');
+        const obj = {} as any;
+        headers.forEach((h, idx) => obj[h] = cols[idx] ?? '');
+        return obj;
+      });
+      this.listItems.clear();
+      this.initialProperties = [];
+      this.items = [];
+      arr.forEach(el => this.initListItem(false, el));
+      this.cdRef.detectChanges();
+    } else {
+      // primitives: expect single column 'value'
+      if (headers.length !== 1) { return; }
+      const values = lines.map(line => line.split(',')[0]);
+      this.listItems.clear();
+      values.forEach(v => this.initListItem(false, v));
+      this.cdRef.detectChanges();
+    }
   }
 }
