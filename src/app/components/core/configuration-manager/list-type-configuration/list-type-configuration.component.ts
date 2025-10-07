@@ -33,6 +33,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   currentView: 'list' | 'detailed' | 'json' | 'csv' = 'list';
   jsonEditorData = '';
   csvEditorData = '';
+  editorErrorMessage = '';
 
   @ViewChild(CdkVirtualScrollViewport, { static: false }) viewport: CdkVirtualScrollViewport;
   private valueChangeSub: Subscription;
@@ -336,6 +337,8 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   setCurrentView(event) {
     this.currentView = event as 'list' | 'detailed' | 'json' | 'csv';
+    this.editorErrorMessage = '';
+    this.validConfigurationForm = true;
     if (this.currentView === 'json') {
       this.jsonEditorData = this.getJsonFromForm();
     } else if (this.currentView === 'csv') {
@@ -380,30 +383,58 @@ export class ListTypeConfigurationComponent implements OnInit {
         this.items = [];
         parsed.forEach(el => this.initListItem(false, el));
         this.cdRef.detectChanges();
+        this.editorErrorMessage = '';
+        this.validConfigurationForm = true;
+        this.formStatusEvent.emit({ status: this.listItems.valid && this.validConfigurationForm, group: this.group });
       } else {
         if (!Array.isArray(parsed)) { return; }
         this.listItems.clear();
         (parsed as any[]).forEach(el => this.initListItem(false, el));
         this.cdRef.detectChanges();
+        this.editorErrorMessage = '';
+        this.validConfigurationForm = true;
+        this.formStatusEvent.emit({ status: this.listItems.valid && this.validConfigurationForm, group: this.group });
       }
     } catch (_) {
-      // ignore invalid JSON while typing
+      this.editorErrorMessage = 'Invalid JSON format.';
+      this.validConfigurationForm = false;
+      this.formStatusEvent.emit({ status: false, group: this.group });
     }
   }
 
   public onCsvEditorChange(text: string) {
     this.csvEditorData = text ?? '';
-    const lines = (this.csvEditorData || '').trim().split(/\r?\n/).filter(l => l.length > 0);
+    const raw = (this.csvEditorData || '').trim();
+    if (!raw) { return; }
+    const lines = raw.split(/\r?\n/).filter(l => l.length > 0);
     if (lines.length === 0) { return; }
-    const headers = (lines.shift() || '').split(',');
+    const headerLine = (lines.shift() || '');
+    const delimiter = this.detectCsvDelimiter(headerLine);
+    if (!delimiter) {
+      this.editorErrorMessage = 'Invalid CSV format. Use comma or tab as delimiter.';
+      this.validConfigurationForm = false;
+      this.formStatusEvent.emit({ status: false, group: this.group });
+      return;
+    }
+    const headers = headerLine.split(delimiter);
     if (this.configuration.items === 'object') {
       const expected = Object.keys(this.configuration.properties);
-      // simple header validation
       if (headers.length !== expected.length || !expected.every(h => headers.indexOf(h) > -1)) {
+        this.editorErrorMessage = delimiter === '\t' ? 'Invalid tab-delimited CSV format.' : 'Invalid CSV format. Use comma or tab as delimiter.';
+        this.validConfigurationForm = false;
+        this.formStatusEvent.emit({ status: false, group: this.group });
         return;
       }
+      for (const line of lines) {
+        if (line.split(delimiter).length !== headers.length) {
+          this.editorErrorMessage = delimiter === '\t' ? 'Invalid tab-delimited CSV format.' : 'Invalid CSV format. Use comma or tab as delimiter.';
+          this.validConfigurationForm = false;
+          this.formStatusEvent.emit({ status: false, group: this.group });
+          return;
+        }
+      }
       const arr = lines.map(line => {
-        const cols = line.split(',');
+        const cols = line.split(delimiter);
         const obj = {} as any;
         headers.forEach((h, idx) => obj[h] = cols[idx] ?? '');
         return obj;
@@ -412,15 +443,42 @@ export class ListTypeConfigurationComponent implements OnInit {
       this.initialProperties = [];
       this.items = [];
       arr.forEach(el => this.initListItem(false, el));
+      this.editorErrorMessage = '';
+      this.validConfigurationForm = true;
       this.cdRef.detectChanges();
+      this.formStatusEvent.emit({ status: this.listItems.valid && this.validConfigurationForm, group: this.group });
     } else {
-      // primitives: expect single column 'value'
-      if (headers.length !== 1) { return; }
-      const values = lines.map(line => line.split(',')[0]);
+      if (headers.length !== 1) {
+        this.editorErrorMessage = 'Invalid CSV format. Use comma or tab as delimiter.';
+        this.validConfigurationForm = false;
+        this.formStatusEvent.emit({ status: false, group: this.group });
+        return;
+      }
+      for (const line of lines) {
+        if (line.split(delimiter).length !== 1) {
+          this.editorErrorMessage = 'Invalid CSV format. Use comma or tab as delimiter.';
+          this.validConfigurationForm = false;
+          this.formStatusEvent.emit({ status: false, group: this.group });
+          return;
+        }
+      }
+      const values = lines.map(line => line.split(delimiter)[0]);
       this.listItems.clear();
       values.forEach(v => this.initListItem(false, v));
+      this.editorErrorMessage = '';
+      this.validConfigurationForm = true;
       this.cdRef.detectChanges();
+      this.formStatusEvent.emit({ status: this.listItems.valid && this.validConfigurationForm, group: this.group });
     }
+  }
+
+  private detectCsvDelimiter(headerLine: string): string | null {
+    const hasComma = headerLine.includes(',');
+    const hasTab = headerLine.includes('\t');
+    if ((hasComma && hasTab) || (!hasComma && !hasTab)) {
+      return null;
+    }
+    return hasTab ? '\t' : ',';
   }
 
   ngOnDestroy() {

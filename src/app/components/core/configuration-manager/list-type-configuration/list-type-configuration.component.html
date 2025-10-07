@@ -101,9 +101,11 @@
   <ng-container *ngIf="currentView === 'json'">
     <app-code-editor [mode]="'json'" [data]="jsonEditorData"
       (dataChange)="onJsonEditorChange($event)"></app-code-editor>
+    <p class="help is-danger" *ngIf="editorErrorMessage">{{editorErrorMessage}}</p>
   </ng-container>
   <ng-container *ngIf="currentView === 'csv'">
     <app-code-editor [mode]="'csv'" [data]="csvEditorData" (dataChange)="onCsvEditorChange($event)"></app-code-editor>
+    <p class="help is-danger" *ngIf="editorErrorMessage">{{editorErrorMessage}}</p>
   </ng-container>
   <ng-container *ngIf="configuration.items != 'object'; else objectButtonPanel">
     <ng-container

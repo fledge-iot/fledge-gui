@@ -245,46 +245,35 @@ export class FileImportModalComponent {
       const firstLine = lines[0];
       const secondLine = lines[1];
 
-      // Auto-detect among common delimiters: Tab, Comma, Semicolon, Pipe, Colon
-      const candidates = ['\t', ',', ';', '|', ':'];
-      let bestDelimiter = this.selectedDelimiter;
-      let bestScore = -1;
-      for (const d of candidates) {
-        const re = new RegExp(this.escapeRegExp(d), 'g');
-        const c1 = (firstLine.match(re) || []).length;
-        const c2 = (secondLine.match(re) || []).length;
-        const score = (c1 > 0 && c1 === c2) ? c1 : -1;
-        if (score > bestScore) {
-          bestScore = score;
-          bestDelimiter = d;
-        }
+      // Only support comma or tab
+      const hasComma = firstLine.includes(',');
+      const hasTab = firstLine.includes('\t');
+      if ((hasComma && hasTab) || (!hasComma && !hasTab)) {
+        this.detectedFormat = 'CSV';
+        this.validationError = 'Invalid CSV format. Use comma or tab as delimiter.';
+        this.updateCodeMirrorMode('text/csv');
+        return;
       }
-      if (bestScore > 0) {
-        this.selectedDelimiter = bestDelimiter;
+      this.selectedDelimiter = hasTab ? '\t' : ',';
+
+      // Check consistent delimiter count across header and first data row
+      const firstLineDelimiters = (firstLine.match(new RegExp(this.escapeRegExp(this.selectedDelimiter), 'g')) || []).length;
+      const secondLineDelimiters = (secondLine.match(new RegExp(this.escapeRegExp(this.selectedDelimiter), 'g')) || []).length;
+      if (firstLineDelimiters !== secondLineDelimiters || firstLineDelimiters === 0) {
+        this.detectedFormat = 'CSV';
+        this.validationError = this.selectedDelimiter === '\t' ? 'Invalid tab-delimited CSV format.' : 'Invalid CSV format. Use comma or tab as delimiter.';
+        this.updateCodeMirrorMode('text/csv');
+        return;
       }
 
-      // Check if first line has the selected delimiter and second line has similar structure
-      if (firstLine.includes(this.selectedDelimiter) && secondLine.includes(this.selectedDelimiter)) {
-        const firstLineDelimiters = (firstLine.match(new RegExp(this.escapeRegExp(this.selectedDelimiter), 'g')) || []).length;
-        const secondLineDelimiters = (secondLine.match(new RegExp(this.escapeRegExp(this.selectedDelimiter), 'g')) || []).length;
-
-        if (firstLineDelimiters === secondLineDelimiters && firstLineDelimiters > 0) {
-          this.detectedFormat = 'CSV';
-          this.validationError = '';
-          this.updateCodeMirrorMode('text/csv');
-          return;
-        } else if (firstLineDelimiters !== secondLineDelimiters) {
-          this.validationError = `CSV Error: Inconsistent column count. Header has ${firstLineDelimiters + 1} columns, but data row has ${secondLineDelimiters + 1} columns.`;
-        }
-      } else if (lines.length >= 2 && !firstLine.includes(this.selectedDelimiter) && !secondLine.includes(this.selectedDelimiter)) {
-        this.validationError = `CSV Error: No ${this.getDelimiterDisplayName()} separators found. CSV files must use ${this.getDelimiterDisplayName()} to separate columns.`;
-      } else if (lines.length < 2) {
-        this.validationError = 'CSV Error: CSV files must have at least a header row and one data row.';
-      }
+      this.detectedFormat = 'CSV';
+      this.validationError = '';
+      this.updateCodeMirrorMode('text/csv');
+      return;
     } else if (lines.length === 1) {
-      this.validationError = 'CSV Error: CSV files must have at least a header row and one data row.';
+      this.validationError = 'Invalid CSV format. Use comma or tab as delimiter.';
     } else {
-      this.validationError = 'CSV Error: Empty or invalid CSV content.';
+      this.validationError = 'Invalid CSV format. Use comma or tab as delimiter.';
     }
 
     // Default to plain text
@@ -299,27 +288,7 @@ export class FileImportModalComponent {
    * @private
    */
   private getJsonErrorMessage(error: any): string {
-    const message = error.message || 'Unknown JSON error';
-
-    // Common JSON error patterns and their user-friendly messages
-    if (message.includes('Unexpected token')) {
-      if (message.includes('in JSON at position')) {
-        const position = message.match(/at position (\d+)/)?.[1];
-        return `Invalid JSON syntax at position ${position}. Check for missing quotes, brackets, or trailing commas.`;
-      }
-      return 'Invalid JSON syntax. Check for missing quotes, brackets, or commas.';
-    }
-
-    if (message.includes('Unexpected end of JSON input')) {
-      return 'Incomplete JSON. Check for missing closing brackets or quotes.';
-    }
-
-    if (message.includes('Expected')) {
-      return 'Invalid JSON format. Check the structure and syntax.';
-    }
-
-    // Return the original message if no pattern matches
-    return `JSON Error: ${message}`;
+    return 'Invalid JSON format.';
   }
 
   /**
@@ -329,31 +298,7 @@ export class FileImportModalComponent {
    * @private
    */
   private getCsvErrorMessage(error: any): string {
-    const message = error.message || 'Unknown CSV error';
-
-    // Common CSV error patterns and their user-friendly messages
-    if (message.includes('Invalid CSV structure')) {
-      return 'CSV Error: Invalid structure. Check that all rows have the same number of columns.';
-    }
-
-    if (message.includes('Missing required properties')) {
-      return 'CSV Error: Missing required columns. Check that all required properties are present in the header row.';
-    }
-
-    if (message.includes('Invalid data type')) {
-      return 'CSV Error: Invalid data format. Check that data values match the expected format.';
-    }
-
-    if (message.includes('Empty file')) {
-      return 'CSV Error: File is empty or contains no valid data.';
-    }
-
-    if (message.includes('No header row')) {
-      return 'CSV Error: No header row found. CSV files must start with column names.';
-    }
-
-    // Return the original message if no pattern matches
-    return `CSV Error: ${message}`;
+    return 'Invalid CSV format. Use comma or tab as delimiter.';
   }
 
   /**
@@ -459,8 +404,9 @@ export class FileImportModalComponent {
       }
     } catch (error) {
       this.file.isValid = false;
-      this.validationError = this.getJsonErrorMessage(error);
-      throw new Error(`Invalid JSON format: ${error.message}`);
+      this.file.isLoaded = false;
+      this.validationError = 'Invalid JSON format.';
+      throw new Error('Invalid JSON format.');
     }
   }
 
@@ -470,38 +416,53 @@ export class FileImportModalComponent {
    */
   private async processManualCsv(): Promise<void> {
     try {
-      // Create a temporary file-like object for validation
-      const tempFile = new File([this.manualContent], 'temp.csv', { type: 'text/csv' });
+      // Determine delimiter strictly as comma or tab
+      const text = this.removeTrailingNewline(this.manualContent);
+      const normalized = this.normalizeLineEndings(text);
+      const lines = normalized.split('\n').filter(l => l.trim());
+      if (lines.length < 2) {
+        this.file.isValid = false;
+        this.file.isLoaded = false;
+        this.validationError = 'Invalid CSV format. Use comma or tab as delimiter.';
+        throw new Error('Invalid CSV format.');
+      }
+      const header = lines[0];
+      const hasComma = header.includes(',');
+      const hasTab = header.includes('\t');
+      if ((hasComma && hasTab) || (!hasComma && !hasTab)) {
+        this.file.isValid = false;
+        this.file.isLoaded = false;
+        this.validationError = 'Invalid CSV format. Use comma or tab as delimiter.';
+        throw new Error('Invalid CSV format.');
+      }
+      const delimiter = hasTab ? '\t' : ',';
+      this.selectedDelimiter = delimiter;
+      const headerCols = header.split(delimiter).length;
+      for (let i = 1; i < lines.length; i++) {
+        if (lines[i].split(delimiter).length !== headerCols) {
+          this.file.isValid = false;
+          this.file.isLoaded = false;
+          this.validationError = delimiter === '\t' ? 'Invalid tab-delimited CSV format.' : 'Invalid CSV format. Use comma or tab as delimiter.';
+          throw new Error('Invalid CSV format.');
+        }
+      }
 
       this.file.extension = 'csv';
       this.file.isValidExtension = true;
+      this.file.isValid = true;
 
-      // Validate CSV structure
-      this.file.isValid = await this.fileImportService.isCsvFileValid(
-        [tempFile],
-        this.configuration.properties,
-        this.configuration.type,
-        this.configuration.keyName
-      );
-
-      if (this.file.isValid) {
-        // Preprocess content to match file import behavior (remove trailing newline)
-        const processedContent = this.removeTrailingNewline(this.manualContent);
-
-        this.file.data = this.importDataFromCSVWithDelimiter(processedContent, this.configuration.type, this.selectedDelimiter);
-        // Normalize preview to comma-separated so the table splitting by ',' renders correctly
-        let previewText = processedContent;
-        if (this.selectedDelimiter !== ',') {
-          const re = new RegExp(this.escapeRegExp(this.selectedDelimiter), 'g');
-          previewText = processedContent.replace(re, ',');
-        }
-        this.tableData = previewText.split('\n').filter(line => line.trim());
-        this.file.isLoaded = true;
+      this.file.data = this.importDataFromCSVWithDelimiter(normalized, this.configuration.type, delimiter);
+      let previewText = normalized;
+      if (delimiter !== ',') {
+        previewText = normalized.replace(/\t/g, ',');
       }
+      this.tableData = previewText.split('\n').filter(line => line.trim());
+      this.file.isLoaded = true;
     } catch (error) {
       this.file.isValid = false;
+      this.file.isLoaded = false;
       this.validationError = this.getCsvErrorMessage(error);
-      throw new Error(`Invalid CSV format: ${error.message}`);
+      throw new Error('Invalid CSV format.');
     }
   }
 
