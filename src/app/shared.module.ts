@@ -35,6 +35,7 @@ import { ListCardComponent } from './components/core/configuration-manager/list-
 import { KvlistCardComponent } from './components/core/configuration-manager/kvlist-card/kvlist-card.component';
 import { DynamicGroupComponent } from './components/core/configuration-manager/dynamic-group/dynamic-group.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { CodeEditorComponent } from './components/common/code-editor/code-editor.component';
 
 @NgModule({
   imports: [
@@ -74,7 +75,8 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     ListTableComponent,
     ListCardComponent,
     KvlistCardComponent,
-    DynamicGroupComponent
+    DynamicGroupComponent,
+    CodeEditorComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -91,7 +93,8 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     TaskScheduleComponent,
     ServiceWarningComponent,
     ServiceConfigComponent,
-    DynamicGroupComponent
+    DynamicGroupComponent,
+    CodeEditorComponent
   ]
 })
 export class SharedModule { }

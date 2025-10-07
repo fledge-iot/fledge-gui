@@ -21,8 +21,11 @@ export class FileImportService {
     const lines = csvText.split('\n').filter(line => line.trim() !== '');
     if (lines.length === 0) return type === 'kvlist' ? {} : [];
 
+    // Detect delimiter from header (tab or comma)
+    const delimiter = lines[0].includes('\t') ? '\t' : ',';
+
     // Header
-    const propertyNames = lines[0].split(',');
+    const propertyNames = lines[0].split(delimiter);
 
     // Data rows
     const dataRows = lines.slice(1);
@@ -31,7 +34,7 @@ export class FileImportService {
       const dataObj: Record<string, any> = {};
 
       dataRows.forEach(row => {
-        const values = row.split(',');
+        const values = row.split(delimiter);
         if (values.length !== propertyNames.length) return; // skip invalid row
 
         const obj: Record<string, any> = {};
@@ -46,7 +49,7 @@ export class FileImportService {
       const dataArray: any[] = [];
 
       dataRows.forEach(row => {
-        const values = row.split(',');
+        const values = row.split(delimiter);
         if (values.length !== propertyNames.length) return; // skip invalid row
 
         const obj: Record<string, any> = {};
@@ -69,6 +72,12 @@ export class FileImportService {
     // Normalize line endings to handle both LF and CRLF
     csvText = this.normalizeLineEndings(csvText);
 
+    // Detect delimiter and convert to comma for preview compatibility
+    const hasTab = csvText.includes('\t');
+    if (hasTab) {
+      csvText = csvText.replace(/\t/g, ',');
+    }
+
     const dataRows = csvText.split('\n').filter(row => row.trim() !== ''); // optional: remove empty lines
     return dataRows;
   }
@@ -83,8 +92,11 @@ export class FileImportService {
     const lines = csvText.split('\n').filter(line => line.trim() !== '');
     if (lines.length === 0) return false;
 
+    // Detect delimiter
+    const delimiter = lines[0].includes('\t') ? '\t' : ',';
+
     // Header row
-    const propertyNames = lines[0].split(',');
+    const propertyNames = lines[0].split(delimiter);
     const propertiesLength = Object.keys(properties).length;
 
     if (type === 'kvlist') {
@@ -98,7 +110,7 @@ export class FileImportService {
 
       // Validate rows
       for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(',');
+        const values = lines[i].split(delimiter);
         if (values.length !== propertiesLength + 1) return false;
       }
       return true;
@@ -113,7 +125,7 @@ export class FileImportService {
 
       // Validate rows
       for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(',');
+        const values = lines[i].split(delimiter);
         if (values.length !== propertiesLength) return false;
       }
       return true;
@@ -198,7 +210,6 @@ export class FileImportService {
     }
     return false;
   }
-
 
   escapeCsvValue(value: any): string {
     if (value == null) return '';

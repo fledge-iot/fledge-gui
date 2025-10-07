@@ -8,7 +8,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class ButtonPanelComponent {
 
   @Input() isFormValid = true;
-  @Input() isListView = true;
+  @Input() view: 'list' | 'detailed' | 'json' | 'csv' = 'list';
   @Input() isAddButtonVisible = true;
   @Output() addnewItem = new EventEmitter<any>();
   @Output() expandAll = new EventEmitter<any>();

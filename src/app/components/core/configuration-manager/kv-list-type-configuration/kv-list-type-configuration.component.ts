@@ -26,7 +26,9 @@ export class KvListTypeConfigurationComponent implements OnInit {
   items = [];
   validConfigurationForm = true;
   kvlistValues = {};
-  isListView = true;
+  currentView: 'list' | 'detailed' | 'json' | 'csv' = 'list';
+  jsonEditorData = '';
+  csvEditorData = '';
 
   constructor(
     public cdRef: ChangeDetectorRef,
@@ -106,7 +108,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
     if (this.configuration.items == 'object') {
       const index = isPrepend ? 0 : this.kvListItems.length - 1;
-      if (this.isListView) {
+      if (this.currentView === 'list') {
         this.scrollToRow(index);
       } else {
         // Expand newly added item
@@ -223,6 +225,12 @@ export class KvListTypeConfigurationComponent implements OnInit {
     for (const [key, value] of Object.entries(event.fileData)) {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
+    if (this.currentView === 'json') {
+      this.jsonEditorData = this.getJsonFromForm();
+    }
+    if (this.currentView === 'csv') {
+      this.csvEditorData = this.getCsvFromForm();
+    }
   }
 
   overrideFileData(event) {
@@ -230,6 +238,12 @@ export class KvListTypeConfigurationComponent implements OnInit {
     this.initialProperties = [];
     for (const [key, value] of Object.entries(event.fileData)) {
       this.kvListItems.push(this.initListItem(false, { key, value }));
+    }
+    if (this.currentView === 'json') {
+      this.jsonEditorData = this.getJsonFromForm();
+    }
+    if (this.currentView === 'csv') {
+      this.csvEditorData = this.getCsvFromForm();
     }
   }
 
@@ -261,9 +275,91 @@ export class KvListTypeConfigurationComponent implements OnInit {
   }
 
   setCurrentView(event) {
-    this.isListView = event.isListView;
-    if (this.kvListItems.length == 1 && !this.isListView) {
+    this.currentView = event as 'list' | 'detailed' | 'json' | 'csv';
+    if (this.currentView === 'json') {
+      this.jsonEditorData = this.getJsonFromForm();
+    } else if (this.currentView === 'csv') {
+      this.csvEditorData = this.getCsvFromForm();
+    }
+    if (this.kvListItems.length == 1 && this.currentView === 'detailed') {
       this.expandListItem(0); // Expand the list if only one item is present
+    }
+  }
+
+  // ===== Synchronization helpers for kvlist =====
+  private getJsonFromForm(): string {
+    if (this.configuration.items === 'object') {
+      const obj = {} as any;
+      this.kvListItems.value.forEach((row: any) => { obj[row.key] = row.value; });
+      return JSON.stringify(obj, null, 2);
+    }
+    const obj = {} as any;
+    this.kvListItems.value.forEach((row: any) => { obj[row.key] = row.value; });
+    return JSON.stringify(obj, null, 2);
+  }
+
+  private getCsvFromForm(): string {
+    if (this.configuration.items === 'object') {
+      const headers = Object.keys(this.configuration.properties);
+      const rows = this.kvListItems.value.map((row: any) => {
+        const values = headers.map(h => `${row.value?.[h] ?? ''}`).join(',');
+        return `${row.key},${values}`;
+      });
+      return ['Key,' + headers.join(','), ...rows].join('\n');
+    }
+    const rows = this.kvListItems.value.map((row: any) => `${row.key},${row.value ?? ''}`);
+    return ['Key,value', ...rows].join('\n');
+  }
+
+  public onJsonEditorChange(text: string) {
+    this.jsonEditorData = text;
+    try {
+      const parsed = JSON.parse(text || '{}');
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        this.kvListItems.clear();
+        this.initialProperties = [];
+        this.items = [];
+        for (const [key, value] of Object.entries(parsed)) {
+          this.kvListItems.push(this.initListItem(false, { key, value }));
+        }
+        this.cdRef.detectChanges();
+      }
+    } catch (_) {
+      // ignore invalid JSON while typing
+    }
+  }
+
+  public onCsvEditorChange(text: string) {
+    this.csvEditorData = text ?? '';
+    const lines = (this.csvEditorData || '').trim().split(/\r?\n/).filter(l => l.length > 0);
+    if (lines.length === 0) { return; }
+    const headers = (lines.shift() || '').split(',');
+    if (this.configuration.items === 'object') {
+      // expect Key + property headers
+      const expected = ['Key', ...Object.keys(this.configuration.properties)];
+      if (headers.length !== expected.length || !expected.every(h => headers.indexOf(h) > -1)) {
+        return;
+      }
+      this.kvListItems.clear();
+      this.initialProperties = [];
+      this.items = [];
+      lines.forEach(line => {
+        const cols = line.split(',');
+        const key = cols[0];
+        const value: any = {};
+        Object.keys(this.configuration.properties).forEach((h, idx) => value[h] = cols[idx + 1] ?? '');
+        this.kvListItems.push(this.initListItem(false, { key, value }));
+      });
+      this.cdRef.detectChanges();
+    } else {
+      // expect Key,value
+      if (headers.length !== 2) { return; }
+      this.kvListItems.clear();
+      lines.forEach(line => {
+        const cols = line.split(',');
+        this.kvListItems.push(this.initListItem(false, { key: cols[0], value: cols[1] ?? '' }));
+      });
+      this.cdRef.detectChanges();
     }
   }
 }
