@@ -308,6 +308,12 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges {
     event.fileData.forEach(element => {
       this.initListItem(false, element);
     });
+    if (this.currentView === 'json') {
+      this.jsonEditorData = this.getJsonFromForm();
+    }
+    if (this.currentView === 'csv') {
+      this.csvEditorData = this.getCsvFromForm();
+    }
   }
 
   overrideFileData(event) {
@@ -316,6 +322,12 @@ export class ListTypeConfigurationComponent implements OnInit, OnChanges {
     event.fileData.forEach(element => {
       this.initListItem(false, element);
     });
+    if (this.currentView === 'json') {
+      this.jsonEditorData = this.getJsonFromForm();
+    }
+    if (this.currentView === 'csv') {
+      this.csvEditorData = this.getCsvFromForm();
+    }
   }
 
   openModal() {

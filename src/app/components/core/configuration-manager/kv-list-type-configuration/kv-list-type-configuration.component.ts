@@ -249,6 +249,12 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges {
     for (const [key, value] of Object.entries(event.fileData)) {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
+    if (this.currentView === 'json') {
+      this.jsonEditorData = this.getJsonFromForm();
+    }
+    if (this.currentView === 'csv') {
+      this.csvEditorData = this.getCsvFromForm();
+    }
   }
 
   overrideFileData(event) {
@@ -256,6 +262,12 @@ export class KvListTypeConfigurationComponent implements OnInit, OnChanges {
     this.initialProperties = [];
     for (const [key, value] of Object.entries(event.fileData)) {
       this.kvListItems.push(this.initListItem(false, { key, value }));
+    }
+    if (this.currentView === 'json') {
+      this.jsonEditorData = this.getJsonFromForm();
+    }
+    if (this.currentView === 'csv') {
+      this.csvEditorData = this.getCsvFromForm();
     }
   }
 
