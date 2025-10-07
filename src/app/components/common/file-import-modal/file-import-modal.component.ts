@@ -239,11 +239,29 @@ export class FileImportModalComponent {
       // Not JSON, continue to CSV detection
     }
 
-    // Detect CSV format using selected delimiter
+    // Detect CSV format; try to auto-detect delimiter first
     const lines = content.split('\n').filter(line => line.trim());
     if (lines.length >= 2) {
       const firstLine = lines[0];
       const secondLine = lines[1];
+
+      // Auto-detect among common delimiters: Tab, Comma, Semicolon, Pipe, Colon
+      const candidates = ['\t', ',', ';', '|', ':'];
+      let bestDelimiter = this.selectedDelimiter;
+      let bestScore = -1;
+      for (const d of candidates) {
+        const re = new RegExp(this.escapeRegExp(d), 'g');
+        const c1 = (firstLine.match(re) || []).length;
+        const c2 = (secondLine.match(re) || []).length;
+        const score = (c1 > 0 && c1 === c2) ? c1 : -1;
+        if (score > bestScore) {
+          bestScore = score;
+          bestDelimiter = d;
+        }
+      }
+      if (bestScore > 0) {
+        this.selectedDelimiter = bestDelimiter;
+      }
 
       // Check if first line has the selected delimiter and second line has similar structure
       if (firstLine.includes(this.selectedDelimiter) && secondLine.includes(this.selectedDelimiter)) {
@@ -471,7 +489,13 @@ export class FileImportModalComponent {
         const processedContent = this.removeTrailingNewline(this.manualContent);
 
         this.file.data = this.importDataFromCSVWithDelimiter(processedContent, this.configuration.type, this.selectedDelimiter);
-        this.tableData = processedContent.split('\n').filter(line => line.trim());
+        // Normalize preview to comma-separated so the table splitting by ',' renders correctly
+        let previewText = processedContent;
+        if (this.selectedDelimiter !== ',') {
+          const re = new RegExp(this.escapeRegExp(this.selectedDelimiter), 'g');
+          previewText = processedContent.replace(re, ',');
+        }
+        this.tableData = previewText.split('\n').filter(line => line.trim());
         this.file.isLoaded = true;
       }
     } catch (error) {
