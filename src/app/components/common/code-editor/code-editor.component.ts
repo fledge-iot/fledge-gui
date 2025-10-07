@@ -15,11 +15,15 @@ export class CodeEditorComponent implements OnChanges {
   public internalData = '';
   public options: any = {
     lineNumbers: true,
-    theme: 'material',
     mode: 'application/json',
-    gutters: ['CodeMirror-lint-markers'],
     autoCloseBrackets: true,
-    matchBrackets: true
+    matchBrackets: true,
+    lineWrapping: true,
+    foldGutter: true,
+    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
+    lint: true,
+    inputStyle: 'textarea',
+    autoRefresh: true
   };
 
   ngOnChanges(changes: SimpleChanges) {

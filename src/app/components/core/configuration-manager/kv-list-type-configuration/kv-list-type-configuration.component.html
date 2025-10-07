@@ -8,9 +8,9 @@
     <ng-container *ngIf="configuration.items == 'object' && kvListItems.controls.length>0">
       <div *ngIf="currentView === 'detailed'" class="btn-panel-container is-flex-direction-row-reverse">
         <div class="btn-panel upper-btn-panel">
-          <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm"
-            [isListView]="currentView === 'list'" (addnewItem)="addListItem(true)" (expandAll)="expandAllItems()"
-            (collapseAll)="collapseAllItems()" (importFile)="openModal()" (exportFile)="openExportFileModal()"
+          <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm" [view]="currentView"
+            (addnewItem)="addListItem(true)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+            (importFile)="openModal()" (exportFile)="openExportFileModal()"
             [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)" />
         </div>
       </div>
@@ -134,7 +134,7 @@
                 </div>
                 <div [id]="'export-dropdown-' + configuration?.key" class="dropdown control mt-1">
                   <div class="dropdown-trigger">
-                    <button class="button is-small small-btn export-btn" aria-haspopup="true"
+                    <button class="button is-small small-btn export-btn" aria-haspopup="true" title="Toggle export menu"
                       aria-controls="dropdown-menu" (click)=toggleDropdown()>
                       <span class="icon is-small">
                         <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
@@ -155,9 +155,9 @@
       <ng-template #buttonPanelTemplate>
         <div class="btn-panel-container is-flex-direction-row">
           <div class="btn-panel lower-btn-panel">
-            <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm"
-              [isListView]="currentView === 'list'" (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()"
-              (collapseAll)="collapseAllItems()" (importFile)="openModal()" (exportFile)="openExportFileModal()"
+            <app-button-panel [isFormValid]="kvListItems.valid && validConfigurationForm" [view]="currentView"
+              (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+              (importFile)="openModal()" (exportFile)="openExportFileModal()"
               [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)" />
           </div>
         </div>

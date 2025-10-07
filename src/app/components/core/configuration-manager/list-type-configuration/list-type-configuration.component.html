@@ -7,9 +7,9 @@
   <ng-container *ngIf="configuration.items == 'object' && listItems.controls.length>0">
     <div *ngIf="currentView === 'detailed'" class="btn-panel-container is-flex-direction-row-reverse">
       <div class="btn-panel upper-btn-panel">
-        <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm"
-          [isListView]="currentView === 'list'" (addnewItem)="addListItem(true)" (expandAll)="expandAllItems()"
-          (collapseAll)="collapseAllItems()" (importFile)="openModal()" (exportFile)="openExportFileModal()"
+        <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" [view]="currentView"
+          (addnewItem)="addListItem(true)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+          (importFile)="openModal()" (exportFile)="openExportFileModal()"
           [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
       </div>
     </div>
@@ -166,9 +166,9 @@
     <ng-template #buttonPanelTemplate>
       <div class="btn-panel-container is-flex-direction-row">
         <div class="btn-panel lower-btn-panel">
-          <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm"
-            [isListView]="currentView === 'list'" (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()"
-            (collapseAll)="collapseAllItems()" (importFile)="openModal()" (exportFile)="openExportFileModal()"
+          <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" [view]="currentView"
+            (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
+            (importFile)="openModal()" (exportFile)="openExportFileModal()"
             [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
         </div>
       </div>
