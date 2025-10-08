@@ -231,6 +231,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   appendFileData(event) {
+    this.csvDelimiter = event.delimiter ?? ',';
     for (const [key, value] of Object.entries(event.fileData)) {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
@@ -245,6 +246,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   overrideFileData(event) {
     this.kvListItems.clear();
     this.initialProperties = [];
+    this.csvDelimiter = event.delimiter ?? ',';
     for (const [key, value] of Object.entries(event.fileData)) {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
@@ -303,6 +305,13 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
     }
   }
 
+  public onDelimiterChanged(delimiter: string) {
+    this.csvDelimiter = delimiter;
+    this.csvEditorData = this.getCsvFromForm();
+    this.cdRef.detectChanges();
+    this.formStatusEvent.emit({ 'status': this.kvListItems.valid && this.validConfigurationForm, 'group': this.group });
+  }
+
   // ===== Synchronization helpers for kvlist =====
   private getJsonFromForm(): string {
     if (this.configuration.items === 'object') {
@@ -316,6 +325,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   private getCsvFromForm(): string {
+    console.log('getCsvFromForm', this.csvDelimiter);
     if (this.configuration.items === 'object') {
       const headers = Object.keys(this.configuration.properties);
       const rows = this.kvListItems.value.map((row: any) => {
@@ -364,7 +374,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
     const headerLine = (lines.shift() || '');
     const delimiter = this.detectCsvDelimiter(headerLine);
     if (!delimiter) {
-      this.editorErrorMessage = 'Invalid CSV format. Use comma or tab as delimiter.';
+      this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
       this.validConfigurationForm = false;
       this.formStatusEvent.emit({ 'status': false, 'group': this.group });
       return;
@@ -374,7 +384,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
     if (this.configuration.items === 'object') {
       const expected = ['Key', ...Object.keys(this.configuration.properties)];
       if (headers.length !== expected.length || !expected.every(h => headers.indexOf(h) > -1)) {
-        this.editorErrorMessage = delimiter === '\t' ? 'Invalid tab-delimited CSV format.' : 'Invalid CSV format. Use comma or tab as delimiter.';
+        this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
         this.validConfigurationForm = false;
         this.formStatusEvent.emit({ 'status': false, 'group': this.group });
         return;
@@ -382,7 +392,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
       // validate each row has consistent columns
       for (const line of lines) {
         if (line.split(delimiter).length !== headers.length) {
-          this.editorErrorMessage = delimiter === '\t' ? 'Invalid tab-delimited CSV format.' : 'Invalid CSV format. Use comma or tab as delimiter.';
+          this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
           this.validConfigurationForm = false;
           this.formStatusEvent.emit({ 'status': false, 'group': this.group });
           return;
@@ -404,14 +414,14 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
       this.formStatusEvent.emit({ 'status': this.kvListItems.valid && this.validConfigurationForm, 'group': this.group });
     } else {
       if (headers.length !== 2) {
-        this.editorErrorMessage = 'Invalid CSV format. Use comma or tab as delimiter.';
+        this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
         this.validConfigurationForm = false;
         this.formStatusEvent.emit({ 'status': false, 'group': this.group });
         return;
       }
       for (const line of lines) {
         if (line.split(delimiter).length !== 2) {
-          this.editorErrorMessage = 'Invalid CSV format. Use comma or tab as delimiter.';
+          this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
           this.validConfigurationForm = false;
           this.formStatusEvent.emit({ 'status': false, 'group': this.group });
           return;
@@ -430,12 +440,10 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   private detectCsvDelimiter(headerLine: string): string | null {
-    const hasComma = headerLine.includes(',');
-    const hasTab = headerLine.includes('\t');
-    if ((hasComma && hasTab) || (!hasComma && !hasTab)) {
-      return null;
-    }
-    return hasTab ? '\t' : ',';
+    const candidates = [',', ';', '\t', '|', ':'];
+    const detected = candidates.filter(d => headerLine.indexOf(d) > -1);
+    if (detected.length !== 1) { return null; }
+    return detected[0];
   }
 
   ngOnDestroy() {

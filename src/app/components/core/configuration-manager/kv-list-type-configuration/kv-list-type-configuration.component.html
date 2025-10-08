@@ -94,7 +94,8 @@
       <p class="help is-danger" *ngIf="editorErrorMessage">{{editorErrorMessage}}</p>
     </ng-container>
     <ng-container *ngIf="configuration.items == 'object' && currentView === 'csv'">
-      <app-code-editor [mode]="'csv'" [data]="csvEditorData" (dataChange)="onCsvEditorChange($event)"></app-code-editor>
+      <app-code-editor [mode]="'csv'" [data]="csvEditorData" [selectedDelimiter]="csvDelimiter"
+        (delimiterChange)="onDelimiterChanged($event)" (dataChange)="onCsvEditorChange($event)"></app-code-editor>
       <p class="help is-danger" *ngIf="editorErrorMessage">{{editorErrorMessage}}</p>
     </ng-container>
     <ng-container *ngIf="configuration.items != 'object'; else objectButtonPanel">

@@ -1,3 +1,17 @@
+<div class="is-flex is-align-items-center is-justify-content-flex-end mb-2"
+  *ngIf="mode === 'csv' && rolesService.hasEditPermissions()">
+
+  <label class="label is-small mb-0 mr-2">CSV Delimiter</label>
+
+  <div class="select is-small">
+    <select aria-label="Delimiter" [ngModel]="selectedDelimiter" (ngModelChange)="onDelimiterSelect($event)">
+      <option *ngFor="let option of delimiterOptions" [ngValue]="option.value">
+        {{option.label}}
+      </option>
+    </select>
+  </div>
+</div>
+
 <ngx-codemirror [ngClass]="{'readonly-editor': !rolesService.hasEditPermissions() }" [options]="options"
   [(ngModel)]="internalData" (ngModelChange)="onModelChange($event)">
 </ngx-codemirror>

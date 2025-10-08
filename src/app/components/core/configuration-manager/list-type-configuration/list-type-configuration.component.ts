@@ -291,6 +291,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   appendFileData(event) {
+    this.csvDelimiter = event.delimiter ?? ',';
     event.fileData.forEach(element => {
       this.initListItem(false, element);
     });
@@ -303,6 +304,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   overrideFileData(event) {
+    this.csvDelimiter = event.delimiter ?? ',';
     this.listItems.clear();
     this.initialProperties = [];
     event.fileData.forEach(element => {
@@ -359,6 +361,13 @@ export class ListTypeConfigurationComponent implements OnInit {
     if (this.listItems.length == 1 && this.currentView === 'detailed') {
       this.expandListItem(0);
     }
+  }
+
+  public onDelimiterChanged(delimiter: string) {
+    this.csvDelimiter = delimiter;
+    this.csvEditorData = this.getCsvFromForm();
+    this.cdRef.detectChanges();
+    this.formStatusEvent.emit({ status: this.listItems.valid && this.validConfigurationForm, group: this.group });
   }
 
   // ===== Synchronization helpers =====
@@ -423,7 +432,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     const headerLine = (lines.shift() || '');
     const delimiter = this.detectCsvDelimiter(headerLine);
     if (!delimiter) {
-      this.editorErrorMessage = 'Invalid CSV format. Use comma or tab as delimiter.';
+      this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
       this.validConfigurationForm = false;
       this.formStatusEvent.emit({ status: false, group: this.group });
       return;
@@ -433,14 +442,14 @@ export class ListTypeConfigurationComponent implements OnInit {
     if (this.configuration.items === 'object') {
       const expected = Object.keys(this.configuration.properties);
       if (headers.length !== expected.length || !expected.every(h => headers.indexOf(h) > -1)) {
-        this.editorErrorMessage = delimiter === '\t' ? 'Invalid tab-delimited CSV format.' : 'Invalid CSV format. Use comma or tab as delimiter.';
+        this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
         this.validConfigurationForm = false;
         this.formStatusEvent.emit({ status: false, group: this.group });
         return;
       }
       for (const line of lines) {
         if (line.split(delimiter).length !== headers.length) {
-          this.editorErrorMessage = delimiter === '\t' ? 'Invalid tab-delimited CSV format.' : 'Invalid CSV format. Use comma or tab as delimiter.';
+          this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
           this.validConfigurationForm = false;
           this.formStatusEvent.emit({ status: false, group: this.group });
           return;
@@ -462,14 +471,14 @@ export class ListTypeConfigurationComponent implements OnInit {
       this.formStatusEvent.emit({ status: this.listItems.valid && this.validConfigurationForm, group: this.group });
     } else {
       if (headers.length !== 1) {
-        this.editorErrorMessage = 'Invalid CSV format. Use comma or tab as delimiter.';
+        this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
         this.validConfigurationForm = false;
         this.formStatusEvent.emit({ status: false, group: this.group });
         return;
       }
       for (const line of lines) {
         if (line.split(delimiter).length !== 1) {
-          this.editorErrorMessage = 'Invalid CSV format. Use comma or tab as delimiter.';
+          this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
           this.validConfigurationForm = false;
           this.formStatusEvent.emit({ status: false, group: this.group });
           return;
@@ -486,12 +495,10 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   private detectCsvDelimiter(headerLine: string): string | null {
-    const hasComma = headerLine.includes(',');
-    const hasTab = headerLine.includes('\t');
-    if ((hasComma && hasTab) || (!hasComma && !hasTab)) {
-      return null;
-    }
-    return hasTab ? '\t' : ',';
+    const candidates = [',', ';', '\t', '|', ':'];
+    const detected = candidates.filter(d => headerLine.indexOf(d) > -1);
+    if (detected.length !== 1) { return null; }
+    return detected[0];
   }
 
   ngOnDestroy() {

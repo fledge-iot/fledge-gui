@@ -9,6 +9,7 @@ export interface FileData {
   data: any;
   isValid: boolean;
   isValidExtension: boolean;
+  delimiter?: string;
 }
 
 export interface CodeMirrorOptions {
@@ -40,7 +41,6 @@ export interface Configuration {
   styleUrls: ['./file-import-modal.component.css']
 })
 export class FileImportModalComponent {
-  // Constants
   private static readonly CODEMIRROR_HEIGHT = '300px';
   private static readonly SUPPORTED_EXTENSIONS = ['csv', 'json'];
   private static readonly DEFAULT_FILE_DATA: FileData = {
@@ -53,8 +53,8 @@ export class FileImportModalComponent {
   };
 
   @Input() configuration: Configuration;
-  @Output() appendFile = new EventEmitter<{ fileData: any }>();
-  @Output() overrideFile = new EventEmitter<{ fileData: any }>();
+  @Output() appendFile = new EventEmitter<{ fileData: any, delimiter: string }>();
+  @Output() overrideFile = new EventEmitter<{ fileData: any, delimiter: string }>();
 
   tableData: string[] | null = null;
   file: FileData = { ...FileImportModalComponent.DEFAULT_FILE_DATA };
@@ -82,8 +82,9 @@ export class FileImportModalComponent {
   ];
 
   @ViewChild('fileImport', { static: true }) fileImport: ElementRef;
-  constructor(public fileImportService: FileImportService,
-    public ngProgress: ProgressBarService,
+  constructor(
+    public fileImportService: FileImportService,
+    public ngProgress: ProgressBarService
   ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -165,23 +166,14 @@ export class FileImportModalComponent {
    */
   toggleManualMode(): void {
     this.isManualMode = !this.isManualMode;
-    if (this.isManualMode) {
-      this.manualContent = '';
-      this.detectedFormat = '';
-      this.validationError = '';
-      this.selectedDelimiter = ',';
-      this.updateCodeMirrorMode('text/plain');
-    } else {
-      // Reset to file upload mode without closing modal
-      this.manualContent = '';
-      this.detectedFormat = '';
-      this.validationError = '';
-      this.selectedDelimiter = ',';
-      this.file = { ...FileImportModalComponent.DEFAULT_FILE_DATA };
-      this.tableData = null;
-      if (this.fileImport?.nativeElement) {
-        this.fileImport.nativeElement.value = '';
-      }
+    this.manualContent = '';
+    this.detectedFormat = '';
+    this.validationError = '';
+    this.selectedDelimiter = ',';
+    this.updateCodeMirrorMode('text/plain');
+
+    if (!this.isManualMode && this.fileImport?.nativeElement) {
+      this.fileImport.nativeElement.value = '';
     }
   }
 
@@ -203,6 +195,15 @@ export class FileImportModalComponent {
    * @public
    */
   onDelimiterChange(delimiter: string): void {
+    if (this.detectedFormat === 'CSV' && this.manualContent.trim()) {
+      // Replace old delimiter in editor content
+      if (this.selectedDelimiter && this.selectedDelimiter !== delimiter) {
+        const oldDelimiter = this.selectedDelimiter;
+        const regex = new RegExp(this.escapeRegExp(oldDelimiter), 'g');
+        this.manualContent = this.manualContent.replace(regex, delimiter);
+      }
+    }
+
     this.selectedDelimiter = delimiter;
     this.validationError = ''; // Clear previous errors
 
@@ -226,7 +227,7 @@ export class FileImportModalComponent {
       return;
     }
 
-    // Try to detect JSON first
+    // JSON detection
     try {
       JSON.parse(content);
       this.detectedFormat = 'JSON';
@@ -239,44 +240,39 @@ export class FileImportModalComponent {
       // Not JSON, continue to CSV detection
     }
 
-    // Detect CSV format; try to auto-detect delimiter first
+    // CSV detection
     const lines = content.split('\n').filter(line => line.trim());
     if (lines.length >= 2) {
       const firstLine = lines[0];
       const secondLine = lines[1];
 
-      // Only support comma or tab
-      const hasComma = firstLine.includes(',');
-      const hasTab = firstLine.includes('\t');
-      if ((hasComma && hasTab) || (!hasComma && !hasTab)) {
+      // check which delimiter produces consistent columns
+      let detected: string | null = null;
+      for (const opt of this.delimiterOptions) {
+        const delim = opt.value;
+        const firstCols = firstLine.split(delim).length;
+        const secondCols = secondLine.split(delim).length;
+
+        if (firstCols > 1 && firstCols === secondCols) {
+          detected = delim;
+          break;
+        }
+      }
+
+      if (!detected) {
         this.detectedFormat = 'CSV';
-        this.validationError = 'Invalid CSV format. Use comma or tab as delimiter.';
+        this.validationError = 'Invalid CSV format. Could not detect a consistent delimiter.';
         this.updateCodeMirrorMode('text/csv');
         return;
       }
-      this.selectedDelimiter = hasTab ? '\t' : ',';
 
-      // Check consistent delimiter count across header and first data row
-      const firstLineDelimiters = (firstLine.match(new RegExp(this.escapeRegExp(this.selectedDelimiter), 'g')) || []).length;
-      const secondLineDelimiters = (secondLine.match(new RegExp(this.escapeRegExp(this.selectedDelimiter), 'g')) || []).length;
-      if (firstLineDelimiters !== secondLineDelimiters || firstLineDelimiters === 0) {
-        this.detectedFormat = 'CSV';
-        this.validationError = this.selectedDelimiter === '\t' ? 'Invalid tab-delimited CSV format.' : 'Invalid CSV format. Use comma or tab as delimiter.';
-        this.updateCodeMirrorMode('text/csv');
-        return;
-      }
-
+      this.selectedDelimiter = detected;
       this.detectedFormat = 'CSV';
       this.validationError = '';
       this.updateCodeMirrorMode('text/csv');
       return;
-    } else if (lines.length === 1) {
-      this.validationError = 'Invalid CSV format. Use comma or tab as delimiter.';
-    } else {
-      this.validationError = 'Invalid CSV format. Use comma or tab as delimiter.';
     }
 
-    // Default to plain text
     this.detectedFormat = 'Unknown';
     this.updateCodeMirrorMode('text/plain');
   }
@@ -385,7 +381,6 @@ export class FileImportModalComponent {
     try {
       // Preprocess content to match file import behavior (remove trailing newline)
       const processedContent = this.removeTrailingNewline(this.manualContent);
-
       const jsonData = JSON.parse(processedContent);
       this.file.extension = 'json';
       this.file.isValidExtension = true;
@@ -402,7 +397,7 @@ export class FileImportModalComponent {
         );
         this.file.isLoaded = true;
       }
-    } catch (error) {
+    } catch {
       this.file.isValid = false;
       this.file.isLoaded = false;
       this.validationError = 'Invalid JSON format.';
@@ -427,17 +422,14 @@ export class FileImportModalComponent {
         throw new Error('Invalid CSV format.');
       }
       const header = lines[0];
-      const hasComma = header.includes(',');
-      const hasTab = header.includes('\t');
-      if ((hasComma && hasTab) || (!hasComma && !hasTab)) {
-        this.file.isValid = false;
-        this.file.isLoaded = false;
-        this.validationError = 'Invalid CSV format. Use comma or tab as delimiter.';
-        throw new Error('Invalid CSV format.');
-      }
-      const delimiter = hasTab ? '\t' : ',';
-      this.selectedDelimiter = delimiter;
+      const delimiter = this.selectedDelimiter || ','; // use selected delimiter
+
       const headerCols = header.split(delimiter).length;
+      if (headerCols < 2) {
+        throw new Error(`Invalid CSV format. Header is not delimited with "${delimiter}".`);
+      }
+
+      // Validate all rows have the same number of columns
       for (let i = 1; i < lines.length; i++) {
         if (lines[i].split(delimiter).length !== headerCols) {
           this.file.isValid = false;
@@ -450,19 +442,17 @@ export class FileImportModalComponent {
       this.file.extension = 'csv';
       this.file.isValidExtension = true;
       this.file.isValid = true;
-
       this.file.data = this.importDataFromCSVWithDelimiter(normalized, this.configuration.type, delimiter);
-      let previewText = normalized;
-      if (delimiter !== ',') {
-        previewText = normalized.replace(/\t/g, ',');
-      }
-      this.tableData = previewText.split('\n').filter(line => line.trim());
+
+      // Keep tableData raw but split using the chosen delimiter
+      this.tableData = normalized.split('\n').filter(line => line.trim());
       this.file.isLoaded = true;
+
     } catch (error) {
       this.file.isValid = false;
       this.file.isLoaded = false;
       this.validationError = this.getCsvErrorMessage(error);
-      throw new Error('Invalid CSV format.');
+      throw error; // preserve actual error
     }
   }
 
@@ -485,39 +475,33 @@ export class FileImportModalComponent {
    * @private
    */
   private importDataFromCSVWithDelimiter(csvText: string, type: string, delimiter: string): any {
-    // Normalize line endings to handle both LF and CRLF
-    const normalizedText = this.normalizeLineEndings(csvText);
-    const propertyNames = normalizedText.slice(0, normalizedText.indexOf('\n')).split(delimiter);
-    const dataRows = normalizedText.slice(normalizedText.indexOf('\n') + 1).split('\n');
+    const normalizedText = this.normalizeLineEndings(csvText).trim();
+    const rows = normalizedText.split('\n').filter(r => r.trim());
+
+    const propertyNames = rows[0].split(delimiter).map(h => h.trim());
+    const dataRows = rows.slice(1);
 
     if (type === 'kvlist') {
-      let dataObj = {};
-      dataRows.forEach((row) => {
-        let values = row.split(delimiter);
-        let obj = new Object();
-        for (let index = 0; index < propertyNames.length; index++) {
-          if (index !== 0) {
-            const propertyName = propertyNames[index];
-            let val = values[index];
-            obj[propertyName] = val;
-          }
+      const dataObj: Record<string, any> = {};
+      dataRows.forEach(row => {
+        const values = row.split(delimiter).map(v => v.trim());
+        const key = values[0];
+        const obj: Record<string, any> = {};
+        for (let i = 1; i < propertyNames.length; i++) {
+          obj[propertyNames[i]] = values[i];
         }
-        dataObj[values[0]] = obj;
+        dataObj[key] = obj;
       });
       return dataObj;
     } else {
-      let dataArray = [];
-      dataRows.forEach((row) => {
-        let values = row.split(delimiter);
-        let obj = new Object();
-        for (let index = 0; index < propertyNames.length; index++) {
-          const propertyName = propertyNames[index];
-          let val = values[index];
-          obj[propertyName] = val;
-        }
-        dataArray.push(obj);
+      return dataRows.map(row => {
+        const values = row.split(delimiter).map(v => v.trim());
+        const obj: Record<string, any> = {};
+        propertyNames.forEach((prop, i) => {
+          obj[prop] = values[i];
+        });
+        return obj;
       });
-      return dataArray;
     }
   }
 
@@ -538,9 +522,13 @@ export class FileImportModalComponent {
    * @private
    */
   private async validateJsonStructure(jsonData: any): Promise<boolean> {
-    // Create a temporary file-like object for validation
     const tempFile = new File([this.manualContent], 'temp.json', { type: 'application/json' });
-    return await this.fileImportService.isJsonFileValid([tempFile], this.configuration.properties, this.configuration.type, this.configuration.keyName);
+    return await this.fileImportService.isJsonFileValid(
+      [tempFile],
+      this.configuration.properties,
+      this.configuration.type,
+      this.configuration.keyName
+    );
   }
 
   /**
@@ -548,7 +536,7 @@ export class FileImportModalComponent {
    * @public
    */
   appendFileData(): void {
-    this.appendFile.emit({ fileData: this.file.data });
+    this.appendFile.emit({ fileData: this.file.data, delimiter: this.selectedDelimiter });
     this.formReset();
   }
 
@@ -557,7 +545,7 @@ export class FileImportModalComponent {
    * @public
    */
   overrideFileData(): void {
-    this.overrideFile.emit({ fileData: this.file.data });
+    this.overrideFile.emit({ fileData: this.file.data, delimiter: this.selectedDelimiter });
     this.formReset();
   }
 

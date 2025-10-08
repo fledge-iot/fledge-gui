@@ -12,6 +12,8 @@ export class CodeEditorComponent implements OnChanges {
   @Input() mode: EditorMode = 'json';
   @Input() data = '';
   @Output() dataChange = new EventEmitter<string>();
+  @Input() selectedDelimiter: string = ',';
+  @Output() delimiterChange = new EventEmitter<string>();
 
   constructor(public rolesService: RolesService) { }
 
@@ -45,5 +47,18 @@ export class CodeEditorComponent implements OnChanges {
   public onModelChange(value: string) {
     this.internalData = value;
     this.dataChange.emit(value);
+  }
+
+  // Dropdown options for CSV delimiters
+  public delimiterOptions = [
+    { value: ',', label: 'Comma (,)', symbol: ',' },
+    { value: ';', label: 'Semicolon (;)', symbol: ';' },
+    { value: '\t', label: 'Tab', symbol: 'Tab' },
+    { value: '|', label: 'Pipe (|)', symbol: '|' },
+    { value: ':', label: 'Colon (:)', symbol: ':' }
+  ];
+
+  public onDelimiterSelect(value: string) {
+    this.delimiterChange.emit(value);
   }
 }
