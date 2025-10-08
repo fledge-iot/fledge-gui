@@ -441,19 +441,38 @@ export class ListTypeConfigurationComponent implements OnInit {
     const headers = headerLine.split(delimiter);
     if (this.configuration.items === 'object') {
       const expected = Object.keys(this.configuration.properties);
-      if (headers.length !== expected.length || !expected.every(h => headers.indexOf(h) > -1)) {
-        this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
+      if (headers.length !== expected.length) {
+        this.editorErrorMessage = `Header count mismatch: CSV has ${headers.length} columns but expected ${expected.length} columns (${expected.join(', ')})`;
         this.validConfigurationForm = false;
         this.formStatusEvent.emit({ status: false, group: this.group });
         return;
       }
-      for (const line of lines) {
-        if (line.split(delimiter).length !== headers.length) {
-          this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
+
+      if (!expected.every(h => headers.indexOf(h) > -1)) {
+        this.editorErrorMessage = `Header mismatch: CSV has columns (${headers.join(', ')}) but expected columns (${expected.join(', ')})`;
+        this.validConfigurationForm = false;
+        this.formStatusEvent.emit({ status: false, group: this.group });
+        return;
+      }
+      // validate each row has consistent columns
+      for (let i = 0; i < lines.length; i++) {
+        let cols = lines[i].split(delimiter);
+
+        // Pad missing columns with empty values
+        while (cols.length < headers.length) {
+          cols.push('');
+        }
+
+        // If there are too many columns, still throw error
+        if (cols.length > headers.length) {
+          this.editorErrorMessage = `Invalid data format at line ${i + 1}. Found ${cols.length} columns, expected ${headers.length}.`;
           this.validConfigurationForm = false;
           this.formStatusEvent.emit({ status: false, group: this.group });
           return;
         }
+
+        // Optionally, replace the line with corrected/padded version
+        lines[i] = cols.join(delimiter);
       }
       const arr = lines.map(line => {
         const cols = line.split(delimiter);
@@ -465,28 +484,6 @@ export class ListTypeConfigurationComponent implements OnInit {
       this.initialProperties = [];
       this.items = [];
       arr.forEach(el => this.initListItem(false, el));
-      this.editorErrorMessage = '';
-      this.validConfigurationForm = true;
-      this.cdRef.detectChanges();
-      this.formStatusEvent.emit({ status: this.listItems.valid && this.validConfigurationForm, group: this.group });
-    } else {
-      if (headers.length !== 1) {
-        this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
-        this.validConfigurationForm = false;
-        this.formStatusEvent.emit({ status: false, group: this.group });
-        return;
-      }
-      for (const line of lines) {
-        if (line.split(delimiter).length !== 1) {
-          this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
-          this.validConfigurationForm = false;
-          this.formStatusEvent.emit({ status: false, group: this.group });
-          return;
-        }
-      }
-      const values = lines.map(line => line.split(delimiter)[0]);
-      this.listItems.clear();
-      values.forEach(v => this.initListItem(false, v));
       this.editorErrorMessage = '';
       this.validConfigurationForm = true;
       this.cdRef.detectChanges();

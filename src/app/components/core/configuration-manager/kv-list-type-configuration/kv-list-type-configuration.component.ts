@@ -366,77 +366,77 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   public onCsvEditorChange(text: string) {
-    this.csvEditorData = text ?? '';
-    const raw = (this.csvEditorData || '').trim();
-    if (!raw) { return; }
-    const lines = raw.split(/\r?\n/).filter(l => l.length > 0);
-    if (lines.length === 0) { return; }
-    const headerLine = (lines.shift() || '');
-    const delimiter = this.detectCsvDelimiter(headerLine);
-    if (!delimiter) {
-      this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
-      this.validConfigurationForm = false;
-      this.formStatusEvent.emit({ 'status': false, 'group': this.group });
-      return;
-    }
-    this.csvDelimiter = delimiter;
-    const headers = headerLine.split(delimiter);
-    if (this.configuration.items === 'object') {
-      const expected = ['Key', ...Object.keys(this.configuration.properties)];
-      if (headers.length !== expected.length || !expected.every(h => headers.indexOf(h) > -1)) {
+    try {
+      this.csvEditorData = text ?? '';
+      const raw = (this.csvEditorData || '').trim();
+      if (!raw) { return; }
+      const lines = raw.split(/\r?\n/).filter(l => l.length > 0);
+      if (lines.length === 0) { return; }
+      const headerLine = (lines.shift() || '');
+      const delimiter = this.detectCsvDelimiter(headerLine);
+      if (!delimiter) {
         this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
         this.validConfigurationForm = false;
         this.formStatusEvent.emit({ 'status': false, 'group': this.group });
         return;
       }
-      // validate each row has consistent columns
-      for (const line of lines) {
-        if (line.split(delimiter).length !== headers.length) {
-          this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
+      this.csvDelimiter = delimiter;
+      const headers = headerLine.split(delimiter);
+      if (this.configuration.items === 'object') {
+        const expected = ['Key', ...Object.keys(this.configuration.properties)];
+        if (headers.length !== expected.length) {
+          this.editorErrorMessage = `Header count mismatch: CSV has ${headers.length} columns but expected ${expected.length} columns (${expected.join(', ')})`;
           this.validConfigurationForm = false;
           this.formStatusEvent.emit({ 'status': false, 'group': this.group });
           return;
         }
-      }
-      this.kvListItems.clear();
-      this.initialProperties = [];
-      this.items = [];
-      lines.forEach(line => {
-        const cols = line.split(delimiter);
-        const key = cols[0];
-        const value: any = {};
-        Object.keys(this.configuration.properties).forEach((h, idx) => value[h] = cols[idx + 1] ?? '');
-        this.kvListItems.push(this.initListItem(false, { key, value }));
-      });
-      this.editorErrorMessage = '';
-      this.validConfigurationForm = true;
-      this.cdRef.detectChanges();
-      this.formStatusEvent.emit({ 'status': this.kvListItems.valid && this.validConfigurationForm, 'group': this.group });
-    } else {
-      if (headers.length !== 2) {
-        this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
-        this.validConfigurationForm = false;
-        this.formStatusEvent.emit({ 'status': false, 'group': this.group });
-        return;
-      }
-      for (const line of lines) {
-        if (line.split(delimiter).length !== 2) {
-          this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
+
+        if (!expected.every(h => headers.indexOf(h) > -1)) {
+          this.editorErrorMessage = `Header mismatch: CSV has columns (${headers.join(', ')}) but expected columns (${expected.join(', ')})`;
           this.validConfigurationForm = false;
           this.formStatusEvent.emit({ 'status': false, 'group': this.group });
           return;
         }
+
+        // validate each row has consistent columns
+        for (let i = 0; i < lines.length; i++) {
+          let cols = lines[i].split(delimiter);
+
+          // Pad missing columns with empty values
+          while (cols.length < headers.length) {
+            cols.push('');
+          }
+
+          // If there are too many columns, still throw error
+          if (cols.length > headers.length) {
+            this.editorErrorMessage = `Invalid data format at line ${i + 1}. Found ${cols.length} columns, expected ${headers.length}.`;
+            this.validConfigurationForm = false;
+            this.formStatusEvent.emit({ status: false, group: this.group });
+            return;
+          }
+
+          // Optionally, replace the line with corrected/padded version
+          lines[i] = cols.join(delimiter);
+        }
+        this.kvListItems.clear();
+        this.initialProperties = [];
+        this.items = [];
+        lines.forEach(line => {
+          const cols = line.split(delimiter);
+          const key = cols[0];
+          const value: any = {};
+          Object.keys(this.configuration.properties).forEach((h, idx) => value[h] = cols[idx + 1] ?? '');
+          this.kvListItems.push(this.initListItem(false, { key, value }));
+        });
+        this.editorErrorMessage = '';
+        this.validConfigurationForm = true;
+        this.cdRef.detectChanges();
+        this.formStatusEvent.emit({ 'status': this.kvListItems.valid && this.validConfigurationForm, 'group': this.group });
       }
-      this.kvListItems.clear();
-      lines.forEach(line => {
-        const cols = line.split(delimiter);
-        this.kvListItems.push(this.initListItem(false, { key: cols[0], value: cols[1] ?? '' }));
-      });
-      this.editorErrorMessage = '';
-      this.validConfigurationForm = true;
-      this.cdRef.detectChanges();
-      this.formStatusEvent.emit({ 'status': this.kvListItems.valid && this.validConfigurationForm, 'group': this.group });
+    } catch (error) {
+      this.editorErrorMessage = 'Invalid CSV: ' + error.message;
     }
+
   }
 
   private detectCsvDelimiter(headerLine: string): string | null {
