@@ -1,5 +1,6 @@
 import { Component, HostListener, Input, OnInit, ViewChild, ContentChild } from '@angular/core';
 import { FlowEditorService } from './../node-editor/flow-editor.service';
+import { SharedService } from '../../../services';
 
 declare const bulmaQuickview: any;
 
@@ -19,7 +20,8 @@ export class QuickviewComponent implements OnInit {
   @ContentChild('systemLogs', { static: false }) systemLogsComponent;
 
   constructor(
-    public flowEditorService: FlowEditorService
+    public flowEditorService: FlowEditorService,
+    public sharedService: SharedService
   ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -66,6 +68,11 @@ export class QuickviewComponent implements OnInit {
     }
     if (this.systemLogsComponent) {
       this.systemLogsComponent.ngOnDestroy();
+    }
+    // set the list kv view to the default value on close quickview
+    if (this.sharedService.listKvView) {
+      const view = localStorage.getItem('LIST_KVLIST_VIEW');
+      this.sharedService.listKvView.next(view || 'list');
     }
   }
 

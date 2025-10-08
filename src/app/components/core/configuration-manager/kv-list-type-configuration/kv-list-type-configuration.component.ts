@@ -1,18 +1,19 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { filter } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
-import { ConfigurationControlService, RolesService } from '../../../../services';
+import { ConfigurationControlService, RolesService, SharedService } from '../../../../services';
 import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
 import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-kv-list-type-configuration',
   templateUrl: './kv-list-type-configuration.component.html',
   styleUrls: ['./kv-list-type-configuration.component.css']
 })
-export class KvListTypeConfigurationComponent implements OnInit {
+export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   @Input() configuration;
   @Input() categoryName;
   @Input() group: string = '';
@@ -30,12 +31,14 @@ export class KvListTypeConfigurationComponent implements OnInit {
   jsonEditorData = '';
   csvEditorData = '';
   editorErrorMessage = '';
+  private viewChangeSub: Subscription;
 
   constructor(
     public cdRef: ChangeDetectorRef,
     public rolesService: RolesService,
     public configControlService: ConfigurationControlService,
-    private fb: FormBuilder) {
+    private fb: FormBuilder,
+    private sharedService: SharedService) {
     this.kvListItemsForm = this.fb.group({
       kvListItems: this.fb.array([])
     });
@@ -48,8 +51,10 @@ export class KvListTypeConfigurationComponent implements OnInit {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
     this.onControlValueChanges();
-    const globalView = localStorage.getItem('LIST_KVLIST_VIEW') || 'list';
-    this.setCurrentView(globalView);
+
+    this.viewChangeSub = this.sharedService.listKvView.subscribe((view) => {
+      this.applyView(view as 'list' | 'detailed' | 'json' | 'csv');
+    });
   }
 
   get kvListItems() {
@@ -278,7 +283,12 @@ export class KvListTypeConfigurationComponent implements OnInit {
   }
 
   setCurrentView(event) {
-    this.currentView = event as 'list' | 'detailed' | 'json' | 'csv';
+    this.applyView(event as 'list' | 'detailed' | 'json' | 'csv');
+    this.sharedService.listKvView.next(this.currentView);
+  }
+
+  private applyView(view: 'list' | 'detailed' | 'json' | 'csv') {
+    this.currentView = view;
     this.editorErrorMessage = '';
     this.validConfigurationForm = true;
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid && this.validConfigurationForm, 'group': this.group });
@@ -288,7 +298,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
       this.csvEditorData = this.getCsvFromForm();
     }
     if (this.kvListItems.length == 1 && this.currentView === 'detailed') {
-      this.expandListItem(0); // Expand the list if only one item is present
+      this.expandListItem(0);
     }
   }
 
@@ -426,4 +436,7 @@ export class KvListTypeConfigurationComponent implements OnInit {
     return hasTab ? '\t' : ',';
   }
 
+  ngOnDestroy() {
+    this.viewChangeSub?.unsubscribe();
+  }
 }

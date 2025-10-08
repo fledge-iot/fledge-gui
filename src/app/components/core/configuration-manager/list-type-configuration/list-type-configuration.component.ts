@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnInit, Outp
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { filter, uniqWith, isEqual, cloneDeep } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
-import { ConfigurationControlService, RolesService } from '../../../../services';
+import { ConfigurationControlService, RolesService, SharedService } from '../../../../services';
 import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
 import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
@@ -37,13 +37,15 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   @ViewChild(CdkVirtualScrollViewport, { static: false }) viewport: CdkVirtualScrollViewport;
   private valueChangeSub: Subscription;
+  private viewChangeSub: Subscription;
 
   constructor(
     private zone: NgZone,
     public cdRef: ChangeDetectorRef,
     public rolesService: RolesService,
     public configControlService: ConfigurationControlService,
-    private fb: FormBuilder) {
+    private fb: FormBuilder,
+    private sharedService: SharedService) {
     this.listItemsForm = this.fb.group({
       listItems: this.fb.array([])
     })
@@ -87,8 +89,9 @@ export class ListTypeConfigurationComponent implements OnInit {
 
     this.valueChangeSub = this.onControlValueChanges();
 
-    const globalView = localStorage.getItem('LIST_KVLIST_VIEW') || 'list';
-    this.setCurrentView(globalView);
+    this.viewChangeSub = this.sharedService.listKvView.subscribe((view) => {
+      this.applyView(view as 'list' | 'detailed' | 'json' | 'csv');
+    });
   }
 
   get listItems() {
@@ -339,7 +342,12 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   setCurrentView(event) {
-    this.currentView = event as 'list' | 'detailed' | 'json' | 'csv';
+    this.applyView(event as 'list' | 'detailed' | 'json' | 'csv');
+    this.sharedService.listKvView.next(this.currentView);
+  }
+
+  private applyView(view: 'list' | 'detailed' | 'json' | 'csv') {
+    this.currentView = view;
     this.editorErrorMessage = '';
     this.validConfigurationForm = true;
     if (this.currentView === 'json') {
@@ -348,9 +356,8 @@ export class ListTypeConfigurationComponent implements OnInit {
       this.csvEditorData = this.getCsvFromForm();
     }
     if (this.listItems.length == 1 && this.currentView === 'detailed') {
-      this.expandListItem(0); // Expand the list if only one item is present
+      this.expandListItem(0);
     }
-
   }
 
   // ===== Synchronization helpers =====
@@ -487,5 +494,6 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   ngOnDestroy() {
     this.valueChangeSub?.unsubscribe();
+    this.viewChangeSub?.unsubscribe();
   }
 }
