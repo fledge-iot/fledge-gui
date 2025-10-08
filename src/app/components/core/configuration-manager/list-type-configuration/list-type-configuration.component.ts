@@ -86,6 +86,9 @@ export class ListTypeConfigurationComponent implements OnInit {
     console.log(`Form creation took ${t1 - t0} ms`);
 
     this.valueChangeSub = this.onControlValueChanges();
+
+    const globalView = localStorage.getItem('LIST_KVLIST_VIEW') || 'list';
+    this.setCurrentView(globalView);
   }
 
   get listItems() {
@@ -347,6 +350,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     if (this.listItems.length == 1 && this.currentView === 'detailed') {
       this.expandListItem(0); // Expand the list if only one item is present
     }
+
   }
 
   // ===== Synchronization helpers =====

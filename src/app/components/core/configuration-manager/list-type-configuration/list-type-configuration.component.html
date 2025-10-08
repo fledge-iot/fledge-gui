@@ -98,12 +98,12 @@
       [validConfigurationForm]="validConfigurationForm" (removeItem)="removeListItem($event)"
       (addItem)="addListItem(true)" (openModalEvent)="openModal()" (exportFile)="openExportFileModal()" />
   </ng-container>
-  <ng-container *ngIf="currentView === 'json'">
+  <ng-container *ngIf="configuration.items == 'object' && currentView === 'json'">
     <app-code-editor [mode]="'json'" [data]="jsonEditorData"
       (dataChange)="onJsonEditorChange($event)"></app-code-editor>
     <p class="help is-danger" *ngIf="editorErrorMessage">{{editorErrorMessage}}</p>
   </ng-container>
-  <ng-container *ngIf="currentView === 'csv'">
+  <ng-container *ngIf="configuration.items == 'object' && currentView === 'csv'">
     <app-code-editor [mode]="'csv'" [data]="csvEditorData" (dataChange)="onCsvEditorChange($event)"></app-code-editor>
     <p class="help is-danger" *ngIf="editorErrorMessage">{{editorErrorMessage}}</p>
   </ng-container>

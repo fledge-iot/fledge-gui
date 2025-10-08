@@ -48,6 +48,8 @@ export class KvListTypeConfigurationComponent implements OnInit {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
     this.onControlValueChanges();
+    const globalView = localStorage.getItem('LIST_KVLIST_VIEW') || 'list';
+    this.setCurrentView(globalView);
   }
 
   get kvListItems() {
@@ -423,4 +425,5 @@ export class KvListTypeConfigurationComponent implements OnInit {
     }
     return hasTab ? '\t' : ',';
   }
+
 }
