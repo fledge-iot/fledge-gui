@@ -15,7 +15,7 @@ import {
   GenerateCsvService,
   ProgressBarService,
   ResponseHandler, RolesService,
-  SchedulesService, ServicesApiService, ToastService
+  SchedulesService, ServicesApiService, SharedService, ToastService
 } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import { MAX_INT_SIZE } from '../../../../utils';
@@ -85,6 +85,7 @@ export class SouthServiceModalComponent implements OnInit {
     public rolesService: RolesService,
     private response: ResponseHandler,
     private toastService: ToastService,
+    private sharedService: SharedService,
     private activatedRoute: ActivatedRoute,
     public cDRef: ChangeDetectorRef,) {
     this.activatedRoute.paramMap.subscribe(params => {
@@ -103,7 +104,7 @@ export class SouthServiceModalComponent implements OnInit {
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
     const alertModal = <HTMLDivElement>document.getElementById('modal-box');
     if (!alertModal.classList.contains('is-active')) {
-      this.navToSouthPage();
+      this.navToSouth();
     }
   }
 
@@ -117,7 +118,7 @@ export class SouthServiceModalComponent implements OnInit {
           const services = data.services as Service[];
           this.service = services.find(service => (service.name == this.serviceName));
           // open modal window if service name is valid otherwise redirect to list page
-          this.service !== undefined ? this.toggleModal(true) : this.navToSouthPage()
+          this.service !== undefined ? this.toggleModal(true) : this.navToSouth()
         },
         error => {
           if (error.status === 0) {
@@ -261,6 +262,8 @@ export class SouthServiceModalComponent implements OnInit {
   }
 
   closeModal(id: string) {
+    console.log('closeModal', this.sharedService.listKvView);
+
     this.dialogService.close(id);
   }
 
@@ -344,7 +347,7 @@ export class SouthServiceModalComponent implements OnInit {
           this.ngProgress.done();
           this.reenableButton.emit(false);
           this.alertService.success(data['result'], true);
-          this.navToSouthPage();
+          this.navToSouth();
           this.closeModal('delete-service-dialog');
           setTimeout(() => {
             this.notify.emit();
@@ -405,7 +408,7 @@ export class SouthServiceModalComponent implements OnInit {
       this.isAddFilterWizard = this.applicationTagClicked;
       return;
     }
-    this.navToSouthPage();
+    this.navToSouth();
   }
 
   /**
@@ -468,7 +471,7 @@ export class SouthServiceModalComponent implements OnInit {
     this.fileUploaderService.uploadConfigurationScript(categoryName, files);
     if (isEmpty(this.changedConfig) && isEmpty(this.advancedConfiguration)) //&& isEmpty(this.changedFilterConfig))
     {
-      this.navToSouthPage();
+      this.navToSouth();
     }
   }
 
@@ -488,7 +491,7 @@ export class SouthServiceModalComponent implements OnInit {
       this.filtersListComponent.update();
       this.unsavedChangesInFilterForm = false;
       if (this.apiCallsStack.length == 0) {
-        this.navToSouthPage();
+        this.navToSouth();
       }
     }
 
@@ -509,15 +512,12 @@ export class SouthServiceModalComponent implements OnInit {
           }
         });
         this.notify.emit();
-        this.navToSouthPage();
+        this.navToSouth();
         this.apiCallsStack = [];
       });
     }
   }
 
-  navToSouthPage() {
-    this.router.navigate(['/south']);
-  }
 
   navToSouth() {
     if (this.source === 'flowEditor') {
@@ -525,6 +525,10 @@ export class SouthServiceModalComponent implements OnInit {
     }
     else {
       this.router.navigate(['/south']);
+      if (this.sharedService.listKvView) {
+        const view = localStorage.getItem('LIST_KVLIST_VIEW') || 'list';
+        this.sharedService.listKvView.next(view);
+      }
     }
   }
 

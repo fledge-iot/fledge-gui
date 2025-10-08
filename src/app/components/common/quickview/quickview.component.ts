@@ -71,8 +71,8 @@ export class QuickviewComponent implements OnInit {
     }
     // set the list kv view to the default value on close quickview
     if (this.sharedService.listKvView) {
-      const view = localStorage.getItem('LIST_KVLIST_VIEW');
-      this.sharedService.listKvView.next(view || 'list');
+      const view = localStorage.getItem('LIST_KVLIST_VIEW') || 'list';
+      this.sharedService.listKvView.next(view);
     }
   }
 
