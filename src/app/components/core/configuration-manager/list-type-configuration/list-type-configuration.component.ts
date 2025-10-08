@@ -33,6 +33,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   currentView: 'list' | 'detailed' | 'json' | 'csv' = 'list';
   jsonEditorData = '';
   csvEditorData = '';
+  csvDelimiter: string = ',';
   editorErrorMessage = '';
 
   @ViewChild(CdkVirtualScrollViewport, { static: false }) viewport: CdkVirtualScrollViewport;
@@ -374,8 +375,8 @@ export class ListTypeConfigurationComponent implements OnInit {
     const values = this.listItems.value || [];
     if (this.configuration.items === 'object') {
       const headers = Object.keys(this.configuration.properties);
-      const rows = values.map(v => headers.map(h => `${v?.[h] ?? ''}`).join(','));
-      return [headers.join(','), ...rows].join('\n');
+      const rows = values.map(v => headers.map(h => `${v?.[h] ?? ''}`).join(this.csvDelimiter));
+      return [headers.join(this.csvDelimiter), ...rows].join('\n');
     }
     // primitives -> single column CSV with header "value"
     const header = 'value';
@@ -427,6 +428,7 @@ export class ListTypeConfigurationComponent implements OnInit {
       this.formStatusEvent.emit({ status: false, group: this.group });
       return;
     }
+    this.csvDelimiter = delimiter;
     const headers = headerLine.split(delimiter);
     if (this.configuration.items === 'object') {
       const expected = Object.keys(this.configuration.properties);

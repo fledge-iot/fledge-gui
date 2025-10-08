@@ -30,6 +30,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   currentView: 'list' | 'detailed' | 'json' | 'csv' = 'list';
   jsonEditorData = '';
   csvEditorData = '';
+  csvDelimiter: string = ',';
   editorErrorMessage = '';
   private viewChangeSub: Subscription;
 
@@ -318,13 +319,13 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
     if (this.configuration.items === 'object') {
       const headers = Object.keys(this.configuration.properties);
       const rows = this.kvListItems.value.map((row: any) => {
-        const values = headers.map(h => `${row.value?.[h] ?? ''}`).join(',');
-        return `${row.key},${values}`;
+        const values = headers.map(h => `${row.value?.[h] ?? ''}`).join(this.csvDelimiter);
+        return `${row.key}${this.csvDelimiter}${values}`;
       });
-      return ['Key,' + headers.join(','), ...rows].join('\n');
+      return ['Key' + this.csvDelimiter + headers.join(this.csvDelimiter), ...rows].join('\n');
     }
-    const rows = this.kvListItems.value.map((row: any) => `${row.key},${row.value ?? ''}`);
-    return ['Key,value', ...rows].join('\n');
+    const rows = this.kvListItems.value.map((row: any) => `${row.key}${this.csvDelimiter}${row.value ?? ''}`);
+    return ['Key' + this.csvDelimiter + 'value', ...rows].join('\n');
   }
 
   public onJsonEditorChange(text: string) {
@@ -368,6 +369,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
       this.formStatusEvent.emit({ 'status': false, 'group': this.group });
       return;
     }
+    this.csvDelimiter = delimiter;
     const headers = headerLine.split(delimiter);
     if (this.configuration.items === 'object') {
       const expected = ['Key', ...Object.keys(this.configuration.properties)];
