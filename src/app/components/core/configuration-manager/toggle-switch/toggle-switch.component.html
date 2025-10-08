@@ -19,15 +19,6 @@
   </p>
   <p class="control">
     <button class="button is-small tooltip has-tooltip-right has-tooltip-arrow toggle-btn"
-      [attr.data-tooltip]="activeView === 'json' ? null : 'JSON view'" (click)="setCurrentView('json')"
-      [disabled]="activeView === 'json'">
-      <span class="icon">
-        <i class="bi bi-sm bi-filetype-json"></i>
-      </span>
-    </button>
-  </p>
-  <p class="control">
-    <button class="button is-small tooltip has-tooltip-right has-tooltip-arrow toggle-btn"
       [attr.data-tooltip]="activeView === 'csv' ? null : 'CSV view'" (click)="setCurrentView('csv')"
       [disabled]="activeView === 'csv'">
       <span class="icon">
@@ -35,4 +26,14 @@
       </span>
     </button>
   </p>
+  <p class="control">
+    <button class="button is-small tooltip has-tooltip-right has-tooltip-arrow toggle-btn"
+      [attr.data-tooltip]="activeView === 'json' ? null : 'JSON view'" (click)="setCurrentView('json')"
+      [disabled]="activeView === 'json'">
+      <span class="icon">
+        <i class="bi bi-sm bi-filetype-json"></i>
+      </span>
+    </button>
+  </p>
+
 </div>
