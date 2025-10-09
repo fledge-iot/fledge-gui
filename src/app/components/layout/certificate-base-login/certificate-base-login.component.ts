@@ -63,7 +63,8 @@ export class CertificateBaseLoginComponent implements OnInit {
     const fileReader = new FileReader();
     fileReader.readAsText(file);
     fileReader.onload = () => {
-      this.certificateContent = fileReader.result;
+      const result = fileReader.result;
+      this.certificateContent = typeof result === 'string' ? result : '';
     };
   }
 
