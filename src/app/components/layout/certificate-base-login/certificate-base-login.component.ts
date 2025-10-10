@@ -11,11 +11,14 @@ import { switchMap } from 'rxjs/operators';
 })
 export class CertificateBaseLoginComponent implements OnInit {
   form: UntypedFormGroup;
-  isCertificateExt = true;
-  certificateFile: any;
-  certificateContent: any = '';
-  public loginCertButtonText = 'Manually put the certificate content';
+  isCertificateExtensionValid = true;
+  certificateFile: File | null = null;
+  certificateContent: string = '';
   public showBrowseCertificate = true;
+
+  public get loginCertButtonText(): string {
+    return this.showBrowseCertificate ? 'Paste Content' : 'Upload File';
+  }
   constructor(public ngProgress: ProgressBarService,
     private authService: AuthService,
     private alertService: AlertService,
@@ -49,11 +52,9 @@ export class CertificateBaseLoginComponent implements OnInit {
     this.resetForm();
     if (this.showBrowseCertificate) {
       this.showBrowseCertificate = false;
-      this.loginCertButtonText = 'Browse Certificate';
       this.form.controls.certificate.disable();
     } else {
       this.showBrowseCertificate = true;
-      this.loginCertButtonText = 'Manually put the certificate content';
       this.form.controls.certificate.enable();
     }
   }
@@ -62,12 +63,13 @@ export class CertificateBaseLoginComponent implements OnInit {
     const fileReader = new FileReader();
     fileReader.readAsText(file);
     fileReader.onload = () => {
-      this.certificateContent = fileReader.result;
+      const result = fileReader.result;
+      this.certificateContent = typeof result === 'string' ? result : '';
     };
   }
 
-  LoginWithCertificate() {
-    const certificate = this.form.get('certificateText').value;
+  loginWithCertificate() {
+    const certificate: string = this.form.get('certificateText').value;
     // If neither the certificate file nor the certificate text value exist, then show error
     if (this.certificateContent.length <= 0 && certificate.length <= 0) {
       this.alertService.error('Certificate is required');
@@ -104,19 +106,20 @@ export class CertificateBaseLoginComponent implements OnInit {
         });
   }
 
-  onCertificateChange(event: any) {
+  onCertificateChange(event: Event) {
     this.certificateContent = '';
-    if (event.target.files.length !== 0) {
-      const fileName = event.target.files[0].name;
+    const input = event.target as HTMLInputElement;
+    if (input?.files && input.files.length !== 0) {
+      const file = input.files[0];
+      const fileName = file.name;
       const ext = fileName.substr(fileName.lastIndexOf('.') + 1);
       if (ext !== 'cert') {
-        this.isCertificateExt = false;
+        this.isCertificateExtensionValid = false;
         return;
       }
-      this.isCertificateExt = true;
-      if (event.target.files.length > 0) {
-        this.readCertificateFileContent(event.target.files[0]);
-      }
+      this.isCertificateExtensionValid = true;
+      this.certificateFile = file;
+      this.readCertificateFileContent(file);
     }
   }
 
@@ -124,6 +127,6 @@ export class CertificateBaseLoginComponent implements OnInit {
     this.form.get('certificate').setValue('');
     this.form.get('certificateText').setValue('');
     this.certificateContent = '';
-    this.isCertificateExt = true;
+    this.isCertificateExtensionValid = true;
   }
 }

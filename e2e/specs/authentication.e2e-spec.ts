@@ -129,8 +129,8 @@ describe('Authentication Methods Based Tests', () => {
         it('Should open certificate login modal', () => {
             authPage.openCertificateLoginModal();
 
-            // Click on "Manually put the certificate content" link
-            cy.get('#certificate-login-modal .button.is-text').click();
+            // Click on "Paste Content" link
+            cy.get('#certificate-login-modal .button.is-ghost').click();
             cy.wait(500);
 
             authPage.validateCertificateModal();
@@ -139,8 +139,8 @@ describe('Authentication Methods Based Tests', () => {
         it('Should close certificate login modal', () => {
             authPage.openCertificateLoginModal();
 
-            // Click on "Manually put the certificate content" link
-            cy.get('#certificate-login-modal .button.is-text').click();
+            // Click on "Paste Content" link
+            cy.get('#certificate-login-modal .button.is-ghost').click();
             cy.wait(500);
 
             authPage.validateCertificateModal();
@@ -183,7 +183,7 @@ describe('Authentication Methods Based Tests', () => {
             });
 
             // Should show validation error for non-certificate file
-            cy.get('#certificate-login-modal .help.is-danger').should('contain', 'certificate');
+            cy.get('#certificate-login-modal .help.is-danger').should('contain', 'Invalid');
         });
 
         it('Should require certificate content for submission', () => {
@@ -213,7 +213,7 @@ describe('Authentication Methods Based Tests', () => {
             cy.get('#certificate-login-modal textarea').should('be.visible');
 
             // Click to switch back to file input
-            cy.get('#certificate-login-modal .button.is-text').click();
+            cy.get('#certificate-login-modal .button.is-ghost').click();
             cy.wait(500);
 
             // Should show file input again
