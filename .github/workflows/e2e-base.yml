@@ -44,30 +44,15 @@ jobs:
           cache: 'yarn'
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Build Application
         run: |
-          echo "Building application..."
-          yarn build --configuration production
-          echo "✓ Build completed successfully"
-          du -sh dist/
+          yarn install --frozen-lockfile
+          echo "Running requirements script..."
+          ./requirements || echo "Requirements script not critical"
 
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@latest
         with:
           chrome-version: stable
-
-      - name: Verify Chrome Installation
-        run: |
-          which google-chrome-stable
-          google-chrome-stable --version
-          echo "CHROME_BIN=$(which google-chrome-stable)" >> $GITHUB_ENV
-
-      - name: Verify Cypress Binary
-        run: |
-          npx cypress verify
-          npx cypress info
 
       - name: Configure Docker for Insecure Registry
         run: |

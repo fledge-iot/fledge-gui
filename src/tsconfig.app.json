@@ -13,7 +13,6 @@
   ],
   "files": [
     "main.ts",
-    "polyfills.ts",
-    "typings.d.ts"
+    "polyfills.ts"
   ]
 }

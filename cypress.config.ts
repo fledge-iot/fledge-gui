@@ -22,18 +22,6 @@ export default defineConfig({
           launchOptions.args.push('--disable-gpu');
           launchOptions.args.push('--disable-dev-shm-usage');
           launchOptions.args.push('--disable-software-rasterizer');
-          
-          // Additional stability flags for CI
-          launchOptions.args.push('--disable-setuid-sandbox');
-          launchOptions.args.push('--disable-web-security');
-          launchOptions.args.push('--disable-features=VizDisplayCompositor');
-          
-          // Prevent timeouts
-          launchOptions.args.push('--disable-background-timer-throttling');
-          launchOptions.args.push('--disable-backgrounding-occluded-windows');
-          launchOptions.args.push('--disable-renderer-backgrounding');
-          
-          console.log('Chrome launch args:', launchOptions.args);
         }
         return launchOptions;
       });
@@ -58,6 +46,6 @@ export default defineConfig({
   },
   
   // Video and screenshots
-  video: true,
+  video: false,
   screenshotOnRunFailure: true,
 })

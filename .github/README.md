@@ -75,7 +75,17 @@ To add Slack/email notifications:
 1. Add secrets: `SLACK_WEBHOOK_URL` or `MAIL_SERVER`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_TO`
 2. Add notification job to workflow (see [GitHub Actions docs](https://github.com/marketplace/actions/slack-send))
 
+## Jenkins Compatibility
+
+Existing Jenkins pipelines work without changes. The `e2e/run` script automatically detects Jenkins via `$JENKINS_HOME` or `$CI=true` and runs in headless mode.
+
 ## Documentation
 
 - [PR Commands](PR_COMMANDS.md) - PR comment trigger details
 - [Insecure Registry](INSECURE_REGISTRY_SETUP.md) - Registry configuration
+
+---
+
+**Notes:**
+- TypeScript config fixed for JSON imports and Node.js `require()`
+- Karma uses modern `karma-coverage` (replaces deprecated `karma-coverage-istanbul-reporter`)
