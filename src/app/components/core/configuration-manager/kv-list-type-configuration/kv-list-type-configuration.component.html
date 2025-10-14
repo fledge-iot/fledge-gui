@@ -115,7 +115,8 @@
       </ng-container>
     </ng-container>
     <ng-template #objectButtonPanel>
-      <ng-container *ngIf="kvListItems.controls.length==0; else buttonPanelTemplate">
+      <ng-container
+        *ngIf="kvListItems.controls.length==0 && (currentView === 'list' || currentView === 'detailed'); else buttonPanelTemplate">
         <ng-container
           *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != kvListItems.controls.length)">
           <div class="field">

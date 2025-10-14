@@ -7,6 +7,7 @@ import { ConfigurationControlService, RolesService, SharedService } from '../../
 import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
 import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
 import { Subscription } from 'rxjs';
+import { DelimiterStoreService } from '../../../../services/delimiter-store.service';
 
 @Component({
   selector: 'app-kv-list-type-configuration',
@@ -39,7 +40,8 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
     public rolesService: RolesService,
     public configControlService: ConfigurationControlService,
     private fb: FormBuilder,
-    private sharedService: SharedService) {
+    private sharedService: SharedService,
+    private delimiterStoreService: DelimiterStoreService) {
     this.kvListItemsForm = this.fb.group({
       kvListItems: this.fb.array([])
     });
@@ -193,7 +195,6 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   expandListItem(index) {
-    console.log('expandListItem', index);
     setTimeout(() => {
       this.expandCollapseSingleItem(index, true, true);
     }, 1);
@@ -233,6 +234,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
 
   appendFileData(event) {
     this.csvDelimiter = event.delimiter ?? ',';
+    this.delimiterStoreService.setDelimiter(this.csvDelimiter);
     for (const [key, value] of Object.entries(event.fileData)) {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
@@ -248,6 +250,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
     this.kvListItems.clear();
     this.initialProperties = [];
     this.csvDelimiter = event.delimiter ?? ',';
+    this.delimiterStoreService.setDelimiter(this.csvDelimiter);
     for (const [key, value] of Object.entries(event.fileData)) {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
@@ -308,6 +311,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
 
   public onDelimiterChanged(delimiter: string) {
     this.csvDelimiter = delimiter;
+    this.delimiterStoreService.setDelimiter(delimiter);
     this.csvEditorData = this.getCsvFromForm();
     this.cdRef.detectChanges();
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid && this.validConfigurationForm, 'group': this.group });
@@ -326,20 +330,28 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   private getCsvFromForm(): string {
-    console.log('getCsvFromForm', this.csvDelimiter);
-    console.log('this.kvListItems.value', this.configuration.items);
+    this.csvDelimiter = this.delimiterStoreService.getDelimiter() ?? this.csvDelimiter ?? ',';
     if (this.configuration.items === 'object') {
       const headers = Object.keys(this.configuration.properties);
-      console.log('headers', headers);
       const rows = this.kvListItems.value.map((row: any) => {
         const values = headers.map(h => `${row.value?.[h] ?? ''}`).join(this.csvDelimiter);
         return `${row.key}${this.csvDelimiter}${values}`;
       });
-      console.log('rows', rows);
       return ['Key' + this.csvDelimiter + headers.join(this.csvDelimiter), ...rows].join('\n');
     }
     const rows = this.kvListItems.value.map((row: any) => `${row.key}${this.csvDelimiter}${row.value ?? ''}`);
     return ['Key' + this.csvDelimiter + 'value', ...rows].join('\n');
+  }
+
+  private setError(message: string): void {
+    this.editorErrorMessage = message;
+    this.validConfigurationForm = false;
+    this.formStatusEvent.emit({ status: false, group: this.group });
+  }
+
+  private setSuccess(): void {
+    this.editorErrorMessage = '';
+    this.validConfigurationForm = true;
   }
 
   public onJsonEditorChange(text: string) {
@@ -347,189 +359,157 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
     try {
       const parsed = JSON.parse(text || '{}');
 
-      // ✅ Case 1: JSON is completely empty → valid = false
+      // Case 1: JSON empty
       if (!parsed || Object.keys(parsed).length === 0) {
-        this.editorErrorMessage = 'Empty JSON file.';
-        this.validConfigurationForm = false;
-        this.formStatusEvent.emit({ status: false, group: this.group });
+        this.setError('Empty JSON file.');
         return;
       }
 
       // Must be a non-array object
       if (!(parsed && typeof parsed === 'object' && !Array.isArray(parsed))) {
-        this.editorErrorMessage = 'Invalid JSON format. Root must be an object.';
-        this.validConfigurationForm = false;
-        this.formStatusEvent.emit({ status: false, group: this.group });
+        this.setError('Invalid JSON format. Root must be an object.');
         return;
       }
 
       // Reset lists
-      this.editorErrorMessage = '';
-      this.validConfigurationForm = true;
+      this.setSuccess();
       this.kvListItems.clear();
       this.initialProperties = [];
       this.items = [];
 
       const requiredProps = Object.keys(this.configuration.properties);
 
-      // Validate each key/value
       for (const [key, value] of Object.entries(parsed)) {
         const rowLine = `Key "${key}"`;
 
-        // ✅ Key required
-        if (!key || key.trim().length === 0) {
-          this.editorErrorMessage = `Missing required "Key".`;
-          this.validConfigurationForm = false;
-          this.formStatusEvent.emit({ status: false, group: this.group });
+        if (!key?.trim()) {
+          this.setError('Missing required "Key".');
           return;
         }
 
-        // ✅ Value must be an object
         if (!(value && typeof value === 'object' && !Array.isArray(value))) {
-          this.editorErrorMessage = `${rowLine} has invalid value. Expected an object with properties (${requiredProps.join(', ')}).`;
-          this.validConfigurationForm = false;
-          this.formStatusEvent.emit({ status: false, group: this.group });
+          this.setError(`${rowLine} has invalid value. Expected an object with properties (${requiredProps.join(', ')}).`);
           return;
         }
 
-        // ✅ All required props must be present
         const missingProps = requiredProps.filter(p => !(p in value));
         if (missingProps.length > 0) {
-          this.editorErrorMessage = `${rowLine} is missing required properties: ${missingProps.join(', ')}.`;
-          this.validConfigurationForm = false;
-          this.formStatusEvent.emit({ status: false, group: this.group });
+          this.setError(`${rowLine} is missing required properties: ${missingProps.join(', ')}.`);
           return;
         }
 
-        // ✅ No extra props allowed (if you want strictness)
         const extraProps = Object.keys(value).filter(p => !requiredProps.includes(p));
         if (extraProps.length > 0) {
-          this.editorErrorMessage = `${rowLine} has extra invalid properties: ${extraProps.join(', ')}.`;
-          this.validConfigurationForm = false;
-          this.formStatusEvent.emit({ status: false, group: this.group });
+          this.setError(`${rowLine} has extra invalid properties: ${extraProps.join(', ')}.`);
           return;
         }
 
-        // ✅ Push validated key/value into kvList
         this.kvListItems.push(this.initListItem(false, { key, value }));
       }
 
-      // If we got here: all good
-      this.validConfigurationForm = true;
-      this.editorErrorMessage = '';
+
+      this.setSuccess();
       this.cdRef.detectChanges();
-      this.formStatusEvent.emit({ status: this.kvListItems.valid && this.validConfigurationForm, group: this.group });
+      this.formStatusEvent.emit({
+        status: this.kvListItems.valid && this.validConfigurationForm,
+        group: this.group
+      });
 
     } catch (error: any) {
-      this.editorErrorMessage = 'Invalid JSON: ' + error.message;
-      this.validConfigurationForm = false;
-      this.formStatusEvent.emit({ status: false, group: this.group });
+      this.setError('Invalid JSON: ' + error.message);
     }
   }
 
   public onCsvEditorChange(text: string) {
     try {
       this.csvEditorData = text ?? '';
-      const raw = (this.csvEditorData || '').trim();
+      const raw = this.csvEditorData.trim();
       if (!raw) {
-        this.editorErrorMessage = 'Empty file or invalid CSV format.';
-        this.validConfigurationForm = false;
-        this.formStatusEvent.emit({ 'status': false, 'group': this.group });
+        this.setError('Empty file or invalid CSV format.');
         return;
       }
-      const lines = raw.split(/\r?\n/).filter(l => l.length > 0);
-      if (lines.length === 0) { return; }
-      const headerLine = (lines.shift() || '');
+
+      const lines = raw.split(/\r?\n/).filter(Boolean);
+      if (lines.length === 0) return;
+
+      const headerLine = lines.shift() || '';
       const delimiter = this.detectCsvDelimiter(headerLine);
       if (!delimiter) {
-        this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
-        this.validConfigurationForm = false;
-        this.formStatusEvent.emit({ 'status': false, 'group': this.group });
+        this.setError('Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.');
         return;
       }
+
       this.csvDelimiter = delimiter;
       const headers = headerLine.split(delimiter);
+
       if (this.configuration.items === 'object') {
         const expected = ['Key', ...Object.keys(this.configuration.properties)];
+
         if (headers.length !== expected.length) {
-          this.editorErrorMessage = `Header count mismatch: CSV has ${headers.length} columns but expected ${expected.length} columns (${expected.join(', ')})`;
-          this.validConfigurationForm = false;
-          this.formStatusEvent.emit({ 'status': false, 'group': this.group });
+          this.setError(`Header count mismatch: CSV has ${headers.length} columns but expected ${expected.length} (${expected.join(', ')})`);
           return;
         }
 
-        if (!expected.every(h => headers.indexOf(h) > -1)) {
-          this.editorErrorMessage = `Header mismatch: CSV has columns (${headers.join(', ')}) but expected columns (${expected.join(', ')})`;
-          this.validConfigurationForm = false;
-          this.formStatusEvent.emit({ 'status': false, 'group': this.group });
+        if (!expected.every(h => headers.includes(h))) {
+          this.setError(`Header mismatch: CSV has columns (${headers.join(', ')}) but expected (${expected.join(', ')})`);
           return;
         }
 
-        // ✅ New check: No data rows after header
         if (lines.length === 0) {
-          this.editorErrorMessage = `Missing required "Key" value at line 2.`;
-          this.validConfigurationForm = false;
-          this.formStatusEvent.emit({ status: false, group: this.group });
+          this.setError(`Missing required "Key" value at line 2.`);
           return;
         }
 
-        // validate each row has consistent columns
         for (let i = 0; i < lines.length; i++) {
           let cols = lines[i].split(delimiter);
 
-          // Pad missing columns with empty values
-          while (cols.length < headers.length) {
-            cols.push('');
-          }
-
-          // If there are too many columns, still throw error
+          while (cols.length < headers.length) cols.push('');
           if (cols.length > headers.length) {
-            this.editorErrorMessage = `Invalid data format at line ${i + 1}. Found ${cols.length} columns, expected ${headers.length}.`;
-            this.validConfigurationForm = false;
-            this.formStatusEvent.emit({ status: false, group: this.group });
+            this.setError(`Invalid data format at line ${i + 1}. Found ${cols.length} columns, expected ${headers.length}.`);
             return;
           }
 
-          // ✅ New Validation: Key must always be present
           const key = (cols[0] || '').trim();
           if (!key) {
-            this.editorErrorMessage = `Missing required "Key" value at line ${i + 2}.`;
-            // +2 because line index starts from 0, and we already removed the header
-            this.validConfigurationForm = false;
-            this.formStatusEvent.emit({ status: false, group: this.group });
+            this.setError(`Missing required "Key" value at line ${i + 2}.`);
             return;
           }
 
-          // Optionally, replace the line with corrected/padded version
           lines[i] = cols.join(delimiter);
         }
+
         this.kvListItems.clear();
         this.initialProperties = [];
         this.items = [];
+
         lines.forEach(line => {
           const cols = line.split(delimiter);
           const key = cols[0];
           const value: any = {};
-          Object.keys(this.configuration.properties).forEach((h, idx) => value[h] = cols[idx + 1] ?? '');
+          Object.keys(this.configuration.properties).forEach((h, idx) => {
+            value[h] = cols[idx + 1] ?? '';
+          });
           this.kvListItems.push(this.initListItem(false, { key, value }));
         });
-        this.editorErrorMessage = '';
-        this.validConfigurationForm = true;
-        this.cdRef.detectChanges();
-        this.formStatusEvent.emit({ 'status': this.kvListItems.valid && this.validConfigurationForm, 'group': this.group });
-      }
-    } catch (error) {
-      this.editorErrorMessage = 'Invalid CSV: ' + error.message;
-    }
 
+        this.setSuccess();
+        this.cdRef.detectChanges();
+        this.formStatusEvent.emit({
+          status: this.kvListItems.valid && this.validConfigurationForm,
+          group: this.group
+        });
+      }
+    } catch (error: any) {
+      this.setError('Invalid CSV: ' + error.message);
+    }
   }
 
   private detectCsvDelimiter(headerLine: string): string | null {
     const candidates = [',', ';', '\t', '|', ':'];
-    const detected = candidates.filter(d => headerLine.indexOf(d) > -1);
-    if (detected.length !== 1) { return null; }
-    return detected[0];
+    const detected = candidates.filter(d => headerLine.includes(d));
+    return detected.length === 1 ? detected[0] : null;
   }
+
 
   ngOnDestroy() {
     this.viewChangeSub?.unsubscribe();

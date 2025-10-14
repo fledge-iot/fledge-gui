@@ -8,6 +8,7 @@ import { FileExportModalComponent } from '../../../common/file-export-modal/file
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Subscription } from 'rxjs';
+import { DelimiterStoreService } from '../../../../services/delimiter-store.service';
 
 @Component({
   selector: 'app-list-type-configuration',
@@ -46,6 +47,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     public rolesService: RolesService,
     public configControlService: ConfigurationControlService,
     private fb: FormBuilder,
+    private delimiterStoreService: DelimiterStoreService,
     private sharedService: SharedService) {
     this.listItemsForm = this.fb.group({
       listItems: this.fb.array([])
@@ -292,6 +294,7 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   appendFileData(event) {
     this.csvDelimiter = event.delimiter ?? ',';
+    this.delimiterStoreService.setDelimiter(this.csvDelimiter);
     event.fileData.forEach(element => {
       this.initListItem(false, element);
     });
@@ -305,6 +308,7 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   overrideFileData(event) {
     this.csvDelimiter = event.delimiter ?? ',';
+    this.delimiterStoreService.setDelimiter(this.csvDelimiter);
     this.listItems.clear();
     this.initialProperties = [];
     event.fileData.forEach(element => {
@@ -365,6 +369,7 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   public onDelimiterChanged(delimiter: string) {
     this.csvDelimiter = delimiter;
+    this.delimiterStoreService.setDelimiter(delimiter);
     this.csvEditorData = this.getCsvFromForm();
     this.cdRef.detectChanges();
     this.formStatusEvent.emit({ status: this.listItems.valid && this.validConfigurationForm, group: this.group });
@@ -381,6 +386,7 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   private getCsvFromForm(): string {
+    this.csvDelimiter = this.delimiterStoreService.getDelimiter() ?? this.csvDelimiter ?? ',';
     const values = this.listItems.value || [];
     if (this.configuration.items === 'object') {
       const headers = Object.keys(this.configuration.properties);
