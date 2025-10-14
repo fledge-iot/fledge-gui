@@ -174,7 +174,7 @@ jobs:
         run: |
           cd e2e
           ./run
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Collect Docker Logs
         if: always()

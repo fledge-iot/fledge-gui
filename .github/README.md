@@ -4,13 +4,16 @@
 
 ### CI (`ci.yml`)
 Runs on every push/PR:
-- Build application
-- Run unit tests  
-- Code quality checks
+- **Build application** (blocking)
+- **Unit tests** (blocking)
+- **Code quality checks** (warnings only - non-blocking)
+  - Linting errors
+  - TypeScript type errors
 
 ### E2E Tests (`e2e-tests.yml`)
 Runs nightly at 2 AM UTC + manual trigger:
-- Full E2E test suite with Fledge container
+- **Full E2E test suite** (blocking)
+- Fledge container setup
 - Uses private registry: `54.204.128.201:5000`
 
 ### PR Commands (`pr-commands.yml`)
@@ -26,6 +29,25 @@ Runs build + E2E tests on your PR branch.
 **OS**: Ubuntu 24.04  
 **Node**: 16.x  
 **Artifacts**: 3-5 days retention
+
+## CI Policy: Blocking vs Non-Blocking
+
+### ❌ Blocking Checks (Must Pass)
+These checks **must pass** for CI to succeed:
+- **Build**: Application must compile successfully
+- **Unit Tests**: All unit tests must pass
+- **E2E Tests**: All end-to-end tests must pass
+
+If any blocking check fails, the workflow fails and PR cannot be merged.
+
+### ⚠️ Non-Blocking Checks (Warnings)
+These checks show **warnings** but don't block CI:
+- **Linting**: ESLint errors and warnings
+- **TypeScript**: Type checking errors
+
+Non-blocking checks allow flexibility for code style while enforcing functional correctness through tests.
+
+**Rationale**: Tests validate functionality (critical), while linting/typing rules can be more subjective and may need exceptions.
 
 ## Insecure Registry Setup
 

@@ -76,26 +76,14 @@ jobs:
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@latest
+        with:
+          chrome-version: stable
+
       - name: Run Unit Tests
-        run: yarn test --watch=false --code-coverage --browsers=ChromeHeadless
-        continue-on-error: true
-
-      - name: Upload Coverage Reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage/
-          retention-days: 5
-          if-no-files-found: warn
-
-      - name: Publish Test Results
-        if: always()
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        with:
-          check_name: Unit Test Results
-          files: coverage/**/test-results.xml
-        continue-on-error: true
+        run: yarn test --watch=false --code-coverage --browsers=ChromeHeadlessCI
+        continue-on-error: false
 
   code-quality:
     name: Code Quality Checks
@@ -118,7 +106,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Check TypeScript
-        run: npx tsc --noEmit
+        run: npx tsc --project tsconfig.app.json --noEmit
         continue-on-error: true
 
       - name: Check Code Formatting
@@ -136,14 +124,29 @@ jobs:
     steps:
       - name: Check Job Results
         run: |
+          echo "=== CI Summary ==="
           echo "Build: ${{ needs.build.result }}"
           echo "Unit Tests: ${{ needs.unit-tests.result }}"
           echo "Code Quality: ${{ needs.code-quality.result }}"
+          echo ""
           
+          # Critical checks - must pass
           if [ "${{ needs.build.result }}" != "success" ]; then
-            echo "❌ Build failed"
+            echo "❌ Build failed - BLOCKING"
             exit 1
           fi
           
-          echo "✅ CI checks completed"
+          if [ "${{ needs.unit-tests.result }}" != "success" ]; then
+            echo "❌ Unit tests failed - BLOCKING"
+            exit 1
+          fi
+          
+          # Non-blocking checks - warnings only
+          if [ "${{ needs.code-quality.result }}" != "success" ]; then
+            echo "⚠️  Code quality checks failed - WARNING (non-blocking)"
+            echo "    Please review linting and TypeScript errors"
+          fi
+          
+          echo ""
+          echo "✅ CI checks completed (critical checks passed)"
 
