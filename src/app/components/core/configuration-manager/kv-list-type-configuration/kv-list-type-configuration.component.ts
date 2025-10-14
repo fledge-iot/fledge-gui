@@ -193,6 +193,7 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   }
 
   expandListItem(index) {
+    console.log('expandListItem', index);
     setTimeout(() => {
       this.expandCollapseSingleItem(index, true, true);
     }, 1);
@@ -326,12 +327,15 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
 
   private getCsvFromForm(): string {
     console.log('getCsvFromForm', this.csvDelimiter);
+    console.log('this.kvListItems.value', this.configuration.items);
     if (this.configuration.items === 'object') {
       const headers = Object.keys(this.configuration.properties);
+      console.log('headers', headers);
       const rows = this.kvListItems.value.map((row: any) => {
         const values = headers.map(h => `${row.value?.[h] ?? ''}`).join(this.csvDelimiter);
         return `${row.key}${this.csvDelimiter}${values}`;
       });
+      console.log('rows', rows);
       return ['Key' + this.csvDelimiter + headers.join(this.csvDelimiter), ...rows].join('\n');
     }
     const rows = this.kvListItems.value.map((row: any) => `${row.key}${this.csvDelimiter}${row.value ?? ''}`);
@@ -342,26 +346,84 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
     this.jsonEditorData = text;
     try {
       const parsed = JSON.parse(text || '{}');
-      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-        this.editorErrorMessage = '';
-        this.validConfigurationForm = true;
-        this.kvListItems.clear();
-        this.initialProperties = [];
-        this.items = [];
-        for (const [key, value] of Object.entries(parsed)) {
-          this.kvListItems.push(this.initListItem(false, { key, value }));
-        }
-        this.cdRef.detectChanges();
-        this.formStatusEvent.emit({ 'status': this.kvListItems.valid && this.validConfigurationForm, 'group': this.group });
-      } else {
-        this.editorErrorMessage = 'Invalid JSON format.';
+
+      // ✅ Case 1: JSON is completely empty → valid = false
+      if (!parsed || Object.keys(parsed).length === 0) {
+        this.editorErrorMessage = 'Empty JSON file.';
         this.validConfigurationForm = false;
-        this.formStatusEvent.emit({ 'status': false, 'group': this.group });
+        this.formStatusEvent.emit({ status: false, group: this.group });
+        return;
       }
-    } catch (_) {
-      this.editorErrorMessage = 'Invalid JSON format.';
+
+      // Must be a non-array object
+      if (!(parsed && typeof parsed === 'object' && !Array.isArray(parsed))) {
+        this.editorErrorMessage = 'Invalid JSON format. Root must be an object.';
+        this.validConfigurationForm = false;
+        this.formStatusEvent.emit({ status: false, group: this.group });
+        return;
+      }
+
+      // Reset lists
+      this.editorErrorMessage = '';
+      this.validConfigurationForm = true;
+      this.kvListItems.clear();
+      this.initialProperties = [];
+      this.items = [];
+
+      const requiredProps = Object.keys(this.configuration.properties);
+
+      // Validate each key/value
+      for (const [key, value] of Object.entries(parsed)) {
+        const rowLine = `Key "${key}"`;
+
+        // ✅ Key required
+        if (!key || key.trim().length === 0) {
+          this.editorErrorMessage = `Missing required "Key".`;
+          this.validConfigurationForm = false;
+          this.formStatusEvent.emit({ status: false, group: this.group });
+          return;
+        }
+
+        // ✅ Value must be an object
+        if (!(value && typeof value === 'object' && !Array.isArray(value))) {
+          this.editorErrorMessage = `${rowLine} has invalid value. Expected an object with properties (${requiredProps.join(', ')}).`;
+          this.validConfigurationForm = false;
+          this.formStatusEvent.emit({ status: false, group: this.group });
+          return;
+        }
+
+        // ✅ All required props must be present
+        const missingProps = requiredProps.filter(p => !(p in value));
+        if (missingProps.length > 0) {
+          this.editorErrorMessage = `${rowLine} is missing required properties: ${missingProps.join(', ')}.`;
+          this.validConfigurationForm = false;
+          this.formStatusEvent.emit({ status: false, group: this.group });
+          return;
+        }
+
+        // ✅ No extra props allowed (if you want strictness)
+        const extraProps = Object.keys(value).filter(p => !requiredProps.includes(p));
+        if (extraProps.length > 0) {
+          this.editorErrorMessage = `${rowLine} has extra invalid properties: ${extraProps.join(', ')}.`;
+          this.validConfigurationForm = false;
+          this.formStatusEvent.emit({ status: false, group: this.group });
+          return;
+        }
+
+        // ✅ Push validated key/value into kvList
+        this.kvListItems.push(this.initListItem(false, { key, value }));
+      }
+
+      // If we got here: all good
+      this.validConfigurationForm = true;
+      this.editorErrorMessage = '';
+      this.cdRef.detectChanges();
+      this.formStatusEvent.emit({ status: this.kvListItems.valid && this.validConfigurationForm, group: this.group });
+
+    } catch (error: any) {
+      this.editorErrorMessage = 'Invalid JSON: ' + error.message;
       this.validConfigurationForm = false;
-      this.formStatusEvent.emit({ 'status': false, 'group': this.group });
+      this.formStatusEvent.emit({ status: false, group: this.group });
     }
   }
 
@@ -369,7 +431,12 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
     try {
       this.csvEditorData = text ?? '';
       const raw = (this.csvEditorData || '').trim();
-      if (!raw) { return; }
+      if (!raw) {
+        this.editorErrorMessage = 'Empty file or invalid CSV format.';
+        this.validConfigurationForm = false;
+        this.formStatusEvent.emit({ 'status': false, 'group': this.group });
+        return;
+      }
       const lines = raw.split(/\r?\n/).filter(l => l.length > 0);
       if (lines.length === 0) { return; }
       const headerLine = (lines.shift() || '');
@@ -398,6 +465,14 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
           return;
         }
 
+        // ✅ New check: No data rows after header
+        if (lines.length === 0) {
+          this.editorErrorMessage = `Missing required "Key" value at line 2.`;
+          this.validConfigurationForm = false;
+          this.formStatusEvent.emit({ status: false, group: this.group });
+          return;
+        }
+
         // validate each row has consistent columns
         for (let i = 0; i < lines.length; i++) {
           let cols = lines[i].split(delimiter);
@@ -410,6 +485,16 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
           // If there are too many columns, still throw error
           if (cols.length > headers.length) {
             this.editorErrorMessage = `Invalid data format at line ${i + 1}. Found ${cols.length} columns, expected ${headers.length}.`;
+            this.validConfigurationForm = false;
+            this.formStatusEvent.emit({ status: false, group: this.group });
+            return;
+          }
+
+          // ✅ New Validation: Key must always be present
+          const key = (cols[0] || '').trim();
+          if (!key) {
+            this.editorErrorMessage = `Missing required "Key" value at line ${i + 2}.`;
+            // +2 because line index starts from 0, and we already removed the header
             this.validConfigurationForm = false;
             this.formStatusEvent.emit({ status: false, group: this.group });
             return;

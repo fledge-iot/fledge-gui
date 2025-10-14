@@ -395,100 +395,200 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   public onJsonEditorChange(text: string) {
     this.jsonEditorData = text;
+
     try {
       const parsed = JSON.parse(text || '[]');
+
       if (this.configuration.items === 'object') {
-        if (!Array.isArray(parsed)) { return; }
+        if (!Array.isArray(parsed)) {
+          this.setJsonError('Invalid JSON format. Expected an array of objects.');
+          return;
+        }
+
+        const expectedHeaders = Object.keys(this.configuration.properties);
+
+        // ✅ Empty array → like "only header row" case
+        if (parsed.length === 0) {
+          this.setJsonError('Invalid data: JSON contains no items.');
+          return;
+        }
+
+        // ✅ Validate each object in array
+        for (let i = 0; i < parsed.length; i++) {
+          const obj = parsed[i];
+
+          if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
+            this.setJsonError(`Invalid item at index ${i}. Expected object with keys (${expectedHeaders.join(', ')}).`);
+            return;
+          }
+
+          const keys = Object.keys(obj);
+
+          // Check key count
+          if (keys.length !== expectedHeaders.length) {
+            this.setJsonError(
+              `Key count mismatch at item ${i}: found ${keys.length} keys, expected ${expectedHeaders.length} (${expectedHeaders.join(', ')})`
+            );
+            return;
+          }
+
+          // Check required keys
+          if (!expectedHeaders.every(h => keys.includes(h))) {
+            this.setJsonError(
+              `Key mismatch at item ${i}: found keys (${keys.join(', ')}) but expected (${expectedHeaders.join(', ')})`
+            );
+            return;
+          }
+        }
+
+        // ✅ Reset & initialize items
         this.listItems.clear();
         this.initialProperties = [];
         this.items = [];
         parsed.forEach(el => this.initListItem(false, el));
-        this.cdRef.detectChanges();
-        this.editorErrorMessage = '';
-        this.validConfigurationForm = true;
-        this.formStatusEvent.emit({ status: this.listItems.valid && this.validConfigurationForm, group: this.group });
+
+        // ✅ Mark valid
+        this.clearJsonError();
       } else {
-        if (!Array.isArray(parsed)) { return; }
+        // Non-object arrays
+        if (!Array.isArray(parsed)) {
+          this.setJsonError('Invalid JSON format. Expected an array.');
+          return;
+        }
+
+        if (parsed.length === 0) {
+          this.setJsonError('Invalid data: JSON contains no items.');
+          return;
+        }
+
         this.listItems.clear();
         (parsed as any[]).forEach(el => this.initListItem(false, el));
-        this.cdRef.detectChanges();
-        this.editorErrorMessage = '';
-        this.validConfigurationForm = true;
-        this.formStatusEvent.emit({ status: this.listItems.valid && this.validConfigurationForm, group: this.group });
+        this.clearJsonError();
       }
     } catch (_) {
-      this.editorErrorMessage = 'Invalid JSON format.';
-      this.validConfigurationForm = false;
-      this.formStatusEvent.emit({ status: false, group: this.group });
+      this.setJsonError('Invalid JSON format.');
     }
   }
+
+  // 🔹 Helper methods for readability
+  private setJsonError(message: string) {
+    this.editorErrorMessage = message;
+    this.validConfigurationForm = false;
+    this.formStatusEvent.emit({ status: false, group: this.group });
+  }
+
+  private clearJsonError() {
+    this.editorErrorMessage = '';
+    this.validConfigurationForm = true;
+    this.cdRef.detectChanges();
+    this.formStatusEvent.emit({
+      status: this.listItems.valid && this.validConfigurationForm,
+      group: this.group
+    });
+  }
+
 
   public onCsvEditorChange(text: string) {
     this.csvEditorData = text ?? '';
     const raw = (this.csvEditorData || '').trim();
-    if (!raw) { return; }
-    const lines = raw.split(/\r?\n/).filter(l => l.length > 0);
-    if (lines.length === 0) { return; }
-    const headerLine = (lines.shift() || '');
-    const delimiter = this.detectCsvDelimiter(headerLine);
-    if (!delimiter) {
-      this.editorErrorMessage = 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.';
+    if (!raw) {
+      this.editorErrorMessage = 'Empty file or invalid CSV format.';
       this.validConfigurationForm = false;
-      this.formStatusEvent.emit({ status: false, group: this.group });
+      this.formStatusEvent.emit({ 'status': false, 'group': this.group });
       return;
     }
+
+    const lines = raw.split(/\r?\n/).filter(l => l.trim().length > 0);
+    if (lines.length === 0) { return; }
+
+    const headerLine = lines.shift() || '';
+    const delimiter = this.detectCsvDelimiter(headerLine);
+
+    if (!delimiter) {
+      this.setCsvError('Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.');
+      return;
+    }
+
     this.csvDelimiter = delimiter;
     const headers = headerLine.split(delimiter);
+
     if (this.configuration.items === 'object') {
-      const expected = Object.keys(this.configuration.properties);
-      if (headers.length !== expected.length) {
-        this.editorErrorMessage = `Header count mismatch: CSV has ${headers.length} columns but expected ${expected.length} columns (${expected.join(', ')})`;
-        this.validConfigurationForm = false;
-        this.formStatusEvent.emit({ status: false, group: this.group });
+      const expectedHeaders = Object.keys(this.configuration.properties);
+
+      // ✅ Header length check
+      if (headers.length !== expectedHeaders.length) {
+        this.setCsvError(
+          `Header count mismatch: CSV has ${headers.length} columns but expected ${expectedHeaders.length} columns (${expectedHeaders.join(', ')})`
+        );
         return;
       }
 
-      if (!expected.every(h => headers.indexOf(h) > -1)) {
-        this.editorErrorMessage = `Header mismatch: CSV has columns (${headers.join(', ')}) but expected columns (${expected.join(', ')})`;
-        this.validConfigurationForm = false;
-        this.formStatusEvent.emit({ status: false, group: this.group });
+      // ✅ Header name check
+      if (!expectedHeaders.every(h => headers.includes(h))) {
+        this.setCsvError(
+          `Header mismatch: CSV has columns (${headers.join(', ')}) but expected columns (${expectedHeaders.join(', ')})`
+        );
         return;
       }
-      // validate each row has consistent columns
+
+      // ✅ Check if only header and no rows
+      if (lines.length === 0) {
+        this.setCsvError('Invalid data: CSV contains only header row and no data rows.');
+        return;
+      }
+
+
+      // ✅ Validate each row
       for (let i = 0; i < lines.length; i++) {
         let cols = lines[i].split(delimiter);
 
-        // Pad missing columns with empty values
+        // Pad missing cols with empty strings
         while (cols.length < headers.length) {
           cols.push('');
         }
 
-        // If there are too many columns, still throw error
+        // Too many columns → error
         if (cols.length > headers.length) {
-          this.editorErrorMessage = `Invalid data format at line ${i + 1}. Found ${cols.length} columns, expected ${headers.length}.`;
-          this.validConfigurationForm = false;
-          this.formStatusEvent.emit({ status: false, group: this.group });
+          this.setCsvError(`Invalid data format at line ${i + 1}. Found ${cols.length} columns, expected ${headers.length}.`);
           return;
         }
 
-        // Optionally, replace the line with corrected/padded version
+        // Replace with normalized version
         lines[i] = cols.join(delimiter);
       }
+
+      // ✅ Convert rows to objects
       const arr = lines.map(line => {
         const cols = line.split(delimiter);
-        const obj = {} as any;
-        headers.forEach((h, idx) => obj[h] = cols[idx] ?? '');
-        return obj;
+        return headers.reduce((obj, h, idx) => {
+          obj[h] = cols[idx] ?? '';
+          return obj;
+        }, {} as Record<string, string>);
       });
+
+      // ✅ Reset & initialize items
       this.listItems.clear();
       this.initialProperties = [];
       this.items = [];
       arr.forEach(el => this.initListItem(false, el));
-      this.editorErrorMessage = '';
-      this.validConfigurationForm = true;
-      this.cdRef.detectChanges();
-      this.formStatusEvent.emit({ status: this.listItems.valid && this.validConfigurationForm, group: this.group });
+
+      // ✅ Mark valid
+      this.clearCsvError();
     }
+  }
+
+  // 🔹 Helper methods for readability
+  private setCsvError(message: string) {
+    this.editorErrorMessage = message;
+    this.validConfigurationForm = false;
+    this.formStatusEvent.emit({ status: false, group: this.group });
+  }
+
+  private clearCsvError() {
+    this.editorErrorMessage = '';
+    this.validConfigurationForm = true;
+    this.cdRef.detectChanges();
+    this.formStatusEvent.emit({ status: this.listItems.valid && this.validConfigurationForm, group: this.group });
   }
 
   private detectCsvDelimiter(headerLine: string): string | null {
