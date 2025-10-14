@@ -1,0 +1,233 @@
+name: E2E Tests (Base)
+
+on:
+  workflow_call:
+    inputs:
+      artifact_prefix:
+        description: 'Prefix for artifact names'
+        required: false
+        type: string
+        default: 'e2e'
+      retention_days:
+        description: 'Artifact retention days'
+        required: false
+        type: number
+        default: 5
+      checkout_ref:
+        description: 'Git ref to checkout (branch, tag, or SHA)'
+        required: false
+        type: string
+        default: ''
+
+env:
+  FLEDGE_IMAGE: 54.204.128.201:5000/fledge:nightly-ubuntu2004
+  FLEDGE_REGISTRY: 54.204.128.201:5000
+  FLEDGE_PORT: 8081
+
+jobs:
+  e2e-tests:
+    name: Run E2E Tests
+    runs-on: ubuntu-20.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.checkout_ref || github.ref }}
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: |
+          yarn install --frozen-lockfile
+          ./requirements-test
+
+      - name: Build Application
+        run: |
+          echo "Building application..."
+          yarn build --configuration production
+          echo "✓ Build completed successfully"
+          du -sh dist/
+
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@latest
+        with:
+          chrome-version: stable
+
+      - name: Verify Chrome Installation
+        run: |
+          which google-chrome-stable
+          google-chrome-stable --version
+
+      - name: Configure Docker for Insecure Registry
+        run: |
+          echo "Configuring Docker to allow insecure registry: ${FLEDGE_REGISTRY}"
+          
+          sudo mkdir -p /etc/docker
+          
+          echo '{
+            "insecure-registries": ["'${FLEDGE_REGISTRY}'"]
+          }' | sudo tee /etc/docker/daemon.json
+          
+          sudo systemctl restart docker
+          sleep 5
+          
+          docker info | grep -A 5 "Insecure Registries" || echo "Docker configured for insecure registry"
+          echo "Docker configured successfully"
+
+      - name: Start Fledge Container
+        run: |
+          echo "Starting Fledge Docker container..."
+          echo "Pulling from private registry: ${FLEDGE_IMAGE}"
+          
+          docker pull ${FLEDGE_IMAGE}
+          
+          echo "✓ Successfully pulled ${FLEDGE_IMAGE}"
+          
+          echo "Starting container with image: ${FLEDGE_IMAGE}"
+          docker run -d \
+            --name fledge \
+            -p 8081:8081 \
+            -p 1995:1995 \
+            -p 8082:80 \
+            ${FLEDGE_IMAGE}
+          
+          echo "✓ Container started successfully"
+          docker ps -a
+          docker images | grep fledge
+
+      - name: Wait for Fledge to be Ready
+        run: |
+          echo "Waiting for Fledge container to initialize..."
+          
+          sleep 20
+          
+          if ! docker ps | grep -q fledge; then
+            echo "ERROR: Fledge container is not running!"
+            docker ps -a
+            docker logs fledge
+            exit 1
+          fi
+          
+          echo "Container is running, checking Fledge installation..."
+          
+          docker exec fledge ls -la /usr/local/fledge || {
+            echo "ERROR: Fledge installation not found in container"
+            docker exec fledge ls -la /usr/local/ || true
+            exit 1
+          }
+          
+          echo "Fixing data directory permissions..."
+          docker exec -u root fledge chown -R 1001:1001 /usr/local/fledge/data 2>/dev/null || true
+          
+          echo "Waiting for Fledge API to be ready..."
+          max_attempts=30
+          attempt=0
+          
+          while [ $attempt -lt $max_attempts ]; do
+            attempt=$((attempt+1))
+            
+            if curl -sf http://localhost:8081/fledge/ping > /dev/null 2>&1; then
+              echo "✓ Fledge API is ready!"
+              echo "Response:"
+              curl -sX GET http://localhost:8081/fledge/ping | head -20
+              exit 0
+            fi
+            
+            if docker exec fledge curl -sf http://localhost:8081/fledge/ping > /dev/null 2>&1; then
+              echo "✓ Fledge API is ready (verified from inside container)!"
+              docker exec fledge curl -sX GET http://localhost:8081/fledge/ping | head -20
+              exit 0
+            fi
+            
+            echo "Attempt $attempt/$max_attempts: Fledge API not ready yet..."
+            
+            if ! docker ps | grep -q fledge; then
+              echo "ERROR: Container stopped running!"
+              docker ps -a
+              docker logs fledge
+              exit 1
+            fi
+            
+            sleep 5
+          done
+          
+          echo "ERROR: Fledge failed to start within timeout"
+          echo "=== Container Status ==="
+          docker ps -a
+          echo "=== Container Logs ==="
+          docker logs fledge
+          echo "=== Container Processes ==="
+          docker exec fledge ps aux || true
+          echo "=== Network Check ==="
+          docker exec fledge netstat -tlnp || true
+          exit 1
+
+      - name: Run E2E Tests
+        id: e2e_tests
+        run: |
+          cd e2e
+          ./run
+        continue-on-error: true
+
+      - name: Collect Docker Logs
+        if: always()
+        run: |
+          mkdir -p reports/docker-logs
+          docker logs fledge > reports/docker-logs/fledge.log 2>&1 || true
+          docker ps -a > reports/docker-logs/containers.txt 2>&1 || true
+
+      - name: Upload Test Results - XML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact_prefix }}-test-results-xml
+          path: e2e/reports/xml/*.xml
+          retention-days: ${{ inputs.retention_days }}
+          if-no-files-found: warn
+
+      - name: Upload Test Results - HTML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact_prefix }}-test-results-html
+          path: e2e/reports/html/
+          retention-days: ${{ inputs.retention_days }}
+          if-no-files-found: warn
+
+      - name: Upload Screenshots on Failure
+        if: failure() && steps.e2e_tests.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact_prefix }}-test-screenshots
+          path: e2e/reports/html/screenshots/
+          retention-days: ${{ inputs.retention_days }}
+          if-no-files-found: warn
+
+      - name: Upload Docker Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact_prefix }}-docker-logs
+          path: reports/docker-logs/
+          retention-days: 3
+          if-no-files-found: warn
+
+      - name: Stop Fledge Container
+        if: always()
+        run: |
+          docker stop fledge || true
+          docker rm fledge || true
+
+      - name: Check Test Results
+        if: steps.e2e_tests.outcome == 'failure'
+        run: |
+          echo "E2E tests failed!"
+          exit 1
+

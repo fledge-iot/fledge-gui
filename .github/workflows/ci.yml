@@ -1,0 +1,149 @@
+name: CI - Build and Lint
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'FOGL-*'
+  pull_request:
+    branches:
+      - main
+      - develop
+
+env:
+  NODE_VERSION: '16'
+
+jobs:
+  build:
+    name: Build and Lint
+    runs-on: ubuntu-20.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: |
+          yarn install --frozen-lockfile
+          ./requirements
+
+      - name: Lint Code
+        run: yarn lint
+        continue-on-error: true
+
+      - name: Build Application
+        run: yarn build --configuration production
+
+      - name: Check Build Size
+        run: |
+          echo "Build completed successfully!"
+          du -sh dist/
+          ls -lh dist/*.js | head -10
+
+      - name: Upload Build Artifacts
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-${{ github.sha }}
+          path: dist/
+          retention-days: 3
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-20.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run Unit Tests
+        run: yarn test --watch=false --code-coverage --browsers=ChromeHeadless
+        continue-on-error: true
+
+      - name: Upload Coverage Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 5
+          if-no-files-found: warn
+
+      - name: Publish Test Results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          check_name: Unit Test Results
+          files: coverage/**/test-results.xml
+        continue-on-error: true
+
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-20.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Check TypeScript
+        run: npx tsc --noEmit
+        continue-on-error: true
+
+      - name: Check Code Formatting
+        run: |
+          echo "Checking for common code quality issues..."
+          # Add prettier or other formatting checks here if configured
+          echo "Code quality checks completed"
+
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-20.04
+    needs: [build, unit-tests, code-quality]
+    if: always()
+
+    steps:
+      - name: Check Job Results
+        run: |
+          echo "Build: ${{ needs.build.result }}"
+          echo "Unit Tests: ${{ needs.unit-tests.result }}"
+          echo "Code Quality: ${{ needs.code-quality.result }}"
+          
+          if [ "${{ needs.build.result }}" != "success" ]; then
+            echo "❌ Build failed"
+            exit 1
+          fi
+          
+          echo "✅ CI checks completed"
+

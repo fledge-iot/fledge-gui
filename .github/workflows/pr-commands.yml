@@ -1,0 +1,103 @@
+name: PR Commands
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  check-command:
+    name: Check PR Comment Commands
+    if: github.event.issue.pull_request
+    runs-on: ubuntu-20.04
+    outputs:
+      trigger_e2e: ${{ steps.check_e2e.outputs.trigger }}
+      pr_ref: ${{ steps.pr.outputs.ref }}
+      pr_sha: ${{ steps.pr.outputs.sha }}
+    
+    steps:
+      - name: Check for E2E Test Command
+        id: check_e2e
+        run: |
+          comment="${{ github.event.comment.body }}"
+          
+          # Check for various E2E test trigger phrases (case insensitive)
+          if echo "$comment" | grep -iE '(^|[^a-z])(run e2e|test e2e|e2e tests?|/run-e2e|/test-e2e)([^a-z]|$)' > /dev/null; then
+            echo "trigger=true" >> $GITHUB_OUTPUT
+            echo "✅ E2E test command detected"
+          else
+            echo "trigger=false" >> $GITHUB_OUTPUT
+            echo "No E2E test command found"
+          fi
+      
+      - name: React to Comment
+        if: steps.check_e2e.outputs.trigger == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: 'rocket'
+            });
+      
+      - name: Get PR Details
+        if: steps.check_e2e.outputs.trigger == 'true'
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            
+            core.setOutput('ref', pr.data.head.ref);
+            core.setOutput('sha', pr.data.head.sha);
+
+  run-e2e-tests:
+    name: Run E2E Tests
+    needs: check-command
+    if: needs.check-command.outputs.trigger_e2e == 'true'
+    uses: ./.github/workflows/e2e-base.yml
+    with:
+      checkout_ref: ${{ needs.check-command.outputs.pr_sha }}
+      artifact_prefix: 'pr-${{ github.event.issue.number }}-e2e'
+      retention_days: 3
+
+  comment-results:
+    name: Comment Test Results
+    runs-on: ubuntu-20.04
+    needs: [check-command, run-e2e-tests]
+    if: always() && needs.check-command.outputs.trigger_e2e == 'true'
+    
+    steps:
+      - name: Comment Test Results
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const testPassed = '${{ needs.run-e2e-tests.result }}' === 'success';
+            const emoji = testPassed ? '✅' : '❌';
+            const status = testPassed ? 'PASSED' : 'FAILED';
+            
+            const body = `## ${emoji} Build & E2E Tests ${status}
+            
+            **Triggered by:** @${{ github.event.comment.user.login }}
+            **Branch:** \`${{ needs.check-command.outputs.pr_ref }}\`
+            **Commit:** \`${{ needs.check-command.outputs.pr_sha }}\`
+            
+            **Checks:**
+            ${testPassed ? '✅' : '❌'} Build successful
+            ${testPassed ? '✅' : '❌'} E2E tests ${testPassed ? 'passed' : 'failed'}
+            
+            [View workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            
+            ${testPassed ? '🎉 All checks passed!' : '⚠️ Some checks failed. Review the workflow logs for details.'}`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });

@@ -1,0 +1,59 @@
+name: E2E Tests - Nightly
+
+on:
+  schedule:
+    # Run nightly at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allow manual trigger
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'src/**'
+      - 'e2e/**'
+      - 'package.json'
+      - 'yarn.lock'
+      - '.github/workflows/e2e-tests.yml'
+      - '.github/workflows/e2e-base.yml'
+
+jobs:
+  e2e-tests:
+    name: E2E Tests
+    uses: ./.github/workflows/e2e-base.yml
+    with:
+      artifact_prefix: 'nightly-e2e'
+      retention_days: 5
+
+  publish-results:
+    name: Publish Test Results
+    runs-on: ubuntu-20.04
+    needs: e2e-tests
+    if: always()
+
+    steps:
+      - name: Download Test Results
+        uses: actions/download-artifact@v4
+        with:
+          name: nightly-e2e-test-results-xml
+          path: reports/xml/
+        continue-on-error: true
+
+      - name: Publish Test Results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          check_name: E2E Test Results
+          files: reports/xml/*.xml
+          report_individual_runs: true
+          deduplicate_classes_by_file_name: false
+        continue-on-error: true
+
+      - name: Comment Test Results on PR
+        if: always() && github.event_name == 'pull_request'
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          check_name: E2E Test Results
+          files: reports/xml/*.xml
+          comment_mode: always
+        continue-on-error: true
