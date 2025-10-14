@@ -27,7 +27,7 @@ jobs:
 
   publish-results:
     name: Publish Test Results
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: e2e-tests
     if: always()
 

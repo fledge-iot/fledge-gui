@@ -3,8 +3,8 @@
 ## Configuration
 
 **Registry**: `54.204.128.201:5000` (HTTP only)  
-**Image**: `fledge:nightly-ubuntu2004`  
-**Full Path**: `54.204.128.201:5000/fledge:nightly-ubuntu2004`
+**Image**: `fledge:nightly-ubuntu2404`  
+**Full Path**: `54.204.128.201:5000/fledge:nightly-ubuntu2404`
 
 ## How It Works
 
@@ -31,7 +31,7 @@ runs-on: self-hosted
 
 **Option 2**: GitHub Container Registry
 ```bash
-docker tag 54.204.128.201:5000/fledge:nightly-ubuntu2004 ghcr.io/fledge-iot/fledge:nightly
+docker tag 54.204.128.201:5000/fledge:nightly-ubuntu2404 ghcr.io/fledge-iot/fledge:nightly
 docker push ghcr.io/fledge-iot/fledge:nightly
 ```
 Update workflow:

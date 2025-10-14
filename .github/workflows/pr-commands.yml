@@ -8,7 +8,7 @@ jobs:
   check-command:
     name: Check PR Comment Commands
     if: github.event.issue.pull_request
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     outputs:
       trigger_e2e: ${{ steps.check_e2e.outputs.trigger }}
       pr_ref: ${{ steps.pr.outputs.ref }}
@@ -68,7 +68,7 @@ jobs:
 
   comment-results:
     name: Comment Test Results
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: [check-command, run-e2e-tests]
     if: always() && needs.check-command.outputs.trigger_e2e == 'true'
     

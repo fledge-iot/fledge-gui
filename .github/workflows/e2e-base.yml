@@ -20,14 +20,14 @@ on:
         default: ''
 
 env:
-  FLEDGE_IMAGE: 54.204.128.201:5000/fledge:nightly-ubuntu2004
+  FLEDGE_IMAGE: 54.204.128.201:5000/fledge:nightly-ubuntu2404
   FLEDGE_REGISTRY: 54.204.128.201:5000
   FLEDGE_PORT: 8081
 
 jobs:
   e2e-tests:
     name: Run E2E Tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
 
     steps:

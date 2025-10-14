@@ -22,8 +22,8 @@ Runs build + E2E tests on your PR branch.
 
 ## Configuration
 
-**Private Registry**: `54.204.128.201:5000/fledge:nightly-ubuntu2004`  
-**OS**: Ubuntu 20.04  
+**Private Registry**: `54.204.128.201:5000/fledge:nightly-ubuntu2404`  
+**OS**: Ubuntu 24.04  
 **Node**: 16.x  
 **Artifacts**: 3-5 days retention
 
