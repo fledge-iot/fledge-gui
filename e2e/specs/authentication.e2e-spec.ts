@@ -202,22 +202,24 @@ describe('Authentication Methods Based Tests', () => {
         it('Should switch between file upload and text input', () => {
             authPage.openCertificateLoginModal();
 
-            // Initially should show file input
-            cy.get('#certificate-login-modal input[type="file"]').should('be.visible');
+            // Initially should show file input area (file input itself is hidden by Bulma CSS)
+            cy.get('#certificate-login-modal input[type="file"]').should('exist');
+            cy.get('#certificate-login-modal .file-label').should('be.visible');
 
-            // Click to switch to text input
-            cy.get('#certificate-login-modal .button.is-text').click();
+            // Click "Paste Content" button to switch to text input
+            cy.get('#certificate-login-modal .button.is-ghost').click();
             cy.wait(500);
 
             // Should show textarea
             cy.get('#certificate-login-modal textarea').should('be.visible');
 
-            // Click to switch back to file input
+            // Click "Upload File" button to switch back to file input
             cy.get('#certificate-login-modal .button.is-ghost').click();
             cy.wait(500);
 
-            // Should show file input again
-            cy.get('#certificate-login-modal input[type="file"]').should('be.visible');
+            // Should show file input area again
+            cy.get('#certificate-login-modal input[type="file"]').should('exist');
+            cy.get('#certificate-login-modal .file-label').should('be.visible');
         });
     });
 
