@@ -9,6 +9,3 @@ declare module "*.json" {
   const value: any;
   export default value;
 }
-
-/* Node.js require for environments */
-declare var require: any;
