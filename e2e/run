@@ -1,8 +1,37 @@
 #!/usr/bin/env bash
-sudo DEBIAN_FRONTEND=noninteractive apt install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+set -e
 
-yarn
+# Install system dependencies if NOT in GitHub Actions
+# GitHub Actions runners have these pre-installed
+if [ -z "$GITHUB_ACTIONS" ]; then
+  echo "=== Installing Cypress System Dependencies ==="
+  sudo DEBIAN_FRONTEND=noninteractive apt-get update -qq 2>/dev/null || true
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+    libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev \
+    libgconf-2-4 libnss3 libxss1 libasound2 \
+    libxtst6 xauth xvfb 2>/dev/null || {
+      echo "⚠️  Failed to install some dependencies (may already be installed)"
+    }
+fi
 
-# Run Cypress in headless mode with Chrome
-ELECTRON_RUN_AS_NODE=1; yarn e2e --browser chrome --headless;
-#Xvfb :1 -screen 0 1280x800x24 & export DISPLAY=:1; yarn e2e
+# Detect CI environment (GitHub Actions or Jenkins)
+if [ -n "$GITHUB_ACTIONS" ] || [ -n "$JENKINS_HOME" ] || [ "$CI" = "true" ]; then
+  HEADLESS_FLAG="--headless"
+  ENV_TYPE="CI"
+else
+  HEADLESS_FLAG=""
+  ENV_TYPE="Local"
+fi
+
+# Debug: Check environment
+echo "=== Environment Check ==="
+echo "Environment: $ENV_TYPE"
+echo "Headless: ${HEADLESS_FLAG:-no (browser visible)}"
+echo "DISPLAY: ${DISPLAY:-not set}"
+echo "Chrome: $(which google-chrome-stable || which google-chrome || which chromium-browser || echo 'not found')"
+echo "Cypress cache: ${CYPRESS_CACHE_FOLDER:-default}"
+echo ""
+
+# Run Cypress E2E tests
+echo "Starting Cypress E2E tests..."
+yarn e2e --browser chrome $HEADLESS_FLAG

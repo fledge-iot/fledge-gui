@@ -44,9 +44,7 @@ jobs:
           cache: 'yarn'
 
       - name: Install Dependencies
-        run: |
-          yarn install --frozen-lockfile
-          ./requirements-test
+        run: yarn install --frozen-lockfile
 
       - name: Build Application
         run: |
@@ -64,6 +62,12 @@ jobs:
         run: |
           which google-chrome-stable
           google-chrome-stable --version
+          echo "CHROME_BIN=$(which google-chrome-stable)" >> $GITHUB_ENV
+
+      - name: Verify Cypress Binary
+        run: |
+          npx cypress verify
+          npx cypress info
 
       - name: Configure Docker for Insecure Registry
         run: |
@@ -171,7 +175,15 @@ jobs:
 
       - name: Run E2E Tests
         id: e2e_tests
+        env:
+          CYPRESS_CACHE_FOLDER: ~/.cache/Cypress
+          CI: true
+          DISPLAY: :99
         run: |
+          # Start Xvfb for headless display
+          sudo Xvfb :99 -screen 0 1280x1024x24 &
+          sleep 3
+          
           cd e2e
           ./run
         continue-on-error: false

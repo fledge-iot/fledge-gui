@@ -38,13 +38,31 @@ Test report will be available in HTML & XML format in `fledge-gui/e2e/reports/`;
 
    ```
    $ sudo git clone https://github.com/fledge/fledge-gui.git
+   $ cd fledge-gui
+   $ yarn install
    ```
 
-   > For CI integration to run on Ubuntu machine, please use e2e/run script.
-
+   **Using the e2e/run script (Recommended for CI):**
+   
+   The `e2e/run` script automatically detects the environment and runs appropriately:
+   
+   - **Local Development:** Opens browser window (visible tests for debugging)
+   - **CI Environment:** Runs in headless mode (GitHub Actions, Jenkins, or `CI=true`)
+   - **Auto-installs dependencies:** Only on local machines (CI runners have pre-installed deps)
+   
    ```
-   $ sudo yarn
-   $ sudo yarn e2e
+   $ ./e2e/run
+   ```
+   
+   To force headless mode locally:
+   ```
+   $ CI=true ./e2e/run
+   ```
+   
+   **Manual yarn command:**
+   
+   ```
+   $ yarn e2e --browser chrome --headless
    ```
 
 #### Installation step on RHEL/CentOS machine
