@@ -33,27 +33,27 @@ Docker is configured to allow the insecure registry. If the registry is unavaila
 
 **Alternative**: Use self-hosted runners with network access to the registry.
 
-## Quick Start
+## Usage
 
-```bash
-# Commit workflows
-git add .github/workflows/
-git commit -m "Add CI/CD workflows"
-git push
+**Automatic**: Push to main/develop triggers CI. Nightly E2E runs at 2 AM UTC.
 
-# Test via PR comment
-# Comment on any PR: /run-e2e
-```
+**Manual**: Comment `/run-e2e` on any PR to trigger build + E2E tests.
 
 ## Status Badges
 
 ```markdown
-![CI](https://github.com/YOUR-ORG/fledge-gui/workflows/CI/badge.svg)
-![E2E](https://github.com/YOUR-ORG/fledge-gui/workflows/E2E%20Tests/badge.svg)
+![CI](https://github.com/fledge-iot/fledge-gui/workflows/CI/badge.svg)
+![E2E](https://github.com/fledge-iot/fledge-gui/workflows/E2E%20Tests/badge.svg)
 ```
+
+## Optional: Notifications
+
+To add Slack/email notifications:
+
+1. Add secrets: `SLACK_WEBHOOK_URL` or `MAIL_SERVER`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_TO`
+2. Add notification job to workflow (see [GitHub Actions docs](https://github.com/marketplace/actions/slack-send))
 
 ## Documentation
 
 - [PR Commands](PR_COMMANDS.md) - PR comment trigger details
 - [Insecure Registry](INSECURE_REGISTRY_SETUP.md) - Registry configuration
-
