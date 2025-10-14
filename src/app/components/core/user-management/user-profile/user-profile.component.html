@@ -87,7 +87,7 @@
       <button class="delete" aria-label="close" (click)="toggleModal(false)"></button>
     </header>
     <section class="modal-card-body">
-      <form name="form" id="ngForm" (ngSubmit)="f.form.valid && changePassword(f, userRecord.userId)" #f="ngForm"
+      <form name="form" id="changePwdForm" (ngSubmit)="f.form.valid && changePassword(f, userRecord.userId)" #f="ngForm"
         novalidate>
         <div class="columns">
           <div class="column is-6">
@@ -121,7 +121,7 @@
       </form>
     </section>
     <footer class="modal-card-foot buttons">
-      <button id="update" type="submit" form="ngForm" class="button is-link is-small">Save</button>
+      <button id="update" type="submit" form="changePwdForm" class="button is-link is-small">Save</button>
     </footer>
   </div>
 </div>

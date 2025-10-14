@@ -72,7 +72,7 @@ export class AdminLogin {
   }
 
   isInputTag() {
-    return cy.get('#cbaForm input').should('be.visible')
+    return cy.get('#changePwdForm input').should('be.visible')
   }
 
   isSaveButton() {

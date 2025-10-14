@@ -7,7 +7,7 @@
     </header>
     <section class="modal-card-body">
       <div class="card-content">
-        <form name="form" id="ngForm" (ngSubmit)="createUser(f)" #f="ngForm" novalidate>
+        <form name="form" id="createUserForm" (ngSubmit)="createUser(f)" #f="ngForm" novalidate>
           <div class="columns m-0">
             <div class="column">
               <label class="label is-small">Name</label>
@@ -115,7 +115,7 @@
       </div>
     </section>
     <footer class="modal-card-foot buttons user-card-footer">
-      <button id="save" type="submit" form="ngForm" class="button is-link is-small">Create</button>
+      <button id="save" type="submit" form="createUserForm" class="button is-link is-small">Create</button>
     </footer>
   </div>
 </div>
