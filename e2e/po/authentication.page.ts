@@ -50,8 +50,8 @@ export class AuthenticationPage {
 
     loginWithCertificateContent(certificateContent: string) {
         this.openCertificateLoginModal();
-        // Switch to manual certificate input
-        cy.get('#certificate-login-modal .button.is-text').click();
+        // Switch to manual certificate input using the "Paste Content" button
+        cy.get('#certificate-login-modal .button.is-ghost').click();
         cy.wait(500);
         cy.get('#certificate-login-modal textarea[formControlName="certificateText"]').clear().type(certificateContent);
         cy.wait(1000);
@@ -227,7 +227,10 @@ export class AuthenticationPage {
     validateCertificateModal() {
         cy.get('#certificate-login-modal').should('be.visible');
         cy.get('#certificate-login-modal .modal-card-title').should('contain', 'Login with Certificate');
-        cy.get('#certificate-login-modal textarea').should('be.visible');
+        // Validate that either file upload or textarea is present (depends on mode)
+        cy.get('#certificate-login-modal').within(() => {
+            cy.get('input[type="file"], textarea[formControlName="certificateText"]').should('exist');
+        });
     }
 
     // Create test certificate content (for testing purposes)
