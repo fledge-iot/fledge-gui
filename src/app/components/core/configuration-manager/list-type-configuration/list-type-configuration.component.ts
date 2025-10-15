@@ -493,7 +493,6 @@ export class ListTypeConfigurationComponent implements OnInit {
     });
   }
 
-
   public onCsvEditorChange(text: string) {
     this.csvEditorData = text ?? '';
     const raw = (this.csvEditorData || '').trim();
@@ -599,9 +598,16 @@ export class ListTypeConfigurationComponent implements OnInit {
 
   private detectCsvDelimiter(headerLine: string): string | null {
     const candidates = [',', ';', '\t', '|', ':'];
-    const detected = candidates.filter(d => headerLine.indexOf(d) > -1);
-    if (detected.length !== 1) { return null; }
-    return detected[0];
+    const detected = candidates.filter(d => headerLine.includes(d));
+
+    if (detected.length === 1) {
+      this.delimiterStoreService.setDelimiter(detected[0]);
+      return detected[0];
+    }
+
+    // ambiguous or none found → reset store
+    this.delimiterStoreService.setDelimiter(null);
+    return null;
   }
 
   ngOnDestroy() {

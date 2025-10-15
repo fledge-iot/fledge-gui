@@ -507,7 +507,15 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   private detectCsvDelimiter(headerLine: string): string | null {
     const candidates = [',', ';', '\t', '|', ':'];
     const detected = candidates.filter(d => headerLine.includes(d));
-    return detected.length === 1 ? detected[0] : null;
+
+    if (detected.length === 1) {
+      this.delimiterStoreService.setDelimiter(detected[0]);
+      return detected[0];
+    }
+
+    // ambiguous or none found → reset store
+    this.delimiterStoreService.setDelimiter(null);
+    return null;
   }
 
 
