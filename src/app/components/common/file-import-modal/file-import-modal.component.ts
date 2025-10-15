@@ -366,7 +366,6 @@ export class FileImportModalComponent {
    * @private
    */
   private handleProcessingError(error: any): void {
-    console.error('Error processing content:', error);
     this.file.isValid = false;
     this.file.isLoaded = false;
     this.tableData = null;
