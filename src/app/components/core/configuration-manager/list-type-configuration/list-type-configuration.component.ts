@@ -9,6 +9,7 @@ import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Subscription } from 'rxjs';
 import { DelimiterStoreService } from '../../../../services/delimiter-store.service';
+import { CsvJsonConverterService } from '../../../../services/csv-json-converter.service';
 
 @Component({
   selector: 'app-list-type-configuration',
@@ -48,7 +49,8 @@ export class ListTypeConfigurationComponent implements OnInit {
     public configControlService: ConfigurationControlService,
     private fb: FormBuilder,
     private delimiterStoreService: DelimiterStoreService,
-    private sharedService: SharedService) {
+    private sharedService: SharedService,
+    private csvJsonSvc: CsvJsonConverterService) {
     this.listItemsForm = this.fb.group({
       listItems: this.fb.array([])
     })
@@ -299,10 +301,10 @@ export class ListTypeConfigurationComponent implements OnInit {
       this.initListItem(false, element);
     });
     if (this.currentView === 'json') {
-      this.jsonEditorData = this.getJsonFromForm();
+      this.jsonEditorData = this.csvJsonSvc.getJsonFromForm('list', this.configuration, this.listItems.value);
     }
     if (this.currentView === 'csv') {
-      this.csvEditorData = this.getCsvFromForm();
+      this.csvEditorData = this.csvJsonSvc.getCsvFromForm('list', this.configuration, this.listItems.value, this.csvDelimiter);
     }
   }
 
@@ -315,10 +317,10 @@ export class ListTypeConfigurationComponent implements OnInit {
       this.initListItem(false, element);
     });
     if (this.currentView === 'json') {
-      this.jsonEditorData = this.getJsonFromForm();
+      this.jsonEditorData = this.csvJsonSvc.getJsonFromForm('list', this.configuration, this.listItems.value);
     }
     if (this.currentView === 'csv') {
-      this.csvEditorData = this.getCsvFromForm();
+      this.csvEditorData = this.csvJsonSvc.getCsvFromForm('list', this.configuration, this.listItems.value, this.csvDelimiter);
     }
   }
 
@@ -358,9 +360,9 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.editorErrorMessage = '';
     this.validConfigurationForm = true;
     if (this.currentView === 'json') {
-      this.jsonEditorData = this.getJsonFromForm();
+      this.jsonEditorData = this.csvJsonSvc.getJsonFromForm('list', this.configuration, this.listItems.value);
     } else if (this.currentView === 'csv') {
-      this.csvEditorData = this.getCsvFromForm();
+      this.csvEditorData = this.csvJsonSvc.getCsvFromForm('list', this.configuration, this.listItems.value, this.csvDelimiter);
     }
     if (this.listItems.length == 1 && this.currentView === 'detailed') {
       this.expandListItem(0);
@@ -370,110 +372,25 @@ export class ListTypeConfigurationComponent implements OnInit {
   public onDelimiterChanged(delimiter: string) {
     this.csvDelimiter = delimiter;
     this.delimiterStoreService.setDelimiter(delimiter);
-    this.csvEditorData = this.getCsvFromForm();
+    this.csvEditorData = this.csvJsonSvc.getCsvFromForm('list', this.configuration, this.listItems.value, this.csvDelimiter);
     this.cdRef.detectChanges();
     this.formStatusEvent.emit({ status: this.listItems.valid && this.validConfigurationForm, group: this.group });
   }
 
-  // ===== Synchronization helpers =====
-  private getJsonFromForm(): string {
-    if (this.configuration.items === 'object') {
-      const arr = this.listItems.value || [];
-      return JSON.stringify(arr, null, 2);
-    }
-    // primitives
-    return JSON.stringify(this.listItems.value || [], null, 2);
-  }
-
-  private getCsvFromForm(): string {
-    this.csvDelimiter = this.delimiterStoreService.getDelimiter() ?? this.csvDelimiter ?? ',';
-    const values = this.listItems.value || [];
-    if (this.configuration.items === 'object') {
-      const headers = Object.keys(this.configuration.properties);
-      const rows = values.map(v => headers.map(h => `${v?.[h] ?? ''}`).join(this.csvDelimiter));
-      return [headers.join(this.csvDelimiter), ...rows].join('\n');
-    }
-    // primitives -> single column CSV with header "value"
-    const header = 'value';
-    const rows = (values as any[]).map(v => `${v ?? ''}`);
-    return [header, ...rows].join('\n');
-  }
+  // ===== Synchronization now handled by CsvJsonListKvService =====
 
   public onJsonEditorChange(text: string) {
     this.jsonEditorData = text;
-
-    try {
-      const parsed = JSON.parse(text || '[]');
-
-      if (this.configuration.items === 'object') {
-        if (!Array.isArray(parsed)) {
-          this.setJsonError('Invalid JSON format. Expected an array of objects.');
-          return;
-        }
-
-        const expectedHeaders = Object.keys(this.configuration.properties);
-
-        // ✅ Empty array → like "only header row" case
-        if (parsed.length === 0) {
-          this.setJsonError('Invalid data: JSON contains no items.');
-          return;
-        }
-
-        // ✅ Validate each object in array
-        for (let i = 0; i < parsed.length; i++) {
-          const obj = parsed[i];
-
-          if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
-            this.setJsonError(`Invalid item at index ${i}. Expected object with keys (${expectedHeaders.join(', ')}).`);
-            return;
-          }
-
-          const keys = Object.keys(obj);
-
-          // Check key count
-          if (keys.length !== expectedHeaders.length) {
-            this.setJsonError(
-              `Key count mismatch at item ${i}: found ${keys.length} keys, expected ${expectedHeaders.length} (${expectedHeaders.join(', ')})`
-            );
-            return;
-          }
-
-          // Check required keys
-          if (!expectedHeaders.every(h => keys.includes(h))) {
-            this.setJsonError(
-              `Key mismatch at item ${i}: found keys (${keys.join(', ')}) but expected (${expectedHeaders.join(', ')})`
-            );
-            return;
-          }
-        }
-
-        // ✅ Reset & initialize items
-        this.listItems.clear();
-        this.initialProperties = [];
-        this.items = [];
-        parsed.forEach(el => this.initListItem(false, el));
-
-        // ✅ Mark valid
-        this.clearJsonError();
-      } else {
-        // Non-object arrays
-        if (!Array.isArray(parsed)) {
-          this.setJsonError('Invalid JSON format. Expected an array.');
-          return;
-        }
-
-        if (parsed.length === 0) {
-          this.setJsonError('Invalid data: JSON contains no items.');
-          return;
-        }
-
-        this.listItems.clear();
-        (parsed as any[]).forEach(el => this.initListItem(false, el));
-        this.clearJsonError();
-      }
-    } catch (_) {
-      this.setJsonError('Invalid JSON format.');
+    const res = this.csvJsonSvc.parseJsonForList(text, this.configuration);
+    if (res.error) {
+      this.setJsonError(res.error);
+      return;
     }
+    this.listItems.clear();
+    this.initialProperties = [];
+    this.items = [];
+    (res.items || []).forEach(el => this.initListItem(false, el));
+    this.clearJsonError();
   }
 
   // 🔹 Helper methods for readability
@@ -494,92 +411,18 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   public onCsvEditorChange(text: string) {
+    const res = this.csvJsonSvc.parseCsvForList(text ?? '', this.configuration);
+    if (res.error) {
+      this.setCsvError(res.error);
+      return;
+    }
     this.csvEditorData = text ?? '';
-    const raw = (this.csvEditorData || '').trim();
-    if (!raw) {
-      this.editorErrorMessage = 'Empty file or invalid CSV format.';
-      this.validConfigurationForm = false;
-      this.formStatusEvent.emit({ 'status': false, 'group': this.group });
-      return;
-    }
-
-    const lines = raw.split(/\r?\n/).filter(l => l.trim().length > 0);
-    if (lines.length === 0) { return; }
-
-    const headerLine = lines.shift() || '';
-    const delimiter = this.detectCsvDelimiter(headerLine);
-
-    if (!delimiter) {
-      this.setCsvError('Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.');
-      return;
-    }
-
-    this.csvDelimiter = delimiter;
-    const headers = headerLine.split(delimiter);
-
-    if (this.configuration.items === 'object') {
-      const expectedHeaders = Object.keys(this.configuration.properties);
-
-      // ✅ Header length check
-      if (headers.length !== expectedHeaders.length) {
-        this.setCsvError(
-          `Header count mismatch: CSV has ${headers.length} columns but expected ${expectedHeaders.length} columns (${expectedHeaders.join(', ')})`
-        );
-        return;
-      }
-
-      // ✅ Header name check
-      if (!expectedHeaders.every(h => headers.includes(h))) {
-        this.setCsvError(
-          `Header mismatch: CSV has columns (${headers.join(', ')}) but expected columns (${expectedHeaders.join(', ')})`
-        );
-        return;
-      }
-
-      // ✅ Check if only header and no rows
-      if (lines.length === 0) {
-        this.setCsvError('Invalid data: CSV contains only header row and no data rows.');
-        return;
-      }
-
-
-      // ✅ Validate each row
-      for (let i = 0; i < lines.length; i++) {
-        let cols = lines[i].split(delimiter);
-
-        // Pad missing cols with empty strings
-        while (cols.length < headers.length) {
-          cols.push('');
-        }
-
-        // Too many columns → error
-        if (cols.length > headers.length) {
-          this.setCsvError(`Invalid data format at line ${i + 1}. Found ${cols.length} columns, expected ${headers.length}.`);
-          return;
-        }
-
-        // Replace with normalized version
-        lines[i] = cols.join(delimiter);
-      }
-
-      // ✅ Convert rows to objects
-      const arr = lines.map(line => {
-        const cols = line.split(delimiter);
-        return headers.reduce((obj, h, idx) => {
-          obj[h] = cols[idx] ?? '';
-          return obj;
-        }, {} as Record<string, string>);
-      });
-
-      // ✅ Reset & initialize items
-      this.listItems.clear();
-      this.initialProperties = [];
-      this.items = [];
-      arr.forEach(el => this.initListItem(false, el));
-
-      // ✅ Mark valid
-      this.clearCsvError();
-    }
+    this.csvDelimiter = res.delimiter ?? this.csvDelimiter ?? ',';
+    this.listItems.clear();
+    this.initialProperties = [];
+    this.items = [];
+    (res.items || []).forEach(el => this.initListItem(false, el));
+    this.clearCsvError();
   }
 
   // 🔹 Helper methods for readability
@@ -596,19 +439,7 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.formStatusEvent.emit({ status: this.listItems.valid && this.validConfigurationForm, group: this.group });
   }
 
-  private detectCsvDelimiter(headerLine: string): string | null {
-    const candidates = [',', ';', '\t', '|', ':'];
-    const detected = candidates.filter(d => headerLine.includes(d));
-
-    if (detected.length === 1) {
-      this.delimiterStoreService.setDelimiter(detected[0]);
-      return detected[0];
-    }
-
-    // ambiguous or none found → reset store
-    this.delimiterStoreService.setDelimiter(null);
-    return null;
-  }
+  // Delimiter detection moved to CsvJsonListKvService
 
   ngOnDestroy() {
     this.valueChangeSub?.unsubscribe();

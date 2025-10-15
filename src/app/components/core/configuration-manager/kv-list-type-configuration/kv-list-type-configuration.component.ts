@@ -8,6 +8,7 @@ import { FileImportModalComponent } from '../../../common/file-import-modal/file
 import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
 import { Subscription } from 'rxjs';
 import { DelimiterStoreService } from '../../../../services/delimiter-store.service';
+import { CsvJsonConverterService } from '../../../../services/csv-json-converter.service';
 
 @Component({
   selector: 'app-kv-list-type-configuration',
@@ -41,7 +42,8 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
     public configControlService: ConfigurationControlService,
     private fb: FormBuilder,
     private sharedService: SharedService,
-    private delimiterStoreService: DelimiterStoreService) {
+    private delimiterStoreService: DelimiterStoreService,
+    private csvJsonSvc: CsvJsonConverterService) {
     this.kvListItemsForm = this.fb.group({
       kvListItems: this.fb.array([])
     });
@@ -239,10 +241,10 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
     if (this.currentView === 'json') {
-      this.jsonEditorData = this.getJsonFromForm();
+      this.jsonEditorData = this.csvJsonSvc.getJsonFromForm('kvlist', this.configuration, this.kvListItems.value);
     }
     if (this.currentView === 'csv') {
-      this.csvEditorData = this.getCsvFromForm();
+      this.csvEditorData = this.csvJsonSvc.getCsvFromForm('kvlist', this.configuration, this.kvListItems.value, this.csvDelimiter);
     }
   }
 
@@ -255,10 +257,10 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
     if (this.currentView === 'json') {
-      this.jsonEditorData = this.getJsonFromForm();
+      this.jsonEditorData = this.csvJsonSvc.getJsonFromForm('kvlist', this.configuration, this.kvListItems.value);
     }
     if (this.currentView === 'csv') {
-      this.csvEditorData = this.getCsvFromForm();
+      this.csvEditorData = this.csvJsonSvc.getCsvFromForm('kvlist', this.configuration, this.kvListItems.value, this.csvDelimiter);
     }
   }
 
@@ -300,9 +302,9 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
     this.validConfigurationForm = true;
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid && this.validConfigurationForm, 'group': this.group });
     if (this.currentView === 'json') {
-      this.jsonEditorData = this.getJsonFromForm();
+      this.jsonEditorData = this.csvJsonSvc.getJsonFromForm('kvlist', this.configuration, this.kvListItems.value);
     } else if (this.currentView === 'csv') {
-      this.csvEditorData = this.getCsvFromForm();
+      this.csvEditorData = this.csvJsonSvc.getCsvFromForm('kvlist', this.configuration, this.kvListItems.value, this.csvDelimiter);
     }
     if (this.kvListItems.length == 1 && this.currentView === 'detailed') {
       this.expandListItem(0);
@@ -312,35 +314,9 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
   public onDelimiterChanged(delimiter: string) {
     this.csvDelimiter = delimiter;
     this.delimiterStoreService.setDelimiter(delimiter);
-    this.csvEditorData = this.getCsvFromForm();
+    this.csvEditorData = this.csvJsonSvc.getCsvFromForm('kvlist', this.configuration, this.kvListItems.value, this.csvDelimiter);
     this.cdRef.detectChanges();
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid && this.validConfigurationForm, 'group': this.group });
-  }
-
-  // ===== Synchronization helpers for kvlist =====
-  private getJsonFromForm(): string {
-    if (this.configuration.items === 'object') {
-      const obj = {} as any;
-      this.kvListItems.value.forEach((row: any) => { obj[row.key] = row.value; });
-      return JSON.stringify(obj, null, 2);
-    }
-    const obj = {} as any;
-    this.kvListItems.value.forEach((row: any) => { obj[row.key] = row.value; });
-    return JSON.stringify(obj, null, 2);
-  }
-
-  private getCsvFromForm(): string {
-    this.csvDelimiter = this.delimiterStoreService.getDelimiter() ?? this.csvDelimiter ?? ',';
-    if (this.configuration.items === 'object') {
-      const headers = Object.keys(this.configuration.properties);
-      const rows = this.kvListItems.value.map((row: any) => {
-        const values = headers.map(h => `${row.value?.[h] ?? ''}`).join(this.csvDelimiter);
-        return `${row.key}${this.csvDelimiter}${values}`;
-      });
-      return ['Key' + this.csvDelimiter + headers.join(this.csvDelimiter), ...rows].join('\n');
-    }
-    const rows = this.kvListItems.value.map((row: any) => `${row.key}${this.csvDelimiter}${row.value ?? ''}`);
-    return ['Key' + this.csvDelimiter + 'value', ...rows].join('\n');
   }
 
   private setError(message: string): void {
@@ -356,166 +332,41 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
 
   public onJsonEditorChange(text: string) {
     this.jsonEditorData = text;
-    try {
-      const parsed = JSON.parse(text || '{}');
-
-      // Case 1: JSON empty
-      if (!parsed || Object.keys(parsed).length === 0) {
-        this.setError('Empty JSON file.');
-        return;
-      }
-
-      // Must be a non-array object
-      if (!(parsed && typeof parsed === 'object' && !Array.isArray(parsed))) {
-        this.setError('Invalid JSON format. Root must be an object.');
-        return;
-      }
-
-      // Reset lists
-      this.setSuccess();
-      this.kvListItems.clear();
-      this.initialProperties = [];
-      this.items = [];
-
-      const requiredProps = Object.keys(this.configuration.properties);
-
-      for (const [key, value] of Object.entries(parsed)) {
-        const rowLine = `Key "${key}"`;
-
-        if (!key?.trim()) {
-          this.setError('Missing required "Key".');
-          return;
-        }
-
-        if (!(value && typeof value === 'object' && !Array.isArray(value))) {
-          this.setError(`${rowLine} has invalid value. Expected an object with properties (${requiredProps.join(', ')}).`);
-          return;
-        }
-
-        const missingProps = requiredProps.filter(p => !(p in value));
-        if (missingProps.length > 0) {
-          this.setError(`${rowLine} is missing required properties: ${missingProps.join(', ')}.`);
-          return;
-        }
-
-        const extraProps = Object.keys(value).filter(p => !requiredProps.includes(p));
-        if (extraProps.length > 0) {
-          this.setError(`${rowLine} has extra invalid properties: ${extraProps.join(', ')}.`);
-          return;
-        }
-
-        this.kvListItems.push(this.initListItem(false, { key, value }));
-      }
-
-
-      this.setSuccess();
-      this.cdRef.detectChanges();
-      this.formStatusEvent.emit({
-        status: this.kvListItems.valid && this.validConfigurationForm,
-        group: this.group
-      });
-
-    } catch (error: any) {
-      this.setError('Invalid JSON: ' + error.message);
+    const res = this.csvJsonSvc.parseJsonForKvList(text, this.configuration);
+    if (res.error) {
+      this.setError(res.error);
+      return;
     }
+    this.setSuccess();
+    this.kvListItems.clear();
+    this.initialProperties = [];
+    this.items = [];
+    (res.items || []).forEach(({ key, value }) => this.kvListItems.push(this.initListItem(false, { key, value })));
+    this.cdRef.detectChanges();
+    this.formStatusEvent.emit({
+      status: this.kvListItems.valid && this.validConfigurationForm,
+      group: this.group
+    });
   }
 
   public onCsvEditorChange(text: string) {
-    try {
-      this.csvEditorData = text ?? '';
-      const raw = this.csvEditorData.trim();
-      if (!raw) {
-        this.setError('Empty file or invalid CSV format.');
-        return;
-      }
-
-      const lines = raw.split(/\r?\n/).filter(Boolean);
-      if (lines.length === 0) return;
-
-      const headerLine = lines.shift() || '';
-      const delimiter = this.detectCsvDelimiter(headerLine);
-      if (!delimiter) {
-        this.setError('Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.');
-        return;
-      }
-
-      this.csvDelimiter = delimiter;
-      const headers = headerLine.split(delimiter);
-
-      if (this.configuration.items === 'object') {
-        const expected = ['Key', ...Object.keys(this.configuration.properties)];
-
-        if (headers.length !== expected.length) {
-          this.setError(`Header count mismatch: CSV has ${headers.length} columns but expected ${expected.length} (${expected.join(', ')})`);
-          return;
-        }
-
-        if (!expected.every(h => headers.includes(h))) {
-          this.setError(`Header mismatch: CSV has columns (${headers.join(', ')}) but expected (${expected.join(', ')})`);
-          return;
-        }
-
-        if (lines.length === 0) {
-          this.setError(`Missing required "Key" value at line 2.`);
-          return;
-        }
-
-        for (let i = 0; i < lines.length; i++) {
-          let cols = lines[i].split(delimiter);
-
-          while (cols.length < headers.length) cols.push('');
-          if (cols.length > headers.length) {
-            this.setError(`Invalid data format at line ${i + 1}. Found ${cols.length} columns, expected ${headers.length}.`);
-            return;
-          }
-
-          const key = (cols[0] || '').trim();
-          if (!key) {
-            this.setError(`Missing required "Key" value at line ${i + 2}.`);
-            return;
-          }
-
-          lines[i] = cols.join(delimiter);
-        }
-
-        this.kvListItems.clear();
-        this.initialProperties = [];
-        this.items = [];
-
-        lines.forEach(line => {
-          const cols = line.split(delimiter);
-          const key = cols[0];
-          const value: any = {};
-          Object.keys(this.configuration.properties).forEach((h, idx) => {
-            value[h] = cols[idx + 1] ?? '';
-          });
-          this.kvListItems.push(this.initListItem(false, { key, value }));
-        });
-
-        this.setSuccess();
-        this.cdRef.detectChanges();
-        this.formStatusEvent.emit({
-          status: this.kvListItems.valid && this.validConfigurationForm,
-          group: this.group
-        });
-      }
-    } catch (error: any) {
-      this.setError('Invalid CSV: ' + error.message);
+    const res = this.csvJsonSvc.parseCsvForKv(text ?? '', this.configuration);
+    if (res.error) {
+      this.setError(res.error);
+      return;
     }
-  }
-
-  private detectCsvDelimiter(headerLine: string): string | null {
-    const candidates = [',', ';', '\t', '|', ':'];
-    const detected = candidates.filter(d => headerLine.includes(d));
-
-    if (detected.length === 1) {
-      this.delimiterStoreService.setDelimiter(detected[0]);
-      return detected[0];
-    }
-
-    // ambiguous or none found → reset store
-    this.delimiterStoreService.setDelimiter(null);
-    return null;
+    this.csvEditorData = text ?? '';
+    this.csvDelimiter = res.delimiter ?? this.csvDelimiter ?? ',';
+    this.kvListItems.clear();
+    this.initialProperties = [];
+    this.items = [];
+    (res.items || []).forEach(({ key, value }) => this.kvListItems.push(this.initListItem(false, { key, value })));
+    this.setSuccess();
+    this.cdRef.detectChanges();
+    this.formStatusEvent.emit({
+      status: this.kvListItems.valid && this.validConfigurationForm,
+      group: this.group
+    });
   }
 
 
