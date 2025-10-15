@@ -35,7 +35,7 @@ export class CodeEditorComponent implements OnChanges {
   };
 
   ngOnInit() {
-    this.selectedDelimiter = this.delimiterStore.getDelimiter();
+    this.selectedDelimiter = this.delimiterStore.getDelimiter() || ',';
   }
 
   ngOnChanges(changes: SimpleChanges) {
