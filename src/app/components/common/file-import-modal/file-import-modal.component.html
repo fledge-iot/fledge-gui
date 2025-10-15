@@ -41,8 +41,7 @@
       <!-- Manual Paste Mode -->
       <div *ngIf="isManualMode" class="manual-paste-container">
         <!-- Delimiter Dropdown -->
-        <div class="is-flex is-align-items-center is-justify-content-flex-end mb-2"
-          *ngIf="detectedFormat === 'CSV' || manualContent.trim()">
+        <div class="is-flex is-align-items-center is-justify-content-flex-end mb-2" *ngIf="detectedFormat === 'CSV'">
           <label class="label is-small mb-0 mr-2">CSV Delimiter</label>
           <div class="select is-small">
             <select aria-label="Delimiter" [ngModel]="selectedDelimiter" (ngModelChange)="onDelimiterChange($event)">
