@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { RolesService } from '../../../services';
+import { DelimiterStoreService } from '../../../services/delimiter-store.service';
 
 type EditorMode = 'json' | 'csv';
 
@@ -15,7 +16,9 @@ export class CodeEditorComponent implements OnChanges {
   @Input() selectedDelimiter: string = ',';
   @Output() delimiterChange = new EventEmitter<string>();
 
-  constructor(public rolesService: RolesService) { }
+  constructor(public rolesService: RolesService,
+    private delimiterStore: DelimiterStoreService
+  ) { }
 
   public internalData = '';
   public options: any = {
@@ -30,6 +33,10 @@ export class CodeEditorComponent implements OnChanges {
     inputStyle: 'textarea',
     autoRefresh: true
   };
+
+  ngOnInit() {
+    this.selectedDelimiter = this.delimiterStore.getDelimiter();
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.mode) {
