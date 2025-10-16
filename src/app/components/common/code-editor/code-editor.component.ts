@@ -47,7 +47,6 @@ export class CodeEditorComponent implements OnChanges {
       };
     }
     if (changes.data) {
-      console.log('data', this.data);
       this.internalData = this.data ?? '';
     }
   }
