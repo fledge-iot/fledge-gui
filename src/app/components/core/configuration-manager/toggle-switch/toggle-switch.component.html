@@ -1,4 +1,4 @@
-<div class="field has-addons">
+<div class="field has-addons" [ngClass]="{'is-disabled': !isFormValid}">
   <p class="control">
     <button class="button is-small tooltip has-tooltip-right has-tooltip-arrow toggle-btn"
       [attr.data-tooltip]="activeView === 'list' ? null : 'Tabular view'" (click)="setCurrentView('list')"

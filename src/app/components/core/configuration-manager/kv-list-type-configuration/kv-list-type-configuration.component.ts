@@ -123,9 +123,23 @@ export class KvListTypeConfigurationComponent implements OnInit, OnDestroy {
       const index = isPrepend ? 0 : this.kvListItems.length - 1;
       if (this.currentView === 'list') {
         this.scrollToRow(index);
-      } else {
+      } else if (this.currentView === 'detailed') {
         // Expand newly added item
         this.expandListItem(index);
+      } else if (this.currentView === 'json') {
+        this.jsonEditorData = this.csvJsonSvc.getJsonFromForm('kvlist', this.configuration, this.kvListItems.value);
+        const res = this.csvJsonSvc.parseJsonForKvList(this.jsonEditorData, this.configuration);
+        if (res.error) {
+          this.setError(res.error);
+          return;
+        }
+      } else if (this.currentView === 'csv') {
+        this.csvEditorData = this.csvJsonSvc.getCsvFromForm('kvlist', this.configuration, this.kvListItems.value, this.csvDelimiter);
+        const res = this.csvJsonSvc.parseCsvForKv(this.csvEditorData, this.configuration);
+        if (res.error) {
+          this.setError(res.error);
+          return;
+        }
       }
     }
   }

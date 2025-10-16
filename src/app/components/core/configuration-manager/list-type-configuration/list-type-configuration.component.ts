@@ -159,8 +159,23 @@ export class ListTypeConfigurationComponent implements OnInit {
       const index = isPrepend ? 0 : this.listItems.length - 1;
       if (this.currentView === 'list') {
         this.scrollToRow(index);
-      } else {
+      } else if (this.currentView === 'detailed') {
+        // Expand newly added item
         this.expandListItem(index);
+      } else if (this.currentView === 'json') {
+        this.jsonEditorData = this.csvJsonSvc.getJsonFromForm('list', this.configuration, this.listItems.value);
+        const res = this.csvJsonSvc.parseJsonForList(this.jsonEditorData, this.configuration);
+        if (res.error) {
+          this.editorErrorMessage = res.error;
+          return;
+        }
+      } else if (this.currentView === 'csv') {
+        this.csvEditorData = this.csvJsonSvc.getCsvFromForm('list', this.configuration, this.listItems.value, this.csvDelimiter);
+        const res = this.csvJsonSvc.parseCsvForList(this.csvEditorData, this.configuration);
+        if (res.error) {
+          this.editorErrorMessage = res.error;
+          return;
+        }
       }
     }
 

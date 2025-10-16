@@ -8,6 +8,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class ToggleSwitchComponent {
   @Output() currentView = new EventEmitter<'list' | 'detailed' | 'json' | 'csv'>();
   @Input() activeView: 'list' | 'detailed' | 'json' | 'csv' = 'list';
+  @Input() isFormValid = false;
 
   setCurrentView(view: 'list' | 'detailed' | 'json' | 'csv') {
     this.activeView = view;

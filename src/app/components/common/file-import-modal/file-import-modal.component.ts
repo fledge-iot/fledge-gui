@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
 import { FileImportService } from '../../../services/file-import.service';
 import { ProgressBarService } from '../../../services';
+import { CsvJsonConverterService } from '../../../services/csv-json-converter.service';
 
 export interface FileData {
   name: string;
@@ -84,7 +85,8 @@ export class FileImportModalComponent {
   @ViewChild('fileImport', { static: true }) fileImport: ElementRef;
   constructor(
     public fileImportService: FileImportService,
-    public ngProgress: ProgressBarService
+    public ngProgress: ProgressBarService,
+    private csvJsonConverter: CsvJsonConverterService
   ) { }
 
   @HostListener('document:keydown.escape', ['$event']) onKeydownHandler() {
@@ -170,6 +172,7 @@ export class FileImportModalComponent {
     this.detectedFormat = '';
     this.validationError = '';
     this.selectedDelimiter = ',';
+    this.tableData = null;
     this.updateCodeMirrorMode('text/plain');
 
     if (!this.isManualMode && this.fileImport?.nativeElement) {
@@ -237,7 +240,6 @@ export class FileImportModalComponent {
     } catch (e) {
       // Store JSON parsing error for later use
       this.validationError = this.getJsonErrorMessage(e);
-      // Not JSON, continue to CSV detection
     }
 
     // CSV detection
@@ -285,16 +287,6 @@ export class FileImportModalComponent {
    */
   private getJsonErrorMessage(error: any): string {
     return 'Invalid JSON format.';
-  }
-
-  /**
-   * Extracts a user-friendly error message from CSV processing errors
-   * @param error - The CSV processing error
-   * @returns User-friendly error message
-   * @private
-   */
-  private getCsvErrorMessage(error: any): string {
-    return 'Invalid CSV format. Use comma or tab as delimiter.';
   }
 
   /**
@@ -377,31 +369,26 @@ export class FileImportModalComponent {
    * @private
    */
   private async processManualJson(): Promise<void> {
-    try {
-      // Preprocess content to match file import behavior (remove trailing newline)
-      const processedContent = this.removeTrailingNewline(this.manualContent);
-      const jsonData = JSON.parse(processedContent);
-      this.file.extension = 'json';
-      this.file.isValidExtension = true;
-
-      // Validate JSON structure
-      this.file.isValid = await this.validateJsonStructure(jsonData);
-
-      if (this.file.isValid) {
-        this.file.data = jsonData;
-        this.tableData = this.fileImportService.getJsonTableData(
-          jsonData,
-          this.getListConfigurationType(),
-          this.configuration.keyName
-        );
-        this.file.isLoaded = true;
-      }
-    } catch {
+    // Preprocess content to match file import behavior (remove trailing newline)
+    let processedContent = this.removeTrailingNewline(this.manualContent);
+    let res = null;
+    if (this.configuration.type === 'kvlist') {
+      res = this.csvJsonConverter.parseJsonForKvList(processedContent, this.configuration);
+    } else {
+      res = this.csvJsonConverter.parseJsonForList(processedContent, this.configuration);
+    }
+    if (res.error) {
       this.file.isValid = false;
       this.file.isLoaded = false;
-      this.validationError = 'Invalid JSON format.';
-      throw new Error('Invalid JSON format.');
+      this.validationError = res.error;
+      throw new Error(res.error);
     }
+    this.file.data = await this.fileImportService.importJsonData([new File([processedContent], 'temp.json', { type: 'application/json' })], this.configuration.type);
+    this.tableData = this.fileImportService.getJsonTableData(this.file.data, this.getListConfigurationType(), this.configuration.keyName);
+    this.file.isLoaded = true;
+    this.file.extension = 'json';
+    this.file.isValidExtension = true;
+    this.file.isValid = true;
   }
 
   /**
@@ -409,50 +396,37 @@ export class FileImportModalComponent {
    * @private
    */
   private async processManualCsv(): Promise<void> {
-    try {
-      // Determine delimiter strictly as comma or tab
-      const text = this.removeTrailingNewline(this.manualContent);
-      const normalized = this.normalizeLineEndings(text);
-      const lines = normalized.split('\n').filter(l => l.trim());
-      if (lines.length < 2) {
-        this.file.isValid = false;
-        this.file.isLoaded = false;
-        this.validationError = 'Invalid CSV format. Use comma or tab as delimiter.';
-        throw new Error('Invalid CSV format.');
-      }
-      const header = lines[0];
-      const delimiter = this.selectedDelimiter || ','; // use selected delimiter
-
-      const headerCols = header.split(delimiter).length;
-      if (headerCols < 2) {
-        throw new Error(`Invalid CSV format. Header is not delimited with "${delimiter}".`);
-      }
-
-      // Validate all rows have the same number of columns
-      for (let i = 1; i < lines.length; i++) {
-        if (lines[i].split(delimiter).length !== headerCols) {
-          this.file.isValid = false;
-          this.file.isLoaded = false;
-          this.validationError = delimiter === '\t' ? 'Invalid tab-delimited CSV format.' : 'Invalid CSV format. Use comma or tab as delimiter.';
-          throw new Error('Invalid CSV format.');
-        }
-      }
-
-      this.file.extension = 'csv';
-      this.file.isValidExtension = true;
-      this.file.isValid = true;
-      this.file.data = this.importDataFromCSVWithDelimiter(normalized, this.configuration.type, delimiter);
-
-      // Keep tableData raw but split using the chosen delimiter
-      this.tableData = normalized.split('\n').filter(line => line.trim());
-      this.file.isLoaded = true;
-
-    } catch (error) {
+    // Determine delimiter strictly as comma or tab
+    const text = this.removeTrailingNewline(this.manualContent);
+    let res = null;
+    if (this.configuration.type === 'kvlist') {
+      res = this.csvJsonConverter.parseCsvForKv(text, this.configuration);
+    } else {
+      res = this.csvJsonConverter.parseCsvForList(text, this.configuration);
+    }
+    if (res.error) {
       this.file.isValid = false;
       this.file.isLoaded = false;
-      this.validationError = this.getCsvErrorMessage(error);
-      throw error; // preserve actual error
+      this.validationError = res.error;
+      throw new Error(res.error);
     }
+
+    const files = new File([text], 'temp.csv', { type: 'text/csv' });
+    this.file.data = await this.fileImportService.importCsvData([files], this.configuration.type, res.delimiter);
+    if (this.configuration.type === 'kvlist') {
+      this.tableData = res.items.map(item => `${item.key} ${this.selectedDelimiter} ${Object.values(item.value).join(this.selectedDelimiter)}`)
+    } else {
+      this.tableData = res.items.map(item => Object.values(item).join(this.selectedDelimiter))
+    }
+
+    const lines = text.split(/\r?\n/).filter(Boolean)
+    const headers = lines[0].split(res.delimiter).join(res.delimiter);
+    this.tableData.unshift(headers);
+    this.file.isLoaded = true;
+
+    this.file.extension = 'csv';
+    this.file.isValidExtension = true;
+    this.file.isValid = true;
   }
 
   /**
@@ -463,71 +437,6 @@ export class FileImportModalComponent {
    */
   private removeTrailingNewline(content: string): string {
     return content.slice(-1) === '\n' ? content.slice(0, -1) : content;
-  }
-
-  /**
-   * Imports CSV data using the specified delimiter
-   * @param csvText - The CSV text content
-   * @param type - The data type (kvlist, etc.)
-   * @param delimiter - The delimiter to use
-   * @returns Parsed data object
-   * @private
-   */
-  private importDataFromCSVWithDelimiter(csvText: string, type: string, delimiter: string): any {
-    const normalizedText = this.normalizeLineEndings(csvText).trim();
-    const rows = normalizedText.split('\n').filter(r => r.trim());
-
-    const propertyNames = rows[0].split(delimiter).map(h => h.trim());
-    const dataRows = rows.slice(1);
-
-    if (type === 'kvlist') {
-      const dataObj: Record<string, any> = {};
-      dataRows.forEach(row => {
-        const values = row.split(delimiter).map(v => v.trim());
-        const key = values[0];
-        const obj: Record<string, any> = {};
-        for (let i = 1; i < propertyNames.length; i++) {
-          obj[propertyNames[i]] = values[i];
-        }
-        dataObj[key] = obj;
-      });
-      return dataObj;
-    } else {
-      return dataRows.map(row => {
-        const values = row.split(delimiter).map(v => v.trim());
-        const obj: Record<string, any> = {};
-        propertyNames.forEach((prop, i) => {
-          obj[prop] = values[i];
-        });
-        return obj;
-      });
-    }
-  }
-
-  /**
-   * Normalizes line endings to handle both LF and CRLF formats
-   * @param text - The text content to normalize
-   * @returns Text with normalized LF line endings
-   * @private
-   */
-  private normalizeLineEndings(text: string): string {
-    return text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-  }
-
-  /**
-   * Validates JSON structure against configuration requirements
-   * @param jsonData - The parsed JSON data to validate
-   * @returns Promise<boolean> - True if valid, false otherwise
-   * @private
-   */
-  private async validateJsonStructure(jsonData: any): Promise<boolean> {
-    const tempFile = new File([this.manualContent], 'temp.json', { type: 'application/json' });
-    return await this.fileImportService.isJsonFileValid(
-      [tempFile],
-      this.configuration.properties,
-      this.configuration.type,
-      this.configuration.keyName
-    );
   }
 
   /**
@@ -596,21 +505,33 @@ export class FileImportModalComponent {
    * @private
    */
   private async processCsvFile(files: File[]): Promise<void> {
-    this.file.isValid = await this.fileImportService.isCsvFileValid(
-      files,
-      this.configuration.properties,
-      this.configuration.type,
-      this.configuration.keyName
-    );
-
-    if (this.file.isValid) {
-      this.tableData = await this.fileImportService.getTableData(files);
-      this.file.data = await this.fileImportService.importCsvData(files, this.configuration.type);
-      this.file.isLoaded = true;
-      this.validationError = '';
+    let res = null;
+    let text = await this.fileImportService.getTextFromFile(files);
+    if (this.configuration.type === 'kvlist') {
+      res = this.csvJsonConverter.parseCsvForKv(text, this.configuration);
     } else {
-      this.validationError = 'CSV Error: File validation failed. Check the file structure and required columns.';
+      res = this.csvJsonConverter.parseCsvForList(text, this.configuration);
     }
+    if (res.error) {
+      this.file.isValid = false;
+      this.file.isLoaded = false;
+      this.validationError = res.error;
+      throw new Error(res.error);
+    }
+    this.file.data = await this.fileImportService.importCsvData(files, this.configuration.type, res.delimiter);
+    if (this.configuration.type === 'kvlist') {
+      this.tableData = res.items.map(item => `${item.key} ${res.delimiter} ${Object.values(item.value).join(res.delimiter)}`)
+    } else {
+      this.tableData = res.items.map(item => Object.values(item).join(res.delimiter))
+    }
+    const lines = text.split(/\r?\n/).filter(Boolean)
+    const headers = lines[0].split(res.delimiter).join(res.delimiter);
+    this.selectedDelimiter = res.delimiter;
+    this.tableData.unshift(headers);
+    this.file.isLoaded = true;
+    this.file.extension = 'csv';
+    this.file.isValidExtension = true;
+    this.file.isValid = true;
   }
 
   /**

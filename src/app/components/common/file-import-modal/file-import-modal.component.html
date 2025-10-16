@@ -66,12 +66,6 @@
             Detected format: <strong>{{detectedFormat}}</strong>
             <span *ngIf="detectedFormat === 'CSV'"> with {{getDelimiterDisplayName()}} delimiter</span>
           </p>
-
-          <!-- Error Message -->
-          <p class="help has-text-danger" *ngIf="validationError">
-            <i class="bi bi-exclamation-triangle"></i>
-            {{validationError}}
-          </p>
         </div>
       </div>
 
@@ -124,7 +118,7 @@
   <span *ngIf="!file.isValidExtension" class="invalid has-text-danger mt-1">
     Only CSV or JSON file is allowed
   </span>
-  <span *ngIf="file.isValidExtension && !file.isValid" class="invalid has-text-danger mt-1">
-    Invalid content<span *ngIf="validationError">: {{validationError}}</span>
+  <span *ngIf="!file.isValid" class="invalid has-text-danger mt-1">
+    {{validationError}}
   </span>
 </ng-template>

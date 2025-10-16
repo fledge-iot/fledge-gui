@@ -28,16 +28,18 @@ export class CsvJsonConverterService {
   getCsvFromForm(mode: ViewMode, configuration: any, rows: any[], current?: string | null): string {
     const delimiter = this.delimiterStore.getDelimiter() ?? current ?? ',';
     if (mode === 'kvlist') {
+      const keyName = configuration.keyName || 'key';
       if (configuration.items === 'object') {
         const headers = Object.keys(configuration.properties);
         const lines = (rows || []).map((r: any) => {
           const vals = headers.map(h => `${r.value?.[h] ?? ''}`).join(delimiter);
           return `${r.key}${delimiter}${vals}`;
         });
-        return ['Key' + delimiter + headers.join(delimiter), ...lines].join('\n');
+        return [keyName + delimiter + headers.join(delimiter), ...lines].join('\n');
+        return [configuration.keyName + delimiter + headers.join(delimiter), ...lines].join('\n');
       }
       const lines = (rows || []).map((r: any) => `${r.key}${delimiter}${r.value ?? ''}`);
-      return ['Key' + delimiter + 'value', ...lines].join('\n');
+      return [keyName + delimiter + 'value', ...lines].join('\n');
     }
     if (configuration.items === 'object') {
       const headers = Object.keys(configuration.properties);
@@ -66,19 +68,21 @@ export class CsvJsonConverterService {
       const parsed = JSON.parse(text || '{}');
 
       if (!parsed || Object.keys(parsed).length === 0) {
-        return { error: 'Empty JSON file.' };
+        return {
+          items: []
+        };
       }
       if (!(parsed && typeof parsed === 'object' && !Array.isArray(parsed))) {
         return { error: 'Invalid JSON format. Root must be an object.' };
       }
-
+      const keyName = configuration.keyName || 'Key';
       const required = Object.keys(configuration.properties);
       const items: Array<{ key: string, value: any }> = [];
 
       for (const [key, value] of Object.entries(parsed)) {
-        const rowLine = `Key "${key}"`;
+        const rowLine = `${keyName} "${key}"`;
 
-        if (!(key as string)?.trim()) return { error: 'Missing required "Key".' };
+        if (!(key as string)?.trim()) return { error: `Missing required "${keyName}".` };
 
         if (!(value && typeof value === 'object' && !Array.isArray(value))) {
           return { error: `${rowLine} has invalid value. Expected an object with properties (${required.join(', ')}).` };
@@ -101,7 +105,6 @@ export class CsvJsonConverterService {
   parseJsonForList(text: string, configuration: any): ParseResult<any[]> {
     try {
       const parsed = JSON.parse(text || '[]');
-
       if (configuration.items === 'object') {
         if (!Array.isArray(parsed)) return { error: 'Invalid JSON format. Expected an array of objects.' };
         const expected = Object.keys(configuration.properties);
@@ -134,7 +137,9 @@ export class CsvJsonConverterService {
   // ===== CSV parse/validate =====
   parseCsvForKv(text: string, configuration: any): ParseResult<Array<{ key: string, value: any }>> {
     const raw = (text ?? '').trim();
-    if (!raw) return { error: 'Empty file or invalid CSV format.' };
+    if (!raw) return {
+      error: null
+    };
 
     const lines = raw.split(/\r?\n/).filter(Boolean);
     if (lines.length === 0) return { error: 'Empty file or invalid CSV format.' };
@@ -142,10 +147,10 @@ export class CsvJsonConverterService {
     const headerLine = lines.shift() || '';
     const delimiter = this.detectDelimiter(headerLine);
     if (!delimiter) return { error: 'Invalid CSV format. Use comma, semicolon, tab, pipe or colon as delimiter.' };
-
     const headers = headerLine.split(delimiter);
+    const keyName = configuration.keyName || 'Key';
     if (configuration.items === 'object') {
-      const expected = ['Key', ...Object.keys(configuration.properties)];
+      const expected = [keyName, ...Object.keys(configuration.properties)];
       if (headers.length !== expected.length) {
         return { error: `Header count mismatch: CSV has ${headers.length} columns but expected ${expected.length} (${expected.join(', ')})` };
       }
@@ -175,7 +180,7 @@ export class CsvJsonConverterService {
       return { items, delimiter };
     }
 
-    const expected = ['Key', 'value'];
+    const expected = [keyName, 'value'];
     if (headers.length !== expected.length || !expected.every(h => headers.includes(h))) {
       return { error: `Header mismatch: CSV has columns (${headers.join(', ')}) but expected (${expected.join(', ')})` };
     }
@@ -194,7 +199,9 @@ export class CsvJsonConverterService {
 
   parseCsvForList(text: string, configuration: any): ParseResult<any[]> {
     const raw = (text ?? '').trim();
-    if (!raw) return { error: 'Empty file or invalid CSV format.' };
+    if (!raw) return {
+      error: null
+    };
 
     const lines = raw.split(/\r?\n/).filter(l => l.trim().length > 0);
     if (lines.length === 0) return { error: 'Empty file or invalid CSV format.' };

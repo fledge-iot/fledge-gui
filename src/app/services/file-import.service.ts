@@ -7,22 +7,19 @@ export class FileImportService {
 
   constructor() { }
 
-  async importCsvData(files: File[], type) {
+  async importCsvData(files: File[], type, delimiter: string) {
     let fileContent = await this.getTextFromFile(files);
-    let importedData = this.importDataFromCSV(fileContent, type);
+    let importedData = this.importDataFromCSV(fileContent, type, delimiter);
     return importedData;
   }
 
-  importDataFromCSV(csvText: string, type: 'kvlist' | 'array') {
+  importDataFromCSV(csvText: string, type: 'kvlist' | 'array', delimiter: string) {
     // Normalize line endings
     csvText = this.normalizeLineEndings(csvText);
 
     // Split into rows
     const lines = csvText.split('\n').filter(line => line.trim() !== '');
     if (lines.length === 0) return type === 'kvlist' ? {} : [];
-
-    // Detect delimiter from header (tab or comma)
-    const delimiter = lines[0].includes('\t') ? '\t' : ',';
 
     // Header
     const propertyNames = lines[0].split(delimiter);

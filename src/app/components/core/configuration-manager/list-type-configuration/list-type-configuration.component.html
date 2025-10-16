@@ -1,6 +1,7 @@
-<ng-container *ngIf="configuration.items == 'object' && listItems.controls.length>0">
+<ng-container *ngIf="configuration.items == 'object'">
   <div class="is-flex toggle-btn-container mb-1">
-    <app-toggle-switch (currentView)="setCurrentView($event)" [activeView]="currentView" />
+    <app-toggle-switch [isFormValid]="listItems.valid && validConfigurationForm" (currentView)="setCurrentView($event)"
+      [activeView]="currentView" />
   </div>
 </ng-container>
 <div [formGroup]="listItemsForm" class="items-container">
@@ -98,12 +99,12 @@
       [validConfigurationForm]="validConfigurationForm" (removeItem)="removeListItem($event)"
       (addItem)="addListItem(true)" (openModalEvent)="openModal()" (exportFile)="openExportFileModal()" />
   </ng-container>
-  <ng-container *ngIf="configuration.items == 'object' && currentView === 'json'">
+  <ng-container *ngIf="configuration.items == 'object' && currentView === 'json' && listItems.controls.length>0">
     <app-code-editor [mode]="'json'" [data]="jsonEditorData"
       (dataChange)="onJsonEditorChange($event)"></app-code-editor>
     <p class="help is-danger" *ngIf="editorErrorMessage">{{editorErrorMessage}}</p>
   </ng-container>
-  <ng-container *ngIf="configuration.items == 'object' && currentView === 'csv'">
+  <ng-container *ngIf="configuration.items == 'object' && currentView === 'csv' && listItems.controls.length>0">
     <app-code-editor [mode]="'csv'" [data]="csvEditorData" [selectedDelimiter]="csvDelimiter"
       (delimiterChange)="onDelimiterChanged($event)" (dataChange)="onCsvEditorChange($event)"></app-code-editor>
     <p class="help is-danger" *ngIf="editorErrorMessage">{{editorErrorMessage}}</p>
@@ -125,8 +126,7 @@
     </ng-container>
   </ng-container>
   <ng-template #objectButtonPanel>
-    <ng-container
-      *ngIf="listItems.controls.length==0 && (currentView === 'list' || currentView === 'detailed'); else buttonPanelTemplate">
+    <ng-container *ngIf="listItems.controls.length==0; else buttonPanelTemplate">
       <ng-container
         *ngIf="rolesService.hasAccessPermission(configuration?.permissions) && (!configuration.listSize || configuration.listSize != listItems.controls.length)">
         <div class="field">
