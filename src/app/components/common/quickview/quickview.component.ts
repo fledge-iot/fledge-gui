@@ -1,6 +1,6 @@
 import { Component, HostListener, Input, OnInit, ViewChild, ContentChild } from '@angular/core';
 import { FlowEditorService } from './../node-editor/flow-editor.service';
-import { SharedService } from 'src/app/services/shared.service';
+import { SharedService } from '../../../services/shared.service';
 
 declare const bulmaQuickview: any;
 

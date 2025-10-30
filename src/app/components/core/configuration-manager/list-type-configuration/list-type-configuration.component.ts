@@ -8,8 +8,8 @@ import { FileExportModalComponent } from '../../../common/file-export-modal/file
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Subscription } from 'rxjs';
-import { DelimiterStoreService } from 'src/app/services/delimiter-store.service';
-import { CsvJsonConverterService } from 'src/app/services/csv-json-converter.service';
+import { DelimiterStoreService } from '../../../../services/delimiter-store.service';
+import { CsvJsonConverterService } from '../../../../services/csv-json-converter.service';
 
 @Component({
   selector: 'app-list-type-configuration',

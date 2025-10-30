@@ -7,8 +7,8 @@ import { ConfigurationControlService, RolesService, SharedService } from '../../
 import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
 import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
 import { Subscription } from 'rxjs/internal/Subscription';
-import { CsvJsonConverterService } from 'src/app/services/csv-json-converter.service';
-import { DelimiterStoreService } from 'src/app/services/delimiter-store.service';
+import { CsvJsonConverterService } from '../../../../services/csv-json-converter.service';
+import { DelimiterStoreService } from '../../../../services/delimiter-store.service';
 
 @Component({
   selector: 'app-kv-list-type-configuration',
