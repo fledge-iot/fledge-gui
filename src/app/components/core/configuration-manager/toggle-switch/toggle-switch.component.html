@@ -1,7 +1,8 @@
-<div class="field has-addons">
+<div class="field has-addons" [ngClass]="{'is-disabled': !isFormValid}">
   <p class="control">
     <button class="button is-small tooltip has-tooltip-right has-tooltip-arrow toggle-btn"
-      [attr.data-tooltip]="isListView ? null : 'Tabular view'" (click)="setCurrentView('list')" [disabled]="isListView">
+      [attr.data-tooltip]="activeView === 'list' ? null : 'Tabular view'" (click)="setCurrentView('list')"
+      [disabled]="activeView === 'list'">
       <span class="icon is-small">
         <i class="bi bi-xs bi-list-task"></i>
       </span>
@@ -9,10 +10,28 @@
   </p>
   <p class="control">
     <button class="button is-small tooltip has-tooltip-right has-tooltip-arrow toggle-btn"
-      [attr.data-tooltip]="isListView ? 'Detailed view' : null" (click)="setCurrentView('detail')"
-      [disabled]="!isListView">
+      [attr.data-tooltip]="activeView === 'detailed' ? null : 'Detailed view'" (click)="setCurrentView('detailed')"
+      [disabled]="activeView === 'detailed'">
       <span class="icon is-small">
         <i class="bi bi-xs bi-view-list"></i>
+      </span>
+    </button>
+  </p>
+  <p class="control">
+    <button class="button is-small tooltip has-tooltip-right has-tooltip-arrow toggle-btn"
+      [attr.data-tooltip]="activeView === 'csv' ? null : 'CSV view'" (click)="setCurrentView('csv')"
+      [disabled]="activeView === 'csv'">
+      <span class="icon">
+        <i class="bi bi-sm bi-filetype-csv"></i>
+      </span>
+    </button>
+  </p>
+  <p class="control">
+    <button class="button is-small tooltip has-tooltip-right has-tooltip-arrow toggle-btn"
+      [attr.data-tooltip]="activeView === 'json' ? null : 'JSON view'" (click)="setCurrentView('json')"
+      [disabled]="activeView === 'json'">
+      <span class="icon">
+        <i class="bi bi-sm bi-filetype-json"></i>
       </span>
     </button>
   </p>

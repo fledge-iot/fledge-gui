@@ -13,7 +13,7 @@
           <p class="help has-text-grey modal-subtitle">North Task</p>
         </ng-template>
       </span>
-      <button class="delete" aria-label="close" [routerLink]="['/north']"></button>
+      <button class="delete" aria-label="close" (click)="navToNorthPage()"></button>
     </header>
     <section class="modal-card-body">
       <ng-container *ngIf="!isAddFilterWizard">
@@ -96,12 +96,13 @@
               </ng-template>
             </div>
           </div>
-          <app-filter-list #filtersListComponent *ngIf="filterPipelineType === FilterPipelineType.Simple" [service]="task?.name" [filterPipeline]="filterPipeline"
-            [from]="'filter'" (formStatus)="filterFormStatus($event)"></app-filter-list>
+          <app-filter-list #filtersListComponent *ngIf="filterPipelineType === FilterPipelineType.Simple"
+            [service]="task?.name" [filterPipeline]="filterPipeline" [from]="'filter'"
+            (formStatus)="filterFormStatus($event)"></app-filter-list>
           <div *ngIf="filterPipelineType === FilterPipelineType.Complex">
             <p class="has-text-centered has-text-grey-light is-size-7 mt-1 mb-2">
-              Complex filter pipeline detected. Please 
-              <a [routerLink]="['/setting']">enable Flow Editor from settings</a> 
+              Complex filter pipeline detected. Please
+              <a [routerLink]="['/setting']">enable Flow Editor from settings</a>
               to view and manage this pipeline.
             </p>
             <hr class="hr-text">
