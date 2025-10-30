@@ -563,18 +563,29 @@ export class ConfigurationControlService {
    * @param expression validation expression
    * @returns
    */
-  validateExpression(key: string, expression: string) {
+  validateExpression(key: string, expression: string): boolean {
     try {
-      const e = eval(expression);
-      if (typeof (e) !== 'boolean') {
-        console.log('Validity expression', expression, 'for', key, 'evaluated to non-boolean value ', e);
+      const fn = new Function(`return (${expression});`);
+      const result = fn();
+
+      if (typeof result !== 'boolean') {
+        console.warn(
+          'Validity expression',
+          expression,
+          'for',
+          key,
+          'evaluated to non-boolean value',
+          result
+        );
       }
-      return e === false ? false : true;
-    } catch (e) {
-      console.log(e);
-      return true;
+
+      return result === false ? false : true;
+    } catch (err) {
+      console.error('Error evaluating expression:', expression, 'for', key, err);
+      return true; // fallback same as your old code
     }
   }
+
 
   getAllACLs() {
     this.aclService.fetchAllACL()

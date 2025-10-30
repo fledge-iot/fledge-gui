@@ -8,7 +8,7 @@ import Utils, { ASSET_READINGS_TIME_FILTER, CHART_COLORS, MAX_INT_SIZE, POLLING_
 import { KeyValue } from '@angular/common';
 import { DateFormatterPipe } from '../../../../pipes';
 import { RangeSliderService } from '../../../common/range-slider/range-slider.service';
-import * as moment from 'moment';
+import moment from 'moment';
 
 declare var Plotly: any;
 

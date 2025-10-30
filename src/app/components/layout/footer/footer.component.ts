@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import * as data from '../../../../git-version.json';
-import * as moment from 'moment';
+import  moment from 'moment';
 
 @Component({
     selector: 'app-footer',
