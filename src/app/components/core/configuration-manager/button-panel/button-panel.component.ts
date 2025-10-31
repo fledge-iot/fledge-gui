@@ -16,6 +16,8 @@ export class ButtonPanelComponent {
   @Output() importFile = new EventEmitter<any>();
   @Output() exportFile = new EventEmitter<any>();
 
+  @Input() view: 'list' | 'detailed' | 'json' | 'csv' = 'list';
+
   addItem() {
     this.addnewItem.emit({ addItem: true });
   }

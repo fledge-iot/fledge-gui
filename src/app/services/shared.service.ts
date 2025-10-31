@@ -18,6 +18,9 @@ export class SharedService {
   public bufferReadings: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public debuggerStateSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
+  public listKvView: BehaviorSubject<any> = new BehaviorSubject<any>(localStorage.getItem('LIST_KVLIST_VIEW') != null ?
+    localStorage.getItem('LIST_KVLIST_VIEW') : 'list');
+
 
   public checkAuth() {
     const auth = !JSON.parse(sessionStorage.getItem('LOGIN_SKIPPED'));

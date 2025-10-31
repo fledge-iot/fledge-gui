@@ -1,5 +1,5 @@
 <div class="field has-addons button-container">
-  <p class="control" *ngIf="isAddButtonVisible">
+  <p class="control" *ngIf="isAddButtonVisible && (view === 'list' || view === 'detailed')">
     <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Add new item"
       (click)="addItem()" [disabled]="!isFormValid">
       <span class="icon is-small">
@@ -23,7 +23,7 @@
       </span>
     </button>
   </p>
-  <p class="control" *ngIf="!isListView">
+  <p class="control" *ngIf="view === 'detailed'">>
     <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Collapse All"
       (click)="collapseAllItems()">
       <span class="icon is-small">
@@ -31,7 +31,7 @@
       </span>
     </button>
   </p>
-  <p class="control" *ngIf="!isListView">
+  <p class="control" *ngIf="view === 'detailed'">
     <button class="button is-small tooltip has-tooltip-bottom has-tooltip-arrow" data-tooltip="Expand All"
       (click)="expandAllItems()">
       <span class="icon is-small">

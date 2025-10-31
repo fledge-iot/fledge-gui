@@ -1,3 +1,9 @@
 .toggle-btn {
   font-size: 0.6rem;
 }
+
+.is-disabled {
+  opacity: 0.5 !important;
+  background-color: lightgray !important;
+  pointer-events: none;
+}
