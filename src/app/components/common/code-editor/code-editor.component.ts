@@ -49,6 +49,9 @@ export class CodeEditorComponent implements OnChanges {
     if (changes.data) {
       this.internalData = this.data ?? '';
     }
+    if (changes.mode && this.mode === 'csv') {
+      this.selectedDelimiter = this.delimiterStore.getDelimiter() || ',';
+    }
   }
 
   public onModelChange(value: string) {
