@@ -49,10 +49,7 @@ export class CodeEditorComponent implements OnChanges {
     if (changes.data) {
       this.internalData = this.data ?? '';
     }
-    console.log(changes);
-
     this.selectedDelimiter = this.delimiterStore.getDelimiter() || ',';
-
   }
 
   public onModelChange(value: string) {
