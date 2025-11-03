@@ -1,13 +1,14 @@
-<ng-container *ngIf="configuration.items == 'object' && listItems.controls.length>0">
-  <div class="is-flex toggle-btn-container">
-    <app-toggle-switch (currentView)="setCurrentView($event)" [isListView]="isListView" />
+<ng-container *ngIf="configuration.items == 'object'">
+  <div class="is-flex toggle-btn-container mb-1">
+    <app-toggle-switch [isFormValid]="listItems.valid && validConfigurationForm" (currentView)="setCurrentView($event)"
+      [activeView]="currentView" />
   </div>
 </ng-container>
 <div [formGroup]="listItemsForm" class="items-container">
   <ng-container *ngIf="configuration.items == 'object' && listItems.controls.length>0">
-    <div *ngIf="!isListView" class="btn-panel-container is-flex-direction-row-reverse">
+    <div *ngIf="currentView === 'detailed'" class="btn-panel-container is-flex-direction-row-reverse">
       <div class="btn-panel upper-btn-panel">
-        <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" [isListView]="isListView"
+        <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" [view]="currentView"
           (addnewItem)="addListItem(true)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
           (importFile)="openModal()" (exportFile)="openExportFileModal()"
           [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />
@@ -73,7 +74,7 @@
       </form>
     </ng-container>
     <ng-template #objectTemplate>
-      <ng-container *ngIf="!isListView">
+      <ng-container *ngIf="currentView === 'detailed'">
         <cdk-virtual-scroll-viewport *ngIf="listItemControls.length > 3; else normalView" itemSize="5"
           class="card-viewport">
           <app-list-card *cdkVirtualFor="let ctrl of listItemControls; let i = index; trackBy: trackByIndex"
@@ -95,11 +96,21 @@
       </ng-container>
     </ng-template>
   </div>
-  <ng-container *ngIf="configuration.items == 'object' && isListView">
+  <ng-container *ngIf="configuration.items == 'object' && currentView === 'list'">
     <app-list-table [configuration]="configuration" [listItemsForm]="listItemsForm" [listType]="'list'" [from]="from"
       [validConfigurationForm]="validConfigurationForm" [isListDisabled]="isListDisabled"
       (removeItem)="removeListItem($event)" (addItem)="addListItem(true)" (openModalEvent)="openModal()"
       (exportFile)="openExportFileModal()" />
+  </ng-container>
+  <ng-container *ngIf="configuration.items == 'object' && currentView === 'json' && listItems.controls.length>0">
+    <app-code-editor [mode]="'json'" [data]="jsonEditorData"
+      (dataChange)="onJsonEditorChange($event)"></app-code-editor>
+    <p class="help is-danger" *ngIf="editorErrorMessage">{{editorErrorMessage}}</p>
+  </ng-container>
+  <ng-container *ngIf="configuration.items == 'object' && currentView === 'csv' && listItems.controls.length>0">
+    <app-code-editor [mode]="'csv'" [data]="csvEditorData" [selectedDelimiter]="csvDelimiter"
+      (delimiterChange)="onDelimiterChanged($event)" (dataChange)="onCsvEditorChange($event)"></app-code-editor>
+    <p class="help is-danger" *ngIf="editorErrorMessage">{{editorErrorMessage}}</p>
   </ng-container>
   <ng-container *ngIf="configuration.items != 'object'; else objectButtonPanel">
     <ng-container
@@ -159,7 +170,7 @@
     <ng-template #buttonPanelTemplate>
       <div class="btn-panel-container is-flex-direction-row">
         <div class="btn-panel lower-btn-panel">
-          <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" [isListView]="isListView"
+          <app-button-panel [isFormValid]="listItems.valid && validConfigurationForm" [view]="currentView"
             (addnewItem)="addListItem(false)" (expandAll)="expandAllItems()" (collapseAll)="collapseAllItems()"
             (importFile)="openModal()" (exportFile)="openExportFileModal()"
             [isAddButtonVisible]="rolesService.hasAccessPermission(configuration?.permissions) && !isListDisabled && (!configuration.listSize || configuration.listSize != listItems.controls.length)" />

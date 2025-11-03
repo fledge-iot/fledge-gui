@@ -11,7 +11,7 @@ import {
   AlertService, ConfigurationControlService, ConfigurationService,
   FileUploaderService, FilterService, NorthService, ProgressBarService,
   ResponseHandler,
-  RolesService, SchedulesService, ServicesApiService, ToastService
+  RolesService, SchedulesService, ServicesApiService, SharedService, ToastService
 } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import Utils from '../../../../utils';
@@ -42,7 +42,7 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   public filterPipeline: any[] = [];
   public confirmationDialogData = {};
   public btnTxt = '';
-  
+
   // Make enum accessible in template
   public readonly FilterPipelineType = FilterPipelineType;
   public filterPipelineType: FilterPipelineType = FilterPipelineType.Empty;
@@ -91,7 +91,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private response: ResponseHandler,
     private toast: ToastService,
     public cDRef: ChangeDetectorRef,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private sharedService: SharedService
   ) {
     this.activatedRoute.paramMap.subscribe(params => {
       this.taskName = params.get('name');
@@ -507,6 +508,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   navToNorthPage() {
     this.router.navigate(['/north']);
+    if (this.sharedService.listKvView) {
+      const view = localStorage.getItem('LIST_KVLIST_VIEW') || 'list';
+      this.sharedService.listKvView.next(view);
+    }
   }
 
   getNorthTasks(caching: boolean) {

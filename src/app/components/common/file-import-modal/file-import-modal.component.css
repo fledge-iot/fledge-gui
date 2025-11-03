@@ -7,3 +7,98 @@
   border: 1px solid #f14668;
   border-radius: 6px;
 }
+
+.manual-paste-container .field {
+  margin-bottom: 0;
+}
+
+.manual-paste-container .help {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.manual-paste-container .help i {
+  margin-right: 0.25rem;
+}
+
+.manual-paste-container .help.has-text-danger {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 4px;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Delimiter selection styling */
+.manual-paste-container .field:first-child {
+  margin-bottom: 1rem;
+}
+
+.manual-paste-container .label.is-small {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4a4a4a;
+  margin-bottom: 0.25rem;
+}
+
+.manual-paste-container .select.is-small select {
+  font-size: 0.875rem;
+  padding: 0.25rem 2rem 0.25rem 0.5rem;
+}
+
+/* CodeMirror styling */
+.manual-paste-container ngx-codemirror {
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  height: 300px;
+  display: block;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.manual-paste-container ngx-codemirror .CodeMirror {
+  height: 300px !important;
+  min-height: 300px !important;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.manual-paste-container ngx-codemirror:hover {
+  border-color: #b5b5b5;
+}
+
+.manual-paste-container ngx-codemirror:focus-within {
+  border-color: #3273dc;
+  box-shadow: 0 0 0 0.125em rgba(50, 115, 220, 0.25);
+}
+
+/* Loading container styling */
+.loading-container {
+  padding: 1rem;
+  text-align: center;
+}
+
+.loading-container p {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.progress-container {
+  margin-bottom: 0.5rem;
+}
+
+/* Modal footer button positioning */
+.modal-card-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.modal-card-foot .buttons {
+  margin-bottom: 0;
+}
+
+.modal-card-foot .buttons:last-child {
+  margin-left: auto;
+}
