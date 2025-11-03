@@ -27,15 +27,15 @@ fi
 
 install_nodejs () {
   isNodeInstalled=`which node` && currentNodeVer=`node -v` || echo ''
-   requiredNodeVer="v16.14.0"
+   requiredNodeVer="v22.11.0"
   # Check if Node.js is not installed or the installed version is lesser than the ${requiredNodeVer}
   if [[ "$isNodeInstalled" = "" ]] || [[ "$(printf '%s\n' "$requiredNodeVer" "$currentNodeVer" | sort -V | head -n1)" != "$requiredNodeVer" ]]; then
       if [[ "$PKG_MANAGER" == *"brew"* ]]; then
-        $1 install node@16
+        $1 install node@22
         $1 unlink node
-        $1 link --overwrite node@16
+        $1 link --overwrite node@22
       else
-       curl -L https://${PKG_TYPE}.nodesource.com/setup_16.x | sudo -E bash -
+       curl -L https://${PKG_TYPE}.nodesource.com/setup_22.x | sudo -E bash -
        sudo $1 install -y nodejs
       fi
   fi
@@ -43,7 +43,7 @@ install_nodejs () {
 
 install_yarn () {
     isYarnInstalled=`which yarn` && currentYarnVer=`yarn -v` || echo ''
-    requiredYarnVer="1.22.19"
+    requiredYarnVer="1.22.21"
     # Check if yarn is not installed or the installed version is lesser than the ${requiredYarnVer}
     if [[ "$isYarnInstalled" = "" ]] || [[ "$(printf '%s\n' "$requiredYarnVer" "$currentYarnVer" | sort -V | head -n1)" != "$requiredYarnVer" ]]; then
         sudo npm install -g yarn
