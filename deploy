@@ -144,7 +144,7 @@ install () {
 
   # put them into /var/www/html and start nginx
   sudo rm -rf ${DOC_ROOT}/*
-  sudo mv dist/* ${DOC_ROOT}/.
+  sudo mv dist/browser/* ${DOC_ROOT}/.
   sudo rm -rf dist
 
   # FIXME: if --keep, then don't remove

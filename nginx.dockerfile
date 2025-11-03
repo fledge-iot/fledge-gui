@@ -2,7 +2,7 @@ FROM nginx:alpine
 
 LABEL author="Mohd. Shariq"
 
-COPY ./dist/ /usr/share/nginx/html/
+COPY ./dist/browser/ /usr/share/nginx/html/
 COPY ./docker/nginx-docker.conf /etc/nginx/nginx.conf
 
 EXPOSE 8080

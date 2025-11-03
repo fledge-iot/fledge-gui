@@ -146,7 +146,7 @@ cd ${package_name}.${arch}
 
 echo "Copying build artifacts for nginx webroot directory..."
 mkdir -p usr/share/nginx/html
-cp -R ${GIT_ROOT}/dist/* usr/share/nginx/html/
+cp -R ${GIT_ROOT}/dist/browser/* usr/share/nginx/html/
 echo "Done."
 
 cd ..

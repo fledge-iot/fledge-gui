@@ -35,7 +35,7 @@ To allow access on other browser devices, over the same network, You can set hos
 
 Run `./build --clean-start` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-To deploy on another machine, You shall need to copy build artifacts stored in the `dist/` directory (and, you may want to use provided `nginx.conf`; to avoid changes in default nginx config).
+To deploy on another machine, You shall need to copy build artifacts stored in the `dist/browser` directory (and, you may want to use provided `nginx.conf`; to avoid changes in default nginx config).
 
 > Make sure you have nginx(-light) installed on the deployment machine.
 
