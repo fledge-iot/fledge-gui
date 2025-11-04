@@ -57,7 +57,7 @@ EXAMPLE
 #########################
 
 remove_unwanted_files () {
-    find dist/assets/* | grep -R --exclude-dir=icons | grep -v "fledge.png" | grep -v "favicon.ico"   | grep -v '/routes' | xargs rm -rf
+    find dist/browser/assets/* | grep -R --exclude-dir=icons | grep -v "fledge.png" | grep -v "favicon.ico"   | grep -v '/routes' | xargs rm -rf
     # rm dist/*.eot
     # rm dist/*.svg
     # rm dist/*.ttf
@@ -67,11 +67,11 @@ remove_unwanted_files () {
 }
 
 compress_bundle_js_files () {
-    gzip --keep dist/*.bundle.js
+    gzip --keep dist/browser/*.bundle.js
 }
 
 show_files_with_size () {
-    for f in dist/*.*; do
+    for f in dist/browser/*.*; do
         FILE_SIZE=$(du -h "$f")
         echo "${FILE_SIZE}"
     done

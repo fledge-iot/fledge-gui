@@ -134,7 +134,7 @@ echo "Done."
 
 echo "Copying build artifacts for nginx webroot directory..."
 mkdir -p var/www/html
-cp -R ${GIT_ROOT}/dist/* var/www/html/
+cp -R ${GIT_ROOT}/dist/browser/* var/www/html/
 echo "Done."
 
 # Build the package

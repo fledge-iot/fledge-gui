@@ -41,6 +41,7 @@
               "./node_modules/bulma-quickview/dist/js/bulma-quickview.min.js"
             ],
             "allowedCommonJsDependencies": [
+              "hammerjs",
               "lodash",
               "chart.js",
               "@ctrl/ngx-codemirror",
