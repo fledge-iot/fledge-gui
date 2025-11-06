@@ -16,13 +16,12 @@
     "e2e:watch": "ng e2e --headless false --watch true",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint",
-    "run:all": "node node_modules/@angular-architects/module-federation/src/server/mf-dev-server.js"
+    "lint": "ng lint"
   },
   "private": true,
   "dependencies": {
     "@ali-hm/angular-tree-component": "^19.1.2",
-    "@angular-architects/module-federation": "^20",
+    "@angular-architects/native-federation": "^20.1.7",
     "@angular/animations": "^20.2.4",
     "@angular/cdk": "^20",
     "@angular/common": "^20.2.4",

@@ -51,8 +51,7 @@
               "jsonlint-mod",
               "moment",
               "elkjs",
-              "@babel/runtime/regenerator",
-              "@angular-architects/module-federation"
+              "@babel/runtime/regenerator"
             ]
           },
           "configurations": {
