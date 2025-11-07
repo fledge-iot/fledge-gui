@@ -1,11 +1,14 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, SimpleChanges, OnChanges, OnDestroy } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { filter } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
 import { cloneDeep } from 'lodash';
-import { ConfigurationControlService, RolesService } from '../../../../services';
+import { ConfigurationControlService, RolesService, SharedService } from '../../../../services';
 import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
 import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
+import { Subscription } from 'rxjs/internal/Subscription';
+import { CsvJsonConverterService } from '../../../../services/csv-json-converter.service';
+import { DelimiterStoreService } from '../../../../services/delimiter-store.service';
 
 @Component({
     selector: 'app-kv-list-type-configuration',
@@ -13,11 +16,12 @@ import { FileExportModalComponent } from '../../../common/file-export-modal/file
     styleUrls: ['./kv-list-type-configuration.component.css'],
     standalone: false
 })
-export class KvListTypeConfigurationComponent implements OnInit {
+export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDestroy {
   @Input() configuration;
   @Input() categoryName;
   @Input() group: string = '';
   @Input() from = '';
+  @Input() fullConfiguration: any;
   @Output() changedConfig = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
   @ViewChild(FileImportModalComponent, { static: true }) fileImportModal: FileImportModalComponent;
@@ -27,13 +31,23 @@ export class KvListTypeConfigurationComponent implements OnInit {
   items = [];
   validConfigurationForm = true;
   kvlistValues = {};
-  isListView = true;
+  isListDisabled = false;
+
+  currentView: 'list' | 'detailed' | 'json' | 'csv' = 'list';
+  jsonEditorData = '';
+  csvEditorData = '';
+  csvDelimiter: string = ',';
+  editorErrorMessage = '';
+  private viewChangeSub: Subscription;
 
   constructor(
     public cdRef: ChangeDetectorRef,
     public rolesService: RolesService,
     public configControlService: ConfigurationControlService,
-    private fb: FormBuilder) {
+    private fb: FormBuilder,
+    private sharedService: SharedService,
+    private delimiterStoreService: DelimiterStoreService,
+    private csvJsonSvc: CsvJsonConverterService) {
     this.kvListItemsForm = this.fb.group({
       kvListItems: this.fb.array([])
     });
@@ -42,10 +56,20 @@ export class KvListTypeConfigurationComponent implements OnInit {
   ngOnInit() {
     let values = this.configuration?.value ? this.configuration.value : this.configuration.default;
     values = JSON.parse(values) as [];
+    this.updateListValidity();
     for (const [key, value] of Object.entries(values)) {
       this.kvListItems.push(this.initListItem(false, { key, value }));
     }
     this.onControlValueChanges();
+    this.viewChangeSub = this.sharedService.listKvView.subscribe((view) => {
+      this.applyView(view as 'list' | 'detailed' | 'json' | 'csv');
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.fullConfiguration && this.fullConfiguration) {
+      this.updateListValidity();
+    }
   }
 
   get kvListItems() {
@@ -113,11 +137,25 @@ export class KvListTypeConfigurationComponent implements OnInit {
     this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
     if (this.configuration.items == 'object') {
       const index = isPrepend ? 0 : this.kvListItems.length - 1;
-      if (this.isListView) {
+      if (this.currentView === 'list') {
         this.scrollToRow(index);
-      } else {
+      } else if (this.currentView === 'detailed') {
         // Expand newly added item
         this.expandListItem(index);
+      } else if (this.currentView === 'json') {
+        this.jsonEditorData = this.csvJsonSvc.getJsonFromForm('kvlist', this.configuration, this.kvListItems.value);
+        const res = this.csvJsonSvc.parseJsonForKvList(this.jsonEditorData, this.configuration);
+        if (res.error) {
+          this.setError(res.error);
+          return;
+        }
+      } else if (this.currentView === 'csv') {
+        this.csvEditorData = this.csvJsonSvc.getCsvFromForm('kvlist', this.configuration, this.kvListItems.value, this.csvDelimiter);
+        const res = this.csvJsonSvc.parseCsvForKv(this.csvEditorData, this.configuration);
+        if (res.error) {
+          this.setError(res.error);
+          return;
+        }
       }
     }
   }
@@ -168,6 +206,12 @@ export class KvListTypeConfigurationComponent implements OnInit {
         }
         transformedObject[item.key] = itemValue;
       });
+
+      // Update the configuration value for validity checking
+      if (this.fullConfiguration && this.configuration.key) {
+        this.fullConfiguration[this.configuration.key].value = JSON.stringify(transformedObject);
+      }
+
       this.changedConfig.emit({ [this.configuration.key]: JSON.stringify(transformedObject) });
       this.formStatusEvent.emit({ 'status': this.kvListItems.valid, 'group': this.group });
     })
@@ -230,16 +274,32 @@ export class KvListTypeConfigurationComponent implements OnInit {
   }
 
   appendFileData(event) {
+    this.csvDelimiter = event.delimiter ?? ',';
+    this.delimiterStoreService.setDelimiter(this.csvDelimiter);
     for (const [key, value] of Object.entries(event.fileData)) {
       this.kvListItems.push(this.initListItem(false, { key, value }));
+    }
+    if (this.currentView === 'json') {
+      this.jsonEditorData = this.csvJsonSvc.getJsonFromForm('kvlist', this.configuration, this.kvListItems.value);
+    }
+    if (this.currentView === 'csv') {
+      this.csvEditorData = this.csvJsonSvc.getCsvFromForm('kvlist', this.configuration, this.kvListItems.value, this.csvDelimiter);
     }
   }
 
   overrideFileData(event) {
     this.kvListItems.clear();
     this.initialProperties = [];
+    this.csvDelimiter = event.delimiter ?? ',';
+    this.delimiterStoreService.setDelimiter(this.csvDelimiter);
     for (const [key, value] of Object.entries(event.fileData)) {
       this.kvListItems.push(this.initListItem(false, { key, value }));
+    }
+    if (this.currentView === 'json') {
+      this.jsonEditorData = this.csvJsonSvc.getJsonFromForm('kvlist', this.configuration, this.kvListItems.value);
+    }
+    if (this.currentView === 'csv') {
+      this.csvEditorData = this.csvJsonSvc.getCsvFromForm('kvlist', this.configuration, this.kvListItems.value, this.csvDelimiter);
     }
   }
 
@@ -271,9 +331,119 @@ export class KvListTypeConfigurationComponent implements OnInit {
   }
 
   setCurrentView(event) {
-    this.isListView = event.isListView;
-    if (this.kvListItems.length == 1 && !this.isListView) {
-      this.expandListItem(0); // Expand the list if only one item is present
+    this.applyView(event as 'list' | 'detailed' | 'json' | 'csv');
+    this.sharedService.listKvView.next(this.currentView);
+  }
+
+  private applyView(view: 'list' | 'detailed' | 'json' | 'csv') {
+    this.currentView = view;
+    this.editorErrorMessage = '';
+    this.validConfigurationForm = true;
+    this.formStatusEvent.emit({ 'status': this.kvListItems.valid && this.validConfigurationForm, 'group': this.group });
+    if (this.currentView === 'json') {
+      this.jsonEditorData = this.csvJsonSvc.getJsonFromForm('kvlist', this.configuration, this.kvListItems.value);
+    } else if (this.currentView === 'csv') {
+      this.csvEditorData = this.csvJsonSvc.getCsvFromForm('kvlist', this.configuration, this.kvListItems.value, this.csvDelimiter);
     }
+    if (this.kvListItems.length == 1 && this.currentView === 'detailed') {
+      this.expandListItem(0);
+    }
+  }
+
+  public onDelimiterChanged(delimiter: string) {
+    this.csvDelimiter = delimiter;
+    this.delimiterStoreService.setDelimiter(delimiter);
+    this.csvEditorData = this.csvJsonSvc.getCsvFromForm('kvlist', this.configuration, this.kvListItems.value, this.csvDelimiter);
+    this.cdRef.detectChanges();
+    this.formStatusEvent.emit({ 'status': this.kvListItems.valid && this.validConfigurationForm, 'group': this.group });
+  }
+
+  private setError(message: string): void {
+    this.editorErrorMessage = message;
+    this.validConfigurationForm = false;
+    this.formStatusEvent.emit({ status: false, group: this.group });
+  }
+
+  private setSuccess(): void {
+    this.editorErrorMessage = '';
+    this.validConfigurationForm = true;
+  }
+
+  public onJsonEditorChange(text: string) {
+    this.jsonEditorData = text;
+    const res = this.csvJsonSvc.parseJsonForKvList(text, this.configuration);
+    if (res.error) {
+      this.setError(res.error);
+      return;
+    }
+    this.setSuccess();
+    this.kvListItems.clear();
+    this.initialProperties = [];
+    this.items = [];
+    (res.items || []).forEach(({ key, value }) => this.kvListItems.push(this.initListItem(false, { key, value })));
+    this.cdRef.detectChanges();
+    this.formStatusEvent.emit({
+      status: this.kvListItems.valid && this.validConfigurationForm,
+      group: this.group
+    });
+  }
+
+  public onCsvEditorChange(text: string) {
+    const res = this.csvJsonSvc.parseCsvForKv(text ?? '', this.configuration);
+    if (res.error) {
+      this.setError(res.error);
+      return;
+    }
+    this.csvEditorData = text ?? '';
+    this.csvDelimiter = res.delimiter ?? this.csvDelimiter ?? ',';
+    this.kvListItems.clear();
+    this.initialProperties = [];
+    this.items = [];
+    (res.items || []).forEach(({ key, value }) => this.kvListItems.push(this.initListItem(false, { key, value })));
+    this.setSuccess();
+    this.cdRef.detectChanges();
+    this.formStatusEvent.emit({
+      status: this.kvListItems.valid && this.validConfigurationForm,
+      group: this.group
+    });
+  }
+
+
+
+
+  /**
+ * Update the validity state of the list based on validity expressions
+ */
+  updateListValidity() {
+    if (this.fullConfiguration && this.configuration.validity) {
+      const tempConfig = { ...this.configuration, key: this.configuration.key };
+      this.isListDisabled = !!this.configControlService.validateConfigItem(this.fullConfiguration, tempConfig);
+
+      // Update form control states based on validity
+      this.updateFormControlsState();
+    } else {
+      this.isListDisabled = false;
+    }
+  }
+
+  /**
+   * Update the enabled/disabled state of all form controls
+   */
+  updateFormControlsState() {
+    if (this.kvListItemsForm && this.kvListItems) {
+      const shouldDisable = this.isListDisabled || !this.rolesService.hasAccessPermission(this.configuration?.permissions);
+
+      this.kvListItems.controls.forEach(control => {
+        if (shouldDisable) {
+          control.disable({ emitEvent: false });
+        } else {
+          control.enable({ emitEvent: false });
+        }
+      });
+    }
+  }
+
+  ngOnDestroy() {
+    this.viewChangeSub?.unsubscribe();
   }
 }

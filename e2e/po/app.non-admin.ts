@@ -49,7 +49,7 @@ export class NonAdminLogin {
   }
 
   isInputTag() {
-    return cy.get('#ngForm input').should('be.visible')
+    return cy.get('#changePwdForm input').should('be.visible')
   }
 
   isSaveButton() {

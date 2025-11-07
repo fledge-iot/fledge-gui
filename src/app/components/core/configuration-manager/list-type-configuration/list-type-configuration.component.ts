@@ -1,13 +1,15 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnInit, Output, ViewChild, SimpleChanges, OnChanges } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { filter, uniqWith, isEqual, cloneDeep } from 'lodash';
 import { CustomValidator } from '../../../../directives/custom-validator';
-import { ConfigurationControlService, RolesService } from '../../../../services';
+import { ConfigurationControlService, RolesService, SharedService } from '../../../../services';
 import { FileImportModalComponent } from '../../../common/file-import-modal/file-import-modal.component';
 import { FileExportModalComponent } from '../../../common/file-export-modal/file-export-modal.component';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Subscription } from 'rxjs';
+import { DelimiterStoreService } from '../../../../services/delimiter-store.service';
+import { CsvJsonConverterService } from '../../../../services/csv-json-converter.service';
 
 @Component({
     selector: 'app-list-type-configuration',
@@ -15,11 +17,12 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./list-type-configuration.component.css'],
     standalone: false
 })
-export class ListTypeConfigurationComponent implements OnInit {
+export class ListTypeConfigurationComponent implements OnInit, OnChanges {
   @Input() configuration;
   @Input() categoryName;
   @Input() group: string = '';
   @Input() from = '';
+  @Input() fullConfiguration: any;
   @Output() changedConfig = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
   @ViewChild(FileImportModalComponent, { static: true }) fileImportModal: FileImportModalComponent;
@@ -31,7 +34,14 @@ export class ListTypeConfigurationComponent implements OnInit {
   firstKey: string;
   validConfigurationForm = true;
   listValues;
-  isListView = true;
+  isListDisabled = false;
+  currentView: 'list' | 'detailed' | 'json' | 'csv' = 'list';
+  jsonEditorData = '';
+  csvEditorData = '';
+  csvDelimiter: string = ',';
+  editorErrorMessage = '';
+  private viewChangeSub: Subscription;
+
 
   @ViewChild(CdkVirtualScrollViewport, { static: false }) viewport: CdkVirtualScrollViewport;
   private valueChangeSub: Subscription;
@@ -41,7 +51,10 @@ export class ListTypeConfigurationComponent implements OnInit {
     public cdRef: ChangeDetectorRef,
     public rolesService: RolesService,
     public configControlService: ConfigurationControlService,
-    private fb: FormBuilder) {
+    private fb: FormBuilder,
+    private delimiterStoreService: DelimiterStoreService,
+    private sharedService: SharedService,
+    private csvJsonSvc: CsvJsonConverterService) {
     this.listItemsForm = this.fb.group({
       listItems: this.fb.array([])
     })
@@ -53,6 +66,9 @@ export class ListTypeConfigurationComponent implements OnInit {
       // Show first property label as list card header
       this.listLabel = this.configuration.properties[this.firstKey]?.displayName ?? this.firstKey;
     }
+
+    this.updateListValidity();
+
     let values = this.configuration?.value ?? this.configuration.default;
     const t0 = performance.now();
     values = JSON.parse(values);
@@ -84,6 +100,15 @@ export class ListTypeConfigurationComponent implements OnInit {
     console.log(`Form creation took ${t1 - t0} ms`);
 
     this.valueChangeSub = this.onControlValueChanges();
+    this.viewChangeSub = this.sharedService.listKvView.subscribe((view) => {
+      this.applyView(view as 'list' | 'detailed' | 'json' | 'csv');
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.fullConfiguration && this.fullConfiguration) {
+      this.updateListValidity();
+    }
   }
 
   get listItems() {
@@ -146,10 +171,24 @@ export class ListTypeConfigurationComponent implements OnInit {
     this.formStatusEvent.emit({ status: this.listItems.valid, group: this.group });
     if (this.configuration.items === 'object') {
       const index = isPrepend ? 0 : this.listItems.length - 1;
-      if (this.isListView) {
+      if (this.currentView === 'list') {
         this.scrollToRow(index);
-      } else {
+      } else if (this.currentView === 'detailed') {
         this.expandListItem(index);
+      } else if (this.currentView === 'json') {
+        this.jsonEditorData = this.csvJsonSvc.getJsonFromForm('list', this.configuration, this.listItems.value);
+        const res = this.csvJsonSvc.parseJsonForList(this.jsonEditorData, this.configuration);
+        if (res.error) {
+          this.editorErrorMessage = res.error;
+          return;
+        }
+      } else if (this.currentView === 'csv') {
+        this.csvEditorData = this.csvJsonSvc.getCsvFromForm('list', this.configuration, this.listItems.value, this.csvDelimiter);
+        const res = this.csvJsonSvc.parseCsvForList(this.csvEditorData, this.configuration);
+        if (res.error) {
+          this.editorErrorMessage = res.error;
+          return;
+        }
       }
     }
 
@@ -219,6 +258,11 @@ export class ListTypeConfigurationComponent implements OnInit {
         })
       )
       .subscribe((processedValue) => {
+        // Update the configuration value for validity checking
+        if (this.fullConfiguration && this.configuration.key) {
+          this.fullConfiguration[this.configuration.key].value = JSON.stringify(processedValue);
+        }
+
         this.changedConfig.emit({
           [this.configuration.key]: JSON.stringify(processedValue),
         });
@@ -288,17 +332,33 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   appendFileData(event) {
+    this.csvDelimiter = event.delimiter ?? ',';
+    this.delimiterStoreService.setDelimiter(this.csvDelimiter);
     event.fileData.forEach(element => {
       this.initListItem(false, element);
     });
+    if (this.currentView === 'json') {
+      this.jsonEditorData = this.csvJsonSvc.getJsonFromForm('list', this.configuration, this.listItems.value);
+    }
+    if (this.currentView === 'csv') {
+      this.csvEditorData = this.csvJsonSvc.getCsvFromForm('list', this.configuration, this.listItems.value, this.csvDelimiter);
+    }
   }
 
   overrideFileData(event) {
+    this.csvDelimiter = event.delimiter ?? ',';
+    this.delimiterStoreService.setDelimiter(this.csvDelimiter);
     this.listItems.clear();
     this.initialProperties = [];
     event.fileData.forEach(element => {
       this.initListItem(false, element);
     });
+    if (this.currentView === 'json') {
+      this.jsonEditorData = this.csvJsonSvc.getJsonFromForm('list', this.configuration, this.listItems.value);
+    }
+    if (this.currentView === 'csv') {
+      this.csvEditorData = this.csvJsonSvc.getCsvFromForm('list', this.configuration, this.listItems.value, this.csvDelimiter);
+    }
   }
 
   openModal() {
@@ -328,13 +388,130 @@ export class ListTypeConfigurationComponent implements OnInit {
   }
 
   setCurrentView(event) {
-    this.isListView = event.isListView;
-    if (this.listItems.length == 1 && !this.isListView) {
-      this.expandListItem(0); // Expand the list if only one item is present
+    this.applyView(event as 'list' | 'detailed' | 'json' | 'csv');
+    this.sharedService.listKvView.next(this.currentView);
+  }
+
+  /**
+   * Update the validity state of the list based on validity expressions
+   */
+  updateListValidity() {
+    if (this.fullConfiguration && this.configuration.validity) {
+      const tempConfig = { ...this.configuration, key: this.configuration.key };
+      this.isListDisabled = !!this.configControlService.validateConfigItem(this.fullConfiguration, tempConfig);
+
+      // Update form control states based on validity
+      this.updateFormControlsState();
+    } else {
+      this.isListDisabled = false;
     }
   }
 
+  /**
+   * Update the enabled/disabled state of all form controls
+   */
+  updateFormControlsState() {
+    if (this.listItemsForm && this.listItems) {
+      const shouldDisable = this.isListDisabled || !this.rolesService.hasAccessPermission(this.configuration?.permissions);
+
+      this.listItems.controls.forEach(control => {
+        if (shouldDisable) {
+          control.disable({ emitEvent: false });
+        } else {
+          control.enable({ emitEvent: false });
+        }
+      });
+    }
+  }
+
+  private applyView(view: 'list' | 'detailed' | 'json' | 'csv') {
+    this.currentView = view;
+    this.editorErrorMessage = '';
+    this.validConfigurationForm = true;
+    if (this.currentView === 'json') {
+      this.jsonEditorData = this.csvJsonSvc.getJsonFromForm('list', this.configuration, this.listItems.value);
+    } else if (this.currentView === 'csv') {
+      this.csvEditorData = this.csvJsonSvc.getCsvFromForm('list', this.configuration, this.listItems.value, this.csvDelimiter);
+    }
+    if (this.listItems.length == 1 && this.currentView === 'detailed') {
+      this.expandListItem(0);
+    }
+  }
+
+  public onDelimiterChanged(delimiter: string) {
+    this.csvDelimiter = delimiter;
+    this.delimiterStoreService.setDelimiter(delimiter);
+    this.csvEditorData = this.csvJsonSvc.getCsvFromForm('list', this.configuration, this.listItems.value, this.csvDelimiter);
+    this.cdRef.detectChanges();
+    this.formStatusEvent.emit({ status: this.listItems.valid && this.validConfigurationForm, group: this.group });
+  }
+
+  // ===== Synchronization now handled by CsvJsonListKvService =====
+
+  public onJsonEditorChange(text: string) {
+    this.jsonEditorData = text;
+    const res = this.csvJsonSvc.parseJsonForList(text, this.configuration);
+    if (res.error) {
+      this.setJsonError(res.error);
+      return;
+    }
+    this.listItems.clear();
+    this.initialProperties = [];
+    this.items = [];
+    (res.items || []).forEach(el => this.initListItem(false, el));
+    this.clearJsonError();
+  }
+
+  // 🔹 Helper methods for readability
+  private setJsonError(message: string) {
+    this.editorErrorMessage = message;
+    this.validConfigurationForm = false;
+    this.formStatusEvent.emit({ status: false, group: this.group });
+  }
+
+  private clearJsonError() {
+    this.editorErrorMessage = '';
+    this.validConfigurationForm = true;
+    this.cdRef.detectChanges();
+    this.formStatusEvent.emit({
+      status: this.listItems.valid && this.validConfigurationForm,
+      group: this.group
+    });
+  }
+
+  public onCsvEditorChange(text: string) {
+    const res = this.csvJsonSvc.parseCsvForList(text ?? '', this.configuration);
+    if (res.error) {
+      this.setCsvError(res.error);
+      return;
+    }
+    this.csvEditorData = text ?? '';
+    this.csvDelimiter = res.delimiter ?? this.csvDelimiter ?? ',';
+    this.listItems.clear();
+    this.initialProperties = [];
+    this.items = [];
+    (res.items || []).forEach(el => this.initListItem(false, el));
+    this.clearCsvError();
+  }
+
+  // 🔹 Helper methods for readability
+  private setCsvError(message: string) {
+    this.editorErrorMessage = message;
+    this.validConfigurationForm = false;
+    this.formStatusEvent.emit({ status: false, group: this.group });
+  }
+
+  private clearCsvError() {
+    this.editorErrorMessage = '';
+    this.validConfigurationForm = true;
+    this.cdRef.detectChanges();
+    this.formStatusEvent.emit({ status: this.listItems.valid && this.validConfigurationForm, group: this.group });
+  }
+
+  // Delimiter detection moved to CsvJsonListKvService
+
   ngOnDestroy() {
     this.valueChangeSub?.unsubscribe();
+    this.viewChangeSub?.unsubscribe();
   }
 }

@@ -12,6 +12,7 @@ import { RolesService } from '../../../../services';
 })
 export class StaticConfigurationComponent {
   @Input() configuration;
+  @Input() isListDisabled = false;
   constructor(public rolesService: RolesService) { }
 
   public codeMirrorConfiguration(type: string) {

@@ -7,7 +7,7 @@
     </header>
     <section class="modal-card-body">
       <div class="card-content">
-        <form name="form" id="ngForm" (ngSubmit)="createUser(f)" #f="ngForm" novalidate>
+        <form name="form" id="createUserForm" (ngSubmit)="createUser(f)" #f="ngForm" novalidate>
           <div class="columns m-0">
             <div class="column">
               <label class="label is-small">Name</label>
@@ -85,8 +85,7 @@
                     [(ngModel)]="model.password" #password="ngModel" validateEqual="confirmPassword" reverse="true"
                     trim="blur" required />
                 </p>
-                <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required
-                  (minimum 6 characters)</small>
+                <small *ngIf="f.submitted && !password.valid" class="help is-danger level-left">Password is required (minimum 6 characters)</small>
               </div>
             </div>
             <div class="columns m-0">
@@ -97,8 +96,7 @@
                     [(ngModel)]="model.confirmPassword" #confirmPassword="ngModel" validateEqual="password" trim="blur"
                     required />
                 </p>
-                <small *ngIf="f.submitted && !confirmPassword.valid" class="help is-danger level-left">Password
-                  mismatch</small>
+                <small *ngIf="f.submitted && !confirmPassword.valid" class="help is-danger level-left">Password mismatch</small>
               </div>
             </div>
           </ng-container>
@@ -115,7 +113,7 @@
       </div>
     </section>
     <footer class="modal-card-foot buttons user-card-footer">
-      <button id="save" type="submit" form="ngForm" class="button is-link is-small">Create</button>
+      <button id="save" type="submit" form="createUserForm" class="button is-link is-small">Create</button>
     </footer>
   </div>
 </div>

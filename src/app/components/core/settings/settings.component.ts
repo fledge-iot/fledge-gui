@@ -38,6 +38,7 @@ export class SettingsComponent implements OnInit {
   readingsGraphUnit = ['seconds', 'minutes', 'hours'];
   @ViewChild('readings_graph_default_time', { static: true }) readings_graph_default_time: ElementRef;
   private fromEventSub: Subscription;
+  selectedListKvView: string;
 
   constructor(private pingService: PingService,
     private sharedService: SharedService,
@@ -72,6 +73,10 @@ export class SettingsComponent implements OnInit {
     let rGraphDefaultUnit = localStorage.getItem('READINGS_GRAPH_DEFAULT_UNIT');
     this.selectedUnit = rGraphDefaultUnit !== null ? rGraphDefaultUnit : 'minutes';
 
+    // Initialize List/KVList global view selection
+    this.selectedListKvView = localStorage.getItem('LIST_KVLIST_VIEW') || 'list';
+    this.sharedService.listKvView.next(this.selectedListKvView);
+
     this.fromEventSub = fromEvent(this.readings_graph_default_time.nativeElement, 'input')
       .pipe(distinctUntilChanged(), debounceTime(DEBOUNCE_TIME))
       .subscribe(() => {
@@ -81,6 +86,16 @@ export class SettingsComponent implements OnInit {
           localStorage.setItem('READINGS_GRAPH_DEFAULT_UNIT', this.selectedUnit);
         }
       })
+  }
+
+  // ===== List/KVList global display preference =====
+  setListKvView(view: string) {
+    // Map 'form' selection to default 'list' editor
+    const mapped = view === 'form' ? 'list' : view;
+    this.selectedListKvView = mapped;
+    localStorage.setItem('LIST_KVLIST_VIEW', mapped);
+    this.sharedService.listKvView.next(mapped);
+    this.toggleDropDown('list-kvlist-view-dropdown');
   }
 
   public testServiceConnection(): void {

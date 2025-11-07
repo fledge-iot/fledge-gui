@@ -7,17 +7,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
     standalone: false
 })
 export class ToggleSwitchComponent {
-  @Output() currentView = new EventEmitter<any>();
-  @Input() isListView;
+  @Output() currentView = new EventEmitter<'list' | 'detailed' | 'json' | 'csv'>();
+  @Input() activeView: 'list' | 'detailed' | 'json' | 'csv' = 'list';
+  @Input() isFormValid = false;
 
-  setCurrentView(view: string) {
-    if (view == 'list') {
-      this.isListView = true;
-      this.currentView.emit({ isListView: true });
-    }
-    else {
-      this.isListView = false;
-      this.currentView.emit({ isListView: false });
-    }
+  setCurrentView(view: 'list' | 'detailed' | 'json' | 'csv') {
+    this.activeView = view;
+    this.currentView.emit(view);
   }
 }
