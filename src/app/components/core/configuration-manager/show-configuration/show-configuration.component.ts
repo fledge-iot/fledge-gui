@@ -16,6 +16,7 @@ export class ShowConfigurationComponent implements OnInit {
   @Input() group: string = '';
   @Input() selectedGroup = '';
   @Input() from = '';
+  @Input() isListDisabled = false; // Validity state from parent list/kvlist-card component
 
   @Output() event = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();

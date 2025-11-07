@@ -11,7 +11,7 @@ import {
   AlertService, ConfigurationControlService, ConfigurationService,
   FileUploaderService, FilterService, NorthService, ProgressBarService,
   ResponseHandler,
-  RolesService, SchedulesService, ServicesApiService, ToastService
+  RolesService, SchedulesService, ServicesApiService, SharedService, ToastService
 } from '../../../../services';
 import { DocService } from '../../../../services/doc.service';
 import Utils from '../../../../utils';
@@ -22,6 +22,7 @@ import { Subject, forkJoin, of } from 'rxjs';
 import { catchError, map, takeUntil } from 'rxjs/operators';
 import { NorthTask } from '../north-task';
 import { FilterListComponent } from '../../filter/filter-list/filter-list.component';
+import { FilterPipelineType } from '../../../../services/filter.service';
 
 @Component({
   selector: 'app-north-task-modal',
@@ -39,9 +40,13 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
   isAddFilterWizard = false;
   public applicationTagClicked = false;
 
-  public filterPipeline: string[] = [];
+  public filterPipeline: any[] = [];
   public confirmationDialogData = {};
   public btnTxt = '';
+
+  // Make enum accessible in template
+  public readonly FilterPipelineType = FilterPipelineType;
+  public filterPipelineType: FilterPipelineType = FilterPipelineType.Empty;
 
   @ViewChild('fg') form: NgForm;
   regExp = '^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$';
@@ -87,7 +92,8 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     private response: ResponseHandler,
     private toast: ToastService,
     public cDRef: ChangeDetectorRef,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private sharedService: SharedService
   ) {
     this.activatedRoute.paramMap.subscribe(params => {
       this.taskName = params.get('name');
@@ -104,7 +110,9 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.filterPipelineType = this.filterService.detectFilterPipelineType(this.filterPipeline);
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes?.task?.previousValue !== changes?.task?.currentValue) {
@@ -345,10 +353,12 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
     this.filterService.getFilterPipeline(this.task.name)
       .subscribe((data: any) => {
         this.filterPipeline = data.result.pipeline as string[];
+        this.filterPipelineType = this.filterService.detectFilterPipelineType(this.filterPipeline);
       },
         error => {
           if (error.status === 404) {
             this.filterPipeline = [];
+            this.filterPipelineType = this.FilterPipelineType.Empty;
           } else {
             console.log('Error ', error);
           }
@@ -499,6 +509,10 @@ export class NorthTaskModalComponent implements OnInit, OnChanges {
 
   navToNorthPage() {
     this.router.navigate(['/north']);
+    if (this.sharedService.listKvView) {
+      const view = localStorage.getItem('LIST_KVLIST_VIEW') || 'list';
+      this.sharedService.listKvView.next(view);
+    }
   }
 
   getNorthTasks(caching: boolean) {

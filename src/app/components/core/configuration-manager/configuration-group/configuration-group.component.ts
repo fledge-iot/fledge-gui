@@ -1,9 +1,11 @@
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, Output, SimpleChanges, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { AlertService, ConfigurationControlService, ConfigurationService, RolesService } from '../../../../services';
 import { DeveloperFeaturesService } from '../../../../services/developer-features.service';
 import { chain, cloneDeep, uniqWith, isEmpty } from 'lodash';
 import { TabHeader } from './tab-header-slider';
 import { TabNavigationComponent } from '../tab-navigation/tab-navigation.component';
+import { ListTypeConfigurationComponent } from '../list-type-configuration/list-type-configuration.component';
+import { KvListTypeConfigurationComponent } from '../kv-list-type-configuration/kv-list-type-configuration.component';
 
 @Component({
     selector: 'app-configuration-group',
@@ -26,6 +28,8 @@ export class ConfigurationGroupComponent implements AfterViewInit {
   @Output() changedAdvanceConfigEvent = new EventEmitter<any>();
 
   @ViewChild(TabNavigationComponent) tabNavigationComponent: TabNavigationComponent;
+  @ViewChildren(ListTypeConfigurationComponent) listTypeConfigurationComponents: QueryList<ListTypeConfigurationComponent>;
+  @ViewChildren(KvListTypeConfigurationComponent) kvListTypeConfigurationComponents: QueryList<KvListTypeConfigurationComponent>;
 
   selectedGroup = { key: 'Basic', name: 'Basic' };
   selectedAdvancedGroup = { key: 'Advanced', name: 'Advanced' };
@@ -436,6 +440,17 @@ export class ConfigurationGroupComponent implements AfterViewInit {
    */
   getChangedConfiguration(values: {}) {
     this.configFormValues = Object.assign({}, this.configFormValues, values);
+
+    // Update the category.config with changed values so list components can react to validity changes
+    Object.keys(values).forEach(key => {
+      if (this.category.config[key]) {
+        this.category.config[key].value = values[key];
+      }
+    });
+
+    this.listTypeConfigurationComponents?.forEach(c => c.updateListValidity());
+    this.kvListTypeConfigurationComponents?.forEach(c => c.updateListValidity());
+
     this.changedConfigEvent.emit(this.configFormValues)
   }
 

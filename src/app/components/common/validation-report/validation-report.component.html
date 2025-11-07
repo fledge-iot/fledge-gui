@@ -1,6 +1,11 @@
 <div class="card validation-report" [class.minimized]="minimized" *ngIf="results || loading || error">
   <header class="card-header validation-report-header p-0">
-    <p class="card-header-title py-0 px-2 h-10">Validation Report</p>
+    <p class="card-header-title py-0 px-1 h-10">
+      <span class="icon">
+        <i [ngClass]="reportIcon.classes" [title]="reportIcon.tooltip"></i>
+      </span>
+      Validation Report
+    </p>
     <div class="card-header-icon">
       <div class="buttons action-buttons">
         <button class="button is-white is-small" title="Minimize" (click)="toggleMinimize()">
@@ -10,7 +15,7 @@
         </button>
         <button class="button is-white is-small" title="Close" (click)="onClose()">
           <span class="icon">
-            <i class="bi bi-x"></i>
+            <i class="bi bi-sm bi-x"></i>
           </span>
         </button>
       </div>
@@ -18,7 +23,7 @@
   </header>
   <div class="card-content p-0" *ngIf="!minimized">
     <div class="content validation-list">
-      <div *ngIf="loading" class="validation-item">Running tests...</div>
+      <div *ngIf="loading" class="validation-item p-2">Running checks...</div>
       <div *ngIf="error" class="validation-item p-2">{{ error }}</div>
       <div *ngFor="let key of (results | keyvalue)" class="validation-item">
         <div class="item-header" (click)="toggleReport(key.key)">

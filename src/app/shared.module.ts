@@ -41,6 +41,7 @@ import { BufferActionButtonsComponent } from './components/core/debugger/buffer-
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { PopoverModule } from './components/common/popover/popover.module';
 import { ValidationReportComponent } from './components/common/validation-report/validation-report.component';
+import { CodeEditorComponent } from './components/common/code-editor/code-editor.component';
 
 @NgModule({
   imports: [
@@ -86,7 +87,8 @@ import { ValidationReportComponent } from './components/common/validation-report
     DebuggerComponent,
     DebuggerReadingsComponent,
     BufferActionButtonsComponent,
-    ValidationReportComponent
+    ValidationReportComponent,
+    CodeEditorComponent
   ],
   exports: [
     ConfigurationGroupComponent,
@@ -107,7 +109,8 @@ import { ValidationReportComponent } from './components/common/validation-report
     DebuggerComponent,
     DebuggerReadingsComponent,
     BufferActionButtonsComponent,
-    ValidationReportComponent
+    ValidationReportComponent,
+    CodeEditorComponent
   ]
 })
 export class SharedModule { }

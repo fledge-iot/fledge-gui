@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { ConfigurationControlService } from '../../../../services';
 
 export interface Model {
   constant: Constant
@@ -26,10 +27,12 @@ export interface Property {
     styleUrls: ['./bucket-configuration.component.css'],
     standalone: false
 })
-export class BucketConfigurationComponent implements OnInit {
+export class BucketConfigurationComponent implements OnInit, OnChanges {
   @Input() dataModel: any;
+  @Input() fullConfiguration: any;
   bucketConfig: Model;
   bucketModelConfiguration: any;
+  public isBucketDisabled = false;
 
   @Output() changedConfig = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<boolean>();
@@ -37,7 +40,7 @@ export class BucketConfigurationComponent implements OnInit {
   @Input() group: string = '';
   @Input() from = '';
 
-  constructor() { }
+  constructor(private configControlService: ConfigurationControlService) { }
 
   ngOnInit(): void {
     this.bucketConfig = this.dataModel.properties;
@@ -50,6 +53,22 @@ export class BucketConfigurationComponent implements OnInit {
         }
         this.bucketModelConfiguration[key].value = this.dataModel.value[key];
       }
+    }
+    this.updateBucketValidityState();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.fullConfiguration || changes.dataModel) {
+      this.updateBucketValidityState();
+    }
+  }
+
+  private updateBucketValidityState(): void {
+    if (this.fullConfiguration && this.dataModel?.validity) {
+      const tempConfig = { ...this.dataModel, key: this.dataModel.key };
+      this.isBucketDisabled = !!this.configControlService.validateConfigItem(this.fullConfiguration, tempConfig);
+    } else {
+      this.isBucketDisabled = false;
     }
   }
 

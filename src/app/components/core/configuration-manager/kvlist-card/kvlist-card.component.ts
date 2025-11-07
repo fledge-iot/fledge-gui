@@ -18,6 +18,7 @@ export class KvlistCardComponent {
   @Input() item: FormGroup;
   @Input('index') i;
   @Input() listItemsForm: FormGroup;
+  @Input() isListDisabled = false;
 
   @Output() changedConfig = new EventEmitter<any>();
   @Output() formStatusEvent = new EventEmitter<any>();
