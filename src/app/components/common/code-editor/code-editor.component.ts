@@ -7,7 +7,8 @@ type EditorMode = 'json' | 'csv';
 @Component({
   selector: 'app-code-editor',
   templateUrl: './code-editor.component.html',
-  styleUrls: ['./code-editor.component.css']
+  styleUrls: ['./code-editor.component.css'],
+  standalone: false
 })
 export class CodeEditorComponent implements OnChanges {
   @Input() mode: EditorMode = 'json';
