@@ -1,3 +1,5 @@
-{}
+{
+   "mlmodels": "http://localhost:5000/remoteEntry.json"
+}
 
 
