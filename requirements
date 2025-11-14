@@ -27,7 +27,7 @@ fi
 
 install_nodejs () {
   isNodeInstalled=`which node` && currentNodeVer=`node -v` || echo ''
-   requiredNodeVer="v22.11.0"
+   requiredNodeVer="v22.21.1"
   # Check if Node.js is not installed or the installed version is lesser than the ${requiredNodeVer}
   if [[ "$isNodeInstalled" = "" ]] || [[ "$(printf '%s\n' "$requiredNodeVer" "$currentNodeVer" | sort -V | head -n1)" != "$requiredNodeVer" ]]; then
       if [[ "$PKG_MANAGER" == *"brew"* ]]; then
