@@ -18,6 +18,33 @@
   }
 }
 
+.quickview-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.quickview-help-icon {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.quickview-header .delete {
+  position: relative;
+  top: 0;
+  right: 0;
+  margin: 0;
+}
+
 .delete {
   position: absolute;
   top: 1.8rem;
