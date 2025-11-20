@@ -133,8 +133,111 @@
   justify-content: center;
 }
 
+/* Override width for debug data display nodes */
+:host:has(.debug-data-display-node) {
+  width: 394px !important;
+  min-width: 394px;
+  max-width: 394px;
+}
+
 .storage-input {
   margin-top: 16px;
+}
+
+/* Debug Data Display Node Styles */
+.debug-data-display-node {
+  background: white;
+  border: 2px solid blue;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  max-height: 400px;
+  width: 394px; /* 75% of 525px */
+  min-width: 394px;
+  max-width: 394px;
+}
+
+.debug-data-display-header {
+  padding: 0.5rem;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.debug-data-display-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.debug-data-display-content {
+  padding: 0.5rem;
+  overflow: auto;
+  flex: 1;
+}
+
+.debug-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.625rem; /* Reduced by 2 points from 0.75rem (12px -> 10px) */
+  font-family: sans-serif;
+}
+
+.debug-data-table thead {
+  background-color: #f5f5f5;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.debug-data-table th {
+  padding: 0.25rem 0.5rem;
+  text-align: left;
+  border: 1px solid #ddd;
+  font-weight: 600;
+  font-size: 0.575rem; /* Reduced by 2 points from 0.7rem (11.2px -> 9.2px) */
+}
+
+.debug-data-table td {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #ddd;
+  vertical-align: top;
+}
+
+.debug-data-table .date-row {
+  background-color: #e8e8e8;
+  font-weight: 600;
+  text-align: center;
+}
+
+.debug-data-table .time-cell {
+  font-family: 'Courier New', monospace;
+  font-size: 0.575rem; /* Reduced by 2 points from 0.7rem (11.2px -> 9.2px) */
+}
+
+.debug-data-table .asset-code-cell {
+  font-weight: 500;
+}
+
+.debug-data-table .reading-key-cell {
+  font-family: 'Courier New', monospace;
+  font-size: 0.575rem; /* Reduced by 2 points from 0.7rem (11.2px -> 9.2px) */
+}
+
+.debug-data-table .reading-value-cell {
+  font-family: 'Courier New', monospace;
+  font-size: 0.575rem; /* Reduced by 2 points from 0.7rem (11.2px -> 9.2px) */
+  text-align: right;
+}
+
+.debug-no-data {
+  color: #999;
+  font-style: italic;
+  text-align: center;
+  padding: 0.5rem;
 }
 
 .storage-node-container {

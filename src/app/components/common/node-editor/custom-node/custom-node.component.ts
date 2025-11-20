@@ -16,7 +16,7 @@ import { interval, of, Subject, Subscription } from "rxjs";
 import { canUndo, canRedo, editor } from './../editor';
 import { DialogService } from '../../confirmation-dialog/dialog.service';
 import { catchError, distinctUntilChanged, map, switchMap, take, takeUntil } from 'rxjs/operators';
-import { Filter, North, Notification, South, Storage } from '../nodes';
+import { Filter, North, Notification, South, Storage, DebugDataDisplay } from '../nodes';
 
 @Component({
   selector: 'app-custom-node',
@@ -77,6 +77,7 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
   pluginVersion = '';
 
   previousState: boolean;  // To store previous state of checkbox
+  isDataDisplayVisible: boolean = false;  // Track data display visibility state
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -113,6 +114,12 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         distinctUntilChanged((prev, curr) => {
+          // Skip if data is not yet initialized
+          if (!this.data) return true;
+          
+          // Skip debug data display nodes
+          if (this.data.type === 'debug-data-display') return true;
+          
           // For storage nodes, handle even when services array is empty or undefined
           if (this.data.label === 'Storage' && this.from === 'south') {
             if (!curr?.services || curr.services.length === 0) {
@@ -158,6 +165,12 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
         })
       )
       .subscribe((servicesResponse: any) => {
+        // Skip if data is not yet initialized
+        if (!this.data) return;
+        
+        // Skip debug data display nodes
+        if (this.data.type === 'debug-data-display') return;
+        
         // Handle storage nodes
         if (this.data.label === 'Storage' && this.from === 'south') {
           const serviceWithDebugger = servicesResponse.services?.find((s: any) => s.debug?.debugger === 'Attached');
@@ -214,6 +227,14 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(): void {
     this.nodeId = this.data.id;
+    
+    // Skip processing for debug data display nodes
+    if (this.data.type === 'debug-data-display') {
+      this.cdr.detectChanges();
+      requestAnimationFrame(() => this.rendered());
+      return;
+    }
+    
     if (this.data.label === 'South' || this.data.label === 'North') {
       this.setSetectedNodeColor('#C781BB');
       if (this.source !== '') {
@@ -738,6 +759,112 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
 
   getAssetReadings() {
     this.flowEditorService.exportReading.next({ serviceName: this.service.name });
+  }
+
+  toggleDataDisplay() {
+    this.isDataDisplayVisible = !this.isDataDisplayVisible;
+    // Emit to flowEditorService to show/hide data display nodes
+    this.flowEditorService.showDebuggerDataDisplay.next(this.isDataDisplayVisible);
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Parse debug data into table rows for display
+   * Data structure: JSON object with "name" field matching filter node name, containing a "readings" array
+   * Each reading item has: user_ts, asset_code, and a readings subobject with key/value pairs
+   */
+  parseDebugDataForTable(data: any): any[] {
+    if (!data) {
+      console.log('parseDebugDataForTable: No data provided');
+      return [];
+    }
+
+    console.log('parseDebugDataForTable: Input data:', data);
+
+    const rows: any[] = [];
+    let currentDate = '';
+
+    // The data should be a JSON object that was matched by name
+    // It should have a "readings" array property
+    let readingsArray: any[] = [];
+    
+    if (data && typeof data === 'object') {
+      if (Array.isArray(data.readings)) {
+        // Data has a readings array property - this is what we want
+        readingsArray = data.readings;
+      } else if (Array.isArray(data)) {
+        // Data itself is an array (might be the readings array)
+        readingsArray = data;
+      } else {
+        // Data is an object but no readings array found
+        console.warn('parseDebugDataForTable: No readings array found in data:', data);
+        return [];
+      }
+    } else {
+      console.warn('parseDebugDataForTable: Invalid data type:', typeof data);
+      return [];
+    }
+
+    console.log('parseDebugDataForTable: Readings array length:', readingsArray.length);
+
+    // Process each reading item in the readings array
+    readingsArray.forEach((item: any) => {
+      if (!item) return;
+
+      // Extract user_ts (timestamp) - this is the key field
+      const userTs = item.user_ts || '';
+      if (!userTs) {
+        console.warn('parseDebugDataForTable: Item missing user_ts:', item);
+        return;
+      }
+
+      // Extract date (portion before space) and time (portion after space)
+      const spaceIndex = userTs.indexOf(' ');
+      const date = spaceIndex > 0 ? userTs.substring(0, spaceIndex) : userTs;
+      let time = spaceIndex > 0 ? userTs.substring(spaceIndex + 1) : '';
+      
+      // Remove timezone information (e.g., "+00:00" or "-05:00")
+      // Look for patterns like "+HH:MM" or "-HH:MM" at the end
+      const timezonePattern = /[+-]\d{2}:\d{2}$/;
+      time = time.replace(timezonePattern, '');
+
+      // Extract asset code
+      const assetCode = item.asset_code || item.assetCode || item.asset || '';
+
+      // Extract reading object - note: it's "reading" (singular), not "readings"
+      // The reading object contains key/value pairs
+      const reading = item.reading || item.readings || {};
+      
+      if (Object.keys(reading).length === 0) {
+        console.warn('parseDebugDataForTable: Item has no reading object:', item);
+        return;
+      }
+
+      // Add date row if date changed
+      if (date !== currentDate) {
+        rows.push({
+          type: 'date',
+          date: date,
+          colspan: 4
+        });
+        currentDate = date;
+      }
+
+      // Add rows for each reading key/value pair
+      Object.keys(reading).forEach((key) => {
+        rows.push({
+          type: 'reading',
+          date: date,
+          time: time,
+          assetCode: assetCode || 'N/A',
+          readingKey: key,
+          readingValue: reading[key]
+        });
+      });
+    });
+
+    console.log('parseDebugDataForTable: Generated rows:', rows.length);
+    return rows;
   }
 
   ngOnDestroy() {

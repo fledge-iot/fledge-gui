@@ -1,5 +1,15 @@
-<div [ngClass]="{'selected-node': data.selected && this.source && data.label !=='Filter'}" class="node-container"
-  (mousedown)="onNodeClick()" *ngIf="data.label!=='Storage'; else storageTemplate">
+<!-- Debug Data Display Node -->
+<ng-container *ngIf="data.type === 'debug-data-display'">
+  <div [ngClass]="{'selected-node': data.selected && this.source && data.label !=='Filter'}" class="node-container"
+    (mousedown)="onNodeClick()">
+    <ng-container *ngTemplateOutlet="debugDataDisplayTemplate"></ng-container>
+  </div>
+</ng-container>
+
+<!-- Regular Nodes (not Storage, not debug-data-display) -->
+<ng-container *ngIf="data.type !== 'debug-data-display' && data.label !== 'Storage'">
+  <div [ngClass]="{'selected-node': data.selected && this.source && data.label !=='Filter'}" class="node-container"
+    (mousedown)="onNodeClick()">
   <ng-container *ngIf="data.label!=''; else addServiceTemplate">
     <div class="title" data-testid="title">
       <div class="is-flex is-justify-content-space-between is-align-items-baseline">
@@ -214,6 +224,10 @@
                              [style.opacity]="data?.debug?.ingress !== 'Suspended' ? '0.5' : '1'"
                              (click)="resumeDebugger()">Resume</a>
                         </div>
+                        <div *ngIf="data?.debug?.debugger === 'Attached'">
+                          <a class="submenu-text" (click)="toggleDataDisplay()">
+                            {{isDataDisplayVisible ? 'Hide Data' : 'Show Data'}}</a>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -255,6 +269,11 @@
     </div>
   </ng-template>
 </div>
+</ng-container>
+<!-- Storage Node -->
+<ng-container *ngIf="data.type !== 'debug-data-display' && data.label === 'Storage'">
+  <ng-container *ngTemplateOutlet="storageTemplate"></ng-container>
+</ng-container>
 <ng-template #storageTemplate>
   <div class="is-flex storage-node-container" style="position: relative;">
     <ng-container *ngIf="from=='south'">
@@ -308,6 +327,46 @@
             </a>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #debugDataDisplayTemplate>
+  <div class="debug-data-display-node">
+    <div class="debug-data-display-header">
+      <div class="debug-data-display-title">{{data.nodeName || 'Debug Data'}}</div>
+    </div>
+    <div class="debug-data-display-content">
+      <ng-container *ngIf="data.debugData">
+        <table class="debug-data-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Asset Code</th>
+              <th>Reading Key</th>
+              <th>Reading Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let readingItem of parseDebugDataForTable(data.debugData)">
+              <tr *ngIf="readingItem.type === 'date'" class="date-row">
+                <td [attr.colspan]="4">{{readingItem.date}}</td>
+              </tr>
+              <tr *ngIf="readingItem.type === 'reading'">
+                <td class="time-cell">{{readingItem.time}}</td>
+                <td class="asset-code-cell">{{readingItem.assetCode}}</td>
+                <td class="reading-key-cell">{{readingItem.readingKey}}</td>
+                <td class="reading-value-cell">{{readingItem.readingValue}}</td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+        <div *ngIf="parseDebugDataForTable(data.debugData).length === 0" class="debug-no-data">
+          No data available
+        </div>
+      </ng-container>
+      <div *ngIf="!data.debugData" class="debug-no-data">
+        No data available
       </div>
     </div>
   </div>

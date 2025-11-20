@@ -1,8 +1,8 @@
 import { CurveFactory } from 'd3-shape';
-import { Filter, North, Notification, South } from './nodes';
+import { Filter, North, Notification, South, DebugDataDisplay } from './nodes';
 import { ClassicPreset } from 'rete';
 
-type Node = South | North | Filter | Notification;
+type Node = South | North | Filter | Notification | DebugDataDisplay;
 export class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> {
   selected?: boolean
   click: (data: Connection<A, B>) => void
