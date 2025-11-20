@@ -137,6 +137,17 @@
   margin-top: 16px;
 }
 
+.storage-node-container {
+  position: relative;
+  min-height: 50px;
+}
+
+.storage-menu-container {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
 .health-icon {
   margin-left: -5px;
   height: 1rem !important;

@@ -256,7 +256,7 @@
   </ng-template>
 </div>
 <ng-template #storageTemplate>
-  <div class="is-flex">
+  <div class="is-flex storage-node-container" style="position: relative;">
     <ng-container *ngIf="from=='south'">
       <div class="input is-pulled-left storage-input input-container"
         *ngFor="let input of data.inputs | keyvalue: sortByIndex" [attr.data-testid]="'input-'+input.key">
@@ -280,5 +280,35 @@
           [emit]="emit" data-testid="output-socket" title="Source"></div>
       </div>
     </ng-container>
+    <div class="storage-menu-container" *ngIf="from=='south' && data?.debug && data?.debug?.debugger === 'Attached'">
+      <div id="storageDropdown-{{nodeId}}" class="dropdown is-hoverable">
+        <div class="dropdown-trigger">
+          <button class="button is-white is-small pt-0 pb-0 dropdown-button context-menu-btn" aria-haspopup="true"
+            aria-controls="storage-dropdown-menu">
+            <span class="icon is-small">
+              <i class="fas fa-ellipsis-v fa-xs fa-fw" aria-hidden="true"></i>
+            </span>
+          </button>
+        </div>
+        <div class="dropdown-menu" id="storage-dropdown-menu" role="menu">
+          <div class="dropdown-content">
+            <a class="dropdown-item" 
+               [class.is-disabled]="data?.debug?.egress === 'Isolated'"
+               [style.pointer-events]="data?.debug?.egress === 'Isolated' ? 'none' : 'auto'"
+               [style.opacity]="data?.debug?.egress === 'Isolated' ? '0.5' : '1'"
+               (click)="isolateDebugger()">
+              <span>Isolate</span>
+            </a>
+            <a class="dropdown-item" 
+               [class.is-disabled]="data?.debug?.egress !== 'Isolated'"
+               [style.pointer-events]="data?.debug?.egress !== 'Isolated' ? 'none' : 'auto'"
+               [style.opacity]="data?.debug?.egress !== 'Isolated' ? '0.5' : '1'"
+               (click)="storeDebugger()">
+              <span>Store</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </ng-template>

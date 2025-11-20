@@ -13,7 +13,7 @@ import { DocService } from "../../../../services/doc.service";
 import { FlowEditorService } from "../flow-editor.service";
 import { interval, of, Subject, Subscription } from "rxjs";
 
-import { canUndo, canRedo } from './../editor';
+import { canUndo, canRedo, editor } from './../editor';
 import { DialogService } from '../../confirmation-dialog/dialog.service';
 import { catchError, distinctUntilChanged, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import { Filter, North, Notification, South, Storage } from '../nodes';
@@ -113,7 +113,34 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         distinctUntilChanged((prev, curr) => {
-          // Skip if no debug data in service response
+          // For storage nodes, handle even when services array is empty or undefined
+          if (this.data.label === 'Storage' && this.from === 'south') {
+            if (!curr?.services || curr.services.length === 0) {
+              // No services, ensure debug state is detached
+              if (this.data.debug && this.data.debug.debugger !== 'Detached') {
+                this.data.debug.debugger = 'Detached';
+                this.data.debug.egress = 'Storage';
+                return false; // Trigger update
+              }
+              return true;
+            }
+
+            const serviceWithDebugger = curr.services.find((s: any) => s.debug?.debugger === 'Attached');
+            if (!serviceWithDebugger) {
+              // No service with attached debugger, reset storage debug state
+              if (this.data.debug && this.data.debug.debugger !== 'Detached') {
+                this.data.debug.debugger = 'Detached';
+                this.data.debug.egress = 'Storage';
+                return false; // Trigger update
+              }
+              return this.data.debug?.debugger === 'Detached';
+            }
+            // Compare storage node debug state with service debug state
+            return this.data.debug?.debugger === serviceWithDebugger.debug?.debugger &&
+              this.data.debug?.egress === serviceWithDebugger.debug?.egress;
+          }
+
+          // Skip if no debug data in service response for other nodes
           if (!curr?.services) return true;
 
           // Get current node's service name
@@ -131,11 +158,45 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
         })
       )
       .subscribe((servicesResponse: any) => {
+        // Handle storage nodes
+        if (this.data.label === 'Storage' && this.from === 'south') {
+          const serviceWithDebugger = servicesResponse.services?.find((s: any) => s.debug?.debugger === 'Attached');
+          if (serviceWithDebugger?.debug) {
+            // Initialize debug object if it doesn't exist
+            if (!this.data.debug) {
+              this.data.debug = {
+                debugger: 'Attached',
+                ingress: 'Running',
+                egress: 'Storage'
+              };
+            }
+            this.data.debug.debugger = serviceWithDebugger.debug.debugger;
+            this.data.debug.egress = serviceWithDebugger.debug.egress || 'Storage';
+            this.cdr.detectChanges();
+          } else {
+            // No service with attached debugger, reset storage debug state
+            // Initialize debug object if it doesn't exist, or update it
+            if (!this.data.debug) {
+              this.data.debug = {
+                debugger: 'Detached',
+                ingress: 'Running',
+                egress: 'Storage'
+              };
+            } else {
+              this.data.debug.debugger = 'Detached';
+              this.data.debug.egress = 'Storage';
+            }
+            this.cdr.detectChanges();
+          }
+          return;
+        }
+
+        // Handle service nodes
         if (!this.data?.controls?.nameControl?.['name'] || !this.data?.debug) return;
 
         // Find the matching service in the response
         const nodeName = this.data.controls.nameControl['name'];
-        const serviceData = servicesResponse.services.find(s => s.name === nodeName);
+        const serviceData = servicesResponse.services?.find(s => s.name === nodeName);
 
         // Only update debug state if we found matching service with debug info
         if (serviceData?.debug) {
@@ -297,9 +358,59 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
         // Immediately update the debugger state to reflect the change
         if (this.data.debug) {
           this.data.debug.debugger = expectedState;
-          // When detaching, reset ingress state to remove suspend/resume options
-          if (expectedState === 'Detached' && this.data.debug.ingress) {
-            this.data.debug.ingress = 'Running';
+          
+          // Find and update all storage nodes
+          const nodes = editor.getNodes();
+          nodes.forEach((node: any) => {
+            if (node.label === 'Storage' && this.from === 'south') {
+              if (expectedState === 'Attached') {
+                // When attaching, initialize or update storage node debug state
+                if (!node.debug) {
+                  node.debug = {
+                    debugger: 'Attached',
+                    ingress: 'Running',
+                    egress: 'Storage'
+                  };
+                } else {
+                  node.debug.debugger = 'Attached';
+                  node.debug.egress = node.debug.egress || 'Storage';
+                }
+                // Also update the debug control if it exists
+                if (node.controls?.debugControl) {
+                  node.controls.debugControl['debug'] = { ...node.debug };
+                }
+              } else {
+                // When detaching, reset ingress and egress state to remove suspend/resume/isolate/store options
+                if (node.debug) {
+                  node.debug.debugger = 'Detached';
+                  node.debug.egress = 'Storage';
+                  // Also update the debug control if it exists
+                  if (node.controls?.debugControl) {
+                    node.controls.debugControl['debug'] = { ...node.debug };
+                  }
+                }
+              }
+            }
+          });
+          
+          // When detaching, reset ingress and egress state to remove suspend/resume options
+          if (expectedState === 'Detached') {
+            if (this.data.debug.ingress) {
+              this.data.debug.ingress = 'Running';
+            }
+            if (this.data.debug.egress) {
+              this.data.debug.egress = 'Storage';
+            }
+            
+            // Emit to sharedService to trigger updates in all components
+            this.sharedService.debuggerStateSubject.next({ services: [] });
+          } else {
+            // When attaching, emit to sharedService to trigger updates in storage nodes
+            this.serviceApi.getSouthServices(false)
+              .pipe(takeUntil(this.destroy$))
+              .subscribe((data: any) => {
+                this.sharedService.debuggerStateSubject.next({ services: data.services || [] });
+              });
           }
         }
         this.ngProgress.done();
@@ -372,6 +483,102 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
         } else {
           this.alertService.error(error.statusText, true);
         }
+      });
+  }
+
+  /**
+   * Get the service name for storage node by finding the service with attached debugger
+   */
+  getServiceNameForStorage(): Promise<string | null> {
+    if (this.data.label !== 'Storage' || this.from !== 'south') {
+      return Promise.resolve(null);
+    }
+    
+    // Find the service with attached debugger by calling the API
+    return this.serviceApi.getSouthServices(false)
+      .pipe(
+        takeUntil(this.destroy$),
+        map((data: any) => {
+          const services = data.services || [];
+          const serviceWithDebugger = services.find((s: any) => s.debug?.debugger === 'Attached');
+          return serviceWithDebugger?.name || null;
+        }),
+        catchError(() => of(null))
+      )
+      .toPromise();
+  }
+
+  isolateDebugger() {
+    // Don't allow isolate if already isolated
+    if (this.data?.debug?.egress === 'Isolated') {
+      return;
+    }
+    
+    this.ngProgress.start();
+    this.getServiceNameForStorage()
+      .then(serviceName => {
+        if (!serviceName) {
+          this.ngProgress.done();
+          this.alertService.error('Service with attached debugger not found', true);
+          return;
+        }
+        
+        const payload = { state: 'discard' };
+        this.serviceApi.manageServiceDebuggerState(serviceName, 'isolate', payload)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((res) => {
+            // Update the debugger state to reflect isolation
+            if (this.data.debug) {
+              this.data.debug.egress = 'Isolated';
+            }
+            this.ngProgress.done();
+            this.alertService.success(res['message'], true);
+            this.cdr.detectChanges();
+          }, error => {
+            this.ngProgress.done();
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText, true);
+            }
+          });
+      });
+  }
+
+  storeDebugger() {
+    // Don't allow store if not isolated
+    if (this.data?.debug?.egress !== 'Isolated') {
+      return;
+    }
+    
+    this.ngProgress.start();
+    this.getServiceNameForStorage()
+      .then(serviceName => {
+        if (!serviceName) {
+          this.ngProgress.done();
+          this.alertService.error('Service with attached debugger not found', true);
+          return;
+        }
+        
+        const payload = { state: 'store' };
+        this.serviceApi.manageServiceDebuggerState(serviceName, 'isolate', payload)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((res) => {
+            // Update the debugger state to reflect storage
+            if (this.data.debug) {
+              this.data.debug.egress = 'Storage';
+            }
+            this.ngProgress.done();
+            this.alertService.success(res['message'], true);
+            this.cdr.detectChanges();
+          }, error => {
+            this.ngProgress.done();
+            if (error.status === 0) {
+              console.log('service down ', error);
+            } else {
+              this.alertService.error(error.statusText, true);
+            }
+          });
       });
   }
 
