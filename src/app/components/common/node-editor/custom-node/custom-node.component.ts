@@ -294,10 +294,77 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
     this.serviceApi.manageServiceDebuggerState(name, action)
       .pipe(takeUntil(this.destroy$))
       .subscribe((res) => {
+        // Immediately update the debugger state to reflect the change
+        if (this.data.debug) {
+          this.data.debug.debugger = expectedState;
+          // When detaching, reset ingress state to remove suspend/resume options
+          if (expectedState === 'Detached' && this.data.debug.ingress) {
+            this.data.debug.ingress = 'Running';
+          }
+        }
         this.ngProgress.done();
         this.alertService.success(res['message'], true);
         // Retry to fetch the service and verify the new debugger state
         this.getDebuggerStateChanges(expectedState);
+        this.cdr.detectChanges();
+      }, error => {
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText, true);
+        }
+      });
+  }
+
+  suspendDebugger() {
+    // Don't allow suspend if already suspended
+    if (this.data?.debug?.ingress === 'Suspended') {
+      return;
+    }
+    
+    this.ngProgress.start();
+    const name = this.data.controls.nameControl['name'];
+    const payload = { state: 'suspend' };
+    this.serviceApi.manageServiceDebuggerState(name, 'suspend', payload)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        // Update the debugger state to reflect suspension
+        if (this.data.debug) {
+          this.data.debug.ingress = 'Suspended';
+        }
+        this.ngProgress.done();
+        this.alertService.success(res['message'], true);
+        this.cdr.detectChanges();
+      }, error => {
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText, true);
+        }
+      });
+  }
+
+  resumeDebugger() {
+    // Don't allow resume if not suspended
+    if (this.data?.debug?.ingress !== 'Suspended') {
+      return;
+    }
+    
+    this.ngProgress.start();
+    const name = this.data.controls.nameControl['name'];
+    const payload = { state: 'resume' };
+    this.serviceApi.manageServiceDebuggerState(name, 'suspend', payload)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        // Update the debugger state to reflect resumption
+        if (this.data.debug) {
+          this.data.debug.ingress = 'Running';
+        }
+        this.ngProgress.done();
+        this.alertService.success(res['message'], true);
+        this.cdr.detectChanges();
       }, error => {
         this.ngProgress.done();
         if (error.status === 0) {
