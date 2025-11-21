@@ -72,6 +72,7 @@ export class NodeEditorComponent implements OnInit {
   private nodeDropdownClickSubscription: Subscription;
   private pipelineSubscription: Subscription;
   private debuggerStateSubscription: Subscription;
+  private debugDisplayRefreshSubscription: Subscription;
 
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
@@ -461,8 +462,29 @@ export class NodeEditorComponent implements OnInit {
       .subscribe((show: boolean) => {
         if (show) {
           this.loadBufferDataAndCreateDataDisplayNodes();
+          this.startDebugDisplayAutoRefresh();
         } else {
           this.removeDebugDataDisplayNodes();
+          this.stopDebugDisplayAutoRefresh();
+        }
+      });
+
+    // Monitor ingress state changes to restart/stop polling
+    this.sharedService.debuggerStateSubject
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        // If debug display nodes are visible, check if we should start/stop polling
+        const areDebugDisplayNodesVisible = this.flowEditorService.showDebuggerDataDisplay.value;
+        if (areDebugDisplayNodesVisible) {
+          if (this.isIngressNotSuspended()) {
+            // Ingress is not suspended, ensure polling is running
+            if (!this.debugDisplayRefreshSubscription) {
+              this.startDebugDisplayAutoRefresh();
+            }
+          } else {
+            // Ingress is suspended, stop polling
+            this.stopDebugDisplayAutoRefresh();
+          }
         }
       });
   }
@@ -1717,6 +1739,153 @@ export class NodeEditorComponent implements OnInit {
     this.debugDataDisplayNodes = [];
   }
 
+  /**
+   * Check if ingress is not suspended for the service/task with attached debugger
+   */
+  private isIngressNotSuspended(): boolean {
+    let serviceWithDebugger: any = null;
+    if (this.from === 'south') {
+      serviceWithDebugger = this.services.find((s: any) => s.debug?.debugger === 'Attached');
+    } else if (this.from === 'north') {
+      serviceWithDebugger = this.tasks.find((t: any) => t.debug?.debugger === 'Attached');
+    }
+    
+    if (!serviceWithDebugger) {
+      return false;
+    }
+    
+    // Check if ingress is not suspended (i.e., it's 'Running')
+    return serviceWithDebugger.debug?.ingress !== 'Suspended';
+  }
+
+  /**
+   * Update existing debug display nodes with new buffer data
+   */
+  async refreshDebugDisplayNodes() {
+    if (!this.isIngressNotSuspended()) {
+      return; // Don't refresh if ingress is suspended
+    }
+
+    // Get the service with attached debugger
+    let serviceWithDebugger: any = null;
+    if (this.from === 'south') {
+      serviceWithDebugger = this.services.find((s: any) => s.debug?.debugger === 'Attached');
+    } else {
+      serviceWithDebugger = this.tasks.find((t: any) => t.debug?.debugger === 'Attached');
+    }
+    
+    if (!serviceWithDebugger) {
+      return;
+    }
+    
+    try {
+      // Fetch latest buffer data
+      const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name).toPromise();
+      this.bufferData = bufferDataResponse?.data || bufferDataResponse;
+      
+      // Update existing debug display nodes with new data
+      const nodes = editor.getNodes();
+      for (const debugNode of this.debugDataDisplayNodes) {
+        const nodeInEditor = nodes.find((n: any) => n.id === debugNode.id);
+        if (!nodeInEditor) continue;
+        
+        const nodeName = debugNode.nodeName;
+        let nodeData = null;
+        
+        // Find matching data in buffer
+        if (this.bufferData && Array.isArray(this.bufferData)) {
+          const findNodeData = (arr: any[]): any => {
+            for (const item of arr) {
+              if (!item) continue;
+              if (typeof item === 'object' && item.name === nodeName) {
+                return item;
+              }
+              if (Array.isArray(item)) {
+                const found = findNodeData(item);
+                if (found) return found;
+              }
+            }
+            return null;
+          };
+          
+          nodeData = findNodeData(this.bufferData);
+        }
+        
+        // For storage node, look for Writer data
+        if (nodeName === 'Storage' && !nodeData) {
+          const findWriterData = (arr: any[]): any => {
+            for (const item of arr) {
+              if (!item) continue;
+              if (typeof item === 'object' && item.name && item.name.toLowerCase().includes('writer')) {
+                return item;
+              }
+              if (Array.isArray(item)) {
+                const found = findWriterData(item);
+                if (found) return found;
+              }
+            }
+            return null;
+          };
+          nodeData = findWriterData(this.bufferData);
+        }
+        
+        // Update the debug node with new data
+        if (nodeInEditor instanceof DebugDataDisplay) {
+          nodeInEditor.debugData = nodeData;
+          // Update the control to reflect new data
+          const control = nodeInEditor.controls?.debugDataDisplayControl as any;
+          if (control) {
+            control.debugData = nodeData;
+          }
+          // Trigger update
+          await area.update('node', nodeInEditor.id);
+        }
+      }
+      
+      this.cdRf.detectChanges();
+    } catch (error) {
+      console.error('Failed to refresh debug display nodes:', error);
+    }
+  }
+
+  /**
+   * Start auto-refresh for debug display nodes
+   */
+  private startDebugDisplayAutoRefresh() {
+    // Stop any existing refresh subscription
+    this.stopDebugDisplayAutoRefresh();
+    
+    // Only start if debug display nodes are visible
+    const areDebugDisplayNodesVisible = this.flowEditorService.showDebuggerDataDisplay.value;
+    if (!areDebugDisplayNodesVisible) {
+      return;
+    }
+    
+    // Start polling every 5 seconds
+    this.debugDisplayRefreshSubscription = interval(5000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        // Only refresh if debug display nodes are visible and ingress is not suspended
+        const areDebugDisplayNodesVisible = this.flowEditorService.showDebuggerDataDisplay.value;
+        if (areDebugDisplayNodesVisible && this.isIngressNotSuspended()) {
+          this.refreshDebugDisplayNodes();
+        } else {
+          // Stop refreshing if conditions are no longer met
+          this.stopDebugDisplayAutoRefresh();
+        }
+      });
+  }
+
+  /**
+   * Stop auto-refresh for debug display nodes
+   */
+  private stopDebugDisplayAutoRefresh() {
+    if (this.debugDisplayRefreshSubscription) {
+      this.debugDisplayRefreshSubscription.unsubscribe();
+      this.debugDisplayRefreshSubscription = null;
+    }
+  }
+
   ngOnDestroy() {
     this.isAlive = false;
     this.debuggerStateSubscription?.unsubscribe();
@@ -1731,6 +1900,7 @@ export class NodeEditorComponent implements OnInit {
     this.nodeClickSubscription?.unsubscribe();
     this.nodeDropdownClickSubscription?.unsubscribe();
     this.serviceStatusSubscription?.unsubscribe();
+    this.stopDebugDisplayAutoRefresh();
     if (this.from === 'notifications') {
       this.serviceDetailsSubscription?.unsubscribe();
       this.paramsSubscription?.unsubscribe();
