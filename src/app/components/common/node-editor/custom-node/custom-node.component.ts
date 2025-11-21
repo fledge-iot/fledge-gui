@@ -896,6 +896,17 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
       });
   }
 
+  /**
+   * Refresh all debug data display nodes
+   */
+  refreshAllDebugDisplayNodes(event?: Event) {
+    if (event) {
+      event.stopPropagation(); // Prevent node click event
+    }
+    // Emit event to refresh all debug data display nodes
+    this.flowEditorService.refreshDebugDisplayNodes.next(true);
+  }
+
   getDebuggerStateChanges(expectedState: string) {
     const maxRetries = 3;
     let attempt = 0;

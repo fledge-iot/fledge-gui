@@ -1802,9 +1802,8 @@ export class NodeEditorComponent implements OnInit {
    * Update existing debug display nodes with new buffer data
    */
   async refreshDebugDisplayNodes() {
-    if (!this.isIngressNotSuspended()) {
-      return; // Don't refresh if ingress is suspended
-    }
+    // Allow manual refresh even if ingress is suspended (user explicitly clicked refresh)
+    // The isIngressNotSuspended check is only for auto-refresh polling
 
     // Get the service with attached debugger
     let serviceWithDebugger: any = null;
@@ -1873,11 +1872,12 @@ export class NodeEditorComponent implements OnInit {
         
         // Update the debug node with new data
         if (nodeInEditor instanceof DebugDataDisplay) {
-          nodeInEditor.debugData = nodeData;
+          // Create a new object reference to trigger Angular change detection
+          nodeInEditor.debugData = nodeData ? JSON.parse(JSON.stringify(nodeData)) : nodeData;
           // Update the control to reflect new data
           const control = nodeInEditor.controls?.debugDataDisplayControl as any;
           if (control) {
-            control.debugData = nodeData;
+            control.debugData = nodeData ? JSON.parse(JSON.stringify(nodeData)) : nodeData;
           }
           // Trigger update
           await area.update('node', nodeInEditor.id);

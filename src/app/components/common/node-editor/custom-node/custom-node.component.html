@@ -370,6 +370,14 @@
   <div class="debug-data-display-node">
     <div class="debug-data-display-header">
       <div class="debug-data-display-title">{{data.nodeName || 'Debug Data'}}</div>
+      <button class="btn is-small btn-icon debug-refresh-btn"
+              (click)="refreshAllDebugDisplayNodes($event)"
+              style="position: absolute; top: 0; right: 0; z-index: 10;">
+        <span class="icon is-small has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
+              data-tooltip="Refresh debug data">
+          <i class="bi bi-arrow-repeat bi-sm"></i>
+        </span>
+      </button>
     </div>
     <div class="debug-data-display-content">
       <ng-container *ngIf="data.debugData">
