@@ -44,12 +44,20 @@
                   [class.is-active]="isFilterWatched"
                   style="display: inline-block !important; visibility: visible !important;">
             <span class="icon is-small has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
-                  [attr.data-tooltip]="isFilterWatched ? 'Hide debug data' : 'Show debug data'">
+                  [attr.data-tooltip]="isFilterWatched ? 'Hide incoming data' : 'Show incoming data'">
               <i class="bi bi-eye bi-sm" [class.has-text-primary]="isFilterWatched"></i>
             </span>
           </button>
           <ng-container *ngIf="data.label!=='Filter'; else southServiceTemplate">
             <div class="is-inline-flex">
+              <button *ngIf="isServiceNode && from === 'south' && data?.debug?.debugger == 'Attached' && data?.debug?.ingress === 'Suspended'" 
+                      class="btn is-small btn-icon mr-1"
+                      (click)="replayDebugger()">
+                <span class="icon is-small has-tooltip-left has-tooltip-arrow tooltip is-hovered"
+                  data-tooltip="Replay buffered data">
+                  <i class="bi bi-arrow-clockwise bi-sm"></i>
+                </span>
+              </button>
               <button *ngIf="isServiceNode && data?.debug?.debugger == 'Attached'" class="btn is-small btn-icon">
                 <span class="icon is-small  has-tooltip-left has-tooltip-arrow tooltip is-hovered"
                   data-tooltip="Debugger Attached">
@@ -297,7 +305,7 @@
             [class.is-active]="isStorageWatched"
             style="position: absolute; top: 0; right: 0; z-index: 10;">
       <span class="icon is-small has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
-            [attr.data-tooltip]="isStorageWatched ? 'Hide debug data' : 'Show debug data'">
+                   [attr.data-tooltip]="isStorageWatched ? 'Hide incoming data' : 'Show incoming data'">
         <i class="bi bi-eye bi-sm" [class.has-text-primary]="isStorageWatched"></i>
       </span>
     </button>

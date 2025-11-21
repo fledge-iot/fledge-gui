@@ -469,6 +469,15 @@ export class NodeEditorComponent implements OnInit {
         }
       });
 
+    // Subscribe to refreshDebugDisplayNodes to manually refresh debug data display nodes
+    this.flowEditorService.refreshDebugDisplayNodes
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((shouldRefresh: boolean) => {
+        if (shouldRefresh) {
+          this.refreshDebugDisplayNodes();
+        }
+      });
+
     // Monitor ingress state changes to restart/stop polling
     this.sharedService.debuggerStateSubject
       .pipe(takeUntil(this.destroy$))
