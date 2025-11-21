@@ -727,6 +727,47 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
   }
 
   /**
+   * Check if status icon should be clickable (for suspend/resume shortcut)
+   */
+  shouldEnableStatusIconClick(): boolean {
+    // Only enable for south services when debugger is attached
+    return this.isServiceNode && 
+           this.from === 'south' && 
+           this.data?.debug?.debugger === 'Attached' &&
+           this.rolesService.hasEditPermissions();
+  }
+
+  /**
+   * Get tooltip text for status icon
+   */
+  getStatusIconTooltip(): string {
+    const baseTooltip = this.service.status ? this.service.status : this.task.status;
+    
+    if (this.shouldEnableStatusIconClick()) {
+      const action = this.data?.debug?.ingress === 'Suspended' ? 'Resume' : 'Suspend';
+      return `${baseTooltip} (Click to ${action.toLowerCase()} ingest)`;
+    }
+    
+    return baseTooltip;
+  }
+
+  /**
+   * Handle click on status icon to toggle suspend/resume
+   */
+  onStatusIconClick() {
+    if (!this.shouldEnableStatusIconClick()) {
+      return;
+    }
+
+    // Toggle suspend/resume based on current state
+    if (this.data?.debug?.ingress === 'Suspended') {
+      this.resumeDebugger();
+    } else {
+      this.suspendDebugger();
+    }
+  }
+
+  /**
    * Replay the debugger buffer data
    */
   replayDebugger() {

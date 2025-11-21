@@ -22,7 +22,9 @@
           <span *ngIf="isServiceNode && (service.status || task.status)"
             class="icon health-icon tooltip has-tooltip-left has-tooltip-arrow is-pulled-right"
             [ngClass]="applyServiceStatusCustomCss(service.status ? service.status : task.status)"
-            [attr.data-tooltip]="service.status ? service.status : task.status">
+            [attr.data-tooltip]="getStatusIconTooltip()"
+            [class.cursor-pointer]="shouldEnableStatusIconClick()"
+            (click)="onStatusIconClick()">
             <i class="fa fa-2xs fa-circle child-icon"></i>
           </span>
           <span *ngIf="!source; else serviceNameTemplate" class="service-name"

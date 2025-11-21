@@ -342,6 +342,10 @@
   left: 6%;
   transform: translate(-50%, -50%);
   color: gray;
+}
+
+.icon.health-icon.cursor-pointer {
+  cursor: pointer;
   font-size: 1.1em;
 }
 
