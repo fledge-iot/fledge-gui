@@ -86,7 +86,11 @@ export async function createEditor(
   area.addPipe((context) => {
     if (context.type === 'nodetranslated') {
       const node: Node = editor.getNode(context.data.id);
-      const nodeConnections = editor.getConnections().filter(conn => conn.source == node.id || conn.target == node.id);
+      if (!node) return;
+      const nodeConnections = editor.getConnections().filter(conn => {
+        if (!conn || !conn.source || !conn.target) return false;
+        return conn.source === node.id || conn.target === node.id;
+      });
       // Defer icon position update to the next paint frame
       requestAnimationFrame(() => {
         nodeConnections.forEach(conn => {

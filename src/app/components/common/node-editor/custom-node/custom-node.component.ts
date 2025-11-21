@@ -173,7 +173,18 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
         
         // Handle storage nodes
         if (this.data.label === 'Storage' && this.from === 'south') {
-          const serviceWithDebugger = servicesResponse.services?.find((s: any) => s.debug?.debugger === 'Attached');
+          // Check if we have a services array or a single service update
+          let serviceWithDebugger = null;
+          if (servicesResponse.services && Array.isArray(servicesResponse.services)) {
+            // Full services array update
+            serviceWithDebugger = servicesResponse.services.find((s: any) => s.debug?.debugger === 'Attached');
+          } else if (servicesResponse.service && servicesResponse.debug) {
+            // Single service update - check if it's attached
+            if (servicesResponse.debug.debugger === 'Attached') {
+              serviceWithDebugger = { debug: servicesResponse.debug };
+            }
+          }
+          
           if (serviceWithDebugger?.debug) {
             // Initialize debug object if it doesn't exist
             if (!this.data.debug) {
@@ -187,19 +198,23 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
             this.data.debug.egress = serviceWithDebugger.debug.egress || 'Storage';
             this.cdr.detectChanges();
           } else {
-            // No service with attached debugger, reset storage debug state
-            // Initialize debug object if it doesn't exist, or update it
-            if (!this.data.debug) {
-              this.data.debug = {
-                debugger: 'Detached',
-                ingress: 'Running',
-                egress: 'Storage'
-              };
-            } else {
-              this.data.debug.debugger = 'Detached';
-              this.data.debug.egress = 'Storage';
+            // Only reset to Detached if we have a services array and no attached debugger
+            // Don't reset on single service updates that aren't for storage
+            if (servicesResponse.services && Array.isArray(servicesResponse.services)) {
+              // No service with attached debugger, reset storage debug state
+              // Initialize debug object if it doesn't exist, or update it
+              if (!this.data.debug) {
+                this.data.debug = {
+                  debugger: 'Detached',
+                  ingress: 'Running',
+                  egress: 'Storage'
+                };
+              } else {
+                this.data.debug.debugger = 'Detached';
+                this.data.debug.egress = 'Storage';
+              }
+              this.cdr.detectChanges();
             }
-            this.cdr.detectChanges();
           }
           return;
         }
@@ -330,8 +345,17 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
     }
 
     if (this.data.label === 'Storage') {
-      if (this.from == 'south' && this.data?.controls?.debugControl) {
-        this.data.debug = this.data?.controls?.debugControl['debug'];
+      if (this.from == 'south') {
+        if (this.data?.controls?.debugControl) {
+          this.data.debug = this.data?.controls?.debugControl['debug'];
+        } else if (!this.data.debug) {
+          // Initialize debug object if it doesn't exist
+          this.data.debug = {
+            debugger: 'Detached',
+            ingress: 'Running',
+            egress: 'Storage'
+          };
+        }
       }
       this.elRef.nativeElement.style.borderColor = "#999999";
     }
@@ -775,11 +799,8 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
    */
   parseDebugDataForTable(data: any): any[] {
     if (!data) {
-      console.log('parseDebugDataForTable: No data provided');
       return [];
     }
-
-    console.log('parseDebugDataForTable: Input data:', data);
 
     const rows: any[] = [];
     let currentDate = '';
@@ -797,15 +818,11 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
         readingsArray = data;
       } else {
         // Data is an object but no readings array found
-        console.warn('parseDebugDataForTable: No readings array found in data:', data);
         return [];
       }
     } else {
-      console.warn('parseDebugDataForTable: Invalid data type:', typeof data);
       return [];
     }
-
-    console.log('parseDebugDataForTable: Readings array length:', readingsArray.length);
 
     // Process each reading item in the readings array
     readingsArray.forEach((item: any) => {
@@ -814,7 +831,6 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
       // Extract user_ts (timestamp) - this is the key field
       const userTs = item.user_ts || '';
       if (!userTs) {
-        console.warn('parseDebugDataForTable: Item missing user_ts:', item);
         return;
       }
 
@@ -836,7 +852,6 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
       const reading = item.reading || item.readings || {};
       
       if (Object.keys(reading).length === 0) {
-        console.warn('parseDebugDataForTable: Item has no reading object:', item);
         return;
       }
 
@@ -863,7 +878,6 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
       });
     });
 
-    console.log('parseDebugDataForTable: Generated rows:', rows.length);
     return rows;
   }
 
