@@ -13,6 +13,7 @@ type Connection = ClassicPreset.Connection<
   selected?: boolean,
   isLoop?: boolean
   debuggerAttached?: boolean;
+  isDebugDisplayConnection?: boolean;
   click: (c: Connection) => void
   remove: (c: Connection) => void
 }

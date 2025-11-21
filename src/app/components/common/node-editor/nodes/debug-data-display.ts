@@ -16,8 +16,8 @@ export class DebugDataDisplay extends ClassicPreset.Node {
     const debugDataDisplayControl = new DebugDataDisplayControl(nodeName, debugData);
     this.addControl('debugDataDisplayControl', debugDataDisplayControl);
     
-    // Add input to connect from the filter/storage node
-    this.addInput("port", new ClassicPreset.Input(socket));
+    // Add output port to connect to the input port of the node whose data is being displayed
+    this.addOutput("port", new ClassicPreset.Output(socket));
   }
 }
 

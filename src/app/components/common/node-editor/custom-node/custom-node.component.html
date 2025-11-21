@@ -369,5 +369,17 @@
         No data available
       </div>
     </div>
+    <!-- Output port to connect to the input port of the node whose data is being displayed -->
+    <ng-container *ngIf="source">
+      <div class="output is-pulled-right" *ngFor="let output of data.outputs | keyvalue: sortByIndex"
+        [attr.data-testid]="'output-'+output.key">
+        <div class="output-title" data-testid="output-title">
+          {{output.value?.label}}
+        </div>
+        <div class="output-socket" refComponent
+          [data]="{type: 'socket', side: 'output', key: output.key, nodeId: data.id, payload: output.value?.socket, seed: seed }"
+          [emit]="emit" data-testid="output-socket" title="Source"></div>
+      </div>
+    </ng-container>
   </div>
 </ng-template>

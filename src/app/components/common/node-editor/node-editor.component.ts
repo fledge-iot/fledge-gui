@@ -1585,11 +1585,11 @@ export class NodeEditorComponent implements OnInit {
       // Wait for nodes to be fully rendered before creating connection
       await new Promise(resolve => setTimeout(resolve, 150));
       
-      // Connect debug node to filter node (from filter output to debug node input)
+      // Connect debug node to filter node (from debug node output to filter node input)
       try {
         // Check that both nodes have the required ports
-        const sourceView = getNodeView(filterNode.id);
-        const targetView = getNodeView(debugNode.id);
+        const sourceView = getNodeView(debugNode.id);
+        const targetView = getNodeView(filterNode.id);
         
         if (sourceView?.position && targetView?.position) {
           // Check for existing connections to avoid duplicates
@@ -1600,7 +1600,7 @@ export class NodeEditorComponent implements OnInit {
           });
           
           if (existingConnections.length === 0) {
-            const connection = new Connection(connectionEvents, filterNode, debugNode);
+            const connection = new Connection(connectionEvents, debugNode, filterNode);
             await editor.addConnection(connection);
             await area.update('connection', connection.id);
             await area.update('node', debugNode.id);
@@ -1609,7 +1609,7 @@ export class NodeEditorComponent implements OnInit {
           }
         }
       } catch (e) {
-        console.warn('Failed to create connection from filter to debug node:', e);
+        console.warn('Failed to create connection from debug node to filter node:', e);
       }
       
       this.debugDataDisplayNodes.push(debugNode);
@@ -1661,11 +1661,11 @@ export class NodeEditorComponent implements OnInit {
       // Wait for nodes to be fully rendered before creating connection
       await new Promise(resolve => setTimeout(resolve, 150));
       
-      // Connect debug node to storage node (from storage output to debug node input)
+      // Connect debug node to storage node (from debug node output to storage node input)
       try {
         // Check that both nodes have the required ports
-        const sourceView = getNodeView(storageNode.id);
-        const targetView = getNodeView(debugNode.id);
+        const sourceView = getNodeView(debugNode.id);
+        const targetView = getNodeView(storageNode.id);
         
         if (sourceView?.position && targetView?.position) {
           // Check for existing connections to avoid duplicates
@@ -1676,7 +1676,7 @@ export class NodeEditorComponent implements OnInit {
           });
           
           if (existingConnections.length === 0) {
-            const connection = new Connection(connectionEvents, storageNode, debugNode);
+            const connection = new Connection(connectionEvents, debugNode, storageNode);
             await editor.addConnection(connection);
             await area.update('connection', connection.id);
             await area.update('node', debugNode.id);
@@ -1685,7 +1685,7 @@ export class NodeEditorComponent implements OnInit {
           }
         }
       } catch (e) {
-        console.warn('Failed to create connection from storage to debug node:', e);
+        console.warn('Failed to create connection from debug node to storage node:', e);
       }
       
       this.debugDataDisplayNodes.push(debugNode);

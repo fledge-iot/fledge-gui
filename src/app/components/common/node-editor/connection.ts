@@ -9,11 +9,14 @@ export class Connection<A extends Node, B extends Node> extends ClassicPreset.Co
   remove: (data: Connection<A, B>) => void
   curve?: CurveFactory;
   debuggerAttached? = false;
+  isDebugDisplayConnection? = false;
 
   constructor(events: { click: (data: Connection<A, B>) => void, remove: (data: Connection<A, B>) => void }, source: A, target: B, public isLoop?: boolean) {
     super(source, 'port', target, 'port')
     this.click = events.click;
     this.remove = events.remove;
     this.isLoop = false;
+    // Check if this is a debug display connection (source is DebugDataDisplay)
+    this.isDebugDisplayConnection = (source as any)?.type === 'debug-data-display';
   }
 }
