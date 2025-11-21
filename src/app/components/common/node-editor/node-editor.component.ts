@@ -1640,7 +1640,7 @@ export class NodeEditorComponent implements OnInit {
           });
           
           if (existingConnections.length === 0) {
-            const connection = new Connection(connectionEvents, debugNode, filterNode);
+            const connection = new Connection(connectionEvents, debugNode as any, filterNode as any);
             await editor.addConnection(connection);
             await area.update('connection', connection.id);
             await area.update('node', debugNode.id);
@@ -1716,7 +1716,7 @@ export class NodeEditorComponent implements OnInit {
           });
           
           if (existingConnections.length === 0) {
-            const connection = new Connection(connectionEvents, debugNode, storageNode);
+            const connection = new Connection(connectionEvents, debugNode as any, storageNode as any);
             await editor.addConnection(connection);
             await area.update('connection', connection.id);
             await area.update('node', debugNode.id);
@@ -1807,7 +1807,8 @@ export class NodeEditorComponent implements OnInit {
         const nodeInEditor = nodes.find((n: any) => n.id === debugNode.id);
         if (!nodeInEditor) continue;
         
-        const nodeName = debugNode.nodeName;
+        // Get node name - could be from nodeName property or filterNodeName for filter watch nodes
+        const nodeName = debugNode.nodeName || (debugNode as any).filterNodeName;
         let nodeData = null;
         
         // Find matching data in buffer
@@ -1873,22 +1874,22 @@ export class NodeEditorComponent implements OnInit {
     // Stop any existing refresh subscription
     this.stopDebugDisplayAutoRefresh();
     
-    // Only start if debug display nodes are visible
-    const areDebugDisplayNodesVisible = this.flowEditorService.showDebuggerDataDisplay.value;
-    if (!areDebugDisplayNodesVisible) {
-      return;
-    }
-    
     // Start polling every 5 seconds
     this.debugDisplayRefreshSubscription = interval(5000)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
-        // Only refresh if debug display nodes are visible and ingress is not suspended
+        // Check if there are any debug display nodes to refresh
         const areDebugDisplayNodesVisible = this.flowEditorService.showDebuggerDataDisplay.value;
-        if (areDebugDisplayNodesVisible && this.isIngressNotSuspended()) {
+        const hasFilterWatchNodes = this.debugDataDisplayNodes.some((node: any) => 
+          (node as any).filterNodeId !== undefined
+        );
+        const hasNodesToRefresh = areDebugDisplayNodesVisible || hasFilterWatchNodes;
+        
+        // Only refresh if there are nodes to refresh and ingress is not suspended
+        if (hasNodesToRefresh && this.isIngressNotSuspended()) {
           this.refreshDebugDisplayNodes();
-        } else {
-          // Stop refreshing if conditions are no longer met
+        } else if (!hasNodesToRefresh) {
+          // Stop refreshing if there are no nodes to refresh
           this.stopDebugDisplayAutoRefresh();
         }
       });
@@ -1999,7 +2000,7 @@ export class NodeEditorComponent implements OnInit {
           });
           
           if (existingConnections.length === 0) {
-            const connection = new Connection(connectionEvents, debugNode, filterNode);
+            const connection = new Connection(connectionEvents, debugNode as any, filterNode as any);
             await editor.addConnection(connection);
             await area.update('connection', connection.id);
             await area.update('node', debugNode.id);
@@ -2012,6 +2013,11 @@ export class NodeEditorComponent implements OnInit {
       }
       
       this.debugDataDisplayNodes.push(debugNode);
+      
+      // Start auto-refresh if not already running (for filter watch nodes)
+      if (!this.debugDisplayRefreshSubscription && this.isIngressNotSuspended()) {
+        this.startDebugDisplayAutoRefresh();
+      }
       
       // Notify custom-node component that watch state has changed
       this.flowEditorService.filterWatchStateChanged.next({
@@ -2062,6 +2068,13 @@ export class NodeEditorComponent implements OnInit {
       const index = this.debugDataDisplayNodes.indexOf(watchNode);
       if (index > -1) {
         this.debugDataDisplayNodes.splice(index, 1);
+      }
+      
+      // Stop auto-refresh if no debug display nodes remain (unless main debug display is visible)
+      const areDebugDisplayNodesVisible = this.flowEditorService.showDebuggerDataDisplay.value;
+      const hasAnyDebugNodes = this.debugDataDisplayNodes.length > 0;
+      if (!areDebugDisplayNodesVisible && !hasAnyDebugNodes && this.debugDisplayRefreshSubscription) {
+        this.stopDebugDisplayAutoRefresh();
       }
       
       // Notify custom-node component that watch state has changed
