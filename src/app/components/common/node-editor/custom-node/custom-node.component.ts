@@ -78,9 +78,102 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
 
   previousState: boolean;  // To store previous state of checkbox
   isDataDisplayVisible: boolean = false;  // Track data display visibility state
+  isDebuggerAttached: boolean = false;  // Track if debugger is attached to pipeline
+  isFilterWatched: boolean = false;  // Track if this filter node is being watched
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
+  }
+
+  /**
+   * Getter to check if eye icon should be shown (with logging)
+   */
+  get shouldShowEyeIcon(): boolean {
+    if (this.data?.label === 'Filter' && !(this.data as Filter).pseudoNode) {
+      const shouldShow = this.isDebuggerAttached;
+      console.log('[Filter Node] shouldShowEyeIcon check - isDebuggerAttached:', this.isDebuggerAttached, 'shouldShow:', shouldShow, 'nodeId:', this.data?.id, 'pseudoNode:', (this.data as Filter).pseudoNode);
+      return shouldShow;
+    }
+    return false;
+  }
+
+  /**
+   * Method to log when template renders (called from template)
+   */
+  logTemplateRender(): boolean {
+    if (this.data?.label === 'Filter' && !(this.data as Filter).pseudoNode) {
+      console.log('[Filter Node] Template rendered - isDebuggerAttached:', this.isDebuggerAttached, 'nodeId:', this.data?.id);
+    }
+    return false; // Don't render anything
+  }
+
+  /**
+   * Getter to check if eye icon should be visible (for debugging)
+   */
+  get shouldShowEyeIconForFilter(): boolean {
+    // Check if this is a Filter node by checking if it has filter-specific controls
+    // Note: data.label is changed to the filter name in ngOnChanges, so we can't use that
+    // Instead, check if it has filterColorControl which is unique to filter nodes
+    const hasFilterColorControl = !!(this.data as any)?.controls?.filterColorControl;
+    const hasNameControl = !!(this.data as any)?.controls?.nameControl;
+    const filterName = this.data?.controls?.nameControl?.['name'];
+    
+    // Check if this is the special "Filter" node used to add new filters
+    // This node has label "Filter" and no actual filter name
+    const isAddFilterNode = this.data?.label === 'Filter' && (!filterName || filterName === 'Filter' || filterName === '');
+    
+    // A filter node in the pipeline has filterColorControl and a name that's not "Filter"
+    const isFilterNode = hasFilterColorControl && hasNameControl && filterName && filterName !== 'Filter';
+    
+    if (!isFilterNode && !isAddFilterNode) {
+      return false; // Not a filter node at all
+    }
+    
+    // Exclude the "Filter" add node and pseudo nodes
+    if (isAddFilterNode) {
+      return false; // Don't show on the add filter node
+    }
+    
+    const isPseudoNode = (this.data as Filter)?.pseudoNode === true;
+    if (isPseudoNode) {
+      return false; // Don't show on pseudo nodes
+    }
+    
+    // Check if node has connections on both input and output ports
+    let hasInputConnection = false;
+    let hasOutputConnection = false;
+    
+    try {
+      const connections = editor.getConnections();
+      
+      // Check for input connections (connections where this node is the target)
+      hasInputConnection = connections.some((conn: any) => 
+        conn.target === this.data.id
+      );
+      
+      // Check for output connections (connections where this node is the source)
+      hasOutputConnection = connections.some((conn: any) => 
+        conn.source === this.data.id
+      );
+    } catch (e) {
+      console.warn('[Filter Node] Error checking connections:', e);
+    }
+    
+    const shouldShow = hasInputConnection && hasOutputConnection && this.isDebuggerAttached;
+    
+    // Always log for filter nodes to see what's happening
+    console.log('[Filter Node] shouldShowEyeIconForFilter - label:', this.data?.label, 
+                'filterName:', filterName,
+                'hasFilterColorControl:', hasFilterColorControl,
+                'isFilterNode:', isFilterNode,
+                'isAddFilterNode:', isAddFilterNode,
+                'isPseudoNode:', isPseudoNode,
+                'hasInputConnection:', hasInputConnection,
+                'hasOutputConnection:', hasOutputConnection,
+                'isDebuggerAttached:', this.isDebuggerAttached, 
+                'shouldShow:', shouldShow,
+                'nodeId:', this.data?.id);
+    return shouldShow;
   }
 
   constructor(private cdr: ChangeDetectorRef,
@@ -109,6 +202,56 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
         this.router.navigated = false;
       }
     });
+
+    // Monitor debugger state to determine if debugger is attached
+    this.sharedService.debuggerStateSubject
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((debuggerState: any) => {
+        if (this.data?.label === 'Filter') {
+          console.log('[Filter Node] debuggerStateSubject received:', debuggerState);
+        }
+        if (debuggerState?.debug?.debugger === 'Attached') {
+          if (this.data?.label === 'Filter') {
+            console.log('[Filter Node] Setting isDebuggerAttached to true from debug.debugger');
+          }
+          this.isDebuggerAttached = true;
+          if (this.data?.label === 'Filter') {
+            console.log('[Filter Node] After setting isDebuggerAttached, triggering change detection');
+          }
+          this.cdr.markForCheck();
+          this.cdr.detectChanges();
+          // Force another change detection cycle for filter nodes
+          if (this.data?.label === 'Filter') {
+            setTimeout(() => {
+              console.log('[Filter Node] Delayed change detection - isDebuggerAttached:', this.isDebuggerAttached);
+              this.cdr.markForCheck();
+              this.cdr.detectChanges();
+            }, 0);
+          }
+        } else if (debuggerState?.services && Array.isArray(debuggerState.services)) {
+          // Check services array if provided
+          const hasAttachedDebugger = debuggerState.services.some((s: any) => s.debug?.debugger === 'Attached');
+          if (this.data?.label === 'Filter') {
+            console.log('[Filter Node] Checking services array, hasAttachedDebugger:', hasAttachedDebugger, 'services:', debuggerState.services);
+          }
+          const wasAttached = this.isDebuggerAttached;
+          this.isDebuggerAttached = hasAttachedDebugger;
+          if (this.data?.label === 'Filter') {
+            console.log('[Filter Node] isDebuggerAttached set to:', this.isDebuggerAttached, '(was:', wasAttached, ')');
+          }
+          // Always trigger change detection for filter nodes when debugger state changes
+          if (this.data?.label === 'Filter' || wasAttached !== hasAttachedDebugger) {
+            if (this.data?.label === 'Filter') {
+              console.log('[Filter Node] Triggering change detection');
+            }
+            this.cdr.markForCheck();
+            this.cdr.detectChanges();
+          }
+        }
+      });
+
+    // Subscribe to filter watch state changes
+    this.subscribeToFilterWatchState();
 
     this.sharedService.debuggerStateSubject
       .pipe(
@@ -150,6 +293,14 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
           // Skip if no debug data in service response for other nodes
           if (!curr?.services) return true;
 
+          // For filter nodes, check if debugger attachment state has changed
+          if (this.data.label === 'Filter') {
+            const hasAttachedDebugger = curr.services.some((s: any) => s.debug?.debugger === 'Attached');
+            const shouldSkip = this.isDebuggerAttached === hasAttachedDebugger;
+            console.log('[Filter Node] distinctUntilChanged - hasAttachedDebugger:', hasAttachedDebugger, 'current isDebuggerAttached:', this.isDebuggerAttached, 'shouldSkip:', shouldSkip);
+            return shouldSkip;
+          }
+
           // Get current node's service name
           const nodeName = this.data?.controls?.nameControl?.['name'];
           if (!nodeName) return true;
@@ -170,6 +321,27 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
         
         // Skip debug data display nodes
         if (this.data.type === 'debug-data-display') return;
+
+        // Update isDebuggerAttached for all nodes (including filters) when services are available
+        if (servicesResponse.services && Array.isArray(servicesResponse.services)) {
+          const hasAttachedDebugger = servicesResponse.services.some((s: any) => s.debug?.debugger === 'Attached');
+          if (this.data?.label === 'Filter') {
+            console.log('[Filter Node] servicesResponse subscription - hasAttachedDebugger:', hasAttachedDebugger, 'current isDebuggerAttached:', this.isDebuggerAttached, 'services:', servicesResponse.services);
+          }
+          const wasAttached = this.isDebuggerAttached;
+          this.isDebuggerAttached = hasAttachedDebugger;
+          if (this.data?.label === 'Filter') {
+            console.log('[Filter Node] servicesResponse - isDebuggerAttached set to:', this.isDebuggerAttached, '(was:', wasAttached, ')');
+          }
+          // Always trigger change detection for filter nodes when debugger state is checked
+          if (this.data?.label === 'Filter' || wasAttached !== hasAttachedDebugger) {
+            if (this.data?.label === 'Filter') {
+              console.log('[Filter Node] servicesResponse - Triggering change detection');
+            }
+            this.cdr.markForCheck();
+            this.cdr.detectChanges();
+          }
+        }
         
         // Handle storage nodes
         if (this.data.label === 'Storage' && this.from === 'south') {
@@ -216,11 +388,15 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
               this.cdr.detectChanges();
             }
           }
+          
           return;
         }
 
         // Handle service nodes
-        if (!this.data?.controls?.nameControl?.['name'] || !this.data?.debug) return;
+        if (!this.data?.controls?.nameControl?.['name'] || !this.data?.debug) {
+          // Filter nodes don't have debug state, but we've already updated isDebuggerAttached above
+          return;
+        }
 
         // Find the matching service in the response
         const nodeName = this.data.controls.nameControl['name'];
@@ -232,6 +408,15 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
           this.data.debug.ingress = serviceData.debug.ingress;
           this.data.debug.egress = serviceData.debug.egress;
           this.cdr.detectChanges();
+        }
+
+        // Update isDebuggerAttached based on services array (for all node types)
+        if (servicesResponse.services && Array.isArray(servicesResponse.services)) {
+          const hasAttachedDebugger = servicesResponse.services.some((s: any) => s.debug?.debugger === 'Attached');
+          if (this.isDebuggerAttached !== hasAttachedDebugger) {
+            this.isDebuggerAttached = hasAttachedDebugger;
+            this.cdr.detectChanges();
+          }
         }
       });
   }
@@ -248,6 +433,31 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
       this.cdr.detectChanges();
       requestAnimationFrame(() => this.rendered());
       return;
+    }
+
+    // Check if this filter node is already being watched
+    // Check by filterColorControl since label gets changed to filter name
+    const hasFilterColorControl = !!(this.data as any)?.controls?.filterColorControl;
+    const filterName = this.data?.controls?.nameControl?.['name'];
+    const isAddFilterNode = this.data?.label === 'Filter' && (!filterName || filterName === 'Filter' || filterName === '');
+    
+    if (hasFilterColorControl && !isAddFilterNode && !(this.data as Filter).pseudoNode) {
+      console.log('[Filter Node] ngOnChanges - Filter node detected, isDebuggerAttached:', this.isDebuggerAttached, 'nodeId:', this.data.id, 'filterName:', filterName);
+      // Check if there's already a debug display node for this filter
+      const nodes = editor.getNodes();
+      const watchNode = nodes.find((n: any) => 
+        n.type === 'debug-data-display' && (n as any).filterNodeId === this.data.id
+      );
+      this.isFilterWatched = !!watchNode;
+      console.log('[Filter Node] ngOnChanges - isFilterWatched:', this.isFilterWatched);
+      
+      // Also check if debugger is attached by checking services/tasks
+      // This will be updated by the subscription, but set initial state
+      if (!this.isDebuggerAttached) {
+        // Check if any service/task has debugger attached
+        // This is a fallback check - the subscription will update it properly
+        console.log('[Filter Node] ngOnChanges - isDebuggerAttached is false, waiting for subscription update');
+      }
     }
     
     if (this.data.label === 'South' || this.data.label === 'North') {
@@ -879,6 +1089,58 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
     });
 
     return rows;
+  }
+
+  /**
+   * Toggle watch state for filter node
+   */
+  toggleFilterWatch() {
+    // Check if this is a filter node by checking for filterColorControl
+    const hasFilterColorControl = !!(this.data as any)?.controls?.filterColorControl;
+    const filterName = this.data?.controls?.nameControl?.['name'];
+    const isAddFilterNode = this.data?.label === 'Filter' && (!filterName || filterName === 'Filter' || filterName === '');
+    
+    if (!hasFilterColorControl || isAddFilterNode) {
+      return;
+    }
+    
+    // Type guard to check if it's a Filter node
+    const filterNode = this.data as Filter;
+    if (filterNode.pseudoNode) {
+      return;
+    }
+    
+    // Check if a watch node already exists for this filter
+    const nodes = editor.getNodes();
+    const existingWatchNode = nodes.find((n: any) => 
+      n.type === 'debug-data-display' && (n as any).filterNodeId === this.data.id
+    );
+    
+    // Toggle the watch state
+    this.isFilterWatched = !!existingWatchNode;
+    this.isFilterWatched = !this.isFilterWatched; // Toggle it
+    
+    // Emit event to node-editor component to create/remove debug display node
+    this.flowEditorService.toggleFilterWatch.next({
+      filterNodeId: this.data.id,
+      filterNodeName: filterName,
+      isWatched: this.isFilterWatched,
+      filterNode: this.data
+    });
+  }
+
+  /**
+   * Subscribe to filter watch state changes to sync icon state
+   */
+  private subscribeToFilterWatchState() {
+    this.flowEditorService.filterWatchStateChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((watchState: any) => {
+        if (watchState && watchState.filterNodeId === this.data.id) {
+          this.isFilterWatched = watchState.isWatched;
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   ngOnDestroy() {

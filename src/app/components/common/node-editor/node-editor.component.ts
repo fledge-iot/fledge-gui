@@ -32,13 +32,13 @@ import {
   history,
   getNodeView,
   area,
+  connectionEvents,
 } from './editor';
 import { FlowEditorService, NodeStatus } from './flow-editor.service';
 import { DebuggerReadingsComponent } from '../../core/debugger/debugger-readings/debugger-readings.component';
 import { DebugDataDisplay } from './nodes/debug-data-display';
 import { ClassicPreset } from 'rete';
 import { Connection } from './connection';
-import { connectionEvents } from './editor';
 
 @Component({
   selector: 'app-node-editor',
@@ -487,6 +487,19 @@ export class NodeEditorComponent implements OnInit {
           }
         }
       });
+
+    // Subscribe to filter watch toggle events
+    this.flowEditorService.toggleFilterWatch
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((watchData: any) => {
+        if (!watchData) return;
+        
+        if (watchData.isWatched) {
+          this.createFilterWatchNode(watchData.filterNodeId, watchData.filterNodeName, watchData.filterNode);
+        } else {
+          this.removeFilterWatchNode(watchData.filterNodeId);
+        }
+      });
   }
 
   ngAfterViewInit(): void {
@@ -674,6 +687,9 @@ export class NodeEditorComponent implements OnInit {
         }
         // refresh node data
         updateNode(data);
+        // Emit tasks to debuggerStateSubject so filter nodes can check for debugger attachment
+        // Convert tasks to services-like format for consistency
+        this.sharedService.debuggerStateSubject.next({ services: tasks || [] });
       },
         error => {
           if (error.status === 0) {
@@ -711,6 +727,8 @@ export class NodeEditorComponent implements OnInit {
         }
         // refresh node data
         updateNode(data);
+        // Emit services to debuggerStateSubject so filter nodes can check for debugger attachment
+        this.sharedService.debuggerStateSubject.next({ services: services || [] });
       },
         error => {
           if (error.status === 0) {
@@ -1883,6 +1901,178 @@ export class NodeEditorComponent implements OnInit {
     if (this.debugDisplayRefreshSubscription) {
       this.debugDisplayRefreshSubscription.unsubscribe();
       this.debugDisplayRefreshSubscription = null;
+    }
+  }
+
+  /**
+   * Create a debug display node for a watched filter node
+   */
+  async createFilterWatchNode(filterNodeId: string, filterNodeName: string, filterNode: any) {
+    if (!this.socket) {
+      this.socket = new ClassicPreset.Socket("socket");
+    }
+
+    // Check if watch node already exists for this filter
+    const nodes = editor.getNodes();
+    const existingWatchNode = nodes.find((n: any) => 
+      n.type === 'debug-data-display' && (n as any).filterNodeId === filterNodeId
+    );
+    if (existingWatchNode) {
+      // Already watching, but this shouldn't happen if toggle is working correctly
+      // Update the watch state in the array if needed
+      const existingInArray = this.debugDataDisplayNodes.find((node: any) => 
+        (node as any).filterNodeId === filterNodeId
+      );
+      if (!existingInArray && existingWatchNode) {
+        this.debugDataDisplayNodes.push(existingWatchNode);
+      }
+      return; // Already watching
+    }
+
+    // Get the service with attached debugger to fetch buffer data
+    let serviceWithDebugger: any = null;
+    if (this.from === 'south') {
+      serviceWithDebugger = this.services.find((s: any) => s.debug?.debugger === 'Attached');
+    } else {
+      serviceWithDebugger = this.tasks.find((t: any) => t.debug?.debugger === 'Attached');
+    }
+    
+    if (!serviceWithDebugger) {
+      return;
+    }
+
+    try {
+      // Fetch buffer data
+      const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name).toPromise();
+      this.bufferData = bufferDataResponse?.data || bufferDataResponse;
+      
+      // Find matching data in buffer for this filter
+      let nodeData = null;
+      if (this.bufferData && Array.isArray(this.bufferData)) {
+        const findNodeData = (arr: any[]): any => {
+          for (const item of arr) {
+            if (!item) continue;
+            if (typeof item === 'object' && item.name === filterNodeName) {
+              return item;
+            }
+            if (Array.isArray(item)) {
+              const found = findNodeData(item);
+              if (found) return found;
+            }
+          }
+          return null;
+        };
+        nodeData = findNodeData(this.bufferData);
+      }
+
+      // Create debug display node
+      const debugNode = new DebugDataDisplay(this.socket, filterNodeName, nodeData);
+      debugNode.debugData = nodeData;
+      // Store reference to the filter node
+      (debugNode as any).filterNodeId = filterNodeId;
+      
+      await editor.addNode(debugNode);
+      
+      // Position node to the left of the filter node
+      const filterNodeView = getNodeView(filterNodeId);
+      if (filterNodeView?.position) {
+        const debugNodeView = getNodeView(debugNode.id);
+        if (debugNodeView) {
+          await debugNodeView.translate(filterNodeView.position.x - 380, filterNodeView.position.y);
+        }
+      }
+      
+      // Wait for nodes to be fully rendered before creating connection
+      await new Promise(resolve => setTimeout(resolve, 150));
+      
+      // Connect debug node to filter node (from debug node output to filter node input)
+      try {
+        const sourceView = getNodeView(debugNode.id);
+        const targetView = getNodeView(filterNodeId);
+        
+        if (sourceView?.position && targetView?.position) {
+          // Check for existing connections to avoid duplicates
+          const existingConnections = editor.getConnections().filter(conn => {
+            if (!conn || !conn.source || !conn.target) return false;
+            return (conn.source === filterNodeId && conn.target === debugNode.id) ||
+                   (conn.source === debugNode.id && conn.target === filterNodeId);
+          });
+          
+          if (existingConnections.length === 0) {
+            const connection = new Connection(connectionEvents, debugNode, filterNode);
+            await editor.addConnection(connection);
+            await area.update('connection', connection.id);
+            await area.update('node', debugNode.id);
+            await area.update('node', filterNodeId);
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to create connection from debug node to filter node:', e);
+      }
+      
+      this.debugDataDisplayNodes.push(debugNode);
+      
+      // Notify custom-node component that watch state has changed
+      this.flowEditorService.filterWatchStateChanged.next({
+        filterNodeId: filterNodeId,
+        isWatched: true
+      });
+      
+      this.cdRf.detectChanges();
+    } catch (error) {
+      console.error('Failed to create filter watch node:', error);
+    }
+  }
+
+  /**
+   * Remove debug display node for a watched filter node
+   */
+  async removeFilterWatchNode(filterNodeId: string) {
+    // Check both the array and the editor nodes to find the watch node
+    let watchNode = this.debugDataDisplayNodes.find((node: any) => 
+      (node as any).filterNodeId === filterNodeId
+    );
+    
+    // If not found in array, check editor nodes
+    if (!watchNode) {
+      const nodes = editor.getNodes();
+      watchNode = nodes.find((n: any) => 
+        n.type === 'debug-data-display' && (n as any).filterNodeId === filterNodeId
+      );
+    }
+    
+    if (!watchNode) {
+      return;
+    }
+
+    try {
+      // Remove connections first
+      const connections = editor.getConnections();
+      connections.forEach((conn: any) => {
+        if (conn.target === watchNode.id || conn.source === watchNode.id) {
+          editor.removeConnection(conn.id);
+        }
+      });
+      
+      // Remove node
+      await editor.removeNode(watchNode.id);
+      
+      // Remove from array
+      const index = this.debugDataDisplayNodes.indexOf(watchNode);
+      if (index > -1) {
+        this.debugDataDisplayNodes.splice(index, 1);
+      }
+      
+      // Notify custom-node component that watch state has changed
+      this.flowEditorService.filterWatchStateChanged.next({
+        filterNodeId: filterNodeId,
+        isWatched: false
+      });
+      
+      this.cdRf.detectChanges();
+    } catch (e) {
+      console.warn('Failed to remove filter watch node:', e);
     }
   }
 

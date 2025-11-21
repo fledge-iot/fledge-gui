@@ -29,6 +29,8 @@ export class FlowEditorService {
   public updateNodeStatusSubject: BehaviorSubject<NodeStatus> = new BehaviorSubject<NodeStatus>({ name: '', newState: false, type: '' });
   public openDebuggerInQuickview: BehaviorSubject<any> = new BehaviorSubject<any>({});
   public showDebuggerDataDisplay: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public toggleFilterWatch: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  public filterWatchStateChanged: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
   private pipelineSubject = new BehaviorSubject<(string | string[])[]>([]);
   updatedFilterPipelineData$: Observable<(string | string[])[]> = this.pipelineSubject.asObservable();

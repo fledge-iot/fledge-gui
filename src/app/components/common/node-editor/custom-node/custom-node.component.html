@@ -37,6 +37,17 @@
           <span *ngIf="task.execution === 'task'" class="help has-text-grey-light">&nbsp;Task</span>
         </div>
         <div class="is-inline-flex">
+          <!-- Eye icon for filter nodes - placed outside ng-template so change detection works -->
+          <button *ngIf="shouldShowEyeIconForFilter" 
+                  class="btn is-small btn-icon mr-2"
+                  (click)="toggleFilterWatch()"
+                  [class.is-active]="isFilterWatched"
+                  style="display: inline-block !important; visibility: visible !important;">
+            <span class="icon is-small has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
+                  [attr.data-tooltip]="isFilterWatched ? 'Hide debug data' : 'Show debug data'">
+              <i class="bi bi-eye bi-sm" [class.has-text-primary]="isFilterWatched"></i>
+            </span>
+          </button>
           <ng-container *ngIf="data.label!=='Filter'; else southServiceTemplate">
             <div class="is-inline-flex">
               <button *ngIf="isServiceNode && data?.debug?.debugger == 'Attached'" class="btn is-small btn-icon">
@@ -74,13 +85,16 @@
                 </span>
               </button>
             </ng-container>
-            <ng-container
-              *ngIf="data.label==='Filter' && !data.pseudoNode && data.controls?.pseudoNodeControl?.pseudoConnection">
-              <button class="btn small-btn add-btn is-pulled-right" (click)="addFilter()">
-                <span class="ml-2 has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Choose plugin">
-                  <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
-                </span>
-              </button>
+            <ng-container *ngIf="data.label==='Filter' && !data.pseudoNode">
+              <div class="is-inline-flex is-align-items-center">
+                <ng-container *ngIf="data.controls?.pseudoNodeControl?.pseudoConnection">
+                  <button class="btn small-btn add-btn is-pulled-right" (click)="addFilter()">
+                    <span class="ml-2 has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Choose plugin">
+                      <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </ng-container>
+              </div>
             </ng-container>
           </ng-template>
         </div>
