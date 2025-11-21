@@ -80,6 +80,7 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
   isDataDisplayVisible: boolean = false;  // Track data display visibility state
   isDebuggerAttached: boolean = false;  // Track if debugger is attached to pipeline
   isFilterWatched: boolean = false;  // Track if this filter node is being watched
+  isStorageWatched: boolean = false;  // Track if this storage node is being watched
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -105,6 +106,25 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
       console.log('[Filter Node] Template rendered - isDebuggerAttached:', this.isDebuggerAttached, 'nodeId:', this.data?.id);
     }
     return false; // Don't render anything
+  }
+
+  /**
+   * Getter to check if eye icon should be visible for storage nodes
+   */
+  get shouldShowEyeIconForStorage(): boolean {
+    // Show on storage nodes when debugger is attached
+    const isStorage = this.data?.label === 'Storage';
+    if (!isStorage) {
+      return false;
+    }
+    
+    const shouldShow = this.isDebuggerAttached;
+    
+    console.log('[Storage Node] shouldShowEyeIconForStorage - label:', this.data?.label, 
+                'isDebuggerAttached:', this.isDebuggerAttached, 
+                'shouldShow:', shouldShow,
+                'nodeId:', this.data?.id);
+    return shouldShow;
   }
 
   /**
@@ -252,6 +272,9 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
 
     // Subscribe to filter watch state changes
     this.subscribeToFilterWatchState();
+    
+    // Subscribe to storage watch state changes
+    this.subscribeToStorageWatchState();
 
     this.sharedService.debuggerStateSubject
       .pipe(
@@ -458,6 +481,16 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
         // This is a fallback check - the subscription will update it properly
         console.log('[Filter Node] ngOnChanges - isDebuggerAttached is false, waiting for subscription update');
       }
+    }
+
+    // Check if this storage node is already being watched
+    if (this.data.label === 'Storage') {
+      const nodes = editor.getNodes();
+      const watchNode = nodes.find((n: any) => 
+        n.type === 'debug-data-display' && (n as any).storageNodeId === this.data.id
+      );
+      this.isStorageWatched = !!watchNode;
+      console.log('[Storage Node] ngOnChanges - isStorageWatched:', this.isStorageWatched, 'nodeId:', this.data.id);
     }
     
     if (this.data.label === 'South' || this.data.label === 'North') {
@@ -1130,6 +1163,32 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
   }
 
   /**
+   * Toggle watch state for storage node
+   */
+  toggleStorageWatch() {
+    if (this.data.label !== 'Storage') {
+      return;
+    }
+    
+    // Check if a watch node already exists for this storage node
+    const nodes = editor.getNodes();
+    const existingWatchNode = nodes.find((n: any) => 
+      n.type === 'debug-data-display' && (n as any).storageNodeId === this.data.id
+    );
+    
+    // Toggle the watch state
+    this.isStorageWatched = !!existingWatchNode;
+    this.isStorageWatched = !this.isStorageWatched; // Toggle it
+    
+    // Emit event to node-editor component to create/remove debug display node
+    this.flowEditorService.toggleStorageWatch.next({
+      storageNodeId: this.data.id,
+      isWatched: this.isStorageWatched,
+      storageNode: this.data
+    });
+  }
+
+  /**
    * Subscribe to filter watch state changes to sync icon state
    */
   private subscribeToFilterWatchState() {
@@ -1138,6 +1197,20 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
       .subscribe((watchState: any) => {
         if (watchState && watchState.filterNodeId === this.data.id) {
           this.isFilterWatched = watchState.isWatched;
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
+  /**
+   * Subscribe to storage watch state changes to sync icon state
+   */
+  private subscribeToStorageWatchState() {
+    this.flowEditorService.storageWatchStateChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((watchState: any) => {
+        if (watchState && watchState.storageNodeId === this.data.id) {
+          this.isStorageWatched = watchState.isWatched;
           this.cdr.detectChanges();
         }
       });

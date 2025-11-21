@@ -290,6 +290,17 @@
 </ng-container>
 <ng-template #storageTemplate>
   <div class="is-flex storage-node-container" style="position: relative;">
+    <!-- Eye icon for watching storage node when debugger is attached - positioned in top right corner -->
+    <button *ngIf="shouldShowEyeIconForStorage" 
+            class="btn is-small btn-icon storage-eye-icon"
+            (click)="toggleStorageWatch()"
+            [class.is-active]="isStorageWatched"
+            style="position: absolute; top: 0; right: 0; z-index: 10;">
+      <span class="icon is-small has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
+            [attr.data-tooltip]="isStorageWatched ? 'Hide debug data' : 'Show debug data'">
+        <i class="bi bi-eye bi-sm" [class.has-text-primary]="isStorageWatched"></i>
+      </span>
+    </button>
     <ng-container *ngIf="from=='south'">
       <div class="input is-pulled-left storage-input input-container"
         *ngFor="let input of data.inputs | keyvalue: sortByIndex" [attr.data-testid]="'input-'+input.key">

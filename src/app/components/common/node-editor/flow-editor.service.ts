@@ -31,6 +31,8 @@ export class FlowEditorService {
   public showDebuggerDataDisplay: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public toggleFilterWatch: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public filterWatchStateChanged: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  public toggleStorageWatch: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  public storageWatchStateChanged: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
   private pipelineSubject = new BehaviorSubject<(string | string[])[]>([]);
   updatedFilterPipelineData$: Observable<(string | string[])[]> = this.pipelineSubject.asObservable();

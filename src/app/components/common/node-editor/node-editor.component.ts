@@ -500,6 +500,19 @@ export class NodeEditorComponent implements OnInit {
           this.removeFilterWatchNode(watchData.filterNodeId);
         }
       });
+
+    // Subscribe to storage watch toggle events
+    this.flowEditorService.toggleStorageWatch
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((watchData: any) => {
+        if (!watchData) return;
+        
+        if (watchData.isWatched) {
+          this.createStorageWatchNode(watchData.storageNodeId, watchData.storageNode);
+        } else {
+          this.removeStorageWatchNode(watchData.storageNodeId);
+        }
+      });
   }
 
   ngAfterViewInit(): void {
@@ -1807,31 +1820,13 @@ export class NodeEditorComponent implements OnInit {
         const nodeInEditor = nodes.find((n: any) => n.id === debugNode.id);
         if (!nodeInEditor) continue;
         
-        // Get node name - could be from nodeName property or filterNodeName for filter watch nodes
+        // Get node name - could be from nodeName property, filterNodeName for filter watch nodes, or storageNodeId for storage watch nodes
         const nodeName = debugNode.nodeName || (debugNode as any).filterNodeName;
+        const isStorageWatchNode = !!(debugNode as any).storageNodeId;
         let nodeData = null;
         
-        // Find matching data in buffer
-        if (this.bufferData && Array.isArray(this.bufferData)) {
-          const findNodeData = (arr: any[]): any => {
-            for (const item of arr) {
-              if (!item) continue;
-              if (typeof item === 'object' && item.name === nodeName) {
-                return item;
-              }
-              if (Array.isArray(item)) {
-                const found = findNodeData(item);
-                if (found) return found;
-              }
-            }
-            return null;
-          };
-          
-          nodeData = findNodeData(this.bufferData);
-        }
-        
-        // For storage node, look for Writer data
-        if (nodeName === 'Storage' && !nodeData) {
+        // For storage watch nodes, look for Writer data
+        if (isStorageWatchNode || nodeName === 'Storage') {
           const findWriterData = (arr: any[]): any => {
             for (const item of arr) {
               if (!item) continue;
@@ -1846,6 +1841,25 @@ export class NodeEditorComponent implements OnInit {
             return null;
           };
           nodeData = findWriterData(this.bufferData);
+        } else {
+          // For filter nodes, find matching data in buffer by name
+          if (this.bufferData && Array.isArray(this.bufferData)) {
+            const findNodeData = (arr: any[]): any => {
+              for (const item of arr) {
+                if (!item) continue;
+                if (typeof item === 'object' && item.name === nodeName) {
+                  return item;
+                }
+                if (Array.isArray(item)) {
+                  const found = findNodeData(item);
+                  if (found) return found;
+                }
+              }
+              return null;
+            };
+            
+            nodeData = findNodeData(this.bufferData);
+          }
         }
         
         // Update the debug node with new data
@@ -1883,7 +1897,10 @@ export class NodeEditorComponent implements OnInit {
         const hasFilterWatchNodes = this.debugDataDisplayNodes.some((node: any) => 
           (node as any).filterNodeId !== undefined
         );
-        const hasNodesToRefresh = areDebugDisplayNodesVisible || hasFilterWatchNodes;
+        const hasStorageWatchNodes = this.debugDataDisplayNodes.some((node: any) => 
+          (node as any).storageNodeId !== undefined
+        );
+        const hasNodesToRefresh = areDebugDisplayNodesVisible || hasFilterWatchNodes || hasStorageWatchNodes;
         
         // Only refresh if there are nodes to refresh and ingress is not suspended
         if (hasNodesToRefresh && this.isIngressNotSuspended()) {
@@ -2086,6 +2103,189 @@ export class NodeEditorComponent implements OnInit {
       this.cdRf.detectChanges();
     } catch (e) {
       console.warn('Failed to remove filter watch node:', e);
+    }
+  }
+
+  /**
+   * Create a debug display node for a watched storage node
+   */
+  async createStorageWatchNode(storageNodeId: string, storageNode: any) {
+    if (!this.socket) {
+      this.socket = new ClassicPreset.Socket("socket");
+    }
+
+    // Check if watch node already exists for this storage
+    const nodes = editor.getNodes();
+    const existingWatchNode = nodes.find((n: any) => 
+      n.type === 'debug-data-display' && (n as any).storageNodeId === storageNodeId
+    );
+    if (existingWatchNode) {
+      // Already watching, but this shouldn't happen if toggle is working correctly
+      const existingInArray = this.debugDataDisplayNodes.find((node: any) => 
+        (node as any).storageNodeId === storageNodeId
+      );
+      if (!existingInArray && existingWatchNode) {
+        this.debugDataDisplayNodes.push(existingWatchNode);
+      }
+      return; // Already watching
+    }
+
+    // Get the service with attached debugger to fetch buffer data
+    let serviceWithDebugger: any = null;
+    if (this.from === 'south') {
+      serviceWithDebugger = this.services.find((s: any) => s.debug?.debugger === 'Attached');
+    } else {
+      serviceWithDebugger = this.tasks.find((t: any) => t.debug?.debugger === 'Attached');
+    }
+    
+    if (!serviceWithDebugger) {
+      return;
+    }
+
+    try {
+      // Fetch buffer data
+      const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name).toPromise();
+      this.bufferData = bufferDataResponse?.data || bufferDataResponse;
+      
+      // Find Writer data in buffer for storage node
+      let nodeData = null;
+      if (this.bufferData && Array.isArray(this.bufferData)) {
+        const findWriterData = (arr: any[]): any => {
+          for (const item of arr) {
+            if (!item) continue;
+            if (typeof item === 'object' && item.name && item.name.toLowerCase().includes('writer')) {
+              return item;
+            }
+            if (Array.isArray(item)) {
+              const found = findWriterData(item);
+              if (found) return found;
+            }
+          }
+          return null;
+        };
+        nodeData = findWriterData(this.bufferData);
+      }
+
+      // Create debug display node
+      const debugNode = new DebugDataDisplay(this.socket, 'Storage', nodeData);
+      debugNode.debugData = nodeData;
+      // Store reference to the storage node
+      (debugNode as any).storageNodeId = storageNodeId;
+      
+      await editor.addNode(debugNode);
+      
+      // Position node to the left of the storage node
+      const storageNodeView = getNodeView(storageNodeId);
+      if (storageNodeView?.position) {
+        const debugNodeView = getNodeView(debugNode.id);
+        if (debugNodeView) {
+          await debugNodeView.translate(storageNodeView.position.x - 380, storageNodeView.position.y);
+        }
+      }
+      
+      // Wait for nodes to be fully rendered before creating connection
+      await new Promise(resolve => setTimeout(resolve, 150));
+      
+      // Connect debug node to storage node (from debug node output to storage node input)
+      try {
+        const sourceView = getNodeView(debugNode.id);
+        const targetView = getNodeView(storageNodeId);
+        
+        if (sourceView?.position && targetView?.position) {
+          // Check for existing connections to avoid duplicates
+          const existingConnections = editor.getConnections().filter(conn => {
+            if (!conn || !conn.source || !conn.target) return false;
+            return (conn.source === storageNodeId && conn.target === debugNode.id) ||
+                   (conn.source === debugNode.id && conn.target === storageNodeId);
+          });
+          
+          if (existingConnections.length === 0) {
+            const connection = new Connection(connectionEvents, debugNode as any, storageNode as any);
+            await editor.addConnection(connection);
+            await area.update('connection', connection.id);
+            await area.update('node', debugNode.id);
+            await area.update('node', storageNodeId);
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to create connection from debug node to storage node:', e);
+      }
+      
+      this.debugDataDisplayNodes.push(debugNode);
+      
+      // Start auto-refresh if not already running (for storage watch nodes)
+      if (!this.debugDisplayRefreshSubscription && this.isIngressNotSuspended()) {
+        this.startDebugDisplayAutoRefresh();
+      }
+      
+      // Notify custom-node component that watch state has changed
+      this.flowEditorService.storageWatchStateChanged.next({
+        storageNodeId: storageNodeId,
+        isWatched: true
+      });
+      
+      this.cdRf.detectChanges();
+    } catch (error) {
+      console.error('Failed to create storage watch node:', error);
+    }
+  }
+
+  /**
+   * Remove debug display node for a watched storage node
+   */
+  async removeStorageWatchNode(storageNodeId: string) {
+    // Check both the array and the editor nodes to find the watch node
+    let watchNode = this.debugDataDisplayNodes.find((node: any) => 
+      (node as any).storageNodeId === storageNodeId
+    );
+    
+    // If not found in array, check editor nodes
+    if (!watchNode) {
+      const nodes = editor.getNodes();
+      watchNode = nodes.find((n: any) => 
+        n.type === 'debug-data-display' && (n as any).storageNodeId === storageNodeId
+      );
+    }
+    
+    if (!watchNode) {
+      return;
+    }
+
+    try {
+      // Remove connections first
+      const connections = editor.getConnections();
+      connections.forEach((conn: any) => {
+        if (conn.target === watchNode.id || conn.source === watchNode.id) {
+          editor.removeConnection(conn.id);
+        }
+      });
+      
+      // Remove node
+      await editor.removeNode(watchNode.id);
+      
+      // Remove from array
+      const index = this.debugDataDisplayNodes.indexOf(watchNode);
+      if (index > -1) {
+        this.debugDataDisplayNodes.splice(index, 1);
+      }
+      
+      // Stop auto-refresh if no debug display nodes remain (unless main debug display is visible)
+      const areDebugDisplayNodesVisible = this.flowEditorService.showDebuggerDataDisplay.value;
+      const hasAnyDebugNodes = this.debugDataDisplayNodes.length > 0;
+      if (!areDebugDisplayNodesVisible && !hasAnyDebugNodes && this.debugDisplayRefreshSubscription) {
+        this.stopDebugDisplayAutoRefresh();
+      }
+      
+      // Notify custom-node component that watch state has changed
+      this.flowEditorService.storageWatchStateChanged.next({
+        storageNodeId: storageNodeId,
+        isWatched: false
+      });
+      
+      this.cdRf.detectChanges();
+    } catch (e) {
+      console.warn('Failed to remove storage watch node:', e);
     }
   }
 
