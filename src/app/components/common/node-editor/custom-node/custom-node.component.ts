@@ -912,6 +912,53 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
   }
 
   /**
+   * Remove this debug data display node and its connections
+   */
+  async removeDebugDataDisplayNode(event?: Event) {
+    if (event) {
+      event.stopPropagation(); // Prevent node click event
+    }
+    
+    // Only handle for debug data display nodes
+    if (!this.data || this.data.type !== 'debug-data-display') {
+      return;
+    }
+
+    try {
+      // Remove connections first
+      const connections = editor.getConnections();
+      connections.forEach((conn: any) => {
+        if (conn.target === this.data.id || conn.source === this.data.id) {
+          editor.removeConnection(conn.id);
+        }
+      });
+      
+      // Remove node
+      await editor.removeNode(this.data.id);
+      
+      // Update watch state if this was a filter watch node
+      const filterNodeId = (this.data as any).filterNodeId;
+      if (filterNodeId) {
+        this.flowEditorService.filterWatchStateChanged.next({
+          filterNodeId: filterNodeId,
+          isWatched: false
+        });
+      }
+      
+      // Update watch state if this was a storage watch node
+      const storageNodeId = (this.data as any).storageNodeId;
+      if (storageNodeId) {
+        this.flowEditorService.storageWatchStateChanged.next({
+          storageNodeId: storageNodeId,
+          isWatched: false
+        });
+      }
+    } catch (e) {
+      console.warn('Failed to remove debug data display node:', e);
+    }
+  }
+
+  /**
    * Open buffer size dialog
    */
   openBufferSizeDialog() {
