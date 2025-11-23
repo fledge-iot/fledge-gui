@@ -1574,14 +1574,40 @@ export class NodeEditorComponent implements OnInit {
    * Create debug data display nodes for filter nodes and storage node
    */
   async createDebugDataDisplayNodes() {
-    // Remove existing debug data display nodes
-    await this.removeDebugDataDisplayNodes();
+    // Remove only the main debug data display nodes (not watch nodes)
+    // Watch nodes have filterNodeId or storageNodeId properties
+    const nodesToRemove = this.debugDataDisplayNodes.filter((node: any) => 
+      !node.filterNodeId && !node.storageNodeId
+    );
+    for (const debugNode of nodesToRemove) {
+      try {
+        // Remove connections first
+        const connections = editor.getConnections();
+        connections.forEach((conn: any) => {
+          if (conn.target === debugNode.id || conn.source === debugNode.id) {
+            editor.removeConnection(conn.id);
+          }
+        });
+        
+        // Remove node
+        await editor.removeNode(debugNode.id);
+      } catch (e) {
+        // Node might already be removed
+      }
+    }
+    // Update the array to only keep watch nodes
+    this.debugDataDisplayNodes = this.debugDataDisplayNodes.filter((node: any) => 
+      node.filterNodeId || node.storageNodeId
+    );
     
     if (!this.socket) {
       this.socket = new ClassicPreset.Socket("socket");
     }
     
     const nodes = editor.getNodes();
+    
+    // Get all existing debug display nodes to check for watch nodes
+    const existingDebugNodes = nodes.filter((node: any) => node.type === 'debug-data-display');
     
     // Find filter nodes and storage node
     const filterNodes: any[] = [];
@@ -1601,6 +1627,26 @@ export class NodeEditorComponent implements OnInit {
     
     // Create nodes for filters
     for (const filterNode of filterNodes) {
+      // Check if this filter node already has a watch node connected to it
+      // A watch node has filterNodeId matching this filter node's id
+      const hasWatchNode = existingDebugNodes.some((debugNode: any) => 
+        (debugNode as any).filterNodeId === filterNode.id
+      );
+      
+      // Also check if there's already a connection to this filter node from any debug display node
+      const connections = editor.getConnections();
+      const hasExistingConnection = connections.some((conn: any) => {
+        if (!conn || !conn.source || !conn.target) return false;
+        // Check if connection is from a debug display node to this filter node
+        const sourceNode = nodes.find((n: any) => n.id === conn.source);
+        return sourceNode && sourceNode.type === 'debug-data-display' && conn.target === filterNode.id;
+      });
+      
+      // Skip creating a debug display node if a watch node or connection already exists
+      if (hasWatchNode || hasExistingConnection) {
+        continue;
+      }
+      
       const nodeName = filterNode.controls?.nameControl?.['name'];
       if (!nodeName) {
         console.warn('Filter node has no name:', filterNode);
@@ -1691,6 +1737,26 @@ export class NodeEditorComponent implements OnInit {
     
     // Create node for storage
     if (storageNode) {
+      // Check if the storage node already has a watch node connected to it
+      // A watch node has storageNodeId matching this storage node's id
+      const hasWatchNode = existingDebugNodes.some((debugNode: any) => 
+        (debugNode as any).storageNodeId === storageNode.id
+      );
+      
+      // Also check if there's already a connection to this storage node from any debug display node
+      const connections = editor.getConnections();
+      const hasExistingConnection = connections.some((conn: any) => {
+        if (!conn || !conn.source || !conn.target) return false;
+        // Check if connection is from a debug display node to this storage node
+        const sourceNode = nodes.find((n: any) => n.id === conn.source);
+        return sourceNode && sourceNode.type === 'debug-data-display' && conn.target === storageNode.id;
+      });
+      
+      // Skip creating a debug display node if a watch node or connection already exists
+      if (hasWatchNode || hasExistingConnection) {
+        return;
+      }
+      
       // Find Writer data in buffer (recursively search through nested arrays)
       let writerData = null;
       if (this.bufferData && Array.isArray(this.bufferData)) {
