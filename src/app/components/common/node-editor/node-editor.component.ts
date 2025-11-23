@@ -394,7 +394,9 @@ export class NodeEditorComponent implements OnInit {
               this.selectedFilters.push(data.label);
             }
           }
-          this.nodesToDelete.push({ id: data.id, 'label': data.label, 'name': data.controls.nameControl['name'] });
+          // Add null check for nameControl to prevent errors with debug display nodes
+          const nodeName = data.controls?.nameControl?.['name'] || data.label || '';
+          this.nodesToDelete.push({ id: data.id, 'label': data.label, 'name': nodeName });
         }
         else if (!data.selected) {
           const nodesToDelete = this.nodesToDelete.filter(node => node.id !== data.id);

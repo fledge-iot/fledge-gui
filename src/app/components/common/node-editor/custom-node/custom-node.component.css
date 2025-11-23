@@ -9,6 +9,24 @@
   height: auto;
   position: relative;
   user-select: none;
+  z-index: 1; /* Default z-index for nodes */
+}
+
+/* Increase z-index of the entire node when dropdown is hovered */
+/* Use class-based approach for more reliable z-index management */
+:host.dropdown-hovered {
+  z-index: 999999 !important; /* Extremely high z-index to ensure menus appear above everything including debug display nodes */
+  position: relative !important;
+  isolation: isolate; /* Create new stacking context */
+}
+
+/* Also increase z-index when dropdown is hovered (fallback for :has selector) */
+:host:has(.dropdown.is-hoverable:hover),
+:host:has(.dropdown.is-active),
+:host:has(.dropdown.is-hoverable:hover .dropdown-menu) {
+  z-index: 999999 !important;
+  position: relative !important;
+  isolation: isolate; /* Create new stacking context */
 }
 
 :host:has(div.add-service),
@@ -161,6 +179,9 @@
   width: 394px !important;
   min-width: 394px;
   max-width: 394px;
+  z-index: 1 !important; /* Lower z-index for debug display nodes so menus appear above them */
+  position: relative;
+  isolation: auto; /* Don't create new stacking context for debug nodes */
 }
 
 .storage-input {
@@ -180,6 +201,8 @@
   width: 394px; /* 75% of 525px */
   min-width: 394px;
   max-width: 394px;
+  position: relative;
+  z-index: 1 !important; /* Very low z-index so menus appear above debug display nodes */
 }
 
 .debug-data-display-header {
@@ -273,6 +296,13 @@
   position: absolute;
   bottom: 0;
   right: 0;
+  z-index: 99999 !important; /* Very high z-index to ensure storage menu appears above everything */
+}
+
+/* Increase z-index of storage node when dropdown is hovered */
+:host:has(.storage-menu-container .dropdown.is-hoverable:hover),
+:host:has(.storage-menu-container .dropdown.is-active) {
+  z-index: 99999 !important; /* Very high z-index to ensure menus appear above everything */
 }
 
 .health-icon {
@@ -394,7 +424,7 @@
   left: 100%;
   display: none;
   min-width: 180px;
-  z-index: 999;
+  z-index: 99999 !important; /* Very high z-index to ensure submenus appear above everything */
   background-color: white;
   border-radius: 4px;
   box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
@@ -430,12 +460,50 @@
   background-color: #f5f5f5;
 }
 
+/* Ensure dropdown containers have high z-index */
+.dropdown {
+  position: relative;
+  z-index: 999999 !important;
+}
+
+/* Hide original dropdown menu when it's been portaled */
+.dropdown-menu[style*="display: none"],
+.dropdown-menu[style*="visibility: hidden"],
+.dropdown-menu.is-hidden {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Prevent Bulma hover from showing menu when portal is active */
+.dropdown.portal-active.is-hoverable:hover .dropdown-menu {
+  display: none !important;
+}
+
 .dropdown.is-hoverable:hover .dropdown-menu {
-  display: block;
+  display: block !important;
+  z-index: 999999 !important; /* Extremely high z-index to ensure menus appear above everything */
+  position: absolute !important;
 }
 
 .dropdown-menu {
   pointer-events: auto;
+  z-index: 999999 !important; /* Extremely high z-index to ensure menus appear above everything */
+  position: absolute !important; /* Ensure proper positioning */
+}
+
+/* Force the dropdown menu to appear above everything when visible - override any inline styles */
+.dropdown.is-hoverable:hover .dropdown-menu,
+.dropdown-menu[style*="display: block"],
+.dropdown-menu[style*="display:block"] {
+  z-index: 999999 !important;
+  position: absolute !important;
+  display: block !important;
+}
+
+/* Ensure dropdown menu appears above debug display nodes */
+:host:not(:has(.debug-data-display-node)) .dropdown-menu {
+  z-index: 999999 !important;
 }
 
 .reading-details {

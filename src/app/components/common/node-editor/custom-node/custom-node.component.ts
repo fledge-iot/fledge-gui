@@ -89,6 +89,15 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
     return this.data.selected;
   }
 
+  @HostBinding("class.dropdown-hovered") dropdownHovered = false;
+  
+  // Track active dropdown portals
+  private activeDropdownPortals = new Map<HTMLElement, {
+    clone: HTMLElement;
+    originalMenu: HTMLElement;
+    cleanup: () => void;
+  }>();
+
   /**
    * Getter to check if eye icon should be shown (with logging)
    */
@@ -211,15 +220,18 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
       .subscribe((debuggerState: any) => {
         if (debuggerState?.debug?.debugger === 'Attached') {
           this.isDebuggerAttached = true;
-          this.cdr.markForCheck();
-          this.cdr.detectChanges();
-          // Force another change detection cycle for filter/storage nodes
-          if (this.data?.label === 'Filter' || this.data?.label === 'Storage') {
-            setTimeout(() => {
-              this.cdr.markForCheck();
-              this.cdr.detectChanges();
-            }, 0);
-          }
+          // Use setTimeout to defer change detection until after component initialization
+          setTimeout(() => {
+            this.cdr.markForCheck();
+            this.cdr.detectChanges();
+            // Force another change detection cycle for filter/storage nodes
+            if (this.data?.label === 'Filter' || this.data?.label === 'Storage') {
+              setTimeout(() => {
+                this.cdr.markForCheck();
+                this.cdr.detectChanges();
+              }, 0);
+            }
+          }, 0);
         } else if (debuggerState?.services && Array.isArray(debuggerState.services)) {
           // Check services array if provided
           const hasAttachedDebugger = debuggerState.services.some((s: any) => s.debug?.debugger === 'Attached');
@@ -227,15 +239,21 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
           this.isDebuggerAttached = hasAttachedDebugger;
           // Always trigger change detection for filter/storage nodes when debugger state changes
           if (this.data?.label === 'Filter' || this.data?.label === 'Storage' || wasAttached !== hasAttachedDebugger) {
-            this.cdr.markForCheck();
-            this.cdr.detectChanges();
+            // Use setTimeout to defer change detection until after component initialization
+            setTimeout(() => {
+              this.cdr.markForCheck();
+              this.cdr.detectChanges();
+            }, 0);
           }
         } else if (debuggerState && !debuggerState.debug && !debuggerState.services) {
           // Debugger state cleared - set to false
           if (this.isDebuggerAttached) {
             this.isDebuggerAttached = false;
-            this.cdr.markForCheck();
-            this.cdr.detectChanges();
+            // Use setTimeout to defer change detection until after component initialization
+            setTimeout(() => {
+              this.cdr.markForCheck();
+              this.cdr.detectChanges();
+            }, 0);
           }
         }
       });
@@ -401,6 +419,229 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
           }
         }
       });
+
+    // Set up event listeners for dropdown hover to manage z-index
+    this.setupDropdownHoverListeners();
+  }
+
+  /**
+   * Set up event listeners to portal dropdown menus to document.body
+   * This ensures menus appear above all nodes by rendering them outside the Rete.js area
+   */
+  private setupDropdownHoverListeners(): void {
+    const hostElement = this.elRef.nativeElement;
+    if (!hostElement) return;
+    
+    // Find all dropdown elements within this node
+    const dropdowns = hostElement.querySelectorAll('.dropdown.is-hoverable');
+    
+    dropdowns.forEach((dropdown: HTMLElement) => {
+      let portalData: {
+        clone: HTMLElement;
+        originalMenu: HTMLElement;
+        cleanup: () => void;
+      } | null = null;
+      
+      const mouseEnterHandler = () => {
+        const dropdownMenu = dropdown.querySelector('.dropdown-menu') as HTMLElement;
+        if (!dropdownMenu) return;
+        
+        // If portal already exists, don't create another
+        if (this.activeDropdownPortals.has(dropdown)) {
+          return;
+        }
+        
+        // Get the dropdown trigger position
+        const dropdownTrigger = dropdown.querySelector('.dropdown-trigger') as HTMLElement;
+        if (!dropdownTrigger) return;
+        
+        const rect = dropdownTrigger.getBoundingClientRect();
+        
+        // Clone the menu with all its content and event handlers
+        const menuClone = dropdownMenu.cloneNode(true) as HTMLElement;
+        
+        // Ensure all classes are preserved
+        menuClone.className = dropdownMenu.className;
+        
+        // Set up the cloned menu styling
+        menuClone.style.position = 'fixed';
+        menuClone.style.top = `${rect.bottom + window.scrollY}px`;
+        menuClone.style.left = `${rect.left + window.scrollX}px`;
+        menuClone.style.zIndex = '999999';
+        menuClone.style.display = 'block';
+        menuClone.style.minWidth = `${rect.width}px`;
+        menuClone.style.maxWidth = 'none';
+        menuClone.style.backgroundColor = 'white'; // Ensure background is set
+        menuClone.style.boxShadow = '0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02)'; // Bulma dropdown shadow
+        menuClone.style.borderRadius = '4px'; // Bulma border radius
+        menuClone.style.paddingTop = '0.5rem';
+        menuClone.style.paddingBottom = '0.5rem';
+        
+        // Ensure dropdown-content inside has proper styling
+        const dropdownContent = menuClone.querySelector('.dropdown-content') as HTMLElement;
+        if (dropdownContent) {
+          dropdownContent.style.backgroundColor = 'white';
+          dropdownContent.style.padding = '0';
+        }
+        
+        // Hide the original menu completely - use both display and visibility
+        // Also add a class to prevent Bulma's hover from showing it
+        dropdownMenu.style.display = 'none';
+        dropdownMenu.style.visibility = 'hidden';
+        dropdownMenu.style.opacity = '0';
+        dropdownMenu.classList.add('is-hidden');
+        
+        // Prevent Bulma's hover behavior on the dropdown
+        dropdown.classList.add('portal-active');
+        
+        // Append clone to document.body
+        document.body.appendChild(menuClone);
+        
+        // Set up event handlers for the cloned menu
+        const handleMenuMouseLeave = (e: MouseEvent) => {
+          const relatedTarget = e.relatedTarget as HTMLElement;
+          // If mouse is moving back to dropdown, don't close
+          if (dropdown.contains(relatedTarget)) {
+            return;
+          }
+          // Mouse left menu - close portal
+          this.closeDropdownPortal(dropdown);
+        };
+        
+        const handleMenuClick = (e: Event) => {
+          // Find the clicked item in the clone
+          const target = e.target as HTMLElement;
+          
+          // Check if it's a submenu item
+          const clickedSubmenuItem = target.closest('.submenu-text') as HTMLElement;
+          if (clickedSubmenuItem) {
+            // Find the corresponding submenu item in the original menu by index
+            const cloneSubmenuItems = Array.from(menuClone.querySelectorAll('.submenu-text'));
+            const originalSubmenuItems = Array.from(dropdownMenu.querySelectorAll('.submenu-text'));
+            const clickedIndex = cloneSubmenuItems.indexOf(clickedSubmenuItem);
+            
+            if (clickedIndex >= 0 && clickedIndex < originalSubmenuItems.length) {
+              const originalSubmenuItem = originalSubmenuItems[clickedIndex] as HTMLElement;
+              // Trigger click on original submenu item
+              if (originalSubmenuItem) {
+                originalSubmenuItem.click();
+              }
+            }
+            return;
+          }
+          
+          // Check if it's a regular dropdown item
+          const clickedItem = target.closest('.dropdown-item') as HTMLElement;
+          if (!clickedItem) return;
+          
+          // Find the corresponding item in the original menu by index
+          const cloneItems = Array.from(menuClone.querySelectorAll('.dropdown-item'));
+          const originalItems = Array.from(dropdownMenu.querySelectorAll('.dropdown-item'));
+          const clickedIndex = cloneItems.indexOf(clickedItem);
+          
+          if (clickedIndex >= 0 && clickedIndex < originalItems.length) {
+            const originalItem = originalItems[clickedIndex] as HTMLElement;
+            // Trigger click on original item
+            if (originalItem) {
+              originalItem.click();
+            }
+          }
+        };
+        
+        menuClone.addEventListener('mouseleave', handleMenuMouseLeave);
+        menuClone.addEventListener('click', handleMenuClick, true); // Use capture phase
+        
+        // Cleanup function
+        const cleanup = () => {
+          menuClone.removeEventListener('mouseleave', handleMenuMouseLeave);
+          menuClone.removeEventListener('click', handleMenuClick);
+          if (document.body.contains(menuClone)) {
+            document.body.removeChild(menuClone);
+          }
+          dropdownMenu.style.display = '';
+          dropdownMenu.style.visibility = '';
+          dropdownMenu.style.opacity = '';
+          dropdownMenu.classList.remove('is-hidden');
+          dropdown.classList.remove('portal-active');
+          this.dropdownHovered = false;
+          hostElement.style.setProperty('z-index', '1', 'important');
+        };
+        
+        portalData = {
+          clone: menuClone,
+          originalMenu: dropdownMenu,
+          cleanup
+        };
+        
+        this.activeDropdownPortals.set(dropdown, portalData);
+        this.dropdownHovered = true;
+        hostElement.style.setProperty('z-index', '999999', 'important');
+        
+        // Update position on scroll/resize
+        const updatePosition = () => {
+          if (!portalData || !document.body.contains(portalData.clone)) return;
+          const newRect = dropdownTrigger.getBoundingClientRect();
+          portalData.clone.style.top = `${newRect.bottom + window.scrollY}px`;
+          portalData.clone.style.left = `${newRect.left + window.scrollX}px`;
+        };
+        
+        window.addEventListener('scroll', updatePosition, true);
+        window.addEventListener('resize', updatePosition);
+        
+        // Store scroll/resize handlers for cleanup
+        (portalData as any).scrollHandler = updatePosition;
+        (portalData as any).resizeHandler = updatePosition;
+      };
+      
+      const mouseLeaveHandler = (e: MouseEvent) => {
+        const relatedTarget = e.relatedTarget as HTMLElement;
+        const portalData = this.activeDropdownPortals.get(dropdown);
+        
+        // If mouse is moving to the cloned menu, don't close
+        if (portalData && portalData.clone && 
+            (portalData.clone.contains(relatedTarget) || portalData.clone === relatedTarget)) {
+          return;
+        }
+        
+        // Mouse left dropdown - close portal after a small delay
+        setTimeout(() => {
+          const portalData = this.activeDropdownPortals.get(dropdown);
+          if (portalData) {
+            // Check if mouse is still over the cloned menu
+            const isOverMenu = portalData.clone.matches(':hover') || 
+                             document.elementFromPoint(e.clientX, e.clientY)?.closest('.dropdown-menu') === portalData.clone;
+            if (!isOverMenu) {
+              this.closeDropdownPortal(dropdown);
+            }
+          }
+        }, 50);
+      };
+      
+      dropdown.addEventListener('mouseenter', mouseEnterHandler);
+      dropdown.addEventListener('mouseleave', mouseLeaveHandler);
+    });
+  }
+  
+  /**
+   * Close a dropdown portal and clean up
+   */
+  private closeDropdownPortal(dropdown: HTMLElement): void {
+    const portalData = this.activeDropdownPortals.get(dropdown);
+    if (!portalData) return;
+    
+    // Remove scroll/resize handlers
+    if ((portalData as any).scrollHandler) {
+      window.removeEventListener('scroll', (portalData as any).scrollHandler, true);
+    }
+    if ((portalData as any).resizeHandler) {
+      window.removeEventListener('resize', (portalData as any).resizeHandler);
+    }
+    
+    // Run cleanup
+    portalData.cleanup();
+    
+    // Remove from map
+    this.activeDropdownPortals.delete(dropdown);
   }
 
   openModal(id: string) {
@@ -409,6 +650,12 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(): void {
     this.nodeId = this.data.id;
+    
+    // Set up dropdown hover listeners when component changes
+    // Use setTimeout to ensure DOM is updated
+    setTimeout(() => {
+      this.setupDropdownHoverListeners();
+    }, 0);
     
     // Skip processing for debug data display nodes
     if (this.data.type === 'debug-data-display') {
@@ -1366,9 +1613,14 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
     this.flowEditorService.filterWatchStateChanged
       .pipe(takeUntil(this.destroy$))
       .subscribe((watchState: any) => {
-        if (watchState && watchState.filterNodeId === this.data.id) {
+        // Add null check for this.data to prevent errors during component initialization
+        if (watchState && this.data && watchState.filterNodeId === this.data.id) {
           this.isFilterWatched = watchState.isWatched;
-          this.cdr.detectChanges();
+          // Use setTimeout to defer change detection until after component initialization
+          setTimeout(() => {
+            this.cdr.markForCheck();
+            this.cdr.detectChanges();
+          }, 0);
         }
       });
   }
@@ -1380,14 +1632,25 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
     this.flowEditorService.storageWatchStateChanged
       .pipe(takeUntil(this.destroy$))
       .subscribe((watchState: any) => {
-        if (watchState && watchState.storageNodeId === this.data.id) {
+        // Add null check for this.data to prevent errors during component initialization
+        if (watchState && this.data && watchState.storageNodeId === this.data.id) {
           this.isStorageWatched = watchState.isWatched;
-          this.cdr.detectChanges();
+          // Use setTimeout to defer change detection until after component initialization
+          setTimeout(() => {
+            this.cdr.markForCheck();
+            this.cdr.detectChanges();
+          }, 0);
         }
       });
   }
 
   ngOnDestroy() {
+    // Clean up all active dropdown portals
+    this.activeDropdownPortals.forEach((portalData, dropdown) => {
+      this.closeDropdownPortal(dropdown);
+    });
+    this.activeDropdownPortals.clear();
+    
     // Clean up modal if it was moved to document.body
     if (this.bufferSizeModal) {
       const modalElement = this.bufferSizeModal.nativeElement;
