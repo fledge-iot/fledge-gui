@@ -1,6 +1,17 @@
 .rete {
   height: 85vh;
   padding: 0.5rem;
+  overflow: visible;
+  position: relative;
+}
+
+/* Ensure the Rete.js area container allows overflow for connections */
+::ng-deep .rete [rete-area] {
+  overflow: visible !important;
+}
+
+::ng-deep .rete [rete-area] > * {
+  overflow: visible !important;
 }
 
 .custom-margin {

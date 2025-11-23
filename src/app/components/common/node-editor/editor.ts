@@ -91,14 +91,18 @@ export async function createEditor(
         if (!conn || !conn.source || !conn.target) return false;
         return conn.source === node.id || conn.target === node.id;
       });
-      // Defer icon position update to the next paint frame
+      // Defer icon position update and connection path recalculation to the next paint frame
       requestAnimationFrame(() => {
         nodeConnections.forEach(conn => {
           const element = area.connectionViews.get(conn.id)?.element;
           if (element) {
             updateConnectionIconPosition(conn.id, element);
+            // Force connection path update to handle partially off-screen nodes
+            area.update('connection', conn.id);
           }
         });
+        // Also update the node view to ensure proper rendering
+        area.update('node', node.id);
       });
     }
     return context;
