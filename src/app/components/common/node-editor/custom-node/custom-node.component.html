@@ -252,6 +252,9 @@
                           <a class="submenu-text" (click)="toggleDataDisplay()">
                             {{isDataDisplayVisible ? 'Hide All Data' : 'Show All Data'}}</a>
                         </div>
+                        <div *ngIf="data?.debug?.debugger === 'Attached'">
+                          <a class="submenu-text" (click)="openBufferSizeDialog()">Buffer Size</a>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -426,3 +429,37 @@
     </ng-container>
   </div>
 </ng-template>
+
+<!-- Buffer Size Dialog -->
+<div #bufferSizeModal class="modal" [class.is-active]="showBufferSizeDialog">
+  <div class="modal-background" (click)="closeBufferSizeDialog()"></div>
+  <div class="modal-card" style="width: 400px;">
+    <header class="modal-card-head">
+      <p class="modal-card-title is-size-6">Buffer Size</p>
+      <button class="delete" (click)="closeBufferSizeDialog()" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body">
+      <div class="field">
+        <label class="label">Buffer Size</label>
+        <div class="control">
+          <input class="input" 
+                 type="number" 
+                 [value]="bufferSizeInput"
+                 (input)="onBufferSizeInput($event)"
+                 min="1" 
+                 max="10" 
+                 step="1"
+                 placeholder="1-10"
+                 autofocus
+                 (keyup.enter)="setBufferSize()"
+                 (keyup.escape)="closeBufferSizeDialog()">
+        </div>
+        <p class="help">Enter a value between 1 and 10</p>
+      </div>
+    </section>
+    <footer class="modal-card-foot buttons">
+      <button class="button is-success" (click)="setBufferSize()">OK</button>
+      <button class="button" (click)="closeBufferSizeDialog()">Cancel</button>
+    </footer>
+  </div>
+</div>

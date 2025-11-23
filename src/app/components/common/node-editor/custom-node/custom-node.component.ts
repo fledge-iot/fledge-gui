@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef, OnDestroy } from "@angular/core";
+import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef, OnDestroy, Renderer2, ViewChild } from "@angular/core";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import {
@@ -81,6 +81,9 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
   isDebuggerAttached: boolean = false;  // Track if debugger is attached to pipeline
   isFilterWatched: boolean = false;  // Track if this filter node is being watched
   isStorageWatched: boolean = false;  // Track if this storage node is being watched
+  showBufferSizeDialog: boolean = false;  // Track buffer size dialog visibility
+  bufferSizeInput: string = '';  // Buffer size input value
+  @ViewChild('bufferSizeModal', { static: false }) bufferSizeModal: ElementRef;  // Reference to modal element
 
   @HostBinding("class.selected") get selected() {
     return this.data.selected;
@@ -185,7 +188,8 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
     private alertService: AlertService,
     private ngProgress: ProgressBarService,
     private serviceApi: ServicesApiService,
-    private elRef: ElementRef) {
+    private elRef: ElementRef,
+    private renderer: Renderer2) {
     this.route.params.subscribe(params => {
       this.from = params.from;
       this.source = params.name;
@@ -907,6 +911,89 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
     this.flowEditorService.refreshDebugDisplayNodes.next(true);
   }
 
+  /**
+   * Open buffer size dialog
+   */
+  openBufferSizeDialog() {
+    this.bufferSizeInput = '';
+    this.showBufferSizeDialog = true;
+    // Move modal to document.body to avoid size constraints
+    setTimeout(() => {
+      if (this.bufferSizeModal) {
+        const modalElement = this.bufferSizeModal.nativeElement;
+        if (modalElement && modalElement.parentNode !== document.body) {
+          document.body.appendChild(modalElement);
+        }
+        // Focus the input after a short delay to ensure the modal is rendered
+        const input = modalElement.querySelector('.input[type="number"]') as HTMLInputElement;
+        if (input) {
+          input.focus();
+        }
+      }
+    }, 100);
+  }
+
+  /**
+   * Close buffer size dialog
+   */
+  closeBufferSizeDialog() {
+    this.showBufferSizeDialog = false;
+    this.bufferSizeInput = '';
+    // Move modal back to component if it was moved to document.body
+    setTimeout(() => {
+      if (this.bufferSizeModal) {
+        const modalElement = this.bufferSizeModal.nativeElement;
+        if (modalElement && modalElement.parentNode === document.body) {
+          // Remove from document.body - it will be reattached by Angular's template
+          document.body.removeChild(modalElement);
+        }
+      }
+    }, 0);
+  }
+
+  /**
+   * Handle buffer size input change
+   */
+  onBufferSizeInput(event: Event) {
+    const target = event.target as HTMLInputElement;
+    this.bufferSizeInput = target.value;
+  }
+
+  /**
+   * Set buffer size when OK is clicked
+   */
+  setBufferSize() {
+    // Parse the input value
+    const bufferSize = parseInt(this.bufferSizeInput, 10);
+    
+    // Validate the input
+    if (isNaN(bufferSize) || bufferSize < 1 || bufferSize > 10) {
+      this.alertService.error('Please enter a number between 1 and 10', true);
+      return;
+    }
+    
+    // Get the service name
+    const name = this.data.controls.nameControl['name'];
+    
+    // Call the API to set buffer size
+    this.ngProgress.start();
+    this.serviceApi.setBufferSize(name, { size: bufferSize })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        this.ngProgress.done();
+        this.alertService.success(res['message'] || 'Buffer size updated successfully', true);
+        this.closeBufferSizeDialog();
+        this.cdr.detectChanges();
+      }, error => {
+        this.ngProgress.done();
+        if (error.status === 0) {
+          console.log('service down ', error);
+        } else {
+          this.alertService.error(error.statusText || 'Failed to update buffer size', true);
+        }
+      });
+  }
+
   getDebuggerStateChanges(expectedState: string) {
     const maxRetries = 3;
     let attempt = 0;
@@ -1254,6 +1341,13 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
+    // Clean up modal if it was moved to document.body
+    if (this.bufferSizeModal) {
+      const modalElement = this.bufferSizeModal.nativeElement;
+      if (modalElement && modalElement.parentNode === document.body) {
+        document.body.removeChild(modalElement);
+      }
+    }
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
