@@ -28,6 +28,45 @@ export class Connector<S extends ClassicScheme, K extends any[]> extends Bidirec
         const nodes = context.editor.getNodes();
         const isSouthSide = nodes.find(node => node.label == 'South');
         const isNorthSide = nodes.find(node => node.label == 'North');
+        
+        // Prevent debug display nodes from creating connections except to their intended target
+        const fromNodeType = (fromNode as any)?.type;
+        const toNodeType = (toNode as any)?.type;
+        
+        // If source is a debug display node, only allow connection to its intended target
+        if (fromNodeType === 'debug-data-display') {
+          const debugNode = fromNode as any;
+          const targetFilterId = debugNode.filterNodeId;
+          const targetStorageId = debugNode.storageNodeId;
+          
+          // Check if there's already a connection from this debug node
+          const existingConnections = context.editor.getConnections().filter(conn => 
+            conn.source === debugNode.id
+          );
+          
+          // If there's already a connection, prevent creating another one
+          if (existingConnections.length > 0) {
+            return;
+          }
+          
+          // Only allow connection if target matches the intended filter or storage node
+          if (targetFilterId && toNode.id !== targetFilterId) {
+            return;
+          }
+          if (targetStorageId && toNode.id !== targetStorageId) {
+            return;
+          }
+          // If no target is set (shouldn't happen, but be safe), prevent connection
+          if (!targetFilterId && !targetStorageId) {
+            return;
+          }
+        }
+        
+        // If target is a debug display node, prevent connection (debug nodes should only be sources)
+        if (toNodeType === 'debug-data-display') {
+          return;
+        }
+        
         const invalidConnections = [
           { from: Storage, to: South, condition: true },
           { from: North, to: Storage, condition: true },

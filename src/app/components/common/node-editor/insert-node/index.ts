@@ -64,7 +64,10 @@ export function insertableNodes<S extends Schemes>(
         ([id, view]) => [id, view.element] as const
       );
 
-      if (view && node.label !== "South" && node.label !== "Storage" && node.label !== "North") {
+      // Exclude debug display nodes from connection insertion logic
+      const isDebugDisplayNode = (node as any)?.type === 'debug-data-display';
+      
+      if (view && node.label !== "South" && node.label !== "Storage" && node.label !== "North" && !isDebugDisplayNode) {
         const isNodeMoved = view.position.x !== context.data.dragStartPosition?.x || view.position.y !== context.data.dragStartPosition?.y;
         if (isNodeMoved) {
           const intersectedConnections = checkIntersection(view.position, node, cons);

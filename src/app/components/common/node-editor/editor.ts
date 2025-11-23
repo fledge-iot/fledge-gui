@@ -153,6 +153,12 @@ async function removeDuplicateConnections() {
 
 
 async function handleConnections(node, connection, flowEditorService: FlowEditorService) {
+  // Prevent debug display nodes from being inserted into connections
+  const isDebugDisplayNode = (node as any)?.type === 'debug-data-display';
+  if (isDebugDisplayNode) {
+    return; // Don't create connections for debug display nodes when dragged onto other connections
+  }
+  
   if (!isEmpty(node.inputs) && !isEmpty(node.outputs) && node?.label === 'Filter') {
     const pseudoNodeControl = node.controls.pseudoNodeControl as PseudoNodeControl;
     pseudoNodeControl.pseudoConnection = true;
