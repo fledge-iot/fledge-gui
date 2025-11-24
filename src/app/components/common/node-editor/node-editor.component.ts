@@ -1575,6 +1575,87 @@ export class NodeEditorComponent implements OnInit {
   /**
    * Create debug data display nodes for filter nodes and storage node
    */
+  /**
+   * Find a non-overlapping position for a debug data display node that minimizes distance to the target node
+   * @param targetX The x position of the target node
+   * @param targetY The y position of the target node
+   * @param debugNodeWidth Width of the debug node (default 394)
+   * @param debugNodeHeight Height of the debug node (default 250)
+   * @returns A position {x, y} that doesn't overlap with existing nodes and minimizes distance
+   */
+  private findNonOverlappingPosition(targetX: number, targetY: number, debugNodeWidth: number = 394, debugNodeHeight: number = 250): { x: number, y: number } {
+    const nodes = editor.getNodes();
+    const spacing = 20; // Minimum spacing between nodes
+    const offsetX = -380; // Default offset to the left
+    
+    // Calculate distance between two points
+    const distance = (x1: number, y1: number, x2: number, y2: number): number => {
+      return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    };
+    
+    // Calculate center point of a node at position (x, y) with given width and height
+    const getNodeCenter = (x: number, y: number, width: number, height: number) => {
+      return { x: x + width / 2, y: y + height / 2 };
+    };
+    
+    const targetCenter = getNodeCenter(targetX, targetY, 198, 100); // Target node center (assuming default size)
+    
+    // Generate candidate positions with small increments, prioritizing vertical alignment
+    const candidates: Array<{ x: number, y: number, distance: number }> = [];
+    const verticalOffsets = [0, 10, -10, 20, -20, 30, -30, 50, -50, 80, -80, 120, -120];
+    const horizontalOffsets = [0, -debugNodeWidth - spacing]; // Try same X, then further left
+    
+    for (const hOffset of horizontalOffsets) {
+      for (const vOffset of verticalOffsets) {
+        const x = targetX + offsetX + hOffset;
+        const y = targetY + vOffset;
+        const debugCenter = getNodeCenter(x, y, debugNodeWidth, debugNodeHeight);
+        const dist = distance(targetCenter.x, targetCenter.y, debugCenter.x, debugCenter.y);
+        candidates.push({ x, y, distance: dist });
+      }
+    }
+    
+    // Sort candidates by distance (closest first)
+    candidates.sort((a, b) => a.distance - b.distance);
+    
+    // Try each candidate position in order of increasing distance
+    for (const candidate of candidates) {
+      let overlaps = false;
+      
+      for (const node of nodes) {
+        const nodeView = getNodeView(node.id);
+        if (!nodeView?.position) continue;
+        
+        const nodeX = nodeView.position.x;
+        const nodeY = nodeView.position.y;
+        const nodeWidth = (node as any).width || 198; // Default node width
+        const nodeHeight = (node as any).height || 100; // Default node height
+        
+        // Check if debug node would overlap with this node
+        const debugRight = candidate.x + debugNodeWidth;
+        const debugBottom = candidate.y + debugNodeHeight;
+        const nodeRight = nodeX + nodeWidth;
+        const nodeBottom = nodeY + nodeHeight;
+        
+        if (!(debugRight < nodeX - spacing || 
+              candidate.x > nodeRight + spacing || 
+              debugBottom < nodeY - spacing || 
+              candidate.y > nodeBottom + spacing)) {
+          overlaps = true;
+          break;
+        }
+      }
+      
+      if (!overlaps) {
+        return { x: candidate.x, y: candidate.y };
+      }
+    }
+    
+    // If all positions overlap, return the closest position (first in sorted list)
+    // This minimizes distance even if there's a slight overlap
+    return { x: candidates[0].x, y: candidates[0].y };
+  }
+
   async createDebugDataDisplayNodes() {
     // Remove only the main debug data display nodes (not watch nodes)
     // Watch nodes have filterNodeId or storageNodeId properties
@@ -1699,8 +1780,13 @@ export class NodeEditorComponent implements OnInit {
       if (filterNodeView?.position) {
         const debugNodeView = getNodeView(debugNode.id);
         if (debugNodeView) {
-          // Position to the left with some spacing
-          await debugNodeView.translate(filterNodeView.position.x - 380, filterNodeView.position.y);
+          const position = this.findNonOverlappingPosition(
+            filterNodeView.position.x, 
+            filterNodeView.position.y,
+            debugNode.width || 394,
+            debugNode.height || 250
+          );
+          await debugNodeView.translate(position.x, position.y);
         }
       }
       
@@ -1791,12 +1877,18 @@ export class NodeEditorComponent implements OnInit {
       // Ensure debugData is set correctly
       debugNode.debugData = writerData;
       
-      // Position node to the left of the storage node
+      // Position node to avoid overlaps with other nodes
       const storageNodeView = getNodeView(storageNode.id);
       if (storageNodeView?.position) {
         const debugNodeView = getNodeView(debugNode.id);
         if (debugNodeView) {
-          await debugNodeView.translate(storageNodeView.position.x - 380, storageNodeView.position.y);
+          const position = this.findNonOverlappingPosition(
+            storageNodeView.position.x, 
+            storageNodeView.position.y,
+            debugNode.width || 394,
+            debugNode.height || 250
+          );
+          await debugNodeView.translate(position.x, position.y);
         }
       }
       
@@ -2080,12 +2172,18 @@ export class NodeEditorComponent implements OnInit {
       
       await editor.addNode(debugNode);
       
-      // Position node to the left of the filter node
+      // Position node to avoid overlaps with other nodes
       const filterNodeView = getNodeView(filterNodeId);
       if (filterNodeView?.position) {
         const debugNodeView = getNodeView(debugNode.id);
         if (debugNodeView) {
-          await debugNodeView.translate(filterNodeView.position.x - 380, filterNodeView.position.y);
+          const position = this.findNonOverlappingPosition(
+            filterNodeView.position.x, 
+            filterNodeView.position.y,
+            debugNode.width || 394,
+            debugNode.height || 250
+          );
+          await debugNodeView.translate(position.x, position.y);
         }
       }
       
@@ -2263,12 +2361,18 @@ export class NodeEditorComponent implements OnInit {
       
       await editor.addNode(debugNode);
       
-      // Position node to the left of the storage node
+      // Position node to avoid overlaps with other nodes
       const storageNodeView = getNodeView(storageNodeId);
       if (storageNodeView?.position) {
         const debugNodeView = getNodeView(debugNode.id);
         if (debugNodeView) {
-          await debugNodeView.translate(storageNodeView.position.x - 380, storageNodeView.position.y);
+          const position = this.findNonOverlappingPosition(
+            storageNodeView.position.x, 
+            storageNodeView.position.y,
+            debugNode.width || 394,
+            debugNode.height || 250
+          );
+          await debugNodeView.translate(position.x, position.y);
         }
       }
       
