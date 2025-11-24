@@ -893,6 +893,9 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
               this.data.debug.egress = 'Storage';
             }
             
+            // Remove all debug display nodes and their connections
+            this.flowEditorService.debuggerDetached.next(true);
+            
             // Emit to sharedService to trigger updates in all components
             this.sharedService.debuggerStateSubject.next({ services: [] });
           } else {

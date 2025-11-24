@@ -480,6 +480,16 @@ export class NodeEditorComponent implements OnInit {
         }
       });
 
+    // Subscribe to debuggerDetached to remove all debug display nodes when debugger is detached
+    this.flowEditorService.debuggerDetached
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((detached: boolean) => {
+        if (detached) {
+          this.removeDebugDataDisplayNodes();
+          this.stopDebugDisplayAutoRefresh();
+        }
+      });
+
     // Monitor ingress state changes to restart/stop polling
     this.sharedService.debuggerStateSubject
       .pipe(takeUntil(this.destroy$))
