@@ -727,7 +727,6 @@ export class CustomNodeComponent implements OnChanges, OnDestroy, AfterViewInit 
         n.type === 'debug-data-display' && (n as any).storageNodeId === this.data.id
       );
       this.isStorageWatched = !!watchNode;
-      console.log('[Storage Node] ngOnChanges - isStorageWatched:', this.isStorageWatched, 'nodeId:', this.data.id);
     }
 
     // Check if this north node is already being watched
