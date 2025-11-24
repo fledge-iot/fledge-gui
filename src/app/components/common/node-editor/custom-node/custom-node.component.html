@@ -1,7 +1,7 @@
 <!-- Debug Data Display Node -->
 <ng-container *ngIf="data.type === 'debug-data-display'">
   <div [ngClass]="{'selected-node': data.selected && this.source && data.label !=='Filter'}" class="node-container"
-    (mousedown)="onNodeClick()">
+    (mousedown)="onNodeClick($event)">
     <ng-container *ngTemplateOutlet="debugDataDisplayTemplate"></ng-container>
   </div>
 </ng-container>

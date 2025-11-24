@@ -830,7 +830,19 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
     return ai - bi;
   }
 
-  onNodeClick() {
+  onNodeClick(event?: MouseEvent) {
+    // If this is a debug display node and the click target is an interactive element from another node (like a button),
+    // allow the click to pass through by not handling it
+    if (this.data.type === 'debug-data-display' && event) {
+      const target = event.target as HTMLElement;
+      // Check if the click is on a button or other interactive element that's not part of this debug display node
+      const clickedButton = target.closest('button.add-btn, .add-btn, button.btn');
+      if (clickedButton && !this.elRef.nativeElement.contains(clickedButton)) {
+        // Click is on a button from another node, don't handle it
+        return;
+      }
+    }
+    
     if (this.source) {
       this.data['isFilterNode'] = this.isFilterNode;
       this.flowEditorService.nodeClick.next(this.data);

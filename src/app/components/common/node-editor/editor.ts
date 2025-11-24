@@ -395,6 +395,8 @@ async function nodesGrid(area: AreaPlugin<Schemes,
 
 export function getUpdatedFilterPipeline() {
   let nodes = editor.getNodes();
+  // Exclude debug display nodes from pipeline validation
+  nodes = nodes.filter((node: any) => node.type !== 'debug-data-display');
   let connections = editor.getConnections();
   for (let i = 0; i < nodes.length; i++) {
     if (i == 0) {
@@ -420,9 +422,17 @@ export function getUpdatedFilterPipeline() {
 
   let updatedFilterPipeline: any = [];
   let sourceNode = nodes[0];
-  while (connections.find(c => c.source === sourceNode.id)) {
+  // Filter out connections to debug display nodes when checking if we should continue
+  while (connections.find(c => {
+    const targetNode = editor.getNode(c.target);
+    return c.source === sourceNode.id && (targetNode as any)?.type !== 'debug-data-display';
+  })) {
     let previousSourceNode = sourceNode;
-    let connlist = connections.filter(c => c.source === sourceNode.id);
+    // Filter out connections to/from debug display nodes
+    let connlist = connections.filter(c => {
+      const targetNode = editor.getNode(c.target);
+      return c.source === sourceNode.id && (targetNode as any)?.type !== 'debug-data-display';
+    });
     if (connlist.length === 1) {
       let filterNode = editor.getNode(connlist[0].target);
 
@@ -439,6 +449,11 @@ export function getUpdatedFilterPipeline() {
     else {
       let masterBranchStartIndex = [];
       let i;
+      // Filter out connections to debug display nodes
+      connlist = connlist.filter(c => {
+        const targetNode = editor.getNode(c.target);
+        return (targetNode as any)?.type !== 'debug-data-display';
+      });
       for (i = 0; i < connlist.length; i++) {
         let node = editor.getNode(connlist[i].target);
         let branch = getBranchNodes(updatedFilterPipeline, connections, node);
@@ -484,13 +499,21 @@ function getBranchNodes(pipeline, connections, node) {
   if (node.label === "Storage" || node.label === "North") {
     return;
   }
+  // Exclude debug display nodes
+  if ((node as any)?.type === 'debug-data-display') {
+    return;
+  }
   if (existsInPipeline(pipeline, node.label)) {
     return [];
   }
   let branchNodes = [];
   branchNodes.push(node.label);
   while (connections.find(c => c.source === node.id)) {
-    let connlist = connections.filter(c => c.source === node.id);
+    // Filter out connections to debug display nodes
+    let connlist = connections.filter(c => {
+      const targetNode = editor.getNode(c.target);
+      return c.source === node.id && (targetNode as any)?.type !== 'debug-data-display';
+    });
     if (connlist.length === 1) {
       let filterNode = editor.getNode(connlist[0].target);
       if (filterNode.label !== "Storage" && filterNode.label !== "North" && (existsInPipeline(pipeline, filterNode.label) || existsInPipeline(branchNodes, filterNode.label))) {

@@ -136,7 +136,8 @@
   padding-top: 3px !important;
   padding-bottom: 0px !important;
   font-size: 14px;
-  z-index: 999;
+  z-index: 999 !important;
+  position: relative;
   pointer-events: auto !important;
   cursor: pointer;
 }
@@ -176,6 +177,12 @@
   justify-content: center;
 }
 
+/* Ensure Filter nodes with add buttons are above debug display nodes */
+.node-container:has(.add-btn) {
+  position: relative;
+  z-index: 5 !important;
+}
+
 /* Override width for debug data display nodes */
 :host:has(.debug-data-display-node) {
   width: 394px !important;
@@ -205,6 +212,16 @@
   max-width: 394px;
   position: relative;
   z-index: 1 !important; /* Very low z-index so menus appear above debug display nodes */
+  pointer-events: auto; /* Allow pointer events on the node itself */
+}
+
+/* Allow pointer events to pass through non-interactive areas of debug display nodes */
+:host:has(.debug-data-display-node) .node-container {
+  pointer-events: none; /* Disable pointer events on container to allow clicks to pass through */
+}
+
+:host:has(.debug-data-display-node) .debug-data-display-node {
+  pointer-events: auto; /* Re-enable pointer events on the actual debug display node */
 }
 
 .debug-data-display-header {
