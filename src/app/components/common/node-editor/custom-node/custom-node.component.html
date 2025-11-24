@@ -60,9 +60,11 @@
                   <i class="bi bi-arrow-clockwise bi-sm"></i>
                 </span>
               </button>
-              <button *ngIf="isServiceNode && data?.debug?.debugger == 'Attached'" class="btn is-small btn-icon">
+              <button *ngIf="isServiceNode && from === 'south' && data?.debug?.debugger == 'Attached'" 
+                      class="btn is-small btn-icon"
+                      (click)="toggleDebuggerState()">
                 <span class="icon is-small  has-tooltip-left has-tooltip-arrow tooltip is-hovered"
-                  data-tooltip="Debugger Attached">
+                  data-tooltip="Debugger attached, click to detach">
                   <i class="bi bi-bug bi-sm debug"></i>
                 </span>
               </button>
