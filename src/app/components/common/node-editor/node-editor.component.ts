@@ -534,6 +534,19 @@ export class NodeEditorComponent implements OnInit {
           this.removeStorageWatchNode(watchData.storageNodeId);
         }
       });
+
+    // Subscribe to north watch toggle events
+    this.flowEditorService.toggleNorthWatch
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((watchData: any) => {
+        if (!watchData) return;
+        
+        if (watchData.isWatched) {
+          this.createNorthWatchNode(watchData.northNodeId, watchData.northNode);
+        } else {
+          this.removeNorthWatchNode(watchData.northNodeId);
+        }
+      });
   }
 
   ngAfterViewInit(): void {
@@ -1577,13 +1590,12 @@ export class NodeEditorComponent implements OnInit {
     
     try {
       // Fetch buffer data
-      const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name).toPromise();
+      const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name, this.from).toPromise();
       
       // Extract the data array from the response
       // Response structure: { "data": [...] }
       this.bufferData = bufferDataResponse?.data || bufferDataResponse;
       
-      console.log('Buffer data received:', this.bufferData);
       
       // Create debug data display nodes
       await this.createDebugDataDisplayNodes();
@@ -1678,9 +1690,9 @@ export class NodeEditorComponent implements OnInit {
 
   async createDebugDataDisplayNodes() {
     // Remove only the main debug data display nodes (not watch nodes)
-    // Watch nodes have filterNodeId or storageNodeId properties
+    // Watch nodes have filterNodeId, storageNodeId, or northNodeId properties
     const nodesToRemove = this.debugDataDisplayNodes.filter((node: any) => 
-      !node.filterNodeId && !node.storageNodeId
+      !node.filterNodeId && !node.storageNodeId && !node.northNodeId
     );
     for (const debugNode of nodesToRemove) {
       try {
@@ -1700,7 +1712,7 @@ export class NodeEditorComponent implements OnInit {
     }
     // Update the array to only keep watch nodes
     this.debugDataDisplayNodes = this.debugDataDisplayNodes.filter((node: any) => 
-      node.filterNodeId || node.storageNodeId
+      node.filterNodeId || node.storageNodeId || node.northNodeId
     );
     
     if (!this.socket) {
@@ -1712,9 +1724,10 @@ export class NodeEditorComponent implements OnInit {
     // Get all existing debug display nodes to check for watch nodes
     const existingDebugNodes = nodes.filter((node: any) => node.type === 'debug-data-display');
     
-    // Find filter nodes and storage node
+    // Find filter nodes, storage node (for south), and north node (for north)
     const filterNodes: any[] = [];
     let storageNode: any = null;
+    let northNode: any = null;
     
     nodes.forEach((node: any) => {
       if (node.type === 'debug-data-display') {
@@ -1725,6 +1738,8 @@ export class NodeEditorComponent implements OnInit {
         filterNodes.push(node);
       } else if (node.label === 'Storage' && this.from === 'south') {
         storageNode = node;
+      } else if (node.label === 'North' && this.from === 'north') {
+        northNode = node;
       }
     });
     
@@ -1782,9 +1797,6 @@ export class NodeEditorComponent implements OnInit {
         
         nodeData = findNodeData(this.bufferData);
       }
-      
-      console.log('Filter node:', nodeName, 'Matched data:', nodeData);
-      console.log('Buffer data structure:', this.bufferData);
       
       // Create debug data display node with the matched data
       // The nodeData should be the JSON object where name matches the filter node name
@@ -1844,6 +1856,7 @@ export class NodeEditorComponent implements OnInit {
     }
     
     // Create node for storage
+    // Handle storage node for south pipelines
     if (storageNode) {
       // Check if the storage node already has a watch node connected to it
       // A watch node has storageNodeId matching this storage node's id
@@ -1908,8 +1921,6 @@ export class NodeEditorComponent implements OnInit {
         }
       }
       
-      console.log('Storage node - Matched Writer data:', writerData);
-      
       const debugNode = new DebugDataDisplay(this.socket, 'Storage', writerData);
       await editor.addNode(debugNode);
       
@@ -1959,6 +1970,126 @@ export class NodeEditorComponent implements OnInit {
         }
       } catch (e) {
         console.warn('Failed to create connection from debug node to storage node:', e);
+      }
+      
+      this.debugDataDisplayNodes.push(debugNode);
+    }
+    
+    // Handle north node for north pipelines - attach Writer data to north node
+    if (northNode) {
+      // Check if the north node already has a watch node connected to it
+      // A watch node has northNodeId matching this north node's id
+      const hasWatchNode = existingDebugNodes.some((debugNode: any) => 
+        (debugNode as any).northNodeId === northNode.id
+      );
+      
+      // Also check if there's already a connection to this north node from any debug display node
+      const connections = editor.getConnections();
+      const hasExistingConnection = connections.some((conn: any) => {
+        if (!conn || !conn.source || !conn.target) return false;
+        // Check if connection is from a debug display node to this north node
+        const sourceNode = nodes.find((n: any) => n.id === conn.source);
+        return sourceNode && sourceNode.type === 'debug-data-display' && conn.target === northNode.id;
+      });
+      
+      // Skip creating a debug display node if a watch node or connection already exists
+      if (hasWatchNode || hasExistingConnection) {
+        return;
+      }
+      
+      // Find all Writer data in buffer (recursively search through nested arrays)
+      // Multiple branches can feed into north, so there may be multiple Writer nodes
+      let writerData = null;
+      if (this.bufferData && Array.isArray(this.bufferData)) {
+        const findAllWriterData = (arr: any[]): any[] => {
+          const writers: any[] = [];
+          for (const item of arr) {
+            if (!item) continue;
+            
+            // If item is an object with a name property matching "Writer"
+            if (typeof item === 'object' && item.name && item.name.toLowerCase().includes('writer')) {
+              writers.push(item);
+            }
+            
+            // If item is an array, recursively search it
+            if (Array.isArray(item)) {
+              const found = findAllWriterData(item);
+              writers.push(...found);
+            }
+          }
+          return writers;
+        };
+        
+        const allWriters = findAllWriterData(this.bufferData);
+        
+        // Combine all Writer nodes' readings into a single data structure
+        if (allWriters.length > 0) {
+          // Combine readings from all Writer nodes
+          const combinedReadings: any[] = [];
+          allWriters.forEach((writer: any) => {
+            if (writer.readings && Array.isArray(writer.readings)) {
+              combinedReadings.push(...writer.readings);
+            }
+          });
+          
+          // Create a combined data structure with all readings
+          const northNodeName = northNode.controls?.nameControl?.['name'] || 'North';
+          writerData = {
+            name: northNodeName,
+            readings: combinedReadings
+          };
+        }
+      }
+      
+      const debugNode = new DebugDataDisplay(this.socket, northNode.controls?.nameControl?.['name'] || 'North', writerData);
+      await editor.addNode(debugNode);
+      
+      // Ensure debugData is set correctly
+      debugNode.debugData = writerData;
+      
+      // Position node to avoid overlaps with other nodes
+      const northNodeView = getNodeView(northNode.id);
+      if (northNodeView?.position) {
+        const debugNodeView = getNodeView(debugNode.id);
+        if (debugNodeView) {
+          const position = this.findNonOverlappingPosition(
+            northNodeView.position.x, 
+            northNodeView.position.y,
+            debugNode.width || 394,
+            debugNode.height || 250
+          );
+          await debugNodeView.translate(position.x, position.y);
+        }
+      }
+      
+      // Wait for nodes to be fully rendered before creating connection
+      await new Promise(resolve => setTimeout(resolve, 150));
+      
+      // Connect debug node to north node (from debug node output to north node input)
+      try {
+        // Check that both nodes have the required ports
+        const sourceView = getNodeView(debugNode.id);
+        const targetView = getNodeView(northNode.id);
+        
+        if (sourceView?.position && targetView?.position) {
+          // Check for existing connections to avoid duplicates
+          const existingConnections = editor.getConnections().filter(conn => {
+            if (!conn || !conn.source || !conn.target) return false;
+            return (conn.source === northNode.id && conn.target === debugNode.id) ||
+                   (conn.source === debugNode.id && conn.target === northNode.id);
+          });
+          
+          if (existingConnections.length === 0) {
+            const connection = new Connection(connectionEvents, debugNode as any, northNode as any);
+            await editor.addConnection(connection);
+            await area.update('connection', connection.id);
+            await area.update('node', debugNode.id);
+            await area.update('node', northNode.id);
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to create connection from debug node to north node:', e);
       }
       
       this.debugDataDisplayNodes.push(debugNode);
@@ -2029,8 +2160,8 @@ export class NodeEditorComponent implements OnInit {
     }
     
     try {
-      // Fetch latest buffer data
-      const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name).toPromise();
+      // Fetch latest buffer data - pass 'from' parameter to use correct URL (south vs north)
+      const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name, this.from).toPromise();
       this.bufferData = bufferDataResponse?.data || bufferDataResponse;
       
       // Update existing debug display nodes with new data
@@ -2039,13 +2170,14 @@ export class NodeEditorComponent implements OnInit {
         const nodeInEditor = nodes.find((n: any) => n.id === debugNode.id);
         if (!nodeInEditor) continue;
         
-        // Get node name - could be from nodeName property, filterNodeName for filter watch nodes, or storageNodeId for storage watch nodes
+        // Get node name - could be from nodeName property, filterNodeName for filter watch nodes, storageNodeId for storage watch nodes, or northNodeId for north watch nodes
         const nodeName = debugNode.nodeName || (debugNode as any).filterNodeName;
         const isStorageWatchNode = !!(debugNode as any).storageNodeId;
+        const isNorthWatchNode = !!(debugNode as any).northNodeId;
         let nodeData = null;
         
-        // For storage watch nodes, look for all Writer data and combine
-        if (isStorageWatchNode || nodeName === 'Storage') {
+        // For storage watch nodes (south) or north watch nodes (north), look for all Writer data and combine
+        if (isStorageWatchNode || isNorthWatchNode || nodeName === 'Storage' || (this.from === 'north' && nodeName && this.tasks.find((t: any) => t.name === nodeName))) {
           const findAllWriterData = (arr: any[]): any[] => {
             const writers: any[] = [];
             for (const item of arr) {
@@ -2072,8 +2204,12 @@ export class NodeEditorComponent implements OnInit {
               }
             });
             
+            // Use appropriate name based on whether it's storage (south) or north
+            const dataName = isNorthWatchNode || (this.from === 'north' && nodeName && this.tasks.find((t: any) => t.name === nodeName))
+              ? (nodeName || 'North')
+              : 'Storage';
             nodeData = {
-              name: 'Storage',
+              name: dataName,
               readings: combinedReadings
             };
           }
@@ -2137,7 +2273,10 @@ export class NodeEditorComponent implements OnInit {
         const hasStorageWatchNodes = this.debugDataDisplayNodes.some((node: any) => 
           (node as any).storageNodeId !== undefined
         );
-        const hasNodesToRefresh = areDebugDisplayNodesVisible || hasFilterWatchNodes || hasStorageWatchNodes;
+        const hasNorthWatchNodes = this.debugDataDisplayNodes.some((node: any) => 
+          (node as any).northNodeId !== undefined
+        );
+        const hasNodesToRefresh = areDebugDisplayNodesVisible || hasFilterWatchNodes || hasStorageWatchNodes || hasNorthWatchNodes;
         
         // Only refresh if there are nodes to refresh and ingress is not suspended
         if (hasNodesToRefresh && this.isIngressNotSuspended()) {
@@ -2198,7 +2337,7 @@ export class NodeEditorComponent implements OnInit {
 
     try {
       // Fetch buffer data
-      const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name).toPromise();
+      const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name, this.from).toPromise();
       this.bufferData = bufferDataResponse?.data || bufferDataResponse;
       
       // Find matching data in buffer for this filter
@@ -2387,7 +2526,7 @@ export class NodeEditorComponent implements OnInit {
 
     try {
       // Fetch buffer data
-      const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name).toPromise();
+      const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name, this.from).toPromise();
       this.bufferData = bufferDataResponse?.data || bufferDataResponse;
       
       // Find all Writer data in buffer for storage node and combine
@@ -2556,6 +2695,212 @@ export class NodeEditorComponent implements OnInit {
   }
 
   /**
+   * Create a debug display node for a watched north node
+   */
+  async createNorthWatchNode(northNodeId: string, northNode: any) {
+    if (!this.socket) {
+      this.socket = new ClassicPreset.Socket("socket");
+    }
+
+    // Check if watch node already exists for this north node
+    const nodes = editor.getNodes();
+    const existingWatchNode = nodes.find((n: any) => 
+      n.type === 'debug-data-display' && (n as any).northNodeId === northNodeId
+    );
+    if (existingWatchNode) {
+      // Already watching, but this shouldn't happen if toggle is working correctly
+      const existingInArray = this.debugDataDisplayNodes.find((node: any) => 
+        (node as any).northNodeId === northNodeId
+      );
+      if (!existingInArray && existingWatchNode) {
+        this.debugDataDisplayNodes.push(existingWatchNode);
+      }
+      return; // Already watching
+    }
+
+    // Get the service with attached debugger to fetch buffer data
+    let serviceWithDebugger: any = null;
+    if (this.from === 'south') {
+      serviceWithDebugger = this.services.find((s: any) => s.debug?.debugger === 'Attached');
+    } else {
+      serviceWithDebugger = this.tasks.find((t: any) => t.debug?.debugger === 'Attached');
+    }
+    
+    if (!serviceWithDebugger) {
+      return;
+    }
+
+    try {
+      // Fetch buffer data
+      const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name, this.from).toPromise();
+      this.bufferData = bufferDataResponse?.data || bufferDataResponse;
+      
+      // Find all Writer data in buffer for north node and combine
+      let nodeData = null;
+      if (this.bufferData && Array.isArray(this.bufferData)) {
+        const findAllWriterData = (arr: any[]): any[] => {
+          const writers: any[] = [];
+          for (const item of arr) {
+            if (!item) continue;
+            if (typeof item === 'object' && item.name && item.name.toLowerCase().includes('writer')) {
+              writers.push(item);
+            }
+            if (Array.isArray(item)) {
+              const found = findAllWriterData(item);
+              writers.push(...found);
+            }
+          }
+          return writers;
+        };
+        
+        const allWriters = findAllWriterData(this.bufferData);
+        
+        // Combine all Writer nodes' readings into a single data structure
+        if (allWriters.length > 0) {
+          const combinedReadings: any[] = [];
+          allWriters.forEach((writer: any) => {
+            if (writer.readings && Array.isArray(writer.readings)) {
+              combinedReadings.push(...writer.readings);
+            }
+          });
+          
+          const northNodeName = northNode.controls?.nameControl?.['name'] || 'North';
+          nodeData = {
+            name: northNodeName,
+            readings: combinedReadings
+          };
+        }
+      }
+
+      // Create debug display node
+      const debugNode = new DebugDataDisplay(this.socket, northNode.controls?.nameControl?.['name'] || 'North', nodeData);
+      debugNode.debugData = nodeData;
+      // Store reference to the north node
+      (debugNode as any).northNodeId = northNodeId;
+      
+      await editor.addNode(debugNode);
+      
+      // Position node to avoid overlaps with other nodes
+      const northNodeView = getNodeView(northNodeId);
+      if (northNodeView?.position) {
+        const debugNodeView = getNodeView(debugNode.id);
+        if (debugNodeView) {
+          const position = this.findNonOverlappingPosition(
+            northNodeView.position.x, 
+            northNodeView.position.y,
+            debugNode.width || 394,
+            debugNode.height || 250
+          );
+          await debugNodeView.translate(position.x, position.y);
+        }
+      }
+      
+      // Wait for nodes to be fully rendered before creating connection
+      await new Promise(resolve => setTimeout(resolve, 150));
+      
+      // Connect debug node to north node (from debug node output to north node input)
+      try {
+        const sourceView = getNodeView(debugNode.id);
+        const targetView = getNodeView(northNodeId);
+        
+        if (sourceView?.position && targetView?.position) {
+          // Check for existing connections to avoid duplicates
+          const existingConnections = editor.getConnections().filter(conn => {
+            if (!conn || !conn.source || !conn.target) return false;
+            return (conn.source === northNodeId && conn.target === debugNode.id) ||
+                   (conn.source === debugNode.id && conn.target === northNodeId);
+          });
+          
+          if (existingConnections.length === 0) {
+            const connection = new Connection(connectionEvents, debugNode as any, northNode as any);
+            await editor.addConnection(connection);
+            await area.update('connection', connection.id);
+            await area.update('node', debugNode.id);
+            await area.update('node', northNodeId);
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to create connection from debug node to north node:', e);
+      }
+      
+      // Add to array
+      this.debugDataDisplayNodes.push(debugNode);
+      
+      // Start auto-refresh if not already running
+      this.startDebugDisplayAutoRefresh();
+      
+      // Emit watch state change
+      this.flowEditorService.northWatchStateChanged.next({
+        northNodeId: northNodeId,
+        isWatched: true
+      });
+      
+      this.cdRf.detectChanges();
+    } catch (error) {
+      console.error('Failed to create north watch node:', error);
+    }
+  }
+
+  /**
+   * Remove debug display node for a watched north node
+   */
+  async removeNorthWatchNode(northNodeId: string) {
+    // Check both the array and the editor nodes to find the watch node
+    let watchNode = this.debugDataDisplayNodes.find((node: any) => 
+      (node as any).northNodeId === northNodeId
+    );
+    
+    // If not found in array, check editor nodes
+    if (!watchNode) {
+      const nodes = editor.getNodes();
+      watchNode = nodes.find((n: any) => 
+        n.type === 'debug-data-display' && (n as any).northNodeId === northNodeId
+      );
+    }
+    
+    if (!watchNode) {
+      return;
+    }
+
+    try {
+      // Remove connections first
+      const connections = editor.getConnections();
+      connections.forEach((conn: any) => {
+        if (conn.target === watchNode.id || conn.source === watchNode.id) {
+          editor.removeConnection(conn.id);
+        }
+      });
+      
+      // Remove node
+      await editor.removeNode(watchNode.id);
+      
+      // Remove from array
+      const index = this.debugDataDisplayNodes.indexOf(watchNode);
+      if (index > -1) {
+        this.debugDataDisplayNodes.splice(index, 1);
+      }
+      
+      // Stop auto-refresh if no debug display nodes remain (unless main debug display is visible)
+      const areDebugDisplayNodesVisible = this.flowEditorService.showDebuggerDataDisplay.value;
+      const hasAnyDebugNodes = this.debugDataDisplayNodes.length > 0;
+      if (!areDebugDisplayNodesVisible && !hasAnyDebugNodes && this.debugDisplayRefreshSubscription) {
+        this.stopDebugDisplayAutoRefresh();
+      }
+      
+      // Emit watch state change
+      this.flowEditorService.northWatchStateChanged.next({
+        northNodeId: northNodeId,
+        isWatched: false
+      });
+      
+      this.cdRf.detectChanges();
+    } catch (error) {
+      console.error('Failed to remove north watch node:', error);
+    }
+  }
+
+  /**
    * Save the state of all debug display nodes before reset
    */
   private saveDebugDisplayNodesState(): any[] {
@@ -2589,6 +2934,10 @@ export class NodeEditorComponent implements OnInit {
             targetNodeInfo = {
               type: 'storage'
             };
+          } else if ((targetNode as any).label === 'North') {
+            targetNodeInfo = {
+              type: 'north'
+            };
           }
         }
       }
@@ -2601,7 +2950,8 @@ export class NodeEditorComponent implements OnInit {
         targetNodeInfo: targetNodeInfo,
         filterNodeId: (debugNode as any).filterNodeId, // For watch nodes
         storageNodeId: (debugNode as any).storageNodeId, // For watch nodes
-        isWatchNode: !!(debugNode as any).filterNodeId || !!(debugNode as any).storageNodeId
+        northNodeId: (debugNode as any).northNodeId, // For watch nodes
+        isWatchNode: !!(debugNode as any).filterNodeId || !!(debugNode as any).storageNodeId || !!(debugNode as any).northNodeId
       });
     }
     
@@ -2656,6 +3006,9 @@ export class NodeEditorComponent implements OnInit {
       } else if (state.targetNodeInfo?.type === 'storage') {
         // Find storage node
         targetNode = nodes.find((n: any) => n.label === 'Storage' && this.from === 'south');
+      } else if (state.targetNodeInfo?.type === 'north') {
+        // Find north node
+        targetNode = nodes.find((n: any) => n.label === 'North' && this.from === 'north');
       }
       
       if (!targetNode) {
@@ -2673,6 +3026,8 @@ export class NodeEditorComponent implements OnInit {
           (debugNode as any).filterNodeId = targetNode.id;
         } else if (state.storageNodeId) {
           (debugNode as any).storageNodeId = targetNode.id;
+        } else if (state.northNodeId) {
+          (debugNode as any).northNodeId = targetNode.id;
         }
       }
       
@@ -2725,6 +3080,11 @@ export class NodeEditorComponent implements OnInit {
         } else if (state.storageNodeId) {
           this.flowEditorService.storageWatchStateChanged.next({
             storageNodeId: targetNode.id,
+            isWatched: true
+          });
+        } else if (state.northNodeId) {
+          this.flowEditorService.northWatchStateChanged.next({
+            northNodeId: targetNode.id,
             isWatched: true
           });
         }

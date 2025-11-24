@@ -33,6 +33,8 @@ export class FlowEditorService {
   public filterWatchStateChanged: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public toggleStorageWatch: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public storageWatchStateChanged: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  public toggleNorthWatch: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  public northWatchStateChanged: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public refreshDebugDisplayNodes: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public debuggerDetached: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public highlightedDebugRow: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null); // Shared highlighted row key (timestamp)

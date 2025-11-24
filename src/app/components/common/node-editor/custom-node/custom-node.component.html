@@ -50,6 +50,17 @@
               <i class="bi bi-eye bi-sm" [class.has-text-primary]="isFilterWatched"></i>
             </span>
           </button>
+          <!-- Eye icon for north nodes - placed outside ng-template so change detection works -->
+          <button *ngIf="shouldShowEyeIconForNorth" 
+                  class="btn is-small btn-icon mr-2"
+                  (click)="toggleNorthWatch()"
+                  [class.is-active]="isNorthWatched"
+                  style="display: inline-block !important; visibility: visible !important;">
+            <span class="icon is-small has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
+                  [attr.data-tooltip]="isNorthWatched ? 'Hide incoming data' : 'Show incoming data'">
+              <i class="bi bi-eye bi-sm" [class.has-text-primary]="isNorthWatched"></i>
+            </span>
+          </button>
           <ng-container *ngIf="data.label!=='Filter'; else southServiceTemplate">
             <div class="is-inline-flex">
               <button *ngIf="isServiceNode && from === 'south' && data?.debug?.debugger == 'Attached' && data?.debug?.ingress === 'Suspended'" 

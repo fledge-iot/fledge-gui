@@ -77,6 +77,7 @@ export class CustomNodeComponent implements OnChanges, OnDestroy, AfterViewInit 
   pluginVersion = '';
   highlightedRowKey: string | null = null; // Track highlighted row by time+assetCode (local, for backward compatibility)
   highlightedTimestamp: string | null = null; // Track highlighted timestamp from shared state
+  isNorthWatched: boolean = false; // Track if north node is being watched
 
   previousState: boolean;  // To store previous state of checkbox
   isDataDisplayVisible: boolean = false;  // Track data display visibility state
@@ -125,8 +126,33 @@ export class CustomNodeComponent implements OnChanges, OnDestroy, AfterViewInit 
    */
   get shouldShowEyeIconForStorage(): boolean {
     // Show on storage nodes when debugger is attached
+    // Only show in south pipelines, not in north pipelines
     const isStorage = this.data?.label === 'Storage';
     if (!isStorage) {
+      return false;
+    }
+    
+    // Don't show eye icon for storage nodes in north pipelines
+    if (this.from === 'north') {
+      return false;
+    }
+    
+    return this.isDebuggerAttached;
+  }
+
+  get shouldShowEyeIconForNorth(): boolean {
+    // Show on north nodes when debugger is attached
+    // Only show in pipeline details view (when source is not empty), not in the general selection view
+    const isNorth = this.data?.label === 'North';
+    if (!isNorth) {
+      return false;
+    }
+    
+    // Only show in pipeline details view, not in the general selection view
+    // source is set from route params.name, which only exists on the details page
+    // On /flow/editor/north, there's no name param, so source is empty/undefined
+    // On /flow/editor/north/{service}/details, source has the service name
+    if (!this.source || this.source === '') {
       return false;
     }
     
@@ -265,6 +291,9 @@ export class CustomNodeComponent implements OnChanges, OnDestroy, AfterViewInit 
     
     // Subscribe to storage watch state changes
     this.subscribeToStorageWatchState();
+    
+    // Subscribe to north watch state changes
+    this.subscribeToNorthWatchState();
 
     this.sharedService.debuggerStateSubject
       .pipe(
@@ -699,6 +728,15 @@ export class CustomNodeComponent implements OnChanges, OnDestroy, AfterViewInit 
       );
       this.isStorageWatched = !!watchNode;
       console.log('[Storage Node] ngOnChanges - isStorageWatched:', this.isStorageWatched, 'nodeId:', this.data.id);
+    }
+
+    // Check if this north node is already being watched
+    if (this.data.label === 'North') {
+      const nodes = editor.getNodes();
+      const watchNode = nodes.find((n: any) => 
+        n.type === 'debug-data-display' && (n as any).northNodeId === this.data.id
+      );
+      this.isNorthWatched = !!watchNode;
     }
     
     if (this.data.label === 'South' || this.data.label === 'North') {
@@ -1806,6 +1844,29 @@ export class CustomNodeComponent implements OnChanges, OnDestroy, AfterViewInit 
     });
   }
 
+  toggleNorthWatch() {
+    if (this.data.label !== 'North') {
+      return;
+    }
+    
+    // Check if a watch node already exists for this north node
+    const nodes = editor.getNodes();
+    const existingWatchNode = nodes.find((n: any) => 
+      n.type === 'debug-data-display' && (n as any).northNodeId === this.data.id
+    );
+    
+    // Toggle the watch state
+    this.isNorthWatched = !!existingWatchNode;
+    this.isNorthWatched = !this.isNorthWatched; // Toggle it
+    
+    // Emit event to node-editor component to create/remove debug display node
+    this.flowEditorService.toggleNorthWatch.next({
+      northNodeId: this.data.id,
+      isWatched: this.isNorthWatched,
+      northNode: this.data
+    });
+  }
+
   /**
    * Subscribe to filter watch state changes to sync icon state
    */
@@ -1835,6 +1896,25 @@ export class CustomNodeComponent implements OnChanges, OnDestroy, AfterViewInit 
         // Add null check for this.data to prevent errors during component initialization
         if (watchState && this.data && watchState.storageNodeId === this.data.id) {
           this.isStorageWatched = watchState.isWatched;
+          // Use setTimeout to defer change detection until after component initialization
+          setTimeout(() => {
+            this.cdr.markForCheck();
+            this.cdr.detectChanges();
+          }, 0);
+        }
+      });
+  }
+
+  /**
+   * Subscribe to north watch state changes to sync icon state
+   */
+  private subscribeToNorthWatchState() {
+    this.flowEditorService.northWatchStateChanged
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((watchState: any) => {
+        // Add null check for this.data to prevent errors during component initialization
+        if (watchState && this.data && watchState.northNodeId === this.data.id) {
+          this.isNorthWatched = watchState.isWatched;
           // Use setTimeout to defer change detection until after component initialization
           setTimeout(() => {
             this.cdr.markForCheck();
