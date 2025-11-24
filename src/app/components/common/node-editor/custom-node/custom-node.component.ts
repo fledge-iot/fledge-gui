@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef, OnDestroy, Renderer2, ViewChild } from "@angular/core";
+import { Component, Input, HostBinding, ChangeDetectorRef, OnChanges, ElementRef, OnDestroy, Renderer2, ViewChild, AfterViewInit } from "@angular/core";
 import { KeyValue } from "@angular/common";
 import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 import {
@@ -26,7 +26,7 @@ import { Filter, North, Notification, South, Storage, DebugDataDisplay } from '.
     "data-testid": "node"
   }
 })
-export class CustomNodeComponent implements OnChanges, OnDestroy {
+export class CustomNodeComponent implements OnChanges, OnDestroy, AfterViewInit {
 
   @Input() data!: South | Filter | North | Notification | Storage;
   @Input() emit!: (data: any) => void;
@@ -75,6 +75,8 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
   fetchedService;
   nodeId = '';
   pluginVersion = '';
+  highlightedRowKey: string | null = null; // Track highlighted row by time+assetCode (local, for backward compatibility)
+  highlightedTimestamp: string | null = null; // Track highlighted timestamp from shared state
 
   previousState: boolean;  // To store previous state of checkbox
   isDataDisplayVisible: boolean = false;  // Track data display visibility state
@@ -661,6 +663,9 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
     if (this.data.type === 'debug-data-display') {
       this.cdr.detectChanges();
       requestAnimationFrame(() => this.rendered());
+      // Subscribe to shared highlighted row state
+      this.subscribeToHighlightedRow();
+      // Time cell listeners are handled via Angular (click) binding, no native listeners needed
       return;
     }
 
@@ -831,10 +836,101 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
   }
 
   onNodeClick(event?: MouseEvent) {
-    // If this is a debug display node and the click target is an interactive element from another node (like a button),
-    // allow the click to pass through by not handling it
+    // If this is a debug display node, check if the event came from a time cell button
+    // Handle it here since Rete.js captures mousedown before Angular click handlers
     if (this.data.type === 'debug-data-display' && event) {
       const target = event.target as HTMLElement;
+      
+      // Check if the click is on a time cell button - check both target and event path
+      let timeCellButton = target.closest('.time-cell-button');
+      
+      // If target is tbody or table, check the event path to find the actual clicked element
+      if (!timeCellButton && (target.tagName === 'TBODY' || target.tagName === 'TABLE')) {
+        // Try to get the actual clicked element from the event path
+        const path = (event as any).composedPath ? (event as any).composedPath() : (event as any).path || [];
+        
+        for (const element of path) {
+          if (element instanceof HTMLElement) {
+            if (element.classList.contains('time-cell-button')) {
+              timeCellButton = element;
+              break;
+            }
+            // Also check if element is a time cell and find button within it
+            if (element.classList.contains('time-cell')) {
+              timeCellButton = element.querySelector('.time-cell-button') as HTMLElement;
+              if (timeCellButton) {
+                break;
+              }
+            }
+          }
+        }
+        
+        // If still not found, try to find which row was clicked based on mouse position
+        if (!timeCellButton && target.tagName === 'TBODY') {
+          const tbody = target as HTMLElement;
+          const rows = tbody.querySelectorAll('tr:not(.date-row)');
+          
+          // Get mouse position relative to tbody
+          const rect = tbody.getBoundingClientRect();
+          const clickX = event.clientX - rect.left;
+          const clickY = event.clientY - rect.top;
+          
+          // Find which row contains the click
+          for (const row of Array.from(rows)) {
+            const rowRect = row.getBoundingClientRect();
+            const rowRelativeY = rowRect.top - rect.top;
+            const rowRelativeBottom = rowRect.bottom - rect.top;
+            
+            if (clickY >= rowRelativeY && clickY <= rowRelativeBottom) {
+              // Click is within this row, check if it's in the time cell
+              const timeCell = row.querySelector('.time-cell');
+              if (timeCell) {
+                const timeCellRect = timeCell.getBoundingClientRect();
+                const timeCellRelativeX = timeCellRect.left - rect.left;
+                const timeCellRelativeRight = timeCellRect.right - rect.left;
+                
+                if (clickX >= timeCellRelativeX && clickX <= timeCellRelativeRight) {
+                  timeCellButton = timeCell.querySelector('.time-cell-button') as HTMLElement;
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      // Also check if target is inside a time cell
+      if (!timeCellButton) {
+        const timeCell = target.closest('.time-cell');
+        if (timeCell) {
+          timeCellButton = timeCell.querySelector('.time-cell-button') as HTMLElement;
+        }
+      }
+      
+      if (timeCellButton) {
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        event.preventDefault();
+        
+        // Find the reading item from the row
+        const row = timeCellButton.closest('tr');
+        
+        if (row && !row.classList.contains('date-row')) {
+          const timeText = timeCellButton.textContent?.trim() || '';
+          
+          // Update shared highlighted timestamp state (all nodes will react to this)
+          const currentHighlighted = this.flowEditorService.highlightedDebugRow.value;
+          if (currentHighlighted === timeText) {
+            this.flowEditorService.highlightedDebugRow.next(null);
+          } else {
+            this.flowEditorService.highlightedDebugRow.next(timeText);
+          }
+          
+          this.cdr.detectChanges();
+        }
+        return; // Don't process as node click
+      }
+      
       // Check if the click is on a button or other interactive element that's not part of this debug display node
       const clickedButton = target.closest('button.add-btn, .add-btn, button.btn');
       if (clickedButton && !this.elRef.nativeElement.contains(clickedButton)) {
@@ -847,6 +943,64 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
       this.data['isFilterNode'] = this.isFilterNode;
       this.flowEditorService.nodeClick.next(this.data);
     }
+  }
+
+
+  /**
+   * Handle mousedown on time cell button - prevent node dragging
+   */
+  onTimeCellMouseDown(event: MouseEvent): void {
+    event.stopPropagation(); // Prevent node dragging
+    event.preventDefault(); // Prevent default behavior
+  }
+
+  /**
+   * Handle click on time cell to highlight the row
+   * Uses the same pattern as the icon buttons (refresh, close) - stop propagation to prevent node click
+   */
+  onTimeCellClick(readingItem: any, event: MouseEvent): void {
+    if (event) {
+      event.stopPropagation(); // Prevent node click event - same as icon buttons
+      event.preventDefault();
+    }
+    
+    if (!readingItem || readingItem.type !== 'reading') {
+      return;
+    }
+    
+    // Update shared highlighted timestamp state (all nodes will react to this)
+    const currentHighlighted = this.flowEditorService.highlightedDebugRow.value;
+    if (currentHighlighted === readingItem.time) {
+      this.flowEditorService.highlightedDebugRow.next(null);
+    } else {
+      this.flowEditorService.highlightedDebugRow.next(readingItem.time);
+    }
+    
+    // Force change detection
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Subscribe to shared highlighted row state
+   */
+  private subscribeToHighlightedRow(): void {
+    this.flowEditorService.highlightedDebugRow
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((timestamp: string | null) => {
+        this.highlightedTimestamp = timestamp;
+        this.cdr.detectChanges();
+      });
+  }
+
+  /**
+   * Check if a table row should be highlighted
+   * Rows are highlighted if their timestamp matches the shared highlighted timestamp
+   */
+  isRowHighlighted(readingItem: any): boolean {
+    if (!this.highlightedTimestamp || !readingItem || readingItem.type !== 'reading') {
+      return false;
+    }
+    return readingItem.time === this.highlightedTimestamp;
   }
 
   toggleDebuggerState() {
@@ -1557,11 +1711,11 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
       // Add date row if date changed and we should show date rows
       if (date !== currentDate) {
         if (shouldShowDateRows) {
-          rows.push({
-            type: 'date',
-            date: date,
-            colspan: 4
-          });
+        rows.push({
+          type: 'date',
+          date: date,
+          colspan: 4
+        });
         }
         currentDate = date;
       }
@@ -1569,7 +1723,7 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
       // Group reading key/value pairs by time and asset code
       const readingKeys = Object.keys(reading);
       const rowspan = readingKeys.length;
-      
+
       // Add rows for each reading key/value pair
       readingKeys.forEach((key, index) => {
         rows.push({
@@ -1689,6 +1843,11 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
         }
       });
   }
+
+  ngAfterViewInit() {
+    // Time cell listeners are handled via Angular (click) binding, no native listeners needed
+  }
+
 
   ngOnDestroy() {
     // Clean up all active dropdown portals

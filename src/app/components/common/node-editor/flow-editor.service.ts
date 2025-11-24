@@ -35,6 +35,7 @@ export class FlowEditorService {
   public storageWatchStateChanged: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public refreshDebugDisplayNodes: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public debuggerDetached: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public highlightedDebugRow: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null); // Shared highlighted row key (timestamp)
   
   // Store debug display nodes state for reload
   private savedDebugDisplayNodesState: any[] = [];

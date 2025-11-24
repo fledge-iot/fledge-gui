@@ -412,10 +412,16 @@
               <tr *ngIf="readingItem.type === 'date'" class="date-row">
                 <td [attr.colspan]="4">{{readingItem.date}}</td>
               </tr>
-              <tr *ngIf="readingItem.type === 'reading'">
+              <tr *ngIf="readingItem.type === 'reading'"
+                  [class.highlighted-row]="isRowHighlighted(readingItem)">
                 <td *ngIf="readingItem.isFirstRow" 
                     class="time-cell" 
-                    [attr.rowspan]="readingItem.rowspan">{{readingItem.time}}</td>
+                    [attr.rowspan]="readingItem.rowspan">
+                  <button type="button" 
+                          class="time-cell-button"
+                          (mousedown)="onTimeCellMouseDown($event)"
+                          (click)="onTimeCellClick(readingItem, $event)">{{readingItem.time}}</button>
+                </td>
                 <td *ngIf="readingItem.isFirstRow" 
                     class="asset-code-cell" 
                     [attr.rowspan]="readingItem.rowspan">{{readingItem.assetCode}}</td>

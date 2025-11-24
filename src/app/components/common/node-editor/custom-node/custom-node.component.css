@@ -248,7 +248,7 @@
 .debug-data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.625rem; /* Reduced by 2 points from 0.75rem (12px -> 10px) */
+  font-size: 0.625rem; /* Reduced by 2 points from 0.75rem (12px -> 9.2px) */
   font-family: sans-serif;
 }
 
@@ -287,6 +287,36 @@
 .debug-data-table .time-cell {
   font-family: sans-serif; /* Match asset-code-cell font */
   font-size: 0.575rem; /* Reduced by 2 points from 0.7rem (11.2px -> 9.2px) */
+  position: relative;
+  padding: 0; /* Remove padding since button will handle it */
+  vertical-align: middle; /* Center button vertically */
+}
+
+.debug-data-table .time-cell-button {
+  cursor: text !important; /* Use text cursor to indicate clicking does something different from dragging */
+  user-select: none; /* Prevent text selection */
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  padding: 0.25rem 0.5rem; /* Match other cells */
+  text-align: left;
+  font-family: sans-serif;
+  font-size: 0.575rem; /* Match time-cell font size */
+  position: relative;
+  z-index: 100; /* Ensure time cell button is on top */
+  margin: 0;
+}
+
+.debug-data-table .time-cell-button:hover {
+  background-color: #e3f2fd !important; /* Light blue on hover to indicate it's interactive */
+  font-weight: 600;
+}
+
+.debug-data-table .time-cell-button:focus {
+  outline: 1px solid #2196F3;
+  outline-offset: -1px;
 }
 
 .debug-data-table .asset-code-cell {
@@ -303,6 +333,30 @@
   font-family: sans-serif; /* Match asset-code-cell font */
   font-size: 0.575rem; /* Reduced by 2 points from 0.7rem (11.2px -> 9.2px) */
   text-align: right;
+}
+
+/* Highlighted row styling */
+.debug-data-table tr.highlighted-row {
+  background-color: #fff9c4 !important; /* Pale yellow background */
+}
+
+.debug-data-table tr.highlighted-row td {
+  background-color: #fff9c4 !important; /* Ensure all cells in highlighted row have the same background */
+  border-color: #ffd54f !important; /* Slightly darker border for visibility */
+}
+
+.debug-data-table tr.highlighted-row:hover {
+  background-color: #fff59d !important; /* Slightly darker yellow on hover */
+}
+
+.debug-data-table tr.highlighted-row:hover td {
+  background-color: #fff59d !important;
+}
+
+/* Make time cell more visually distinct when hovered */
+.debug-data-table .time-cell:hover {
+  background-color: #e3f2fd !important; /* Light blue on hover to indicate it's interactive */
+  font-weight: 600;
 }
 
 .debug-no-data {

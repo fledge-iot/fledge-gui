@@ -105,6 +105,62 @@ export async function createEditor(
         area.update('node', node.id);
       });
     }
+    // Prevent node dragging if it's a debug display node and the drag started from a time cell
+    if (context.type === 'nodedragged') {
+      const node: Node = editor.getNode(context.data.id);
+      if (node && (node as any)?.type === 'debug-data-display') {
+        // Try to get the original event from different possible locations
+        const originalEvent = (context as any).data?.originalEvent || (context as any).originalEvent || (context as any).event;
+        
+        // If we don't have the original event, we can't check the target, so just cancel if it's a debug display node
+        // The onNodeClick handler should have already handled the highlighting
+        if (!originalEvent) {
+          // Don't cancel - let the drag continue, but onNodeClick should have handled the highlighting
+        } else {
+          const target = originalEvent.target as HTMLElement;
+          
+          const timeCellButton = target.closest('.time-cell-button');
+          const timeCell = target.closest('.time-cell');
+          
+          if (timeCellButton || timeCell) {
+            // Get the row and highlight it
+            const row = (timeCellButton || timeCell)?.closest('tr');
+            if (row && !row.classList.contains('date-row')) {
+              const timeText = (timeCellButton || timeCell)?.textContent?.trim() || '';
+              
+              // Update shared highlighted timestamp state (all nodes will react to this)
+              // We need to access flowEditorService through the component
+              const nodeView = getNodeView(node.id);
+              
+              if (nodeView) {
+                // Try different ways to access the component
+                const component = (nodeView as any).component || (nodeView as any).node?.component || (nodeView as any).view?.component;
+                
+                if (component && component.flowEditorService) {
+                  const currentHighlighted = component.flowEditorService.highlightedDebugRow.value;
+                  if (currentHighlighted === timeText) {
+                    component.flowEditorService.highlightedDebugRow.next(null);
+                  } else {
+                    component.flowEditorService.highlightedDebugRow.next(timeText);
+                  }
+                  
+                  if (component.cdr) {
+                    component.cdr.detectChanges();
+                  }
+                }
+              }
+            }
+            
+            // Cancel the drag
+            return null;
+          }
+        }
+        // Also check if the event was marked as a time cell event
+        if (originalEvent && ((originalEvent as any)?.__timeCellEvent || (originalEvent as any)?.__stopNodeDrag)) {
+          return null;
+        }
+      }
+    }
     return context;
   });
 }
