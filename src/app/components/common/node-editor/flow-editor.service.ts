@@ -35,6 +35,21 @@ export class FlowEditorService {
   public storageWatchStateChanged: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public refreshDebugDisplayNodes: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public debuggerDetached: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  
+  // Store debug display nodes state for reload
+  private savedDebugDisplayNodesState: any[] = [];
+  
+  public saveDebugDisplayNodesStateForReload(state: any[]): void {
+    this.savedDebugDisplayNodesState = state;
+  }
+  
+  public getSavedDebugDisplayNodesStateForReload(): any[] {
+    return this.savedDebugDisplayNodesState;
+  }
+  
+  public clearSavedDebugDisplayNodesStateForReload(): void {
+    this.savedDebugDisplayNodesState = [];
+  }
 
   private pipelineSubject = new BehaviorSubject<(string | string[])[]>([]);
   updatedFilterPipelineData$: Observable<(string | string[])[]> = this.pipelineSubject.asObservable();

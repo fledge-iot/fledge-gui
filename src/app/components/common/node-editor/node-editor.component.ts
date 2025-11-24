@@ -618,6 +618,8 @@ export class NodeEditorComponent implements OnInit {
                       createEditor(el, this.injector, this.flowEditorService, this.rolesService, this.alertService, data);
                 // Store socket reference for debug data display nodes
                 this.socket = new ClassicPreset.Socket("socket");
+                // Restore debug display nodes state after reload
+                this.restoreDebugDisplayNodesStateAfterReload();
                     }
                   });
                 }
@@ -639,6 +641,8 @@ export class NodeEditorComponent implements OnInit {
                 createEditor(el, this.injector, this.flowEditorService, this.rolesService, this.alertService, data);
                 // Store socket reference for debug data display nodes
                 this.socket = new ClassicPreset.Socket("socket");
+                // Restore debug display nodes state after reload
+                this.restoreDebugDisplayNodesStateAfterReload();
                 this.filterConfigApiCallsStack = [];
               });
             }
@@ -647,6 +651,8 @@ export class NodeEditorComponent implements OnInit {
                 createEditor(el, this.injector, this.flowEditorService, this.rolesService, this.alertService, data);
                 // Store socket reference for debug data display nodes
                 this.socket = new ClassicPreset.Socket("socket");
+                // Restore debug display nodes state after reload
+                this.restoreDebugDisplayNodesStateAfterReload();
               }
               // Navigate to the list page when service and task not exist
               if ((!data.task && !data.service)) {
@@ -1298,6 +1304,10 @@ export class NodeEditorComponent implements OnInit {
   }
 
   reload() {
+    // Save debug display nodes state before reload
+    const debugDisplayNodesState = this.saveDebugDisplayNodesState();
+    this.flowEditorService.saveDebugDisplayNodesStateForReload(debugDisplayNodesState);
+    
     this.flowEditorService.clearEmittedPipelineChanges();
     if (editor) {
       // on reload editor clear the node history
@@ -2596,6 +2606,28 @@ export class NodeEditorComponent implements OnInit {
     }
     
     return state;
+  }
+
+  /**
+   * Restore debug display nodes state after reload
+   */
+  private async restoreDebugDisplayNodesStateAfterReload(): Promise<void> {
+    const savedState = this.flowEditorService.getSavedDebugDisplayNodesStateForReload();
+    if (savedState && savedState.length > 0) {
+      // Wait a bit for editor to be fully initialized and nodes to be rendered
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Check if editor is available
+      if (!editor || !editor.getNodes) {
+        // If editor not ready, try again after a delay
+        setTimeout(() => this.restoreDebugDisplayNodesStateAfterReload(), 500);
+        return;
+      }
+      
+      await this.restoreDebugDisplayNodesState(savedState);
+      // Clear the saved state after restoration
+      this.flowEditorService.clearSavedDebugDisplayNodesStateForReload();
+    }
   }
 
   /**
