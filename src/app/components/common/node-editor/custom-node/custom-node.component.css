@@ -261,21 +261,22 @@
 }
 
 .debug-data-table .time-cell {
-  font-family: 'Courier New', monospace;
+  font-family: sans-serif; /* Match asset-code-cell font */
   font-size: 0.575rem; /* Reduced by 2 points from 0.7rem (11.2px -> 9.2px) */
 }
 
 .debug-data-table .asset-code-cell {
   font-weight: 500;
+  font-family: sans-serif;
 }
 
 .debug-data-table .reading-key-cell {
-  font-family: 'Courier New', monospace;
+  font-family: sans-serif; /* Match asset-code-cell font */
   font-size: 0.575rem; /* Reduced by 2 points from 0.7rem (11.2px -> 9.2px) */
 }
 
 .debug-data-table .reading-value-cell {
-  font-family: 'Courier New', monospace;
+  font-family: sans-serif; /* Match asset-code-cell font */
   font-size: 0.575rem; /* Reduced by 2 points from 0.7rem (11.2px -> 9.2px) */
   text-align: right;
 }
