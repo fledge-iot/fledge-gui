@@ -1855,28 +1855,47 @@ export class NodeEditorComponent implements OnInit {
         return;
       }
       
-      // Find Writer data in buffer (recursively search through nested arrays)
+      // Find all Writer data in buffer (recursively search through nested arrays)
+      // Multiple branches can feed into storage, so there may be multiple Writer nodes
       let writerData = null;
       if (this.bufferData && Array.isArray(this.bufferData)) {
-        const findWriterData = (arr: any[]): any => {
+        const findAllWriterData = (arr: any[]): any[] => {
+          const writers: any[] = [];
           for (const item of arr) {
             if (!item) continue;
             
             // If item is an object with a name property matching "Writer"
             if (typeof item === 'object' && item.name && item.name.toLowerCase().includes('writer')) {
-              return item;
+              writers.push(item);
             }
             
             // If item is an array, recursively search it
             if (Array.isArray(item)) {
-              const found = findWriterData(item);
-              if (found) return found;
+              const found = findAllWriterData(item);
+              writers.push(...found);
             }
           }
-          return null;
+          return writers;
         };
         
-        writerData = findWriterData(this.bufferData);
+        const allWriters = findAllWriterData(this.bufferData);
+        
+        // Combine all Writer nodes' readings into a single data structure
+        if (allWriters.length > 0) {
+          // Combine readings from all Writer nodes
+          const combinedReadings: any[] = [];
+          allWriters.forEach((writer: any) => {
+            if (writer.readings && Array.isArray(writer.readings)) {
+              combinedReadings.push(...writer.readings);
+            }
+          });
+          
+          // Create a combined data structure with all readings
+          writerData = {
+            name: 'Storage',
+            readings: combinedReadings
+          };
+        }
       }
       
       console.log('Storage node - Matched Writer data:', writerData);
@@ -2015,22 +2034,39 @@ export class NodeEditorComponent implements OnInit {
         const isStorageWatchNode = !!(debugNode as any).storageNodeId;
         let nodeData = null;
         
-        // For storage watch nodes, look for Writer data
+        // For storage watch nodes, look for all Writer data and combine
         if (isStorageWatchNode || nodeName === 'Storage') {
-          const findWriterData = (arr: any[]): any => {
+          const findAllWriterData = (arr: any[]): any[] => {
+            const writers: any[] = [];
             for (const item of arr) {
               if (!item) continue;
               if (typeof item === 'object' && item.name && item.name.toLowerCase().includes('writer')) {
-                return item;
+                writers.push(item);
               }
               if (Array.isArray(item)) {
-                const found = findWriterData(item);
-                if (found) return found;
+                const found = findAllWriterData(item);
+                writers.push(...found);
               }
             }
-            return null;
+            return writers;
           };
-          nodeData = findWriterData(this.bufferData);
+          
+          const allWriters = findAllWriterData(this.bufferData);
+          
+          // Combine all Writer nodes' readings into a single data structure
+          if (allWriters.length > 0) {
+            const combinedReadings: any[] = [];
+            allWriters.forEach((writer: any) => {
+              if (writer.readings && Array.isArray(writer.readings)) {
+                combinedReadings.push(...writer.readings);
+              }
+            });
+            
+            nodeData = {
+              name: 'Storage',
+              readings: combinedReadings
+            };
+          }
         } else {
           // For filter nodes, find matching data in buffer by name
           if (this.bufferData && Array.isArray(this.bufferData)) {
@@ -2344,23 +2380,40 @@ export class NodeEditorComponent implements OnInit {
       const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name).toPromise();
       this.bufferData = bufferDataResponse?.data || bufferDataResponse;
       
-      // Find Writer data in buffer for storage node
+      // Find all Writer data in buffer for storage node and combine
       let nodeData = null;
       if (this.bufferData && Array.isArray(this.bufferData)) {
-        const findWriterData = (arr: any[]): any => {
+        const findAllWriterData = (arr: any[]): any[] => {
+          const writers: any[] = [];
           for (const item of arr) {
             if (!item) continue;
             if (typeof item === 'object' && item.name && item.name.toLowerCase().includes('writer')) {
-              return item;
+              writers.push(item);
             }
             if (Array.isArray(item)) {
-              const found = findWriterData(item);
-              if (found) return found;
+              const found = findAllWriterData(item);
+              writers.push(...found);
             }
           }
-          return null;
+          return writers;
         };
-        nodeData = findWriterData(this.bufferData);
+        
+        const allWriters = findAllWriterData(this.bufferData);
+        
+        // Combine all Writer nodes' readings into a single data structure
+        if (allWriters.length > 0) {
+          const combinedReadings: any[] = [];
+          allWriters.forEach((writer: any) => {
+            if (writer.readings && Array.isArray(writer.readings)) {
+              combinedReadings.push(...writer.readings);
+            }
+          });
+          
+          nodeData = {
+            name: 'Storage',
+            readings: combinedReadings
+          };
+        }
       }
 
       // Create debug display node
@@ -2679,3 +2732,5 @@ export class NodeEditorComponent implements OnInit {
     this.destroy$.unsubscribe();
   }
 }
+
+
