@@ -308,7 +308,7 @@
             class="btn is-small btn-icon storage-eye-icon"
             (click)="toggleStorageWatch()"
             [class.is-active]="isStorageWatched"
-            style="position: absolute; top: 0; right: 0; z-index: 10;">
+            style="position: absolute; top: 4px; right: 4px; z-index: 10;">
       <span class="icon is-small has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
                    [attr.data-tooltip]="isStorageWatched ? 'Hide incoming data' : 'Show incoming data'">
         <i class="bi bi-eye bi-sm" [class.has-text-primary]="isStorageWatched"></i>
@@ -376,7 +376,7 @@
       <div class="debug-data-display-actions">
         <button class="btn is-small btn-icon debug-refresh-btn"
                 (click)="refreshAllDebugDisplayNodes($event)"
-                style="position: absolute; top: 0; right: 24px; z-index: 10;">
+                style="position: absolute; top: 4px; right: 24px; z-index: 10;">
           <span class="icon is-small has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
                 data-tooltip="Refresh debug data">
             <i class="bi bi-arrow-repeat bi-sm"></i>
@@ -384,7 +384,7 @@
         </button>
         <button class="btn is-small btn-icon debug-remove-btn"
                 (click)="removeDebugDataDisplayNode($event)"
-                style="position: absolute; top: 0; right: 0; z-index: 10;">
+                style="position: absolute; top: 4px; right: 4px; z-index: 10;">
           <span class="icon is-small has-tooltip-bottom has-tooltip-arrow tooltip is-hovered"
                 data-tooltip="Close data display">
             <i class="bi bi-x-circle bi-sm"></i>
