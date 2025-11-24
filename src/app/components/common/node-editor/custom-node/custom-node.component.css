@@ -256,6 +256,11 @@
   vertical-align: top;
 }
 
+/* Center-align rowspan cells vertically when rowspan > 1 */
+.debug-data-table td[rowspan] {
+  vertical-align: middle;
+}
+
 .debug-data-table .date-row {
   background-color: #e8e8e8;
   font-weight: 600;

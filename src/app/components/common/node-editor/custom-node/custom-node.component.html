@@ -413,8 +413,12 @@
                 <td [attr.colspan]="4">{{readingItem.date}}</td>
               </tr>
               <tr *ngIf="readingItem.type === 'reading'">
-                <td class="time-cell">{{readingItem.time}}</td>
-                <td class="asset-code-cell">{{readingItem.assetCode}}</td>
+                <td *ngIf="readingItem.isFirstRow" 
+                    class="time-cell" 
+                    [attr.rowspan]="readingItem.rowspan">{{readingItem.time}}</td>
+                <td *ngIf="readingItem.isFirstRow" 
+                    class="asset-code-cell" 
+                    [attr.rowspan]="readingItem.rowspan">{{readingItem.assetCode}}</td>
                 <td class="reading-key-cell">{{readingItem.readingKey}}</td>
                 <td class="reading-value-cell">{{readingItem.readingValue}}</td>
               </tr>

@@ -1533,15 +1533,21 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
         currentDate = date;
       }
 
+      // Group reading key/value pairs by time and asset code
+      const readingKeys = Object.keys(reading);
+      const rowspan = readingKeys.length;
+      
       // Add rows for each reading key/value pair
-      Object.keys(reading).forEach((key) => {
+      readingKeys.forEach((key, index) => {
         rows.push({
           type: 'reading',
           date: date,
           time: time,
           assetCode: assetCode || 'N/A',
           readingKey: key,
-          readingValue: reading[key]
+          readingValue: reading[key],
+          rowspan: rowspan, // Total number of rows for this reading
+          isFirstRow: index === 0 // Flag to indicate if this is the first row of the group
         });
       });
     });
