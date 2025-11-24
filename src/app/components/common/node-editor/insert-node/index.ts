@@ -93,6 +93,19 @@ export function insertableNodes<S extends Schemes>(
           for (let id of intersectedConnections) {
             const exist = editor.getConnection(id);
             if (exist && (exist.source !== node.id && exist.target !== node.id)) {
+              // Check if this connection involves a debug data display node
+              const sourceNode = editor.getNode(exist.source);
+              const targetNode = editor.getNode(exist.target);
+              const isDebugDisplayConnection = 
+                (exist as any)?.isDebugDisplayConnection ||
+                (sourceNode as any)?.type === 'debug-data-display' ||
+                (targetNode as any)?.type === 'debug-data-display';
+              
+              // Prevent dropping filters on connections involving debug data display nodes
+              if (isDebugDisplayConnection) {
+                continue; // Skip this connection
+              }
+              
               removeOldConnection(node, editor);
               await editor.removeConnection(id);
               await props.createConnections(node, exist);
