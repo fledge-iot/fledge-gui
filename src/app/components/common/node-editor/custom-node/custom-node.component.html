@@ -100,7 +100,9 @@
             <ng-container *ngIf="data.label==='Filter' && !data.pseudoNode">
               <div class="is-inline-flex is-align-items-center">
                 <ng-container *ngIf="data.controls?.pseudoNodeControl?.pseudoConnection">
-                  <button class="btn small-btn add-btn is-pulled-right" (click)="addFilter()">
+                  <button class="btn small-btn add-btn is-pulled-right" 
+                          (click)="addFilter($event)"
+                          (mousedown)="$event.stopPropagation()">
                     <span class="ml-2 has-tooltip-bottom has-tooltip-arrow tooltip is-hovered" data-tooltip="Choose plugin">
                       <i class="bi bi-plus-circle plus-icon" aria-hidden="true"></i>
                     </span>

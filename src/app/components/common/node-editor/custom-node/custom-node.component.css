@@ -137,6 +137,8 @@
   padding-bottom: 0px !important;
   font-size: 14px;
   z-index: 999;
+  pointer-events: auto !important;
+  cursor: pointer;
 }
 
 .help-text {

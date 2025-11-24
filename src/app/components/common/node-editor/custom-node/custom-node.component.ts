@@ -1356,7 +1356,11 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
     this.router.navigate(['logs/syslog'], { queryParams: { source: this.service.name } });
   }
 
-  addFilter() {
+  addFilter(event?: Event) {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
     this.flowEditorService.filterInfo.next({ name: "newPipelineFilter" });
   }
 
