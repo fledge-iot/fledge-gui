@@ -1504,6 +1504,25 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
       return [];
     }
 
+    // First pass: collect all unique dates to determine if we should show date rows
+    const uniqueDates = new Set<string>();
+    readingsArray.forEach((item: any) => {
+      if (!item) return;
+      const userTs = item.user_ts || '';
+      if (!userTs) return;
+      const spaceIndex = userTs.indexOf(' ');
+      const date = spaceIndex > 0 ? userTs.substring(0, spaceIndex) : userTs;
+      if (date) {
+        uniqueDates.add(date);
+      }
+    });
+
+    // Determine if we should show date rows:
+    // - Show if there's more than one date, OR
+    // - Show if any date is not today's date
+    const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    const shouldShowDateRows = uniqueDates.size > 1 || Array.from(uniqueDates).some(date => date !== today);
+
     // Process each reading item in the readings array
     readingsArray.forEach((item: any) => {
       if (!item) return;
@@ -1535,13 +1554,15 @@ export class CustomNodeComponent implements OnChanges, OnDestroy {
         return;
       }
 
-      // Add date row if date changed
+      // Add date row if date changed and we should show date rows
       if (date !== currentDate) {
-        rows.push({
-          type: 'date',
-          date: date,
-          colspan: 4
-        });
+        if (shouldShowDateRows) {
+          rows.push({
+            type: 'date',
+            date: date,
+            colspan: 4
+          });
+        }
         currentDate = date;
       }
 
