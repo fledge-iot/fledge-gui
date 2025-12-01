@@ -46,7 +46,7 @@ export class SouthServiceModalComponent implements OnInit {
   public filterPipelineType: FilterPipelineType = FilterPipelineType.Empty;
 
   assetReadings = [];
-  public isAddFilterWizard;
+  public isAddFilterWizard: boolean = false;
   public source = '';
 
   confirmationDialogData = {};
@@ -126,7 +126,13 @@ export class SouthServiceModalComponent implements OnInit {
           const services = data.services as Service[];
           this.service = services.find(service => (service.name == this.serviceName));
           // open modal window if service name is valid otherwise redirect to list page
-          this.service !== undefined ? this.toggleModal(true) : this.navToSouth()
+          if (this.service !== undefined) {
+            this.isAddFilterWizard = false; // Ensure it's false
+            this.toggleModal(true);
+            this.cDRef.detectChanges(); // Force change detection
+          } else {
+            this.navToSouth();
+          }
         },
         error => {
           if (error.status === 0) {
@@ -175,6 +181,7 @@ export class SouthServiceModalComponent implements OnInit {
 
     const modalWindow = <HTMLDivElement>document.getElementById('south-service-modal');
     if (isOpen) {
+      this.isAddFilterWizard = false; // Ensure it's false when opening for editing
       this.getCategoryData();
       this.validConfigurationForm = true;
       this.validFilterConfigForm = true;
@@ -404,6 +411,22 @@ export class SouthServiceModalComponent implements OnInit {
 
   goToLink(pluginInfo) {
     this.docService.goToPluginLink(pluginInfo);
+  }
+
+  /**
+   * Open plugin help documentation in a new tab
+   * @param pluginName - Name of the plugin (may be short name like "modbus" or full name like "fledge-south-modbus")
+   */
+  openPluginHelp(pluginName: string) {
+    if (pluginName) {
+      // Construct the full plugin name if it's not already in full format
+      let fullPluginName = pluginName;
+      if (!pluginName.startsWith('fledge-')) {
+        fullPluginName = `fledge-south-${pluginName}`;
+      }
+      const helpUrl = `https://fledge-iot.readthedocs.io/en/latest/plugins/${fullPluginName}/`;
+      window.open(helpUrl, '_blank');
+    }
   }
 
   navToSyslogs(service: Service) {

@@ -16,6 +16,10 @@ export class QuickviewComponent implements OnInit {
   @Input() showReadings: boolean;
   @Input() isDebuggerPage = false;
   @Input() showLogs: boolean;
+  @Input() pluginName: string;
+  @Input() showPluginConfiguration: boolean = false;
+  @Input() filterPluginName: string;
+  @Input() showFilterConfiguration: boolean = false;
 
   @ContentChild('notificationLogs', { static: false }) notificationLogsComponent;
   @ContentChild('systemLogs', { static: false }) systemLogsComponent;
@@ -79,6 +83,27 @@ export class QuickviewComponent implements OnInit {
     if (this.sharedService.listKvView) {
       const view = localStorage.getItem('LIST_KVLIST_VIEW') || 'list';
       this.sharedService.listKvView.next(view);
+    }
+  }
+
+  /**
+   * Open plugin help documentation in a new tab
+   * @param pluginName - Name of the plugin (may be short name like "modbus" or full name like "fledge-south-modbus")
+   * @param isFilter - Whether this is a filter plugin (uses "fledge-filter-" prefix instead of "fledge-south-")
+   */
+  openPluginHelp(pluginName: string, isFilter: boolean = false) {
+    if (pluginName) {
+      // Construct the full plugin name if it's not already in full format
+      let fullPluginName = pluginName;
+      if (!pluginName.startsWith('fledge-')) {
+        if (isFilter) {
+          fullPluginName = `fledge-filter-${pluginName}`;
+        } else {
+          fullPluginName = `fledge-south-${pluginName}`;
+        }
+      }
+      const helpUrl = `https://fledge-iot.readthedocs.io/en/latest/plugins/${fullPluginName}/`;
+      window.open(helpUrl, '_blank');
     }
   }
 

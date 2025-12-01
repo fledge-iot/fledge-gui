@@ -470,6 +470,19 @@ export class AddTaskWizardComponent implements OnInit, OnDestroy {
     this.docService.goToPluginLink(pluginInfo);
   }
 
+  /**
+   * Open plugin help documentation in a new tab
+   * @param pluginName - Name of the plugin (short name, e.g., "http")
+   */
+  openPluginHelp(pluginName: string) {
+    if (pluginName) {
+      // Construct the full plugin name: fledge-north-{name}
+      const fullPluginName = `fledge-north-${pluginName}`;
+      const helpUrl = `https://fledge-iot.readthedocs.io/en/latest/plugins/${fullPluginName}/`;
+      window.open(helpUrl, '_blank');
+    }
+  }
+
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
