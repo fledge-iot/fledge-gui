@@ -1,8 +1,16 @@
 <div id="quickviewDefault" class="quickview" #quickView>
   <div class="quickview-body" style="position: relative;">
-    <!-- Close button top-right -->
-    <button type="button" class="delete is-small" (click)="onCloseQuickview()">
-    </button>
+    <!-- Header with help icon and close button -->
+    <div class="quickview-header">
+      <span *ngIf="(showPluginConfiguration && pluginName) || (showFilterConfiguration && filterPluginName)" 
+            class="icon is-small has-tooltip-left has-tooltip-arrow tooltip quickview-help-icon"
+            data-tooltip="Plugin Help"
+            (click)="openPluginHelp(showFilterConfiguration ? filterPluginName : pluginName, showFilterConfiguration)">
+        <i class="bi bi-question-circle"></i>
+      </span>
+      <button type="button" class="delete is-small" (click)="onCloseQuickview()">
+      </button>
+    </div>
 
     <!-- Content -->
     <div class="quickview-block" #quickViewBlock>

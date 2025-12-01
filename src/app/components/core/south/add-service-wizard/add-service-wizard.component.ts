@@ -393,6 +393,19 @@ export class AddServiceWizardComponent implements OnInit, OnDestroy {
     this.docService.goToPluginLink(pluginInfo);
   }
 
+  /**
+   * Open plugin help documentation in a new tab
+   * @param pluginName - Name of the plugin (short name, e.g., "modbus")
+   */
+  openPluginHelp(pluginName: string) {
+    if (pluginName) {
+      // Construct the full plugin name: fledge-south-{name}
+      const fullPluginName = `fledge-south-${pluginName}`;
+      const helpUrl = `https://fledge-iot.readthedocs.io/en/latest/plugins/${fullPluginName}/`;
+      window.open(helpUrl, '_blank');
+    }
+  }
+
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }

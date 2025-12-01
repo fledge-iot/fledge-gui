@@ -144,6 +144,13 @@
           </div>
         </div>
         <div class="box mb-5 step-content" id="c-2">
+          <span *ngIf="plugin" 
+                class="icon is-small has-tooltip-left has-tooltip-arrow tooltip help-icon"
+                data-tooltip="Plugin Help"
+                (click)="openPluginHelp(plugin)"
+                style="cursor: pointer; margin-left: 0.5rem; vertical-align: middle; float: right;">
+            <i class="bi bi-question-circle"></i>
+          </span>
           <app-configuration-group *ngIf="configurationData" [category]="configurationData" [plugin]="plugin"
             [recalculateTabsOverflow]="isTabsNavVisible" (changedConfigEvent)="getChangedConfig($event)"
             [from]="'add-task-form'" (formStatusEvent)="validConfigurationForm = $event"></app-configuration-group>

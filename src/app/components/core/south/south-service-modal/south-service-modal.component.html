@@ -10,6 +10,14 @@
         </span>
         <p class="help has-text-grey modal-subtitle">South Service</p>
       </span>
+      <span *ngIf="service" 
+            [style.display]="isAddFilterWizard ? 'none' : 'inline-block'"
+            class="icon is-small has-tooltip-left has-tooltip-arrow tooltip"
+            data-tooltip="Plugin Help"
+            (click)="openPluginHelp(service?.plugin?.name || category?.config?.plugin?.value)"
+            style="cursor: pointer; margin-right: 0.5rem; color: #3273dc;">
+        <i class="bi bi-question-circle"></i>
+      </span>
       <button class="delete" aria-label="close" (click)="navToSouth()"></button>
     </header>
     <section class="modal-card-body">
