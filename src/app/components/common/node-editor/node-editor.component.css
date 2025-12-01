@@ -1,6 +1,19 @@
 .rete {
   height: 85vh;
   padding: 0.5rem;
+  overflow: visible;
+  position: relative;
+  /* Ensure Rete.js area doesn't create a stacking context that prevents z-index from working */
+  isolation: auto;
+}
+
+/* Ensure the Rete.js area container allows overflow for connections */
+::ng-deep .rete [rete-area] {
+  overflow: visible !important;
+}
+
+::ng-deep .rete [rete-area] > * {
+  overflow: visible !important;
 }
 
 .custom-margin {
@@ -54,4 +67,29 @@
     background: rgba(0, 0, 0, 0.7);
     color: white;
   }
+}
+
+/* Ensure dropdown menus from nodes appear above debug display nodes */
+/* Target the Rete.js area container - don't create stacking context */
+::ng-deep [rete-area] {
+  position: relative;
+  isolation: auto; /* Don't create new stacking context */
+}
+
+/* Ensure all dropdown menus have maximum z-index */
+::ng-deep [rete-area] .dropdown-menu {
+  z-index: 999999 !important;
+  position: absolute !important;
+}
+
+/* Nodes with dropdowns should have high z-index when hovered */
+::ng-deep [rete-area] app-custom-node.dropdown-hovered {
+  z-index: 999999 !important;
+  position: relative !important;
+}
+
+/* Ensure debug display nodes have low z-index */
+::ng-deep [rete-area] app-custom-node:has(.debug-data-display-node) {
+  z-index: 1 !important;
+  position: relative !important;
 }

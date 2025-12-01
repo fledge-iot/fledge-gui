@@ -15,6 +15,15 @@ svg path.selected {
   stroke: rgb(255, 217, 44);
 }
 
+svg path.debug-display-connection {
+  stroke-dasharray: 5, 5;
+}
+
+svg path.debug-display-connection.selected {
+  stroke: rgb(255, 217, 44);
+  stroke-dasharray: 5, 5;
+}
+
 .hover-path {
   stroke-width: 14px !important;
   stroke: transparent !important;

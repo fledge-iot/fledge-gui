@@ -86,16 +86,80 @@ export async function createEditor(
   area.addPipe((context) => {
     if (context.type === 'nodetranslated') {
       const node: Node = editor.getNode(context.data.id);
-      const nodeConnections = editor.getConnections().filter(conn => conn.source == node.id || conn.target == node.id);
-      // Defer icon position update to the next paint frame
+      if (!node) return;
+      const nodeConnections = editor.getConnections().filter(conn => {
+        if (!conn || !conn.source || !conn.target) return false;
+        return conn.source === node.id || conn.target === node.id;
+      });
+      // Defer icon position update and connection path recalculation to the next paint frame
       requestAnimationFrame(() => {
         nodeConnections.forEach(conn => {
           const element = area.connectionViews.get(conn.id)?.element;
           if (element) {
             updateConnectionIconPosition(conn.id, element);
+            // Force connection path update to handle partially off-screen nodes
+            area.update('connection', conn.id);
           }
         });
+        // Also update the node view to ensure proper rendering
+        area.update('node', node.id);
       });
+    }
+    // Prevent node dragging if it's a debug display node and the drag started from a time cell
+    if (context.type === 'nodedragged') {
+      const node: Node = editor.getNode(context.data.id);
+      if (node && (node as any)?.type === 'debug-data-display') {
+        // Try to get the original event from different possible locations
+        const originalEvent = (context as any).data?.originalEvent || (context as any).originalEvent || (context as any).event;
+        
+        // If we don't have the original event, we can't check the target, so just cancel if it's a debug display node
+        // The onNodeClick handler should have already handled the highlighting
+        if (!originalEvent) {
+          // Don't cancel - let the drag continue, but onNodeClick should have handled the highlighting
+        } else {
+          const target = originalEvent.target as HTMLElement;
+          
+          const timeCellButton = target.closest('.time-cell-button');
+          const timeCell = target.closest('.time-cell');
+          
+          if (timeCellButton || timeCell) {
+            // Get the row and highlight it
+            const row = (timeCellButton || timeCell)?.closest('tr');
+            if (row && !row.classList.contains('date-row')) {
+              const timeText = (timeCellButton || timeCell)?.textContent?.trim() || '';
+              
+              // Update shared highlighted timestamp state (all nodes will react to this)
+              // We need to access flowEditorService through the component
+              const nodeView = getNodeView(node.id);
+              
+              if (nodeView) {
+                // Try different ways to access the component
+                const component = (nodeView as any).component || (nodeView as any).node?.component || (nodeView as any).view?.component;
+                
+                if (component && component.flowEditorService) {
+                  const currentHighlighted = component.flowEditorService.highlightedDebugRow.value;
+                  if (currentHighlighted === timeText) {
+                    component.flowEditorService.highlightedDebugRow.next(null);
+                  } else {
+                    component.flowEditorService.highlightedDebugRow.next(timeText);
+                  }
+                  
+                  if (component.cdr) {
+                    component.cdr.detectChanges();
+                  }
+                }
+              }
+            }
+            
+            // Cancel the drag
+            return null;
+          }
+        }
+        // Also check if the event was marked as a time cell event
+        if (originalEvent && ((originalEvent as any)?.__timeCellEvent || (originalEvent as any)?.__stopNodeDrag)) {
+          return null;
+        }
+      }
     }
     return context;
   });
@@ -145,6 +209,12 @@ async function removeDuplicateConnections() {
 
 
 async function handleConnections(node, connection, flowEditorService: FlowEditorService) {
+  // Prevent debug display nodes from being inserted into connections
+  const isDebugDisplayNode = (node as any)?.type === 'debug-data-display';
+  if (isDebugDisplayNode) {
+    return; // Don't create connections for debug display nodes when dragged onto other connections
+  }
+  
   if (!isEmpty(node.inputs) && !isEmpty(node.outputs) && node?.label === 'Filter') {
     const pseudoNodeControl = node.controls.pseudoNodeControl as PseudoNodeControl;
     pseudoNodeControl.pseudoConnection = true;
@@ -381,6 +451,8 @@ async function nodesGrid(area: AreaPlugin<Schemes,
 
 export function getUpdatedFilterPipeline() {
   let nodes = editor.getNodes();
+  // Exclude debug display nodes from pipeline validation
+  nodes = nodes.filter((node: any) => node.type !== 'debug-data-display');
   let connections = editor.getConnections();
   for (let i = 0; i < nodes.length; i++) {
     if (i == 0) {
@@ -406,9 +478,17 @@ export function getUpdatedFilterPipeline() {
 
   let updatedFilterPipeline: any = [];
   let sourceNode = nodes[0];
-  while (connections.find(c => c.source === sourceNode.id)) {
+  // Filter out connections to debug display nodes when checking if we should continue
+  while (connections.find(c => {
+    const targetNode = editor.getNode(c.target);
+    return c.source === sourceNode.id && (targetNode as any)?.type !== 'debug-data-display';
+  })) {
     let previousSourceNode = sourceNode;
-    let connlist = connections.filter(c => c.source === sourceNode.id);
+    // Filter out connections to/from debug display nodes
+    let connlist = connections.filter(c => {
+      const targetNode = editor.getNode(c.target);
+      return c.source === sourceNode.id && (targetNode as any)?.type !== 'debug-data-display';
+    });
     if (connlist.length === 1) {
       let filterNode = editor.getNode(connlist[0].target);
 
@@ -425,6 +505,11 @@ export function getUpdatedFilterPipeline() {
     else {
       let masterBranchStartIndex = [];
       let i;
+      // Filter out connections to debug display nodes
+      connlist = connlist.filter(c => {
+        const targetNode = editor.getNode(c.target);
+        return (targetNode as any)?.type !== 'debug-data-display';
+      });
       for (i = 0; i < connlist.length; i++) {
         let node = editor.getNode(connlist[i].target);
         let branch = getBranchNodes(updatedFilterPipeline, connections, node);
@@ -470,13 +555,21 @@ function getBranchNodes(pipeline, connections, node) {
   if (node.label === "Storage" || node.label === "North") {
     return;
   }
+  // Exclude debug display nodes
+  if ((node as any)?.type === 'debug-data-display') {
+    return;
+  }
   if (existsInPipeline(pipeline, node.label)) {
     return [];
   }
   let branchNodes = [];
   branchNodes.push(node.label);
   while (connections.find(c => c.source === node.id)) {
-    let connlist = connections.filter(c => c.source === node.id);
+    // Filter out connections to debug display nodes
+    let connlist = connections.filter(c => {
+      const targetNode = editor.getNode(c.target);
+      return c.source === node.id && (targetNode as any)?.type !== 'debug-data-display';
+    });
     if (connlist.length === 1) {
       let filterNode = editor.getNode(connlist[0].target);
       if (filterNode.label !== "Storage" && filterNode.label !== "North" && (existsInPipeline(pipeline, filterNode.label) || existsInPipeline(branchNodes, filterNode.label))) {

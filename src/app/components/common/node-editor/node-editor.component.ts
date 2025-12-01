@@ -31,9 +31,14 @@ import {
   editor,
   history,
   getNodeView,
+  area,
+  connectionEvents,
 } from './editor';
 import { FlowEditorService, NodeStatus } from './flow-editor.service';
 import { DebuggerReadingsComponent } from '../../core/debugger/debugger-readings/debugger-readings.component';
+import { DebugDataDisplay } from './nodes/debug-data-display';
+import { ClassicPreset } from 'rete';
+import { Connection } from './connection';
 
 @Component({
   selector: 'app-node-editor',
@@ -67,6 +72,7 @@ export class NodeEditorComponent implements OnInit {
   private nodeDropdownClickSubscription: Subscription;
   private pipelineSubscription: Subscription;
   private debuggerStateSubscription: Subscription;
+  private debugDisplayRefreshSubscription: Subscription;
 
   showPluginConfiguration: boolean = false;
   showFilterConfiguration: boolean = false;
@@ -85,6 +91,9 @@ export class NodeEditorComponent implements OnInit {
   tasks: NorthTask[] = [];
   notifications: Notification[] = [];
   destroy$: Subject<boolean> = new Subject<boolean>();
+  debugDataDisplayNodes: any[] = [];
+  bufferData: any = null;
+  socket: ClassicPreset.Socket;
   serviceName = '';
   filterName = '';
   dialogServiceName = '';
@@ -385,7 +394,9 @@ export class NodeEditorComponent implements OnInit {
               this.selectedFilters.push(data.label);
             }
           }
-          this.nodesToDelete.push({ id: data.id, 'label': data.label, 'name': data.controls.nameControl['name'] });
+          // Add null check for nameControl to prevent errors with debug display nodes
+          const nodeName = data.controls?.nameControl?.['name'] || data.label || '';
+          this.nodesToDelete.push({ id: data.id, 'label': data.label, 'name': nodeName });
         }
         else if (!data.selected) {
           const nodesToDelete = this.nodesToDelete.filter(node => node.id !== data.id);
@@ -445,6 +456,96 @@ export class NodeEditorComponent implements OnInit {
         this.showFilterConfiguration = false;
         this.showTaskSchedule = false;
         this.showNotificationConfiguration = false;
+      });
+
+    // Subscribe to showDebuggerDataDisplay to create/remove debug data display nodes
+    this.flowEditorService.showDebuggerDataDisplay
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((show: boolean) => {
+        if (show) {
+          this.loadBufferDataAndCreateDataDisplayNodes();
+          this.startDebugDisplayAutoRefresh();
+        } else {
+          this.removeDebugDataDisplayNodes();
+          this.stopDebugDisplayAutoRefresh();
+        }
+      });
+
+    // Subscribe to refreshDebugDisplayNodes to manually refresh debug data display nodes
+    this.flowEditorService.refreshDebugDisplayNodes
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((shouldRefresh: boolean) => {
+        if (shouldRefresh) {
+          this.refreshDebugDisplayNodes();
+        }
+      });
+
+    // Subscribe to debuggerDetached to remove all debug display nodes when debugger is detached
+    this.flowEditorService.debuggerDetached
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((detached: boolean) => {
+        if (detached) {
+          this.removeDebugDataDisplayNodes();
+          this.stopDebugDisplayAutoRefresh();
+        }
+      });
+
+    // Monitor ingress state changes to restart/stop polling
+    this.sharedService.debuggerStateSubject
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        // If debug display nodes are visible, check if we should start/stop polling
+        const areDebugDisplayNodesVisible = this.flowEditorService.showDebuggerDataDisplay.value;
+        if (areDebugDisplayNodesVisible) {
+          if (this.isIngressNotSuspended()) {
+            // Ingress is not suspended, ensure polling is running
+            if (!this.debugDisplayRefreshSubscription) {
+              this.startDebugDisplayAutoRefresh();
+            }
+          } else {
+            // Ingress is suspended, stop polling
+            this.stopDebugDisplayAutoRefresh();
+          }
+        }
+      });
+
+    // Subscribe to filter watch toggle events
+    this.flowEditorService.toggleFilterWatch
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((watchData: any) => {
+        if (!watchData) return;
+        
+        if (watchData.isWatched) {
+          this.createFilterWatchNode(watchData.filterNodeId, watchData.filterNodeName, watchData.filterNode);
+        } else {
+          this.removeFilterWatchNode(watchData.filterNodeId);
+        }
+      });
+
+    // Subscribe to storage watch toggle events
+    this.flowEditorService.toggleStorageWatch
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((watchData: any) => {
+        if (!watchData) return;
+        
+        if (watchData.isWatched) {
+          this.createStorageWatchNode(watchData.storageNodeId, watchData.storageNode);
+        } else {
+          this.removeStorageWatchNode(watchData.storageNodeId);
+        }
+      });
+
+    // Subscribe to north watch toggle events
+    this.flowEditorService.toggleNorthWatch
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((watchData: any) => {
+        if (!watchData) return;
+        
+        if (watchData.isWatched) {
+          this.createNorthWatchNode(watchData.northNodeId, watchData.northNode);
+        } else {
+          this.removeNorthWatchNode(watchData.northNodeId);
+        }
       });
   }
 
@@ -528,6 +629,10 @@ export class NodeEditorComponent implements OnInit {
                       })
                       data.isServiceEnabled = this.serviceInfo.isEnabled;
                       createEditor(el, this.injector, this.flowEditorService, this.rolesService, this.alertService, data);
+                // Store socket reference for debug data display nodes
+                this.socket = new ClassicPreset.Socket("socket");
+                // Restore debug display nodes state after reload
+                this.restoreDebugDisplayNodesStateAfterReload();
                     }
                   });
                 }
@@ -547,12 +652,20 @@ export class NodeEditorComponent implements OnInit {
                   this.filterConfigurations.push(filterConfig);
                 })
                 createEditor(el, this.injector, this.flowEditorService, this.rolesService, this.alertService, data);
+                // Store socket reference for debug data display nodes
+                this.socket = new ClassicPreset.Socket("socket");
+                // Restore debug display nodes state after reload
+                this.restoreDebugDisplayNodesStateAfterReload();
                 this.filterConfigApiCallsStack = [];
               });
             }
             else {
               if (this.from !== 'notifications') {
                 createEditor(el, this.injector, this.flowEditorService, this.rolesService, this.alertService, data);
+                // Store socket reference for debug data display nodes
+                this.socket = new ClassicPreset.Socket("socket");
+                // Restore debug display nodes state after reload
+                this.restoreDebugDisplayNodesStateAfterReload();
               }
               // Navigate to the list page when service and task not exist
               if ((!data.task && !data.service)) {
@@ -627,6 +740,9 @@ export class NodeEditorComponent implements OnInit {
         }
         // refresh node data
         updateNode(data);
+        // Emit tasks to debuggerStateSubject so filter nodes can check for debugger attachment
+        // Convert tasks to services-like format for consistency
+        this.sharedService.debuggerStateSubject.next({ services: tasks || [] });
       },
         error => {
           if (error.status === 0) {
@@ -664,6 +780,8 @@ export class NodeEditorComponent implements OnInit {
         }
         // refresh node data
         updateNode(data);
+        // Emit services to debuggerStateSubject so filter nodes can check for debugger attachment
+        this.sharedService.debuggerStateSubject.next({ services: services || [] });
       },
         error => {
           if (error.status === 0) {
@@ -1199,6 +1317,10 @@ export class NodeEditorComponent implements OnInit {
   }
 
   reload() {
+    // Save debug display nodes state before reload
+    const debugDisplayNodesState = this.saveDebugDisplayNodesState();
+    this.flowEditorService.saveDebugDisplayNodesStateForReload(debugDisplayNodesState);
+    
     this.flowEditorService.clearEmittedPipelineChanges();
     if (editor) {
       // on reload editor clear the node history
@@ -1421,9 +1543,21 @@ export class NodeEditorComponent implements OnInit {
     this.router.navigate(['/developer/options/additional-services/config'], { state: { ...this.serviceInfo } });
   }
 
-  reset() {
+  async reset() {
     this.updatedFilterPipeline = [];
-    resetNodes(this.flowEditorService);
+    
+    // Save debug display nodes state before reset
+    const debugDisplayNodesState = this.saveDebugDisplayNodesState();
+    
+    // Perform reset
+    await resetNodes(this.flowEditorService);
+    
+    // Restore debug display nodes after reset
+    if (debugDisplayNodesState.length > 0) {
+      // Wait a bit for nodes to be recreated after reset
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await this.restoreDebugDisplayNodesState(debugDisplayNodesState);
+    }
   }
 
   callUndoAction() {
@@ -1432,6 +1566,1539 @@ export class NodeEditorComponent implements OnInit {
 
   callRedoAction() {
     redoAction(this.flowEditorService);
+  }
+
+  /**
+   * Load buffer data and create debug data display nodes
+   */
+  async loadBufferDataAndCreateDataDisplayNodes() {
+    if (!this.socket) {
+      this.socket = new ClassicPreset.Socket("socket");
+    }
+    
+    // Get the service with attached debugger
+    let serviceWithDebugger: any = null;
+    if (this.from === 'south') {
+      serviceWithDebugger = this.services.find((s: any) => s.debug?.debugger === 'Attached');
+    } else {
+      serviceWithDebugger = this.tasks.find((t: any) => t.debug?.debugger === 'Attached');
+    }
+    
+    if (!serviceWithDebugger) {
+      return;
+    }
+    
+    try {
+      // Fetch buffer data
+      const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name, this.from).toPromise();
+      
+      // Extract the data array from the response
+      // Response structure: { "data": [...] }
+      this.bufferData = bufferDataResponse?.data || bufferDataResponse;
+      
+      
+      // Create debug data display nodes
+      await this.createDebugDataDisplayNodes();
+    } catch (error) {
+      console.error('Failed to load buffer data:', error);
+    }
+  }
+
+  /**
+   * Create debug data display nodes for filter nodes and storage node
+   */
+  /**
+   * Find a non-overlapping position for a debug data display node that minimizes distance to the target node
+   * @param targetX The x position of the target node
+   * @param targetY The y position of the target node
+   * @param debugNodeWidth Width of the debug node (default 394)
+   * @param debugNodeHeight Height of the debug node (default 250)
+   * @returns A position {x, y} that doesn't overlap with existing nodes and minimizes distance
+   */
+  private findNonOverlappingPosition(targetX: number, targetY: number, debugNodeWidth: number = 394, debugNodeHeight: number = 250): { x: number, y: number } {
+    const nodes = editor.getNodes();
+    const spacing = 20; // Minimum spacing between nodes
+    const offsetX = -380; // Default offset to the left
+    
+    // Calculate distance between two points
+    const distance = (x1: number, y1: number, x2: number, y2: number): number => {
+      return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    };
+    
+    // Calculate center point of a node at position (x, y) with given width and height
+    const getNodeCenter = (x: number, y: number, width: number, height: number) => {
+      return { x: x + width / 2, y: y + height / 2 };
+    };
+    
+    const targetCenter = getNodeCenter(targetX, targetY, 198, 100); // Target node center (assuming default size)
+    
+    // Generate candidate positions with small increments, prioritizing vertical alignment
+    const candidates: Array<{ x: number, y: number, distance: number }> = [];
+    const verticalOffsets = [0, 10, -10, 20, -20, 30, -30, 50, -50, 80, -80, 120, -120];
+    const horizontalOffsets = [0, -debugNodeWidth - spacing]; // Try same X, then further left
+    
+    for (const hOffset of horizontalOffsets) {
+      for (const vOffset of verticalOffsets) {
+        const x = targetX + offsetX + hOffset;
+        const y = targetY + vOffset;
+        const debugCenter = getNodeCenter(x, y, debugNodeWidth, debugNodeHeight);
+        const dist = distance(targetCenter.x, targetCenter.y, debugCenter.x, debugCenter.y);
+        candidates.push({ x, y, distance: dist });
+      }
+    }
+    
+    // Sort candidates by distance (closest first)
+    candidates.sort((a, b) => a.distance - b.distance);
+    
+    // Try each candidate position in order of increasing distance
+    for (const candidate of candidates) {
+      let overlaps = false;
+      
+      for (const node of nodes) {
+        const nodeView = getNodeView(node.id);
+        if (!nodeView?.position) continue;
+        
+        const nodeX = nodeView.position.x;
+        const nodeY = nodeView.position.y;
+        const nodeWidth = (node as any).width || 198; // Default node width
+        const nodeHeight = (node as any).height || 100; // Default node height
+        
+        // Check if debug node would overlap with this node
+        const debugRight = candidate.x + debugNodeWidth;
+        const debugBottom = candidate.y + debugNodeHeight;
+        const nodeRight = nodeX + nodeWidth;
+        const nodeBottom = nodeY + nodeHeight;
+        
+        if (!(debugRight < nodeX - spacing || 
+              candidate.x > nodeRight + spacing || 
+              debugBottom < nodeY - spacing || 
+              candidate.y > nodeBottom + spacing)) {
+          overlaps = true;
+          break;
+        }
+      }
+      
+      if (!overlaps) {
+        return { x: candidate.x, y: candidate.y };
+      }
+    }
+    
+    // If all positions overlap, return the closest position (first in sorted list)
+    // This minimizes distance even if there's a slight overlap
+    return { x: candidates[0].x, y: candidates[0].y };
+  }
+
+  async createDebugDataDisplayNodes() {
+    // Remove only the main debug data display nodes (not watch nodes)
+    // Watch nodes have filterNodeId, storageNodeId, or northNodeId properties
+    const nodesToRemove = this.debugDataDisplayNodes.filter((node: any) => 
+      !node.filterNodeId && !node.storageNodeId && !node.northNodeId
+    );
+    for (const debugNode of nodesToRemove) {
+      try {
+        // Remove connections first
+        const connections = editor.getConnections();
+        connections.forEach((conn: any) => {
+          if (conn.target === debugNode.id || conn.source === debugNode.id) {
+            editor.removeConnection(conn.id);
+          }
+        });
+        
+        // Remove node
+        await editor.removeNode(debugNode.id);
+      } catch (e) {
+        // Node might already be removed
+      }
+    }
+    // Update the array to only keep watch nodes
+    this.debugDataDisplayNodes = this.debugDataDisplayNodes.filter((node: any) => 
+      node.filterNodeId || node.storageNodeId || node.northNodeId
+    );
+    
+    if (!this.socket) {
+      this.socket = new ClassicPreset.Socket("socket");
+    }
+    
+    const nodes = editor.getNodes();
+    
+    // Get all existing debug display nodes to check for watch nodes
+    const existingDebugNodes = nodes.filter((node: any) => node.type === 'debug-data-display');
+    
+    // Find filter nodes, storage node (for south), and north node (for north)
+    const filterNodes: any[] = [];
+    let storageNode: any = null;
+    let northNode: any = null;
+    
+    nodes.forEach((node: any) => {
+      if (node.type === 'debug-data-display') {
+        return; // Skip existing debug data display nodes
+      }
+      // Check by type instead of label, since filter labels are changed to their actual names
+      if (node.type === 'filter' && !node.pseudoNode) {
+        filterNodes.push(node);
+      } else if (node.label === 'Storage' && this.from === 'south') {
+        storageNode = node;
+      } else if (node.label === 'North' && this.from === 'north') {
+        northNode = node;
+      }
+    });
+    
+    // Create nodes for filters
+    for (const filterNode of filterNodes) {
+      // Check if this filter node already has a watch node connected to it
+      // A watch node has filterNodeId matching this filter node's id
+      const hasWatchNode = existingDebugNodes.some((debugNode: any) => 
+        (debugNode as any).filterNodeId === filterNode.id
+      );
+      
+      // Also check if there's already a connection to this filter node from any debug display node
+      const connections = editor.getConnections();
+      const hasExistingConnection = connections.some((conn: any) => {
+        if (!conn || !conn.source || !conn.target) return false;
+        // Check if connection is from a debug display node to this filter node
+        const sourceNode = nodes.find((n: any) => n.id === conn.source);
+        return sourceNode && sourceNode.type === 'debug-data-display' && conn.target === filterNode.id;
+      });
+      
+      // Skip creating a debug display node if a watch node or connection already exists
+      if (hasWatchNode || hasExistingConnection) {
+        continue;
+      }
+      
+      const nodeName = filterNode.controls?.nameControl?.['name'];
+      if (!nodeName) {
+        console.warn('Filter node has no name:', filterNode);
+        continue;
+      }
+      
+      // Find matching data in buffer by name
+      // The buffer data structure: array that can contain objects and nested arrays
+      // Each object has: { "name": "...", "readings": [...] }
+      let nodeData = null;
+      if (this.bufferData && Array.isArray(this.bufferData)) {
+        // Recursively search through the array (which may contain nested arrays)
+        const findNodeData = (arr: any[]): any => {
+          for (const item of arr) {
+            if (!item) continue;
+            
+            // If item is an object with a name property, check if it matches
+            if (typeof item === 'object' && item.name === nodeName) {
+              return item;
+            }
+            
+            // If item is an array, recursively search it
+            if (Array.isArray(item)) {
+              const found = findNodeData(item);
+              if (found) return found;
+            }
+          }
+          return null;
+        };
+        
+        nodeData = findNodeData(this.bufferData);
+      }
+      
+      // Create debug data display node with the matched data
+      // The nodeData should be the JSON object where name matches the filter node name
+      // This object should contain a "readings" array
+      const debugNode = new DebugDataDisplay(this.socket, nodeName, nodeData);
+      await editor.addNode(debugNode);
+      
+      // Ensure debugData is set correctly
+      debugNode.debugData = nodeData;
+      
+      // Position node to the left of the filter node
+      const filterNodeView = getNodeView(filterNode.id);
+      if (filterNodeView?.position) {
+        const debugNodeView = getNodeView(debugNode.id);
+        if (debugNodeView) {
+          const position = this.findNonOverlappingPosition(
+            filterNodeView.position.x, 
+            filterNodeView.position.y,
+            debugNode.width || 394,
+            debugNode.height || 250
+          );
+          await debugNodeView.translate(position.x, position.y);
+        }
+      }
+      
+      // Wait for nodes to be fully rendered before creating connection
+      await new Promise(resolve => setTimeout(resolve, 150));
+      
+      // Connect debug node to filter node (from debug node output to filter node input)
+      try {
+        // Check that both nodes have the required ports
+        const sourceView = getNodeView(debugNode.id);
+        const targetView = getNodeView(filterNode.id);
+        
+        if (sourceView?.position && targetView?.position) {
+          // Check for existing connections to avoid duplicates
+          const existingConnections = editor.getConnections().filter(conn => {
+            if (!conn || !conn.source || !conn.target) return false;
+            return (conn.source === filterNode.id && conn.target === debugNode.id) ||
+                   (conn.source === debugNode.id && conn.target === filterNode.id);
+          });
+          
+          if (existingConnections.length === 0) {
+            const connection = new Connection(connectionEvents, debugNode as any, filterNode as any);
+            await editor.addConnection(connection);
+            await area.update('connection', connection.id);
+            await area.update('node', debugNode.id);
+            await area.update('node', filterNode.id);
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to create connection from debug node to filter node:', e);
+      }
+      
+      this.debugDataDisplayNodes.push(debugNode);
+    }
+    
+    // Create node for storage
+    // Handle storage node for south pipelines
+    if (storageNode) {
+      // Check if the storage node already has a watch node connected to it
+      // A watch node has storageNodeId matching this storage node's id
+      const hasWatchNode = existingDebugNodes.some((debugNode: any) => 
+        (debugNode as any).storageNodeId === storageNode.id
+      );
+      
+      // Also check if there's already a connection to this storage node from any debug display node
+      const connections = editor.getConnections();
+      const hasExistingConnection = connections.some((conn: any) => {
+        if (!conn || !conn.source || !conn.target) return false;
+        // Check if connection is from a debug display node to this storage node
+        const sourceNode = nodes.find((n: any) => n.id === conn.source);
+        return sourceNode && sourceNode.type === 'debug-data-display' && conn.target === storageNode.id;
+      });
+      
+      // Skip creating a debug display node if a watch node or connection already exists
+      if (hasWatchNode || hasExistingConnection) {
+        return;
+      }
+      
+      // Find all Writer data in buffer (recursively search through nested arrays)
+      // Multiple branches can feed into storage, so there may be multiple Writer nodes
+      let writerData = null;
+      if (this.bufferData && Array.isArray(this.bufferData)) {
+        const findAllWriterData = (arr: any[]): any[] => {
+          const writers: any[] = [];
+          for (const item of arr) {
+            if (!item) continue;
+            
+            // If item is an object with a name property matching "Writer"
+            if (typeof item === 'object' && item.name && item.name.toLowerCase().includes('writer')) {
+              writers.push(item);
+            }
+            
+            // If item is an array, recursively search it
+            if (Array.isArray(item)) {
+              const found = findAllWriterData(item);
+              writers.push(...found);
+            }
+          }
+          return writers;
+        };
+        
+        const allWriters = findAllWriterData(this.bufferData);
+        
+        // Combine all Writer nodes' readings into a single data structure
+        if (allWriters.length > 0) {
+          // Combine readings from all Writer nodes
+          const combinedReadings: any[] = [];
+          allWriters.forEach((writer: any) => {
+            if (writer.readings && Array.isArray(writer.readings)) {
+              combinedReadings.push(...writer.readings);
+            }
+          });
+          
+          // Create a combined data structure with all readings
+          writerData = {
+            name: 'Storage',
+            readings: combinedReadings
+          };
+        }
+      }
+      
+      const debugNode = new DebugDataDisplay(this.socket, 'Storage', writerData);
+      await editor.addNode(debugNode);
+      
+      // Ensure debugData is set correctly
+      debugNode.debugData = writerData;
+      
+      // Position node to avoid overlaps with other nodes
+      const storageNodeView = getNodeView(storageNode.id);
+      if (storageNodeView?.position) {
+        const debugNodeView = getNodeView(debugNode.id);
+        if (debugNodeView) {
+          const position = this.findNonOverlappingPosition(
+            storageNodeView.position.x, 
+            storageNodeView.position.y,
+            debugNode.width || 394,
+            debugNode.height || 250
+          );
+          await debugNodeView.translate(position.x, position.y);
+        }
+      }
+      
+      // Wait for nodes to be fully rendered before creating connection
+      await new Promise(resolve => setTimeout(resolve, 150));
+      
+      // Connect debug node to storage node (from debug node output to storage node input)
+      try {
+        // Check that both nodes have the required ports
+        const sourceView = getNodeView(debugNode.id);
+        const targetView = getNodeView(storageNode.id);
+        
+        if (sourceView?.position && targetView?.position) {
+          // Check for existing connections to avoid duplicates
+          const existingConnections = editor.getConnections().filter(conn => {
+            if (!conn || !conn.source || !conn.target) return false;
+            return (conn.source === storageNode.id && conn.target === debugNode.id) ||
+                   (conn.source === debugNode.id && conn.target === storageNode.id);
+          });
+          
+          if (existingConnections.length === 0) {
+            const connection = new Connection(connectionEvents, debugNode as any, storageNode as any);
+            await editor.addConnection(connection);
+            await area.update('connection', connection.id);
+            await area.update('node', debugNode.id);
+            await area.update('node', storageNode.id);
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to create connection from debug node to storage node:', e);
+      }
+      
+      this.debugDataDisplayNodes.push(debugNode);
+    }
+    
+    // Handle north node for north pipelines - attach Writer data to north node
+    if (northNode) {
+      // Check if the north node already has a watch node connected to it
+      // A watch node has northNodeId matching this north node's id
+      const hasWatchNode = existingDebugNodes.some((debugNode: any) => 
+        (debugNode as any).northNodeId === northNode.id
+      );
+      
+      // Also check if there's already a connection to this north node from any debug display node
+      const connections = editor.getConnections();
+      const hasExistingConnection = connections.some((conn: any) => {
+        if (!conn || !conn.source || !conn.target) return false;
+        // Check if connection is from a debug display node to this north node
+        const sourceNode = nodes.find((n: any) => n.id === conn.source);
+        return sourceNode && sourceNode.type === 'debug-data-display' && conn.target === northNode.id;
+      });
+      
+      // Skip creating a debug display node if a watch node or connection already exists
+      if (hasWatchNode || hasExistingConnection) {
+        return;
+      }
+      
+      // Find all Writer data in buffer (recursively search through nested arrays)
+      // Multiple branches can feed into north, so there may be multiple Writer nodes
+      let writerData = null;
+      if (this.bufferData && Array.isArray(this.bufferData)) {
+        const findAllWriterData = (arr: any[]): any[] => {
+          const writers: any[] = [];
+          for (const item of arr) {
+            if (!item) continue;
+            
+            // If item is an object with a name property matching "Writer"
+            if (typeof item === 'object' && item.name && item.name.toLowerCase().includes('writer')) {
+              writers.push(item);
+            }
+            
+            // If item is an array, recursively search it
+            if (Array.isArray(item)) {
+              const found = findAllWriterData(item);
+              writers.push(...found);
+            }
+          }
+          return writers;
+        };
+        
+        const allWriters = findAllWriterData(this.bufferData);
+        
+        // Combine all Writer nodes' readings into a single data structure
+        if (allWriters.length > 0) {
+          // Combine readings from all Writer nodes
+          const combinedReadings: any[] = [];
+          allWriters.forEach((writer: any) => {
+            if (writer.readings && Array.isArray(writer.readings)) {
+              combinedReadings.push(...writer.readings);
+            }
+          });
+          
+          // Create a combined data structure with all readings
+          const northNodeName = northNode.controls?.nameControl?.['name'] || 'North';
+          writerData = {
+            name: northNodeName,
+            readings: combinedReadings
+          };
+        }
+      }
+      
+      const debugNode = new DebugDataDisplay(this.socket, northNode.controls?.nameControl?.['name'] || 'North', writerData);
+      await editor.addNode(debugNode);
+      
+      // Ensure debugData is set correctly
+      debugNode.debugData = writerData;
+      
+      // Position node to avoid overlaps with other nodes
+      const northNodeView = getNodeView(northNode.id);
+      if (northNodeView?.position) {
+        const debugNodeView = getNodeView(debugNode.id);
+        if (debugNodeView) {
+          const position = this.findNonOverlappingPosition(
+            northNodeView.position.x, 
+            northNodeView.position.y,
+            debugNode.width || 394,
+            debugNode.height || 250
+          );
+          await debugNodeView.translate(position.x, position.y);
+        }
+      }
+      
+      // Wait for nodes to be fully rendered before creating connection
+      await new Promise(resolve => setTimeout(resolve, 150));
+      
+      // Connect debug node to north node (from debug node output to north node input)
+      try {
+        // Check that both nodes have the required ports
+        const sourceView = getNodeView(debugNode.id);
+        const targetView = getNodeView(northNode.id);
+        
+        if (sourceView?.position && targetView?.position) {
+          // Check for existing connections to avoid duplicates
+          const existingConnections = editor.getConnections().filter(conn => {
+            if (!conn || !conn.source || !conn.target) return false;
+            return (conn.source === northNode.id && conn.target === debugNode.id) ||
+                   (conn.source === debugNode.id && conn.target === northNode.id);
+          });
+          
+          if (existingConnections.length === 0) {
+            const connection = new Connection(connectionEvents, debugNode as any, northNode as any);
+            await editor.addConnection(connection);
+            await area.update('connection', connection.id);
+            await area.update('node', debugNode.id);
+            await area.update('node', northNode.id);
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to create connection from debug node to north node:', e);
+      }
+      
+      this.debugDataDisplayNodes.push(debugNode);
+    }
+    
+    this.cdRf.detectChanges();
+  }
+
+  /**
+   * Remove all debug data display nodes and their connections
+   */
+  async removeDebugDataDisplayNodes() {
+    for (const debugNode of this.debugDataDisplayNodes) {
+      try {
+        // Remove connections first
+        const connections = editor.getConnections();
+        connections.forEach((conn: any) => {
+          if (conn.target === debugNode.id || conn.source === debugNode.id) {
+            editor.removeConnection(conn.id);
+          }
+        });
+        
+        // Remove node
+        await editor.removeNode(debugNode.id);
+      } catch (e) {
+        // Node might already be removed
+      }
+    }
+    this.debugDataDisplayNodes = [];
+  }
+
+  /**
+   * Check if ingress is not suspended for the service/task with attached debugger
+   */
+  private isIngressNotSuspended(): boolean {
+    let serviceWithDebugger: any = null;
+    if (this.from === 'south') {
+      serviceWithDebugger = this.services.find((s: any) => s.debug?.debugger === 'Attached');
+    } else if (this.from === 'north') {
+      serviceWithDebugger = this.tasks.find((t: any) => t.debug?.debugger === 'Attached');
+    }
+    
+    if (!serviceWithDebugger) {
+      return false;
+    }
+    
+    // Check if ingress is not suspended (i.e., it's 'Running')
+    return serviceWithDebugger.debug?.ingress !== 'Suspended';
+  }
+
+  /**
+   * Update existing debug display nodes with new buffer data
+   */
+  async refreshDebugDisplayNodes() {
+    // Allow manual refresh even if ingress is suspended (user explicitly clicked refresh)
+    // The isIngressNotSuspended check is only for auto-refresh polling
+
+    // Get the service with attached debugger
+    let serviceWithDebugger: any = null;
+    if (this.from === 'south') {
+      serviceWithDebugger = this.services.find((s: any) => s.debug?.debugger === 'Attached');
+    } else {
+      serviceWithDebugger = this.tasks.find((t: any) => t.debug?.debugger === 'Attached');
+    }
+    
+    if (!serviceWithDebugger) {
+      return;
+    }
+    
+    try {
+      // Fetch latest buffer data - pass 'from' parameter to use correct URL (south vs north)
+      const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name, this.from).toPromise();
+      this.bufferData = bufferDataResponse?.data || bufferDataResponse;
+      
+      // Update existing debug display nodes with new data
+      const nodes = editor.getNodes();
+      for (const debugNode of this.debugDataDisplayNodes) {
+        const nodeInEditor = nodes.find((n: any) => n.id === debugNode.id);
+        if (!nodeInEditor) continue;
+        
+        // Get node name - could be from nodeName property, filterNodeName for filter watch nodes, storageNodeId for storage watch nodes, or northNodeId for north watch nodes
+        const nodeName = debugNode.nodeName || (debugNode as any).filterNodeName;
+        const isStorageWatchNode = !!(debugNode as any).storageNodeId;
+        const isNorthWatchNode = !!(debugNode as any).northNodeId;
+        let nodeData = null;
+        
+        // For storage watch nodes (south) or north watch nodes (north), look for all Writer data and combine
+        if (isStorageWatchNode || isNorthWatchNode || nodeName === 'Storage' || (this.from === 'north' && nodeName && this.tasks.find((t: any) => t.name === nodeName))) {
+          const findAllWriterData = (arr: any[]): any[] => {
+            const writers: any[] = [];
+            for (const item of arr) {
+              if (!item) continue;
+              if (typeof item === 'object' && item.name && item.name.toLowerCase().includes('writer')) {
+                writers.push(item);
+              }
+              if (Array.isArray(item)) {
+                const found = findAllWriterData(item);
+                writers.push(...found);
+              }
+            }
+            return writers;
+          };
+          
+          const allWriters = findAllWriterData(this.bufferData);
+          
+          // Combine all Writer nodes' readings into a single data structure
+          if (allWriters.length > 0) {
+            const combinedReadings: any[] = [];
+            allWriters.forEach((writer: any) => {
+              if (writer.readings && Array.isArray(writer.readings)) {
+                combinedReadings.push(...writer.readings);
+              }
+            });
+            
+            // Use appropriate name based on whether it's storage (south) or north
+            const dataName = isNorthWatchNode || (this.from === 'north' && nodeName && this.tasks.find((t: any) => t.name === nodeName))
+              ? (nodeName || 'North')
+              : 'Storage';
+            nodeData = {
+              name: dataName,
+              readings: combinedReadings
+            };
+          }
+        } else {
+          // For filter nodes, find matching data in buffer by name
+          if (this.bufferData && Array.isArray(this.bufferData)) {
+            const findNodeData = (arr: any[]): any => {
+              for (const item of arr) {
+                if (!item) continue;
+                if (typeof item === 'object' && item.name === nodeName) {
+                  return item;
+                }
+                if (Array.isArray(item)) {
+                  const found = findNodeData(item);
+                  if (found) return found;
+                }
+              }
+              return null;
+            };
+            
+            nodeData = findNodeData(this.bufferData);
+          }
+        }
+        
+        // Update the debug node with new data
+        if (nodeInEditor instanceof DebugDataDisplay) {
+          // Create a new object reference to trigger Angular change detection
+          nodeInEditor.debugData = nodeData ? JSON.parse(JSON.stringify(nodeData)) : nodeData;
+          // Update the control to reflect new data
+          const control = nodeInEditor.controls?.debugDataDisplayControl as any;
+          if (control) {
+            control.debugData = nodeData ? JSON.parse(JSON.stringify(nodeData)) : nodeData;
+          }
+          // Trigger update
+          await area.update('node', nodeInEditor.id);
+        }
+      }
+      
+      this.cdRf.detectChanges();
+    } catch (error) {
+      console.error('Failed to refresh debug display nodes:', error);
+    }
+  }
+
+  /**
+   * Start auto-refresh for debug display nodes
+   */
+  private startDebugDisplayAutoRefresh() {
+    // Stop any existing refresh subscription
+    this.stopDebugDisplayAutoRefresh();
+    
+    // Start polling every 5 seconds
+    this.debugDisplayRefreshSubscription = interval(5000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        // Check if there are any debug display nodes to refresh
+        const areDebugDisplayNodesVisible = this.flowEditorService.showDebuggerDataDisplay.value;
+        const hasFilterWatchNodes = this.debugDataDisplayNodes.some((node: any) => 
+          (node as any).filterNodeId !== undefined
+        );
+        const hasStorageWatchNodes = this.debugDataDisplayNodes.some((node: any) => 
+          (node as any).storageNodeId !== undefined
+        );
+        const hasNorthWatchNodes = this.debugDataDisplayNodes.some((node: any) => 
+          (node as any).northNodeId !== undefined
+        );
+        const hasNodesToRefresh = areDebugDisplayNodesVisible || hasFilterWatchNodes || hasStorageWatchNodes || hasNorthWatchNodes;
+        
+        // Only refresh if there are nodes to refresh and ingress is not suspended
+        if (hasNodesToRefresh && this.isIngressNotSuspended()) {
+          this.refreshDebugDisplayNodes();
+        } else if (!hasNodesToRefresh) {
+          // Stop refreshing if there are no nodes to refresh
+          this.stopDebugDisplayAutoRefresh();
+        }
+      });
+  }
+
+  /**
+   * Stop auto-refresh for debug display nodes
+   */
+  private stopDebugDisplayAutoRefresh() {
+    if (this.debugDisplayRefreshSubscription) {
+      this.debugDisplayRefreshSubscription.unsubscribe();
+      this.debugDisplayRefreshSubscription = null;
+    }
+  }
+
+  /**
+   * Create a debug display node for a watched filter node
+   */
+  async createFilterWatchNode(filterNodeId: string, filterNodeName: string, filterNode: any) {
+    if (!this.socket) {
+      this.socket = new ClassicPreset.Socket("socket");
+    }
+
+    // Check if watch node already exists for this filter
+    const nodes = editor.getNodes();
+    const existingWatchNode = nodes.find((n: any) => 
+      n.type === 'debug-data-display' && (n as any).filterNodeId === filterNodeId
+    );
+    if (existingWatchNode) {
+      // Already watching, but this shouldn't happen if toggle is working correctly
+      // Update the watch state in the array if needed
+      const existingInArray = this.debugDataDisplayNodes.find((node: any) => 
+        (node as any).filterNodeId === filterNodeId
+      );
+      if (!existingInArray && existingWatchNode) {
+        this.debugDataDisplayNodes.push(existingWatchNode);
+      }
+      return; // Already watching
+    }
+
+    // Get the service with attached debugger to fetch buffer data
+    let serviceWithDebugger: any = null;
+    if (this.from === 'south') {
+      serviceWithDebugger = this.services.find((s: any) => s.debug?.debugger === 'Attached');
+    } else {
+      serviceWithDebugger = this.tasks.find((t: any) => t.debug?.debugger === 'Attached');
+    }
+    
+    if (!serviceWithDebugger) {
+      return;
+    }
+
+    try {
+      // Fetch buffer data
+      const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name, this.from).toPromise();
+      this.bufferData = bufferDataResponse?.data || bufferDataResponse;
+      
+      // Find matching data in buffer for this filter
+      let nodeData = null;
+      if (this.bufferData && Array.isArray(this.bufferData)) {
+        const findNodeData = (arr: any[]): any => {
+          for (const item of arr) {
+            if (!item) continue;
+            if (typeof item === 'object' && item.name === filterNodeName) {
+              return item;
+            }
+            if (Array.isArray(item)) {
+              const found = findNodeData(item);
+              if (found) return found;
+            }
+          }
+          return null;
+        };
+        nodeData = findNodeData(this.bufferData);
+      }
+
+      // Create debug display node
+      const debugNode = new DebugDataDisplay(this.socket, filterNodeName, nodeData);
+      debugNode.debugData = nodeData;
+      // Store reference to the filter node
+      (debugNode as any).filterNodeId = filterNodeId;
+      
+      await editor.addNode(debugNode);
+      
+      // Position node to avoid overlaps with other nodes
+      const filterNodeView = getNodeView(filterNodeId);
+      if (filterNodeView?.position) {
+        const debugNodeView = getNodeView(debugNode.id);
+        if (debugNodeView) {
+          const position = this.findNonOverlappingPosition(
+            filterNodeView.position.x, 
+            filterNodeView.position.y,
+            debugNode.width || 394,
+            debugNode.height || 250
+          );
+          await debugNodeView.translate(position.x, position.y);
+        }
+      }
+      
+      // Wait for nodes to be fully rendered before creating connection
+      await new Promise(resolve => setTimeout(resolve, 150));
+      
+      // Connect debug node to filter node (from debug node output to filter node input)
+      try {
+        const sourceView = getNodeView(debugNode.id);
+        const targetView = getNodeView(filterNodeId);
+        
+        if (sourceView?.position && targetView?.position) {
+          // Check for existing connections to avoid duplicates
+          const existingConnections = editor.getConnections().filter(conn => {
+            if (!conn || !conn.source || !conn.target) return false;
+            return (conn.source === filterNodeId && conn.target === debugNode.id) ||
+                   (conn.source === debugNode.id && conn.target === filterNodeId);
+          });
+          
+          if (existingConnections.length === 0) {
+            const connection = new Connection(connectionEvents, debugNode as any, filterNode as any);
+            await editor.addConnection(connection);
+            await area.update('connection', connection.id);
+            await area.update('node', debugNode.id);
+            await area.update('node', filterNodeId);
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to create connection from debug node to filter node:', e);
+      }
+      
+      this.debugDataDisplayNodes.push(debugNode);
+      
+      // Start auto-refresh if not already running (for filter watch nodes)
+      if (!this.debugDisplayRefreshSubscription && this.isIngressNotSuspended()) {
+        this.startDebugDisplayAutoRefresh();
+      }
+      
+      // Notify custom-node component that watch state has changed
+      this.flowEditorService.filterWatchStateChanged.next({
+        filterNodeId: filterNodeId,
+        isWatched: true
+      });
+      
+      this.cdRf.detectChanges();
+    } catch (error) {
+      console.error('Failed to create filter watch node:', error);
+    }
+  }
+
+  /**
+   * Remove debug display node for a watched filter node
+   */
+  async removeFilterWatchNode(filterNodeId: string) {
+    // Check both the array and the editor nodes to find the watch node
+    let watchNode = this.debugDataDisplayNodes.find((node: any) => 
+      (node as any).filterNodeId === filterNodeId
+    );
+    
+    // If not found in array, check editor nodes
+    if (!watchNode) {
+      const nodes = editor.getNodes();
+      watchNode = nodes.find((n: any) => 
+        n.type === 'debug-data-display' && (n as any).filterNodeId === filterNodeId
+      );
+    }
+    
+    if (!watchNode) {
+      return;
+    }
+
+    try {
+      // Remove connections first
+      const connections = editor.getConnections();
+      connections.forEach((conn: any) => {
+        if (conn.target === watchNode.id || conn.source === watchNode.id) {
+          editor.removeConnection(conn.id);
+        }
+      });
+      
+      // Remove node
+      await editor.removeNode(watchNode.id);
+      
+      // Remove from array
+      const index = this.debugDataDisplayNodes.indexOf(watchNode);
+      if (index > -1) {
+        this.debugDataDisplayNodes.splice(index, 1);
+      }
+      
+      // Stop auto-refresh if no debug display nodes remain (unless main debug display is visible)
+      const areDebugDisplayNodesVisible = this.flowEditorService.showDebuggerDataDisplay.value;
+      const hasAnyDebugNodes = this.debugDataDisplayNodes.length > 0;
+      if (!areDebugDisplayNodesVisible && !hasAnyDebugNodes && this.debugDisplayRefreshSubscription) {
+        this.stopDebugDisplayAutoRefresh();
+      }
+      
+      // Notify custom-node component that watch state has changed
+      this.flowEditorService.filterWatchStateChanged.next({
+        filterNodeId: filterNodeId,
+        isWatched: false
+      });
+      
+      this.cdRf.detectChanges();
+    } catch (e) {
+      console.warn('Failed to remove filter watch node:', e);
+    }
+  }
+
+  /**
+   * Create a debug display node for a watched storage node
+   */
+  async createStorageWatchNode(storageNodeId: string, storageNode: any) {
+    if (!this.socket) {
+      this.socket = new ClassicPreset.Socket("socket");
+    }
+
+    // Check if watch node already exists for this storage
+    const nodes = editor.getNodes();
+    const existingWatchNode = nodes.find((n: any) => 
+      n.type === 'debug-data-display' && (n as any).storageNodeId === storageNodeId
+    );
+    if (existingWatchNode) {
+      // Already watching, but this shouldn't happen if toggle is working correctly
+      const existingInArray = this.debugDataDisplayNodes.find((node: any) => 
+        (node as any).storageNodeId === storageNodeId
+      );
+      if (!existingInArray && existingWatchNode) {
+        this.debugDataDisplayNodes.push(existingWatchNode);
+      }
+      return; // Already watching
+    }
+
+    // Get the service with attached debugger to fetch buffer data
+    let serviceWithDebugger: any = null;
+    if (this.from === 'south') {
+      serviceWithDebugger = this.services.find((s: any) => s.debug?.debugger === 'Attached');
+    } else {
+      serviceWithDebugger = this.tasks.find((t: any) => t.debug?.debugger === 'Attached');
+    }
+    
+    if (!serviceWithDebugger) {
+      return;
+    }
+
+    try {
+      // Fetch buffer data
+      const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name, this.from).toPromise();
+      this.bufferData = bufferDataResponse?.data || bufferDataResponse;
+      
+      // Find all Writer data in buffer for storage node and combine
+      let nodeData = null;
+      if (this.bufferData && Array.isArray(this.bufferData)) {
+        const findAllWriterData = (arr: any[]): any[] => {
+          const writers: any[] = [];
+          for (const item of arr) {
+            if (!item) continue;
+            if (typeof item === 'object' && item.name && item.name.toLowerCase().includes('writer')) {
+              writers.push(item);
+            }
+            if (Array.isArray(item)) {
+              const found = findAllWriterData(item);
+              writers.push(...found);
+            }
+          }
+          return writers;
+        };
+        
+        const allWriters = findAllWriterData(this.bufferData);
+        
+        // Combine all Writer nodes' readings into a single data structure
+        if (allWriters.length > 0) {
+          const combinedReadings: any[] = [];
+          allWriters.forEach((writer: any) => {
+            if (writer.readings && Array.isArray(writer.readings)) {
+              combinedReadings.push(...writer.readings);
+            }
+          });
+          
+          nodeData = {
+            name: 'Storage',
+            readings: combinedReadings
+          };
+        }
+      }
+
+      // Create debug display node
+      const debugNode = new DebugDataDisplay(this.socket, 'Storage', nodeData);
+      debugNode.debugData = nodeData;
+      // Store reference to the storage node
+      (debugNode as any).storageNodeId = storageNodeId;
+      
+      await editor.addNode(debugNode);
+      
+      // Position node to avoid overlaps with other nodes
+      const storageNodeView = getNodeView(storageNodeId);
+      if (storageNodeView?.position) {
+        const debugNodeView = getNodeView(debugNode.id);
+        if (debugNodeView) {
+          const position = this.findNonOverlappingPosition(
+            storageNodeView.position.x, 
+            storageNodeView.position.y,
+            debugNode.width || 394,
+            debugNode.height || 250
+          );
+          await debugNodeView.translate(position.x, position.y);
+        }
+      }
+      
+      // Wait for nodes to be fully rendered before creating connection
+      await new Promise(resolve => setTimeout(resolve, 150));
+      
+      // Connect debug node to storage node (from debug node output to storage node input)
+      try {
+        const sourceView = getNodeView(debugNode.id);
+        const targetView = getNodeView(storageNodeId);
+        
+        if (sourceView?.position && targetView?.position) {
+          // Check for existing connections to avoid duplicates
+          const existingConnections = editor.getConnections().filter(conn => {
+            if (!conn || !conn.source || !conn.target) return false;
+            return (conn.source === storageNodeId && conn.target === debugNode.id) ||
+                   (conn.source === debugNode.id && conn.target === storageNodeId);
+          });
+          
+          if (existingConnections.length === 0) {
+            const connection = new Connection(connectionEvents, debugNode as any, storageNode as any);
+            await editor.addConnection(connection);
+            await area.update('connection', connection.id);
+            await area.update('node', debugNode.id);
+            await area.update('node', storageNodeId);
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to create connection from debug node to storage node:', e);
+      }
+      
+      this.debugDataDisplayNodes.push(debugNode);
+      
+      // Start auto-refresh if not already running (for storage watch nodes)
+      if (!this.debugDisplayRefreshSubscription && this.isIngressNotSuspended()) {
+        this.startDebugDisplayAutoRefresh();
+      }
+      
+      // Notify custom-node component that watch state has changed
+      this.flowEditorService.storageWatchStateChanged.next({
+        storageNodeId: storageNodeId,
+        isWatched: true
+      });
+      
+      this.cdRf.detectChanges();
+    } catch (error) {
+      console.error('Failed to create storage watch node:', error);
+    }
+  }
+
+  /**
+   * Remove debug display node for a watched storage node
+   */
+  async removeStorageWatchNode(storageNodeId: string) {
+    // Check both the array and the editor nodes to find the watch node
+    let watchNode = this.debugDataDisplayNodes.find((node: any) => 
+      (node as any).storageNodeId === storageNodeId
+    );
+    
+    // If not found in array, check editor nodes
+    if (!watchNode) {
+      const nodes = editor.getNodes();
+      watchNode = nodes.find((n: any) => 
+        n.type === 'debug-data-display' && (n as any).storageNodeId === storageNodeId
+      );
+    }
+    
+    if (!watchNode) {
+      return;
+    }
+
+    try {
+      // Remove connections first
+      const connections = editor.getConnections();
+      connections.forEach((conn: any) => {
+        if (conn.target === watchNode.id || conn.source === watchNode.id) {
+          editor.removeConnection(conn.id);
+        }
+      });
+      
+      // Remove node
+      await editor.removeNode(watchNode.id);
+      
+      // Remove from array
+      const index = this.debugDataDisplayNodes.indexOf(watchNode);
+      if (index > -1) {
+        this.debugDataDisplayNodes.splice(index, 1);
+      }
+      
+      // Stop auto-refresh if no debug display nodes remain (unless main debug display is visible)
+      const areDebugDisplayNodesVisible = this.flowEditorService.showDebuggerDataDisplay.value;
+      const hasAnyDebugNodes = this.debugDataDisplayNodes.length > 0;
+      if (!areDebugDisplayNodesVisible && !hasAnyDebugNodes && this.debugDisplayRefreshSubscription) {
+        this.stopDebugDisplayAutoRefresh();
+      }
+      
+      // Notify custom-node component that watch state has changed
+      this.flowEditorService.storageWatchStateChanged.next({
+        storageNodeId: storageNodeId,
+        isWatched: false
+      });
+      
+      this.cdRf.detectChanges();
+    } catch (e) {
+      console.warn('Failed to remove storage watch node:', e);
+    }
+  }
+
+  /**
+   * Create a debug display node for a watched north node
+   */
+  async createNorthWatchNode(northNodeId: string, northNode: any) {
+    if (!this.socket) {
+      this.socket = new ClassicPreset.Socket("socket");
+    }
+
+    // Check if watch node already exists for this north node
+    const nodes = editor.getNodes();
+    const existingWatchNode = nodes.find((n: any) => 
+      n.type === 'debug-data-display' && (n as any).northNodeId === northNodeId
+    );
+    if (existingWatchNode) {
+      // Already watching, but this shouldn't happen if toggle is working correctly
+      const existingInArray = this.debugDataDisplayNodes.find((node: any) => 
+        (node as any).northNodeId === northNodeId
+      );
+      if (!existingInArray && existingWatchNode) {
+        this.debugDataDisplayNodes.push(existingWatchNode);
+      }
+      return; // Already watching
+    }
+
+    // Get the service with attached debugger to fetch buffer data
+    let serviceWithDebugger: any = null;
+    if (this.from === 'south') {
+      serviceWithDebugger = this.services.find((s: any) => s.debug?.debugger === 'Attached');
+    } else {
+      serviceWithDebugger = this.tasks.find((t: any) => t.debug?.debugger === 'Attached');
+    }
+    
+    if (!serviceWithDebugger) {
+      return;
+    }
+
+    try {
+      // Fetch buffer data
+      const bufferDataResponse: any = await this.servicesApiService.getBufferedData(serviceWithDebugger.name, this.from).toPromise();
+      this.bufferData = bufferDataResponse?.data || bufferDataResponse;
+      
+      // Find all Writer data in buffer for north node and combine
+      let nodeData = null;
+      if (this.bufferData && Array.isArray(this.bufferData)) {
+        const findAllWriterData = (arr: any[]): any[] => {
+          const writers: any[] = [];
+          for (const item of arr) {
+            if (!item) continue;
+            if (typeof item === 'object' && item.name && item.name.toLowerCase().includes('writer')) {
+              writers.push(item);
+            }
+            if (Array.isArray(item)) {
+              const found = findAllWriterData(item);
+              writers.push(...found);
+            }
+          }
+          return writers;
+        };
+        
+        const allWriters = findAllWriterData(this.bufferData);
+        
+        // Combine all Writer nodes' readings into a single data structure
+        if (allWriters.length > 0) {
+          const combinedReadings: any[] = [];
+          allWriters.forEach((writer: any) => {
+            if (writer.readings && Array.isArray(writer.readings)) {
+              combinedReadings.push(...writer.readings);
+            }
+          });
+          
+          const northNodeName = northNode.controls?.nameControl?.['name'] || 'North';
+          nodeData = {
+            name: northNodeName,
+            readings: combinedReadings
+          };
+        }
+      }
+
+      // Create debug display node
+      const debugNode = new DebugDataDisplay(this.socket, northNode.controls?.nameControl?.['name'] || 'North', nodeData);
+      debugNode.debugData = nodeData;
+      // Store reference to the north node
+      (debugNode as any).northNodeId = northNodeId;
+      
+      await editor.addNode(debugNode);
+      
+      // Position node to avoid overlaps with other nodes
+      const northNodeView = getNodeView(northNodeId);
+      if (northNodeView?.position) {
+        const debugNodeView = getNodeView(debugNode.id);
+        if (debugNodeView) {
+          const position = this.findNonOverlappingPosition(
+            northNodeView.position.x, 
+            northNodeView.position.y,
+            debugNode.width || 394,
+            debugNode.height || 250
+          );
+          await debugNodeView.translate(position.x, position.y);
+        }
+      }
+      
+      // Wait for nodes to be fully rendered before creating connection
+      await new Promise(resolve => setTimeout(resolve, 150));
+      
+      // Connect debug node to north node (from debug node output to north node input)
+      try {
+        const sourceView = getNodeView(debugNode.id);
+        const targetView = getNodeView(northNodeId);
+        
+        if (sourceView?.position && targetView?.position) {
+          // Check for existing connections to avoid duplicates
+          const existingConnections = editor.getConnections().filter(conn => {
+            if (!conn || !conn.source || !conn.target) return false;
+            return (conn.source === northNodeId && conn.target === debugNode.id) ||
+                   (conn.source === debugNode.id && conn.target === northNodeId);
+          });
+          
+          if (existingConnections.length === 0) {
+            const connection = new Connection(connectionEvents, debugNode as any, northNode as any);
+            await editor.addConnection(connection);
+            await area.update('connection', connection.id);
+            await area.update('node', debugNode.id);
+            await area.update('node', northNodeId);
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to create connection from debug node to north node:', e);
+      }
+      
+      // Add to array
+      this.debugDataDisplayNodes.push(debugNode);
+      
+      // Start auto-refresh if not already running
+      this.startDebugDisplayAutoRefresh();
+      
+      // Emit watch state change
+      this.flowEditorService.northWatchStateChanged.next({
+        northNodeId: northNodeId,
+        isWatched: true
+      });
+      
+      this.cdRf.detectChanges();
+    } catch (error) {
+      console.error('Failed to create north watch node:', error);
+    }
+  }
+
+  /**
+   * Remove debug display node for a watched north node
+   */
+  async removeNorthWatchNode(northNodeId: string) {
+    // Check both the array and the editor nodes to find the watch node
+    let watchNode = this.debugDataDisplayNodes.find((node: any) => 
+      (node as any).northNodeId === northNodeId
+    );
+    
+    // If not found in array, check editor nodes
+    if (!watchNode) {
+      const nodes = editor.getNodes();
+      watchNode = nodes.find((n: any) => 
+        n.type === 'debug-data-display' && (n as any).northNodeId === northNodeId
+      );
+    }
+    
+    if (!watchNode) {
+      return;
+    }
+
+    try {
+      // Remove connections first
+      const connections = editor.getConnections();
+      connections.forEach((conn: any) => {
+        if (conn.target === watchNode.id || conn.source === watchNode.id) {
+          editor.removeConnection(conn.id);
+        }
+      });
+      
+      // Remove node
+      await editor.removeNode(watchNode.id);
+      
+      // Remove from array
+      const index = this.debugDataDisplayNodes.indexOf(watchNode);
+      if (index > -1) {
+        this.debugDataDisplayNodes.splice(index, 1);
+      }
+      
+      // Stop auto-refresh if no debug display nodes remain (unless main debug display is visible)
+      const areDebugDisplayNodesVisible = this.flowEditorService.showDebuggerDataDisplay.value;
+      const hasAnyDebugNodes = this.debugDataDisplayNodes.length > 0;
+      if (!areDebugDisplayNodesVisible && !hasAnyDebugNodes && this.debugDisplayRefreshSubscription) {
+        this.stopDebugDisplayAutoRefresh();
+      }
+      
+      // Emit watch state change
+      this.flowEditorService.northWatchStateChanged.next({
+        northNodeId: northNodeId,
+        isWatched: false
+      });
+      
+      this.cdRf.detectChanges();
+    } catch (error) {
+      console.error('Failed to remove north watch node:', error);
+    }
+  }
+
+  /**
+   * Save the state of all debug display nodes before reset
+   */
+  private saveDebugDisplayNodesState(): any[] {
+    const state: any[] = [];
+    
+    for (const debugNode of this.debugDataDisplayNodes) {
+      // Get node position
+      const nodeView = getNodeView(debugNode.id);
+      const position = nodeView?.position || { x: 0, y: 0 };
+      
+      // Get target node info (filter or storage node it's connected to)
+      const connections = editor.getConnections();
+      const connection = connections.find((conn: any) => 
+        conn.source === debugNode.id || conn.target === debugNode.id
+      );
+      
+      let targetNodeInfo: any = null;
+      if (connection) {
+        const targetNodeId = connection.source === debugNode.id ? connection.target : connection.source;
+        const nodes = editor.getNodes();
+        const targetNode = nodes.find((n: any) => n.id === targetNodeId);
+        if (targetNode) {
+          // For filter nodes, save the filter name
+          if ((targetNode as any).type === 'filter' && !(targetNode as any).pseudoNode) {
+            const filterName = (targetNode as any).controls?.nameControl?.['name'];
+            targetNodeInfo = {
+              type: 'filter',
+              name: filterName
+            };
+          } else if ((targetNode as any).label === 'Storage') {
+            targetNodeInfo = {
+              type: 'storage'
+            };
+          } else if ((targetNode as any).label === 'North') {
+            targetNodeInfo = {
+              type: 'north'
+            };
+          }
+        }
+      }
+      
+      // Save state
+      state.push({
+        nodeName: debugNode.nodeName || (debugNode as any).filterNodeName || 'Storage',
+        debugData: debugNode.debugData,
+        position: { x: position.x, y: position.y },
+        targetNodeInfo: targetNodeInfo,
+        filterNodeId: (debugNode as any).filterNodeId, // For watch nodes
+        storageNodeId: (debugNode as any).storageNodeId, // For watch nodes
+        northNodeId: (debugNode as any).northNodeId, // For watch nodes
+        isWatchNode: !!(debugNode as any).filterNodeId || !!(debugNode as any).storageNodeId || !!(debugNode as any).northNodeId
+      });
+    }
+    
+    return state;
+  }
+
+  /**
+   * Restore debug display nodes state after reload
+   */
+  private async restoreDebugDisplayNodesStateAfterReload(): Promise<void> {
+    const savedState = this.flowEditorService.getSavedDebugDisplayNodesStateForReload();
+    if (savedState && savedState.length > 0) {
+      // Wait a bit for editor to be fully initialized and nodes to be rendered
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Check if editor is available
+      if (!editor || !editor.getNodes) {
+        // If editor not ready, try again after a delay
+        setTimeout(() => this.restoreDebugDisplayNodesStateAfterReload(), 500);
+        return;
+      }
+      
+      await this.restoreDebugDisplayNodesState(savedState);
+      // Clear the saved state after restoration
+      this.flowEditorService.clearSavedDebugDisplayNodesStateForReload();
+    }
+  }
+
+  /**
+   * Restore debug display nodes after reset
+   */
+  private async restoreDebugDisplayNodesState(savedState: any[]): Promise<void> {
+    if (!this.socket) {
+      this.socket = new ClassicPreset.Socket("socket");
+    }
+    
+    // Clear existing debug display nodes array (they were removed by reset)
+    this.debugDataDisplayNodes = [];
+    
+    for (const state of savedState) {
+      // Find the target node after reset
+      let targetNode: any = null;
+      const nodes = editor.getNodes();
+      
+      if (state.targetNodeInfo?.type === 'filter') {
+        // Find filter node by name
+        targetNode = nodes.find((n: any) => 
+          n.type === 'filter' && 
+          !n.pseudoNode && 
+          n.controls?.nameControl?.['name'] === state.targetNodeInfo.name
+        );
+      } else if (state.targetNodeInfo?.type === 'storage') {
+        // Find storage node
+        targetNode = nodes.find((n: any) => n.label === 'Storage' && this.from === 'south');
+      } else if (state.targetNodeInfo?.type === 'north') {
+        // Find north node
+        targetNode = nodes.find((n: any) => n.label === 'North' && this.from === 'north');
+      }
+      
+      if (!targetNode) {
+        // Target node not found, skip this debug display node
+        continue;
+      }
+      
+      // Create debug display node
+      const debugNode = new DebugDataDisplay(this.socket, state.nodeName, state.debugData);
+      debugNode.debugData = state.debugData;
+      
+      // Restore watch node metadata if it was a watch node
+      if (state.isWatchNode) {
+        if (state.filterNodeId) {
+          (debugNode as any).filterNodeId = targetNode.id;
+        } else if (state.storageNodeId) {
+          (debugNode as any).storageNodeId = targetNode.id;
+        } else if (state.northNodeId) {
+          (debugNode as any).northNodeId = targetNode.id;
+        }
+      }
+      
+      await editor.addNode(debugNode);
+      
+      // Restore position
+      const debugNodeView = getNodeView(debugNode.id);
+      if (debugNodeView && state.position) {
+        await debugNodeView.translate(state.position.x, state.position.y);
+      }
+      
+      // Wait for node to be rendered
+      await new Promise(resolve => setTimeout(resolve, 150));
+      
+      // Restore connection
+      try {
+        const sourceView = getNodeView(debugNode.id);
+        const targetView = getNodeView(targetNode.id);
+        
+        if (sourceView?.position && targetView?.position) {
+          // Check for existing connections to avoid duplicates
+          const existingConnections = editor.getConnections().filter((conn: any) => {
+            if (!conn || !conn.source || !conn.target) return false;
+            return (conn.source === targetNode.id && conn.target === debugNode.id) ||
+                   (conn.source === debugNode.id && conn.target === targetNode.id);
+          });
+          
+          if (existingConnections.length === 0) {
+            const connection = new Connection(connectionEvents, debugNode as any, targetNode as any);
+            await editor.addConnection(connection);
+            await area.update('connection', connection.id);
+            await area.update('node', debugNode.id);
+            await area.update('node', targetNode.id);
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to restore connection for debug display node:', e);
+      }
+      
+      this.debugDataDisplayNodes.push(debugNode);
+      
+      // Notify watch state if it was a watch node
+      if (state.isWatchNode) {
+        if (state.filterNodeId) {
+          this.flowEditorService.filterWatchStateChanged.next({
+            filterNodeId: targetNode.id,
+            isWatched: true
+          });
+        } else if (state.storageNodeId) {
+          this.flowEditorService.storageWatchStateChanged.next({
+            storageNodeId: targetNode.id,
+            isWatched: true
+          });
+        } else if (state.northNodeId) {
+          this.flowEditorService.northWatchStateChanged.next({
+            northNodeId: targetNode.id,
+            isWatched: true
+          });
+        }
+      }
+    }
+    
+    // Restart auto-refresh if needed
+    const areDebugDisplayNodesVisible = this.flowEditorService.showDebuggerDataDisplay.value;
+    const hasAnyDebugNodes = this.debugDataDisplayNodes.length > 0;
+    if ((areDebugDisplayNodesVisible || hasAnyDebugNodes) && this.isIngressNotSuspended()) {
+      this.startDebugDisplayAutoRefresh();
+    }
+    
+    this.cdRf.detectChanges();
   }
 
   ngOnDestroy() {
@@ -1448,6 +3115,7 @@ export class NodeEditorComponent implements OnInit {
     this.nodeClickSubscription?.unsubscribe();
     this.nodeDropdownClickSubscription?.unsubscribe();
     this.serviceStatusSubscription?.unsubscribe();
+    this.stopDebugDisplayAutoRefresh();
     if (this.from === 'notifications') {
       this.serviceDetailsSubscription?.unsubscribe();
       this.paramsSubscription?.unsubscribe();
@@ -1456,3 +3124,5 @@ export class NodeEditorComponent implements OnInit {
     this.destroy$.unsubscribe();
   }
 }
+
+

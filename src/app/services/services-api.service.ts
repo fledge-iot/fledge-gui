@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment';
 export class ServicesApiService {
   private GET_SERVICES_URL = environment.BASE_URL + 'service';
   private SOUTH_URL = environment.BASE_URL + 'south';
+  private NORTH_URL = environment.BASE_URL + 'north';
   private AVAILABLE_PLUGINS_URL = environment.BASE_URL + 'plugins/available';
   private POST_PLUGINS_URL = environment.BASE_URL + 'plugins';
 
@@ -138,7 +139,9 @@ export class ServicesApiService {
       catchError(error => throwError(error)));
   }
 
-  getBufferedData(name: string) {
+  getBufferedData(name: string, from: string = 'south') {
+    // Both south services and north tasks use /fledge/service/{name}/debug?action=buffer
+    // This matches the pattern used by manageServiceDebuggerState
     return this.http.get(`${this.GET_SERVICES_URL}/${encodeURIComponent(name)}/debug?action=buffer`).pipe(
       map(response => response),
       catchError(error => throwError(error)));
