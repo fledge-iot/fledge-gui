@@ -55,7 +55,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
     description: new UntypedFormControl(),
     rule: new UntypedFormControl(),
     delivery: new UntypedFormControl(),
-    retriggerTime: new UntypedFormControl()
+    retriggerTime: new UntypedFormControl(),
+    text: new UntypedFormControl()
   });
 
   @ViewChild(ViewLogsComponent, { static: true }) viewLogsComponent: ViewLogsComponent;
@@ -99,7 +100,8 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
       description: ['', Validators.required],
       rule: ['', Validators.required],
       delivery: ['', Validators.required],
-      retriggerTime: ['60', Validators.required]
+      retriggerTime: ['60', Validators.required],
+      text: ['']
     });
     this.subscription = this.sharedService.showLogs.subscribe(showPackageLogs => {
       if (showPackageLogs.isSubscribed) {
@@ -324,6 +326,7 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
         if (this.payload.retrigger_time < 0) {
           return;
         }
+        this.payload.text = (this.notificationForm.get('text')?.value ?? '').trim();
         this.addNotificationInstance(this.payload);
         break;
       default:
@@ -425,6 +428,10 @@ export class AddNotificationWizardComponent implements OnInit, OnDestroy {
 
   setNotificationType(type: string) {
     this.notificationType = type;
+  }
+
+  public trackByNotificationTypeValue(index: number, type: string): string {
+    return type;
   }
 
   /**

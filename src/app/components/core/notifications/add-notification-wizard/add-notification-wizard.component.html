@@ -83,6 +83,7 @@
               <div class="column is-vertical-center">
                 <div class="select is-multiple">
                   <select multiple name="type" #selectedPlugin formControlName="rule" id="rule"
+                    title="Select rule plugin"
                     (change)="isPluginSelected(selectedPlugin.value, notificationRulePlugins[0].type)">
                     <option *ngFor="let p of notificationRulePlugins" [value]="p.name"> {{ p.name }}</option>
                   </select>
@@ -143,6 +144,7 @@
               <div class="column is-vertical-center">
                 <div class="select is-multiple">
                   <select multiple name="type" #deliveryPlugin formControlName="delivery" id="notify"
+                    title="Select delivery plugin"
                     (change)="isPluginSelected(deliveryPlugin.value, notificationDeliveryPlugins[0].type)">
                     <option *ngFor="let d of notificationDeliveryPlugins" [value]="d.name"> {{ d.name }}</option>
                   </select>
@@ -200,8 +202,8 @@
                   <div id="notify-type-dropdown" class="dropdown notification-type">
                     <div class="dropdown-trigger">
                       <button class="button is-fullwidth is-small" aria-haspopup="true" aria-controls="dropdown-menu"
-                        (click)="toggleDropDown('notify-type-dropdown')">
-                        <span>{{notificationType}}</span>
+                        type="button" (click)="toggleDropDown('notify-type-dropdown')">
+                        <span>{{ notificationType }}</span>
                         <span class="icon is-small">
                           <i class="fa fa-sm fa-angle-down" aria-hidden="true"></i>
                         </span>
@@ -209,9 +211,11 @@
                     </div>
                     <div class="dropdown-menu" id="dropdown-menu" role="menu">
                       <div class="dropdown-content">
-                        <a class="dropdown-item" *ngFor="let type of notificationTypeList"
-                          (click)="toggleDropDown('notify-type-dropdown');setNotificationType(type)">
-                          {{type}}
+                        <a class="dropdown-item" role="menuitem"
+                          *ngFor="let type of notificationTypeList; trackBy: trackByNotificationTypeValue"
+                          (click)="toggleDropDown('notify-type-dropdown');setNotificationType(type)"
+                          [attr.data-value]="type">
+                          {{ type }}
                         </a>
                       </div>
                     </div>
@@ -244,12 +248,27 @@
               <div class="field is-horizontal">
                 <div class="field-label">
                   <label class="label has-text-left tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline"
+                    data-tooltip="Text message to send for this notification">Message</label>
+                </div>
+                <div class="field-body last-step-field">
+                  <div class="field">
+                    <div class="control column is-6 p-0">
+                      <textarea class="textarea is-small" id="message" placeholder="Message" rows="2"
+                        formControlName="text" title="Message"></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="field is-horizontal">
+                <div class="field-label">
+                  <label class="label has-text-left tooltip has-tooltip-right has-tooltip-arrow has-tooltip-multiline"
                     data-tooltip="Enabled">Enabled</label>
                 </div>
                 <div class="field-body last-step-field">
                   <div class="field">
                     <div class="control">
-                      <input class="checkbox" type="checkbox" checked (click)="onCheckboxClicked($event)">
+                      <input class="checkbox" type="checkbox" title="Enabled" checked
+                        (click)="onCheckboxClicked($event)">
                     </div>
                   </div>
                 </div>
