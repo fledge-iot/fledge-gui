@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-    name: 'truncateMiddleOfText'
+    name: 'truncateMiddleOfText',
+    standalone: false
 })
 export class TruncateMiddleOfTextPipe implements PipeTransform {
     transform(value: string, maxLength: number = 16): string {

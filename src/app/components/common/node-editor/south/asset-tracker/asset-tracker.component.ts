@@ -4,9 +4,10 @@ import { DeveloperFeaturesService } from '../../../../../services/developer-feat
 import { Service } from '../../../../core/south/south-service';
 
 @Component({
-  selector: 'app-asset-tracker',
-  templateUrl: './asset-tracker.component.html',
-  styleUrls: ['./asset-tracker.component.css']
+    selector: 'app-asset-tracker',
+    templateUrl: './asset-tracker.component.html',
+    styleUrls: ['./asset-tracker.component.css'],
+    standalone: false
 })
 export class AssetTrackerComponent {
 

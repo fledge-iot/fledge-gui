@@ -2,9 +2,10 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { RolesService } from '../../../../services';
 
 @Component({
-  selector: 'app-service-config',
-  templateUrl: './service-config.component.html',
-  styleUrls: ['./service-config.component.css']
+    selector: 'app-service-config',
+    templateUrl: './service-config.component.html',
+    styleUrls: ['./service-config.component.css'],
+    standalone: false
 })
 export class ServiceConfigComponent implements OnInit {
     @Output() serviceConfigureModal = new EventEmitter<boolean>();

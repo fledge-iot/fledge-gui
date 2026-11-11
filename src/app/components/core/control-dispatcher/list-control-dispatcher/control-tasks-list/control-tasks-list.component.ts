@@ -13,10 +13,11 @@ import { orderBy, isEmpty } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-control-tasks-list',
-  templateUrl: './control-tasks-list.component.html',
-  styleUrls: ['./control-tasks-list.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-control-tasks-list',
+    templateUrl: './control-tasks-list.component.html',
+    styleUrls: ['./control-tasks-list.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ControlTasksListComponent implements OnInit {
   controlScripts: any = [];

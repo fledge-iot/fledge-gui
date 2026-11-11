@@ -6,10 +6,11 @@ import { AlertService, RolesService } from '../../../../../../services';
 import { ControlDispatcherService } from '../../../../../../services/control-dispatcher.service';
 
 @Component({
-  selector: 'app-add-script',
-  templateUrl: './add-script.component.html',
-  styleUrls: ['./add-script.component.css'],
-  viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
+    selector: 'app-add-script',
+    templateUrl: './add-script.component.html',
+    styleUrls: ['./add-script.component.css'],
+    viewProviders: [{ provide: ControlContainer, useExisting: NgForm }],
+    standalone: false
 })
 export class AddScriptComponent implements OnInit {
   scripts = [];  // list of south services

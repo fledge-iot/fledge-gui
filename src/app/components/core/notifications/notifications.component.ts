@@ -16,10 +16,11 @@ import { ServiceConfigComponent } from './service-config/service-config.componen
 import { DocService } from '../../../services/doc.service';
 
 @Component({
-  selector: 'app-notifications',
-  templateUrl: './notifications.component.html',
-  styleUrls: ['./notifications.component.css'],
-  providers: [ServicesApiService]
+    selector: 'app-notifications',
+    templateUrl: './notifications.component.html',
+    styleUrls: ['./notifications.component.css'],
+    providers: [ServicesApiService],
+    standalone: false
 })
 
 export class NotificationsComponent implements OnInit, OnDestroy {

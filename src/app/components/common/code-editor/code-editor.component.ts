@@ -5,9 +5,10 @@ import { DelimiterStoreService } from '../../../services/delimiter-store.service
 type EditorMode = 'json' | 'csv';
 
 @Component({
-  selector: 'app-code-editor',
-  templateUrl: './code-editor.component.html',
-  styleUrls: ['./code-editor.component.css']
+    selector: 'app-code-editor',
+    templateUrl: './code-editor.component.html',
+    styleUrls: ['./code-editor.component.css'],
+    standalone: false
 })
 export class CodeEditorComponent implements OnChanges {
   @Input() mode: EditorMode = 'json';

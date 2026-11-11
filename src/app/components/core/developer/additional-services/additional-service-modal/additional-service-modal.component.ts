@@ -19,9 +19,10 @@ import { Service, Schedule } from '../../../../../models';
 import { AdditionalServicesUtils } from '../additional-services-utils.service';
 
 @Component({
-  selector: 'app-additional-service-modal',
-  templateUrl: './additional-service-modal.component.html',
-  styleUrls: ['./additional-service-modal.component.css']
+    selector: 'app-additional-service-modal',
+    templateUrl: './additional-service-modal.component.html',
+    styleUrls: ['./additional-service-modal.component.css'],
+    standalone: false
 })
 export class AdditionalServiceModalComponent implements OnInit, OnDestroy {
   category: any;

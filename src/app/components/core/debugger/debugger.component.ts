@@ -8,9 +8,10 @@ import { DocService } from '../../../services/doc.service';
 import { interval, of, Subject } from 'rxjs';
 
 @Component({
-  selector: 'app-debugger',
-  templateUrl: './debugger.component.html',
-  styleUrls: ['./debugger.component.css']
+    selector: 'app-debugger',
+    templateUrl: './debugger.component.html',
+    styleUrls: ['./debugger.component.css'],
+    standalone: false
 })
 export class DebuggerComponent {
   @Input() debuggerData: { debug: Debug, serviceName: string, node?: string };

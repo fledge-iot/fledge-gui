@@ -1,7 +1,8 @@
 import { Directive, HostListener, ElementRef } from '@angular/core';
 
 @Directive({
-  selector: '[appFloatOnly]'
+    selector: '[appFloatOnly]',
+    standalone: false
 })
 export class FloatOnlyDirective {
 

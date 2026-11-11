@@ -7,9 +7,10 @@ import { AlertService, PingService, SchedulesService, ProgressBarService, RolesS
 import { POLLING_INTERVAL } from '../../../../utils';
 
 @Component({
-  selector: 'app-tasks',
-  templateUrl: './tasks.component.html',
-  styleUrls: ['./tasks.component.css']
+    selector: 'app-tasks',
+    templateUrl: './tasks.component.html',
+    styleUrls: ['./tasks.component.css'],
+    standalone: false
 })
 export class TasksComponent implements OnInit, OnDestroy {
   public tasksData = [];

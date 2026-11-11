@@ -8,9 +8,10 @@ import Utils from '../../../utils';
 import { RangeSliderService } from '../range-slider/range-slider.service';
 
 @Component({
-  selector: 'app-chart',
-  template: '<canvas></canvas>',
-  styles: [':host { display: block; }']
+    selector: 'app-chart',
+    template: '<canvas></canvas>',
+    styles: [':host { display: block; }'],
+    standalone: false
 })
 export class ChartComponent implements OnInit, OnChanges, OnDestroy {
   chart: any;

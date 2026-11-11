@@ -7,9 +7,10 @@ import { User } from '../../../../models';
 import { AlertService, RolesService, UserService } from '../../../../services';
 
 @Component({
-  selector: 'app-update-user',
-  templateUrl: './update-user.component.html',
-  styleUrls: ['./update-user.component.css']
+    selector: 'app-update-user',
+    templateUrl: './update-user.component.html',
+    styleUrls: ['./update-user.component.css'],
+    standalone: false
 })
 export class UpdateUserComponent implements OnInit, OnChanges {
   public userRecord: User;

@@ -3,9 +3,10 @@ import { UntypedFormGroup, NgForm } from '@angular/forms';
 import { AlertService, RolesService, ServicesApiService } from '../../../../../../services';
 
 @Component({
-  selector: 'app-add-operation',
-  templateUrl: './add-operation.component.html',
-  styleUrls: ['./add-operation.component.css'],
+    selector: 'app-add-operation',
+    templateUrl: './add-operation.component.html',
+    styleUrls: ['./add-operation.component.css'],
+    standalone: false
 })
 export class AddOperationComponent implements OnInit {
 
