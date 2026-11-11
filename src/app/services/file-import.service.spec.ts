@@ -1,12 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
 import { FileImportService } from './file-import.service';
+import { withAppTestDefaults } from '../testing/app-test-module';
 
 describe('FileImportService', () => {
   let service: FileImportService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule(withAppTestDefaults({}));
     service = TestBed.inject(FileImportService);
   });
 

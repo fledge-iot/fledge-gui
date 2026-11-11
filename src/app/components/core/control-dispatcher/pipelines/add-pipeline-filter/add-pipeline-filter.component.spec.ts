@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AddPipelineFilterComponent } from './add-pipeline-filter.component';
+import { withAppTestDefaults } from '../../../../../testing/app-test-module';
 
 describe('AddPipelineFilterComponent', () => {
   let component: AddPipelineFilterComponent;
   let fixture: ComponentFixture<AddPipelineFilterComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+    TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ AddPipelineFilterComponent ]
-    })
+    }))
     .compileComponents();
   }));
 

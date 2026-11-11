@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TimeDropdownComponent } from './time-dropdown.component';
+import { withAppTestDefaults } from '../../../testing/app-test-module';
 
 describe('TimeDropdownComponent', () => {
   let component: TimeDropdownComponent;
   let fixture: ComponentFixture<TimeDropdownComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
+    await TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ TimeDropdownComponent ]
-    })
+    }))
     .compileComponents();
   });
 

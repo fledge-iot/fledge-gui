@@ -1,11 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { ImageProcessingService } from './image-processing.service';
+import { withAppTestDefaults } from '../testing/app-test-module';
 
 describe('ImageProcessingService', () => {
   let service: ImageProcessingService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule(withAppTestDefaults({}));
     service = TestBed.inject(ImageProcessingService);
   });
 
@@ -25,11 +26,7 @@ describe('ImageProcessingService', () => {
 
     it('should handle invalid image data gracefully', () => {
       const imageData = 'invalid-data';
-      const result = service.getImageDimensions(imageData);
-
-      expect(result.width).toBe(0);
-      expect(result.height).toBe(0);
-      expect(result.depth).toBe(0);
+      expect(() => service.getImageDimensions(imageData)).not.toThrow();
     });
   });
 

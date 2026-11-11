@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AdditionalServicesContextMenuComponent } from './additional-services-context-menu.component';
+import { withAppTestDefaults } from '../../../../../testing/app-test-module';
 
 describe('AdditionalServicesContextMenuComponent', () => {
   let component: AdditionalServicesContextMenuComponent;
   let fixture: ComponentFixture<AdditionalServicesContextMenuComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
+    await TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ AdditionalServicesContextMenuComponent ]
-    })
+    }))
     .compileComponents();
   });
 

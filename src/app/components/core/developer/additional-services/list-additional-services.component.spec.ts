@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ListAdditionalServicesComponent } from './list-additional-services.component';
+import { withAppTestDefaults } from '../../../../testing/app-test-module';
 
 describe('ListAdditionalServicesComponent', () => {
   let component: ListAdditionalServicesComponent;
   let fixture: ComponentFixture<ListAdditionalServicesComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
+    await TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ ListAdditionalServicesComponent ]
-    })
+    }))
     .compileComponents();
   });
 

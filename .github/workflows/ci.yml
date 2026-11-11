@@ -1,0 +1,199 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  NODE_VERSION: "22"
+  GUI_IMAGE: fledge-gui:ci
+
+jobs:
+  build:
+    name: Production build
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Audit production dependencies
+        shell: bash
+        run: |
+          set -uo pipefail
+          code=0
+          output="$(yarn audit --groups dependencies --level high 2>&1)" || code=$?
+          echo "${output}"
+          if ! grep -q "Packages audited" <<< "${output}"; then
+            echo "ERROR: yarn audit did not complete" >&2
+            exit 1
+          fi
+          if (( code & 24 )); then
+            echo "ERROR: high or critical vulnerabilities found (yarn audit exit code ${code})" >&2
+            exit 1
+          fi
+
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run unit tests
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: yarn test --watch=false --browsers=ChromeHeadless
+
+  image:
+    name: Container image
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+
+      - name: Build image
+        run: docker build --file nginx.dockerfile --tag "${GUI_IMAGE}" .
+
+      - name: Check served content and security headers
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --detach --name gui --publish 8080:8080 "${GUI_IMAGE}"
+          trap 'docker logs gui; docker rm --force gui' EXIT
+          curl --silent --show-error --fail --retry 20 --retry-delay 2 --retry-connrefused --retry-all-errors --output /dev/null http://localhost:8080/
+          status="$(curl --silent --output /dev/null --write-out '%{http_code}' http://localhost:8080/)"
+          headers="$(curl --silent --dump-header - --output /dev/null http://localhost:8080/ | tr -d '\r')"
+          echo "${headers}"
+          [[ "${status}" == "200" ]] || { echo "ERROR: expected 200 on /, got ${status}" >&2; exit 1; }
+          grep -qi '^content-security-policy: ' <<< "${headers}" || { echo "ERROR: Content-Security-Policy missing" >&2; exit 1; }
+          grep -qi '^x-frame-options: DENY$' <<< "${headers}" || { echo "ERROR: X-Frame-Options DENY missing" >&2; exit 1; }
+          grep -qi '^x-content-type-options: nosniff$' <<< "${headers}" || { echo "ERROR: X-Content-Type-Options nosniff missing" >&2; exit 1; }
+
+      - name: Export image
+        run: docker save "${GUI_IMAGE}" | gzip > gui-image.tar.gz
+
+      - name: Upload image
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gui-image
+          path: gui-image.tar.gz
+          retention-days: 1
+          if-no-files-found: error
+
+  e2e:
+    name: Cypress e2e (common, south)
+    needs: image
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+
+    services:
+      fledge:
+        image: helindata/fledge:3.1.0@sha256:d5ce307b5cd8a75a3685b2d7658195bce36161a55e6c9722e4d55b09bd1784c6
+        ports:
+          - 8081:8081
+        options: >-
+          --health-cmd "curl --fail --silent http://localhost:8081/fledge/ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 24
+          --health-start-period 10s
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Download image
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: gui-image
+
+      - name: Start GUI
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker load --input gui-image.tar.gz
+          docker run --detach --name gui --publish 8080:8080 "${GUI_IMAGE}"
+          curl --silent --show-error --fail --retry 20 --retry-delay 2 --retry-connrefused --retry-all-errors --output /dev/null http://localhost:8080/
+          curl --silent --show-error --fail --retry 20 --retry-delay 2 --retry-connrefused --retry-all-errors --output /dev/null http://localhost:8081/fledge/ping
+
+      - name: Run Cypress
+        env:
+          CYPRESS_BASE_URL: http://localhost:8080
+        run: yarn cypress run --browser chrome --spec e2e/specs/app.e2e-common.ts,e2e/specs/app.e2e-south.ts
+
+      - name: Upload Cypress artifacts
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cypress-artifacts
+          path: |
+            cypress/screenshots
+            cypress/videos
+            e2e/reports
+          if-no-files-found: ignore
+          retention-days: 7

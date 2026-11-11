@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { NavbarComponent } from './navbar.component';
+import { withAppTestDefaults } from '../../../testing/app-test-module';
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+    TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ NavbarComponent ]
-    })
+    }))
     .compileComponents();
   }));
 

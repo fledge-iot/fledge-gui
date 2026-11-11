@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SettingsComponent } from './settings.component';
+import { withAppTestDefaults } from '../../../testing/app-test-module';
 
 describe('SettingsComponent', () => {
   let component: SettingsComponent;
   let fixture: ComponentFixture<SettingsComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+    TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ SettingsComponent ]
-    })
+    }))
     .compileComponents();
   }));
 

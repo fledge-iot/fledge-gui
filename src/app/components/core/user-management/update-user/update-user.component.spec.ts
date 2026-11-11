@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { UpdateUserComponent } from './update-user.component';
+import { withAppTestDefaults } from '../../../../testing/app-test-module';
 
 describe('UpdateUserComponent', () => {
   let component: UpdateUserComponent;
   let fixture: ComponentFixture<UpdateUserComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+    TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ UpdateUserComponent ]
-    })
+    }))
     .compileComponents();
   }));
 
