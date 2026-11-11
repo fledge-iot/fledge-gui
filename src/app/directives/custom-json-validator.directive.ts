@@ -2,8 +2,9 @@ import { Directive, Input } from '@angular/core';
 import { UntypedFormControl, NG_VALIDATORS, Validator } from '@angular/forms';
 
 @Directive({
-  selector: '[jsonValue][formControlName],[jsonValue][formControl],[jsonValue][ngModel]',
-  providers: [{ provide: NG_VALIDATORS, useExisting: CustomJsonDirective, multi: true }]
+    selector: '[jsonValue][formControlName],[jsonValue][formControl],[jsonValue][ngModel]',
+    providers: [{ provide: NG_VALIDATORS, useExisting: CustomJsonDirective, multi: true }],
+    standalone: false
 })
 export class CustomJsonDirective implements Validator {
   @Input()

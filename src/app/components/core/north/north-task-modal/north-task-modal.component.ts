@@ -25,9 +25,10 @@ import { FilterListComponent } from '../../filter/filter-list/filter-list.compon
 import { FilterPipelineType } from '../../../../services/filter.service';
 
 @Component({
-  selector: 'app-north-task-modal',
-  templateUrl: './north-task-modal.component.html',
-  styleUrls: ['./north-task-modal.component.css']
+    selector: 'app-north-task-modal',
+    templateUrl: './north-task-modal.component.html',
+    styleUrls: ['./north-task-modal.component.css'],
+    standalone: false
 })
 export class NorthTaskModalComponent implements OnInit, OnChanges {
   category: any;

@@ -41,9 +41,10 @@ import { ClassicPreset } from 'rete';
 import { Connection } from './connection';
 
 @Component({
-  selector: 'app-node-editor',
-  templateUrl: './node-editor.component.html',
-  styleUrls: ['./node-editor.component.css']
+    selector: 'app-node-editor',
+    templateUrl: './node-editor.component.html',
+    styleUrls: ['./node-editor.component.css'],
+    standalone: false
 })
 export class NodeEditorComponent implements OnInit {
   @ViewChild(ServiceWarningComponent, { static: true }) notificationServiceWarningComponent: ServiceWarningComponent;

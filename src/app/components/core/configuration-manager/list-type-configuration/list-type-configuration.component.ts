@@ -12,9 +12,10 @@ import { DelimiterStoreService } from '../../../../services/delimiter-store.serv
 import { CsvJsonConverterService } from '../../../../services/csv-json-converter.service';
 
 @Component({
-  selector: 'app-list-type-configuration',
-  templateUrl: './list-type-configuration.component.html',
-  styleUrls: ['./list-type-configuration.component.css']
+    selector: 'app-list-type-configuration',
+    templateUrl: './list-type-configuration.component.html',
+    styleUrls: ['./list-type-configuration.component.css'],
+    standalone: false
 })
 export class ListTypeConfigurationComponent implements OnInit, OnChanges {
   @Input() configuration;

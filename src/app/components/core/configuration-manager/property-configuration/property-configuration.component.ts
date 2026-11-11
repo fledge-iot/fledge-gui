@@ -4,9 +4,10 @@ import { RolesService } from '../../../../services';
 
 
 @Component({
-  selector: 'app-property-configuration',
-  templateUrl: './property-configuration.component.html',
-  styleUrls: ['./property-configuration.component.css']
+    selector: 'app-property-configuration',
+    templateUrl: './property-configuration.component.html',
+    styleUrls: ['./property-configuration.component.css'],
+    standalone: false
 })
 export class PropertyConfigurationComponent {
   @Input() control: FormControl;

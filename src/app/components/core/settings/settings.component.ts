@@ -13,9 +13,10 @@ import { DEBOUNCE_TIME } from '../../../utils';
 import { FlowEditorService } from '../../common/node-editor/flow-editor.service';
 
 @Component({
-  selector: 'app-settings',
-  templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.css'],
+    selector: 'app-settings',
+    templateUrl: './settings.component.html',
+    styleUrls: ['./settings.component.css'],
+    standalone: false
 })
 export class SettingsComponent implements OnInit {
   @Output() toggle: EventEmitter<any> = new EventEmitter();

@@ -5,11 +5,10 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { RolesService } from '../../../../services';
 
 @Component({
-  standalone: true,
-  selector: 'app-static-configuration',
-  templateUrl: './static-configuration.component.html',
-  styleUrls: ['./static-configuration.component.css'],
-  imports: [CommonModule, CodemirrorModule, FormsModule]
+    selector: 'app-static-configuration',
+    templateUrl: './static-configuration.component.html',
+    styleUrls: ['./static-configuration.component.css'],
+    imports: [CommonModule, CodemirrorModule, FormsModule]
 })
 export class StaticConfigurationComponent {
   @Input() configuration;

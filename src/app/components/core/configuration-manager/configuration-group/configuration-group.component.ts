@@ -8,9 +8,10 @@ import { ListTypeConfigurationComponent } from '../list-type-configuration/list-
 import { KvListTypeConfigurationComponent } from '../kv-list-type-configuration/kv-list-type-configuration.component';
 
 @Component({
-  selector: 'app-configuration-group',
-  templateUrl: './configuration-group.component.html',
-  styleUrls: ['./configuration-group.component.css']
+    selector: 'app-configuration-group',
+    templateUrl: './configuration-group.component.html',
+    styleUrls: ['./configuration-group.component.css'],
+    standalone: false
 })
 export class ConfigurationGroupComponent implements AfterViewInit {
 

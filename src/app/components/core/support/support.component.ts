@@ -4,9 +4,10 @@ import { Subscription } from 'rxjs';
 import { DocService } from '../../../services/doc.service';
 
 @Component({
-  selector: 'app-support',
-  templateUrl: './support.component.html',
-  styleUrls: ['./support.component.css']
+    selector: 'app-support',
+    templateUrl: './support.component.html',
+    styleUrls: ['./support.component.css'],
+    standalone: false
 })
 export class SupportComponent implements OnInit, OnDestroy {
   public bundlesData = [];

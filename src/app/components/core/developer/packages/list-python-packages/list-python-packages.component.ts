@@ -6,9 +6,10 @@ import { SharedService } from '../../../../../services/shared.service';
 import { sortBy } from 'lodash';
 
 @Component({
-  selector: 'app-list-python-packages',
-  templateUrl: './list-python-packages.component.html',
-  styleUrls: ['./list-python-packages.component.css']
+    selector: 'app-list-python-packages',
+    templateUrl: './list-python-packages.component.html',
+    styleUrls: ['./list-python-packages.component.css'],
+    standalone: false
 })
 export class ListPythonPackagesComponent implements OnInit {
   public showSpinner = false;

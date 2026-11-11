@@ -7,9 +7,10 @@ import { interval, Subject, Subscription } from 'rxjs';
 import { takeUntil, takeWhile } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-packages-log',
-  templateUrl: './packages-log.component.html',
-  styleUrls: ['./packages-log.component.css']
+    selector: 'app-packages-log',
+    templateUrl: './packages-log.component.html',
+    styleUrls: ['./packages-log.component.css'],
+    standalone: false
 })
 export class PackagesLogComponent implements OnInit, OnDestroy {
   public logList = [];

@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output, HostListener } from '@angular/core';
 
 @Component({
-  selector: 'app-shutdown-modal',
-  templateUrl: './shutdown-modal.component.html',
-  styleUrls: ['./shut-down.component.css']
+    selector: 'app-shutdown-modal',
+    templateUrl: './shutdown-modal.component.html',
+    styleUrls: ['./shut-down.component.css'],
+    standalone: false
 })
 export class ShutdownModalComponent implements OnInit {
   @Input() shutDownData: { key: any, message: any };

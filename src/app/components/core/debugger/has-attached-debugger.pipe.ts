@@ -1,8 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'hasAttachedDebugger',
-  pure: true
+    name: 'hasAttachedDebugger',
+    pure: true,
+    standalone: false
 })
 export class HasAttachedDebuggerPipe implements PipeTransform {
   transform(items: any[], filterByExecutionService: boolean = false): boolean {

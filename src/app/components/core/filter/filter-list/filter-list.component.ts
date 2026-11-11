@@ -17,9 +17,10 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DocService } from '../../../../services/doc.service';
 
 @Component({
-  selector: 'app-filter-list',
-  templateUrl: './filter-list.component.html',
-  styleUrls: ['./filter-list.component.css']
+    selector: 'app-filter-list',
+    templateUrl: './filter-list.component.html',
+    styleUrls: ['./filter-list.component.css'],
+    standalone: false
 })
 export class FilterListComponent {
 
