@@ -1,0 +1,88 @@
+name: Build GUI image
+
+on:
+  pull_request:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  DOCKER_IMAGE: helindata/fledge-gui
+  RELEASE_BRANCH: develop
+
+jobs:
+  image:
+    name: Build image (amd64, arm64, arm/v7)
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    environment: ${{ github.event_name == 'release' && 'production' || '' }}
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
+        with:
+          fetch-depth: 0
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(sed -n 's/^[[:space:]]*"version":[[:space:]]*"\([^"]*\)".*/\1/p' package.json | head -1)"
+          if [[ "${GITHUB_EVENT_NAME}" == "release" ]]; then
+            tag="${GITHUB_REF_NAME#v}"
+            if [[ "${tag}" != "${version}" ]]; then
+              echo "ERROR: release tag '${GITHUB_REF_NAME}' does not match package.json version '${version}'" >&2
+              exit 1
+            fi
+            tag_sha="$(git rev-parse "${GITHUB_REF_NAME}^{commit}")"
+            if [[ "${tag_sha}" != "${GITHUB_SHA}" ]]; then
+              echo "ERROR: tag '${GITHUB_REF_NAME}' resolves to ${tag_sha} but workflow is running on ${GITHUB_SHA}" >&2
+              exit 1
+            fi
+            git fetch --no-tags origin "+refs/heads/${RELEASE_BRANCH}:refs/remotes/origin/${RELEASE_BRANCH}"
+            if ! git merge-base --is-ancestor "${GITHUB_SHA}" "refs/remotes/origin/${RELEASE_BRANCH}"; then
+              echo "ERROR: tag '${GITHUB_REF_NAME}' is not an ancestor of origin/${RELEASE_BRANCH}" >&2
+              exit 1
+            fi
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130  # v3.7.0
+        with:
+          platforms: arm64,arm
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f  # v3.12.0
+
+      - name: Docker Hub login (OIDC)
+        if: github.event_name == 'release'
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f  # v4.6.0
+        env:
+          DOCKERHUB_OIDC_CONNECTIONID: ${{ vars.DOCKERHUB_OIDC_CONNECTION_ID }}
+        with:
+          username: ${{ vars.DOCKERHUB_ORG }}
+
+      - name: Build and push multi-arch image
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8  # v6.19.2
+        with:
+          context: .
+          file: nginx.dockerfile
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: ${{ github.event_name == 'release' }}
+          tags: |
+            ${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.version }}
+            ${{ env.DOCKER_IMAGE }}:latest
+          provenance: false
+          sbom: false

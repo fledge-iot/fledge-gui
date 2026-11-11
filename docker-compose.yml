@@ -1,23 +1,10 @@
-# Run docker-compose build
-# Run docker-compose up
-
-version: '3.1'
-
 services:
-
-  fledge:
+  fledge-gui:
     container_name: fledge-gui
-    image: nginx
     build:
       context: .
       dockerfile: nginx.dockerfile
+    image: helindata/fledge-gui:local
     ports:
-      - "8080:80"
-      # - "443:443"
-
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
+      - "8080:8080"
+    restart: unless-stopped

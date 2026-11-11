@@ -17,7 +17,7 @@ https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/
 ```
 ### Run app
 
-> Make sure to run `./build` to make sure docker container can load build artificats from `dist` directory 
+> The image builds the GUI itself, so no local `./build` is needed.
 
 ```
     $ docker-compose build
