@@ -50,3 +50,4 @@ packages/build/
 
 # git-version file
 src/git-version.json
+build-out/

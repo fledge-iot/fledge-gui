@@ -1439,6 +1439,11 @@
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.28.3.tgz#75c5034b55ba868121668be5d5bb31cc64e6e61a"
   integrity sha512-9uIQ10o0WGdpP6GDhXcdOJPJuDgFtIDtN/9+ArJQ2NAfAmiuhTQdzkaTGR33v43GYS2UrSA0eX2pPPHoFVvpxA==
 
+"@babel/runtime@^7.10.2":
+  version "7.29.13"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.29.13.tgz#6b33e456181ff15b5585d932f3aebfc0669b32dd"
+  integrity sha512-v+oN26xP4YIlQsbQ/CbTH1WG5m/l/DjKKZNy/Kp3f/AFvbgt7Em/D0FeMM3O2hX0YzeN2M16W8lOpyhIkfCBcQ==
+
 "@babel/runtime@^7.21.0":
   version "7.23.9"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.23.9.tgz#47791a15e4603bb5f905bc0753801cf21d6345f7"
@@ -3339,6 +3344,11 @@
   integrity sha512-aJ3wj8tXMpBrzQ5ghIaqMisD8C3FIrcO6sDKHqFbuqAsI7yOxj0fA7MrRCPLZHIVUjERIwsMmGn/vB0UQ9u0Hg==
   dependencies:
     "@types/jasmine" "*"
+
+"@types/jexl@^2.3.4":
+  version "2.3.4"
+  resolved "https://registry.yarnpkg.com/@types/jexl/-/jexl-2.3.4.tgz#0cdcf5483bea12d1e68186dd97e8fd50f66d7c03"
+  integrity sha512-3BU5DbkPvwqOeW8kZcB9Bvn5bspTFY3Lo0yBS6ephuI8kVSpCjzbGtRPbWnvdbr67tMvXDxiJRcL3fwbz/6+PQ==
 
 "@types/json-schema@*", "@types/json-schema@^7.0.15", "@types/json-schema@^7.0.9":
   version "7.0.15"
@@ -7301,6 +7311,13 @@ jest-worker@^27.4.5:
     "@types/node" "*"
     merge-stream "^2.0.0"
     supports-color "^8.0.0"
+
+jexl@2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/jexl/-/jexl-2.3.0.tgz#73e0694d86ca917ac24fed753f201c1db59a46c5"
+  integrity sha512-ecqln4kTWNkMwbFvTukOMDq1jy1GcPzvshhMp/s4pxU86xdLDq7HbDRa87DfMfbSAOS8V6EwvCdfs0S+w/iycA==
+  dependencies:
+    "@babel/runtime" "^7.10.2"
 
 jiti@^1.20.0:
   version "1.21.7"
