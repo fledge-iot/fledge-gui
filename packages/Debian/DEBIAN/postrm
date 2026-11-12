@@ -38,5 +38,14 @@ is_running_in_container() {
 if is_running_in_container; then
     echo "[postrm] Running inside container, skipping service nginx stop."
 else
-    service nginx stop
+    service nginx stop || true
 fi
+
+case "$1" in
+    remove|purge)
+        rm -f /etc/nginx/sites-enabled/fledge-gui
+        if [ -f /etc/nginx/sites-available/default ] && [ ! -e /etc/nginx/sites-enabled/default ]; then
+            ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+        fi
+        ;;
+esac

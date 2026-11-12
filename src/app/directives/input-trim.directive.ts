@@ -6,6 +6,7 @@ import { DefaultValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     providers: [
         { provide: NG_VALUE_ACCESSOR, useExisting: InputTrimDirective, multi: true }
     ],
+    standalone: false
 })
 export class InputTrimDirective extends DefaultValueAccessor {
 

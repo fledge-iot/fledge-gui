@@ -1,4 +1,4 @@
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -77,84 +77,78 @@ export function pingServiceFactory(ping: PingService, sharedService: SharedServi
     });
 }
 
-@NgModule({
-  imports: [
-    BrowserModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    routing,
-    NgProgressModule,
-    PipesModule,
-    AlertDialogModule,
-    SharedModule,
-    DashboardModule,
-    DirectivesModule,
-    SystemAlertModule,
-    LogsModule
-  ],
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    CertificateBaseLoginComponent,
-    AlertComponent,
-    ProgressBarComponent,
-    FooterComponent,
-    SideMenuComponent,
-    NavbarComponent,
-    SettingsComponent,
-    ServiceDiscoveryComponent,
-    ShutdownModalComponent,
-    RestartModalComponent
-  ],
-  providers: [
-    AuthRequiredGuard,
-    DataViewRoleGuard,
-    {
-      provide: 'ALERT_SERVICE',
-      useExisting: AlertService,
-    },
-    AuthService,
-    ConfigurationService,
-    AuditService,
-    SystemLogService,
-    PackagesLogService,
-    ServicesApiService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: pingServiceFactory,
-      deps: [PingService, SharedService, Router],
-      multi: true
-    },
-    ConnectedServiceStatus,
-    DiscoveryService,
-    SharedService,
-    CertificateService,
-    SupportService,
-    BackupRestoreService,
-    PingService,
-    NorthService,
-    SchedulesService,
-    {
-      provide: 'PROGRESS_SERVICE',
-      useExisting: ProgressBarService,
-    },
-    UserService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: HttpsRequestInterceptor,
-      multi: true,
-    },
-    {
-      provide: 'ADDITIONAL_SERVICE',
-      useExisting: AdditionalServicesUtils
-    },
-    {
-      provide: 'SHARED_SERVICE',
-      useExisting: SharedService
-    }
-  ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        LoginComponent,
+        CertificateBaseLoginComponent,
+        AlertComponent,
+        ProgressBarComponent,
+        FooterComponent,
+        SideMenuComponent,
+        NavbarComponent,
+        SettingsComponent,
+        ServiceDiscoveryComponent,
+        ShutdownModalComponent,
+        RestartModalComponent
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        FormsModule,
+        ReactiveFormsModule,
+        routing,
+        NgProgressModule,
+        PipesModule,
+        AlertDialogModule,
+        SharedModule,
+        DashboardModule,
+        DirectivesModule,
+        SystemAlertModule,
+        LogsModule], providers: [
+        AuthRequiredGuard,
+        DataViewRoleGuard,
+        {
+            provide: 'ALERT_SERVICE',
+            useExisting: AlertService,
+        },
+        AuthService,
+        ConfigurationService,
+        AuditService,
+        SystemLogService,
+        PackagesLogService,
+        ServicesApiService,
+        {
+            provide: APP_INITIALIZER,
+            useFactory: pingServiceFactory,
+            deps: [PingService, SharedService, Router],
+            multi: true
+        },
+        ConnectedServiceStatus,
+        DiscoveryService,
+        SharedService,
+        CertificateService,
+        SupportService,
+        BackupRestoreService,
+        PingService,
+        NorthService,
+        SchedulesService,
+        {
+            provide: 'PROGRESS_SERVICE',
+            useExisting: ProgressBarService,
+        },
+        UserService,
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: HttpsRequestInterceptor,
+            multi: true,
+        },
+        {
+            provide: 'ADDITIONAL_SERVICE',
+            useExisting: AdditionalServicesUtils
+        },
+        {
+            provide: 'SHARED_SERVICE',
+            useExisting: SharedService
+        },
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 
 export class AppModule { }

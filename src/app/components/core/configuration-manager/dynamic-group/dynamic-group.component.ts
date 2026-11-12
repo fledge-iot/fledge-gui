@@ -2,9 +2,10 @@ import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChange
 import { ConfigurationBase } from '../../../../services';
 
 @Component({
-  selector: 'app-dynamic-group',
-  templateUrl: './dynamic-group.component.html',
-  styleUrls: ['./dynamic-group.component.css']
+    selector: 'app-dynamic-group',
+    templateUrl: './dynamic-group.component.html',
+    styleUrls: ['./dynamic-group.component.css'],
+    standalone: false
 })
 export class DynamicGroupComponent implements OnInit, OnChanges {
   @Input() categoryGroups: any[] = [];

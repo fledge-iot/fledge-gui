@@ -12,9 +12,10 @@ import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 
 
 @Component({
-  selector: 'app-add-control-script',
-  templateUrl: './add-control-script.component.html',
-  styleUrls: ['./add-control-script.component.css'],
+    selector: 'app-add-control-script',
+    templateUrl: './add-control-script.component.html',
+    styleUrls: ['./add-control-script.component.css'],
+    standalone: false
 })
 export class AddControlScriptComponent implements OnInit {
   stepControlsList = [];

@@ -11,9 +11,10 @@ import { ViewLogsComponent } from '../logs/packages-log/view-logs/view-logs.comp
 import { FlowEditorService } from '../../common/node-editor/flow-editor.service';
 
 @Component({
-  selector: 'app-north',
-  templateUrl: './north.component.html',
-  styleUrls: ['./north.component.css']
+    selector: 'app-north',
+    templateUrl: './north.component.html',
+    styleUrls: ['./north.component.css'],
+    standalone: false
 })
 
 export class NorthComponent implements OnInit, OnDestroy {

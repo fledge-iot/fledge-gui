@@ -6,9 +6,10 @@ import { map, mergeMap } from 'rxjs/operators';
 import { AlertService, ConfigurationService, RolesService } from '../../../../../../services';
 
 @Component({
-  selector: 'app-add-configure',
-  templateUrl: './add-configure.component.html',
-  styleUrls: ['./add-configure.component.css'],
+    selector: 'app-add-configure',
+    templateUrl: './add-configure.component.html',
+    styleUrls: ['./add-configure.component.css'],
+    standalone: false
 })
 export class AddConfigureComponent implements OnInit {
 

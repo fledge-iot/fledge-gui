@@ -6,7 +6,7 @@ describe('PackagesLogService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: PackagesLogService = TestBed.get(PackagesLogService);
+    const service: PackagesLogService = TestBed.inject(PackagesLogService);
     expect(service).toBeTruthy();
   });
 });

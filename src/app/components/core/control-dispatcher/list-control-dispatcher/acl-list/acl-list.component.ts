@@ -11,9 +11,10 @@ import { DocService } from '../../../../../services/doc.service';
 import { AdditionalServicesUtils } from '../../../developer/additional-services/additional-services-utils.service';
 
 @Component({
-  selector: 'app-acl-list',
-  templateUrl: './acl-list.component.html',
-  styleUrls: ['./acl-list.component.css']
+    selector: 'app-acl-list',
+    templateUrl: './acl-list.component.html',
+    styleUrls: ['./acl-list.component.css'],
+    standalone: false
 })
 export class AclListComponent implements OnInit, OnDestroy {
   @ViewChild('confirmationDialog') confirmationDialog: ConfirmationDialogComponent;

@@ -5,9 +5,10 @@ import { SharedService } from '../../../services/shared.service';
 declare const bulmaQuickview: any;
 
 @Component({
-  selector: 'app-quickview',
-  templateUrl: './quickview.component.html',
-  styleUrls: ['./quickview.component.css']
+    selector: 'app-quickview',
+    templateUrl: './quickview.component.html',
+    styleUrls: ['./quickview.component.css'],
+    standalone: false
 })
 export class QuickviewComponent implements OnInit {
 

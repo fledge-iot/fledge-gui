@@ -2,9 +2,10 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { RangeSliderService } from './range-slider.service';
 
 @Component({
-  selector: 'app-range-slider',
-  templateUrl: './range-slider.component.html',
-  styleUrls: ['./range-slider.component.css']
+    selector: 'app-range-slider',
+    templateUrl: './range-slider.component.html',
+    styleUrls: ['./range-slider.component.css'],
+    standalone: false
 })
 export class RangeSliderComponent implements OnInit {
   @ViewChild('range') set range(element) {
