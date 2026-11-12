@@ -1,14 +1,15 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AppComponent } from './app.component';
+import { withAppTestDefaults } from './testing/app-test-module';
 
 describe('AppComponent', () => {
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+    TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [
         AppComponent
       ],
-    }).compileComponents();
+    })).compileComponents();
   }));
 
   it('should create the app', waitForAsync(() => {
@@ -23,10 +24,11 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('app');
   }));
 
-  it('should render title in a h1 tag', waitForAsync(() => {
+  it('should render the navbar and the router outlet', waitForAsync(() => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain('Welcome to app!');
+    expect(compiled.querySelector('app-navbar')).not.toBeNull();
+    expect(compiled.querySelector('router-outlet')).not.toBeNull();
   }));
 });

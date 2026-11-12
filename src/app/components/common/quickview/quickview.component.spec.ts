@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { QuickviewComponent } from './quickview.component';
+import { withAppTestDefaults } from '../../../testing/app-test-module';
 
 describe('QuickviewComponent', () => {
   let component: QuickviewComponent;
   let fixture: ComponentFixture<QuickviewComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
+    await TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ QuickviewComponent ]
-    })
+    }))
     .compileComponents();
   });
 

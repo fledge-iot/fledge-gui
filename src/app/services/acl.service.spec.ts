@@ -1,12 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
 import { AclService } from './acl.service';
+import { withAppTestDefaults } from '../testing/app-test-module';
 
 describe('AclService', () => {
   let service: AclService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule(withAppTestDefaults({}));
     service = TestBed.inject(AclService);
   });
 

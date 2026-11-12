@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ServiceDiscoveryComponent } from './service-discovery.component';
+import { withAppTestDefaults } from '../../../testing/app-test-module';
 
 describe('ServiceDiscoveryComponent', () => {
   let component: ServiceDiscoveryComponent;
   let fixture: ComponentFixture<ServiceDiscoveryComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+    TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ ServiceDiscoveryComponent ]
-    })
+    }))
     .compileComponents();
   }));
 

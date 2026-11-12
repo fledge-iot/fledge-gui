@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { FilterAlertComponent } from './filter-alert.component';
+import { withAppTestDefaults } from '../../../../testing/app-test-module';
 
 describe('FilterAlertComponent', () => {
   let component: FilterAlertComponent;
   let fixture: ComponentFixture<FilterAlertComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+    TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ FilterAlertComponent ]
-    })
+    }))
     .compileComponents();
   }));
 

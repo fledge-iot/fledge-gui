@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NodeEditorComponent } from './node-editor.component';
+import { withAppTestDefaults } from '../../../testing/app-test-module';
 
 describe('NodeEditorComponent', () => {
   let component: NodeEditorComponent;
   let fixture: ComponentFixture<NodeEditorComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
+    await TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ NodeEditorComponent ]
-    })
+    }))
     .compileComponents();
   });
 

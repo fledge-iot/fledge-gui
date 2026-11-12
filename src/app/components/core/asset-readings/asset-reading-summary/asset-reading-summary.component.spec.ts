@@ -1,15 +1,16 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AssetReadingSummaryComponent } from './asset-reading-summary.component';
+import { withAppTestDefaults } from '../../../../testing/app-test-module';
 
 describe('AssetReadingSummaryComponent', () => {
   let component: AssetReadingSummaryComponent;
   let fixture: ComponentFixture<AssetReadingSummaryComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+    TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [AssetReadingSummaryComponent]
-    })
+    }))
       .compileComponents();
   }));
 

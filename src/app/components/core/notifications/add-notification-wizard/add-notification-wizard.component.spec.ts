@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AddNotificationWizardComponent } from './add-notification-wizard.component';
+import { withAppTestDefaults } from '../../../../testing/app-test-module';
 
 describe('AddNotificationWizardComponent', () => {
   let component: AddNotificationWizardComponent;
   let fixture: ComponentFixture<AddNotificationWizardComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+    TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ AddNotificationWizardComponent ]
-    })
+    }))
     .compileComponents();
   }));
 
