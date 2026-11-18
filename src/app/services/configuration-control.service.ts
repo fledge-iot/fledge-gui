@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { AclService } from './acl.service';
 import { orderBy, map, cloneDeep, reduce, assign } from 'lodash';
+import { buildValidityContext, isValidityExpressionSatisfied } from './validity-expression';
 
 export class ConfigurationBase<T> {
   value: T | undefined;
@@ -25,7 +26,6 @@ export class ConfigurationBase<T> {
   file: File;
   validFileExtension?: boolean;
   validity?: string;
-  validityExpression?: string;
 
   constructor(options: {
     value?: T;
@@ -49,7 +49,6 @@ export class ConfigurationBase<T> {
     files?: File;
     validFileExtension?: boolean;
     validity?: string;
-    validityExpression?: string;
   } = {}) {
     this.value = options.value;
     this.key = options.key || '';
@@ -73,7 +72,6 @@ export class ConfigurationBase<T> {
     this.file = options.files;
     this.validFileExtension = options.validFileExtension || true;
     this.validity = options.validity;
-    this.validityExpression = '';
   }
 }
 
@@ -453,73 +451,36 @@ export class ConfigurationControlService {
     return new UntypedFormGroup(group);
   }
 
-  /**
-   * validate form control on page init based on validation expression;
-   *
-   * @param pluginConfiguration complete configuration of a plugin
-   * @param config single config item
-   * @returns
-   */
   validateConfigItem(pluginConfiguration: any, config: ConfigurationBase<string>) {
     if (config.validity) {
-      config.validityExpression = config.validity;
       Object.keys(pluginConfiguration).forEach(key => {
-        const el = pluginConfiguration[key];
-        el.key = key;
-        // generate validation expression on page load based on configuration property values
-        config.validityExpression = this.generateValidationExpression(el, config.validityExpression);
+        pluginConfiguration[key].key = key;
       });
-      const isValidExpression = this.validateExpression(config.key, config.validityExpression);
-      pluginConfiguration[config.key].validityExpression = config?.validityExpression;
-      return !isValidExpression;
+      return !isValidityExpressionSatisfied(config.validity, buildValidityContext(pluginConfiguration));
     }
   }
 
   checkConfigItemValidityOnChange(form: UntypedFormGroup, config: ConfigurationBase<string>, fullConfiguration: any) {
-    // update config value in a global config object
     if (fullConfiguration) {
       fullConfiguration[config.key].value = config.value;
-      // buid validation expression
-      Object.keys(fullConfiguration).forEach(key => {
-        const cnf = fullConfiguration[key];
-        if (cnf.validity) {
-          let expression = cnf.validity;
-          Object.keys(fullConfiguration).forEach(key => {
-            const el = fullConfiguration[key];
-            // generate validation expression based on changed config item value
-            expression = this.generateValidationExpression(el, expression);
-          });
-          // update validitionExpression property of the configuration item
-          cnf.validityExpression = expression;
-        }
-      });
-
-      // validate expression to enable/disable form control
-      Object.keys(fullConfiguration).forEach(key => {
-        const cnf = fullConfiguration[key];
-        if (cnf.validity) {
-          let isValidExpression = this.validateExpression(key, cnf.validityExpression);
-          this.setFormControlState(cnf, form, isValidExpression, config);
-        }
-      });
+      this.applyValidity(form, fullConfiguration, config);
     }
   }
 
-  /**
-   * Validate form control on cofiguration tab switch
-   * @param form Configuration control form
-   * @param fullConfiguration plugin configuration
-   */
   checkConfigItemOnGroupChange(form: UntypedFormGroup, fullConfiguration: any) {
     if (fullConfiguration) {
-      Object.keys(fullConfiguration).forEach(key => {
-        const cnf = fullConfiguration[key];
-        if (cnf.hasOwnProperty('validityExpression')) {
-          const isValidExpression = this.validateExpression(key, cnf.validityExpression);
-          this.setFormControlState(cnf, form, isValidExpression);
-        }
-      });
+      this.applyValidity(form, fullConfiguration);
     }
+  }
+
+  private applyValidity(form: UntypedFormGroup, fullConfiguration: any, configControl = null) {
+    const context = buildValidityContext(fullConfiguration);
+    Object.keys(fullConfiguration).forEach(key => {
+      const cnf = fullConfiguration[key];
+      if (cnf.validity) {
+        this.setFormControlState(cnf, form, isValidityExpressionSatisfied(cnf.validity, context), configControl);
+      }
+    });
   }
 
   setFormControlState(cnf: any, form: UntypedFormGroup, validExpression: boolean, configControl = null) {
@@ -538,41 +499,6 @@ export class ConfigurationControlService {
     }
     else {
       validExpression ? form.controls[cnf.key]?.enable({ emitEvent: false }) : form.controls[cnf.key]?.disable({ emitEvent: false });
-    }
-  }
-
-  /**
-   * Generate validation expression based on config property values
-   * @param config configuration item
-   * @param expression validation expression
-   * @returns
-   */
-  generateValidationExpression(config: any, expression: string) {
-    const regex = new RegExp(`${config.key}[^"]?\\s?.=`);
-    // check if validity expression has the config key
-    if (regex.test(expression)) {
-      expression = expression
-        .split(new RegExp(`${config.key.trim()}+(?=.*=)`)).join(`"${config.value}"`);
-    }
-    return expression;
-  }
-
-  /**
-   * evaluate validation expresison to enable/disable form control
-   * @param key config property
-   * @param expression validation expression
-   * @returns
-   */
-  validateExpression(key: string, expression: string) {
-    try {
-      const e = eval(expression);
-      if (typeof (e) !== 'boolean') {
-        console.log('Validity expression', expression, 'for', key, 'evaluated to non-boolean value ', e);
-      }
-      return e === false ? false : true;
-    } catch (e) {
-      console.log(e);
-      return true;
     }
   }
 
