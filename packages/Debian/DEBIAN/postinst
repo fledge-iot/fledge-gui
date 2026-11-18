@@ -40,7 +40,16 @@ start_nginx () {
   systemctl is-active nginx
 }
 
+enable_site () {
+  if [ -L /etc/nginx/sites-enabled/default ] && [ "$(readlink /etc/nginx/sites-enabled/default)" = "/etc/nginx/sites-available/default" ]; then
+    rm -f /etc/nginx/sites-enabled/default
+  fi
+  ln -sf /etc/nginx/sites-available/fledge-gui /etc/nginx/sites-enabled/fledge-gui
+  nginx -t
+}
+
 cp --remove-destination /var/www/html/fledge.html /var/www/html/index.html
+enable_site
 
 if is_running_in_container; then
     echo "[postinst] Running inside container, skipping service nginx start."

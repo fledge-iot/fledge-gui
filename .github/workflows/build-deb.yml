@@ -1,0 +1,170 @@
+name: Build GUI .deb
+
+on:
+  pull_request:
+  push:
+    branches: [develop]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  PACKAGE: fledge-gui
+  RELEASE_BRANCH: develop
+
+jobs:
+  build:
+    name: Build .deb (all)
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f  # v3.12.0
+
+      - name: Build .deb
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x .ci/deb/build.sh
+          .ci/deb/build.sh
+
+      - name: Upload .deb artifact for bullseye
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: ${{ env.PACKAGE }}-bullseye-all
+          path: build-out/*.deb
+          if-no-files-found: error
+
+      - name: Upload .deb artifact for bookworm
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: ${{ env.PACKAGE }}-bookworm-all
+          path: build-out/*.deb
+          if-no-files-found: error
+
+      - name: Upload .deb artifact for jammy
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: ${{ env.PACKAGE }}-jammy-all
+          path: build-out/*.deb
+          if-no-files-found: error
+
+      - name: Upload .deb artifact for noble
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: ${{ env.PACKAGE }}-noble-all
+          path: build-out/*.deb
+          if-no-files-found: error
+
+  package-check:
+    name: Check package metadata
+    needs: build
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
+
+      - name: Download package artifacts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093  # v4.3.0
+        with:
+          pattern: ${{ env.PACKAGE }}-*
+          path: dist
+
+      - name: Verify package fields
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s globstar nullglob
+          version="$(sed -n 's/^[[:space:]]*"version":[[:space:]]*"\([^"]*\)".*/\1/p' package.json | head -1)"
+          debs=(dist/**/*.deb)
+          if [[ ${#debs[@]} -ne 4 ]]; then
+            echo "ERROR: expected 4 .deb artifacts, found ${#debs[@]}" >&2
+            exit 1
+          fi
+          for deb in "${debs[@]}"; do
+            pkg="$(dpkg-deb --field "$deb" Package)"
+            ver="$(dpkg-deb --field "$deb" Version)"
+            arch="$(dpkg-deb --field "$deb" Architecture)"
+            deps="$(dpkg-deb --field "$deb" Depends)"
+            if [[ "$pkg" != "${PACKAGE}" ]]; then
+              echo "ERROR: ${deb} has Package '${pkg}', expected '${PACKAGE}'" >&2
+              exit 1
+            fi
+            if [[ "$ver" != "$version" ]]; then
+              echo "ERROR: ${deb} has Version '${ver}', expected '${version}'" >&2
+              exit 1
+            fi
+            if [[ "$arch" != "all" ]]; then
+              echo "ERROR: ${deb} has Architecture '${arch}', expected 'all'" >&2
+              exit 1
+            fi
+            if [[ "$deps" != *nginx* ]]; then
+              echo "ERROR: ${deb} Depends '${deps}' does not include nginx" >&2
+              exit 1
+            fi
+            dpkg-deb --info "$deb"
+            dpkg-deb --contents "$deb"
+          done
+
+  dispatch-publish:
+    name: Dispatch signed publish
+    needs: package-check
+    if: github.event_name == 'release'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
+        with:
+          fetch-depth: 0
+
+      - name: Verify release tag matches package.json version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(sed -n 's/^[[:space:]]*"version":[[:space:]]*"\([^"]*\)".*/\1/p' package.json | head -1)"
+          if [[ "${tag}" != "${version}" ]]; then
+            echo "ERROR: release tag '${GITHUB_REF_NAME}' (stripped: '${tag}') does not match package.json version '${version}'" >&2
+            exit 1
+          fi
+          tag_sha="$(git rev-parse "${GITHUB_REF_NAME}^{commit}")"
+          if [[ "${tag_sha}" != "${GITHUB_SHA}" ]]; then
+            echo "ERROR: tag '${GITHUB_REF_NAME}' resolves to ${tag_sha} but workflow is running on ${GITHUB_SHA}" >&2
+            exit 1
+          fi
+          git fetch --no-tags origin "+refs/heads/${RELEASE_BRANCH}:refs/remotes/origin/${RELEASE_BRANCH}"
+          if ! git merge-base --is-ancestor "${GITHUB_SHA}" "refs/remotes/origin/${RELEASE_BRANCH}"; then
+            echo "ERROR: tag '${GITHUB_REF_NAME}' (${GITHUB_SHA}) is not an ancestor of origin/${RELEASE_BRANCH}; only commits merged into ${RELEASE_BRANCH} may be released" >&2
+            exit 1
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger publish workflow in fledge repository
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.APT_PUBLISH_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY_OWNER}/fledge/dispatches" \
+            -f event_type=plugin-publish \
+            -f "client_payload[repository]=${GITHUB_REPOSITORY}" \
+            -f "client_payload[run_id]=${GITHUB_RUN_ID}" \
+            -f "client_payload[package]=${PACKAGE}" \
+            -f "client_payload[version]=${{ steps.version.outputs.version }}"
+          echo "dispatched plugin-publish for ${PACKAGE} ${{ steps.version.outputs.version }} (run ${GITHUB_RUN_ID})" >> "$GITHUB_STEP_SUMMARY"

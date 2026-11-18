@@ -40,5 +40,5 @@ is_running_in_container() {
 if is_running_in_container; then
     echo "[preinst] Running inside container, skipping service nginx stop."
 else
-    service nginx stop
+    service nginx stop || true
 fi
