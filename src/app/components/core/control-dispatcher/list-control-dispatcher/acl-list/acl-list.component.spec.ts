@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AclListComponent } from './acl-list.component';
+import { withAppTestDefaults } from '../../../../../testing/app-test-module';
 
 describe('AclListComponent', () => {
   let component: AclListComponent;
   let fixture: ComponentFixture<AclListComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
+    await TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ AclListComponent ]
-    })
+    }))
     .compileComponents();
   });
 

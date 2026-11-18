@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { TasksComponent } from './tasks.component';
+import { withAppTestDefaults } from '../../../../testing/app-test-module';
 
 describe('TasksComponent', () => {
   let component: TasksComponent;
   let fixture: ComponentFixture<TasksComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+    TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [TasksComponent]
-    })
+    }))
       .compileComponents();
   }));
 

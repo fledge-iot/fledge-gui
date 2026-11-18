@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AddConfigureComponent } from './add-configure.component';
+import { withAppTestDefaults } from '../../../../../../testing/app-test-module';
 
 describe('AddConfigureComponent', () => {
   let component: AddConfigureComponent;
   let fixture: ComponentFixture<AddConfigureComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
+    await TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ AddConfigureComponent ]
-    })
+    }))
     .compileComponents();
   });
 

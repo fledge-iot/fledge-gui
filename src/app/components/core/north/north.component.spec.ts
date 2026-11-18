@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { NorthComponent } from './north.component';
+import { withAppTestDefaults } from '../../../testing/app-test-module';
 
 describe('NorthComponent', () => {
   let component: NorthComponent;
   let fixture: ComponentFixture<NorthComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+    TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ NorthComponent ]
-    })
+    }))
     .compileComponents();
   }));
 

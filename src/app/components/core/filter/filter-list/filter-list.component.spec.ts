@@ -1,15 +1,16 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FilterListComponent } from './filter-list.component';
+import { withAppTestDefaults } from '../../../../testing/app-test-module';
 
 describe('FilterListComponent', () => {
   let component: FilterListComponent;
   let fixture: ComponentFixture<FilterListComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+    TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [FilterListComponent]
-    })
+    }))
       .compileComponents();
   }));
 

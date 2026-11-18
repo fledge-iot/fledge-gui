@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AddFilterWizardComponent } from './add-filter-wizard.component';
+import { withAppTestDefaults } from '../../../../testing/app-test-module';
 
 describe('AddFilterPluginWizardComponent', () => {
   let component: AddFilterWizardComponent;
   let fixture: ComponentFixture<AddFilterWizardComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+    TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ AddFilterWizardComponent ]
-    })
+    }))
     .compileComponents();
   }));
 

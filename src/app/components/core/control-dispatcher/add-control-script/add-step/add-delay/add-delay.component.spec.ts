@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AddDelayComponent } from './add-delay.component';
+import { withAppTestDefaults } from '../../../../../../testing/app-test-module';
 
 describe('AddDelayComponent', () => {
   let component: AddDelayComponent;
   let fixture: ComponentFixture<AddDelayComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
+    await TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ AddDelayComponent ]
-    })
+    }))
     .compileComponents();
   });
 

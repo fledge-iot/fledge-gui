@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { PackagesLogComponent } from './packages-log.component';
+import { withAppTestDefaults } from '../../../../testing/app-test-module';
 
 describe('PackagesLogComponent', () => {
   let component: PackagesLogComponent;
   let fixture: ComponentFixture<PackagesLogComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+    TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ PackagesLogComponent ]
-    })
+    }))
     .compileComponents();
   }));
 

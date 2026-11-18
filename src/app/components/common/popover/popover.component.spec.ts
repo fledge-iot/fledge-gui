@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { PopoverComponent } from './popover.component';
+import { withAppTestDefaults } from '../../../testing/app-test-module';
 
 describe('PopoverComponent', () => {
   let component: PopoverComponent;
   let fixture: ComponentFixture<PopoverComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+    TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [PopoverComponent]
-    })
+    }))
       .compileComponents();
   }));
 

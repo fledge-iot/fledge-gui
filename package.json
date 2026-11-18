@@ -15,6 +15,7 @@
     "e2e": "ng e2e",
     "e2e:watch": "ng e2e --headless false --watch true",
     "watch": "ng build --watch --configuration development",
+    "pretest": "bash git-version",
     "test": "ng test",
     "lint": "ng lint",
     "run:all": "node node_modules/@angular-architects/module-federation/src/server/mf-dev-server.js"

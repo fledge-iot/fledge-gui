@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AlertDialogComponent } from './alert-dialog.component';
+import { withAppTestDefaults } from '../../../testing/app-test-module';
 
 describe('AlertDialogComponent', () => {
   let component: AlertDialogComponent;
   let fixture: ComponentFixture<AlertDialogComponent>;
 
   beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+    TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [ AlertDialogComponent ]
-    })
+    }))
     .compileComponents();
   }));
 

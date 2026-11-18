@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RangeSliderComponent } from './range-slider.component';
+import { withAppTestDefaults } from '../../../testing/app-test-module';
 
 describe('RangeSliderComponent', () => {
   let component: RangeSliderComponent;
   let fixture: ComponentFixture<RangeSliderComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
+    await TestBed.configureTestingModule(withAppTestDefaults({
       declarations: [RangeSliderComponent]
-    })
+    }))
       .compileComponents();
   });
 
