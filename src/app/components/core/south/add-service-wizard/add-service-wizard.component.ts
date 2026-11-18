@@ -15,9 +15,10 @@ import { CustomValidator } from '../../../../directives/custom-validator';
 import { QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 
 @Component({
-  selector: 'app-add-service-wizard',
-  templateUrl: './add-service-wizard.component.html',
-  styleUrls: ['./add-service-wizard.component.css']
+    selector: 'app-add-service-wizard',
+    templateUrl: './add-service-wizard.component.html',
+    styleUrls: ['./add-service-wizard.component.css'],
+    standalone: false
 })
 export class AddServiceWizardComponent implements OnInit, OnDestroy {
 

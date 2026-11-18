@@ -10,9 +10,10 @@ import { POLLING_INTERVAL } from '../../../utils';
 import { FileUploadModalComponent } from '../../common/file-upload-modal/file-upload-modal.component';
 
 @Component({
-  selector: 'app-backup-restore',
-  templateUrl: './backup-restore.component.html',
-  styleUrls: ['./backup-restore.component.css']
+    selector: 'app-backup-restore',
+    templateUrl: './backup-restore.component.html',
+    styleUrls: ['./backup-restore.component.css'],
+    standalone: false
 })
 export class BackupRestoreComponent implements OnInit, OnDestroy {
   public backupData = [];

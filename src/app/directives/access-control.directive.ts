@@ -2,7 +2,8 @@ import { Directive, ElementRef, OnChanges } from '@angular/core';
 import { Subject } from 'rxjs';
 
 @Directive({
-  selector: '[requiredViewEditorRole]'
+    selector: '[requiredViewEditorRole]',
+    standalone: false
 })
 export class AccessControlDirective implements OnChanges {
 

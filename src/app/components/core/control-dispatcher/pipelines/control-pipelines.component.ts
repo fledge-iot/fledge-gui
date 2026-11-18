@@ -9,9 +9,10 @@ import { AlertService, ControlPipelinesService, ProgressBarService, RolesService
 import { AdditionalServicesUtils } from '../../developer/additional-services/additional-services-utils.service';
 
 @Component({
-  selector: 'app-control-pipelines',
-  templateUrl: './control-pipelines.component.html',
-  styleUrls: ['./control-pipelines.component.css']
+    selector: 'app-control-pipelines',
+    templateUrl: './control-pipelines.component.html',
+    styleUrls: ['./control-pipelines.component.css'],
+    standalone: false
 })
 export class ControlPipelinesComponent implements OnInit, OnDestroy {
   @ViewChild(AlertDialogComponent, { static: true }) child: AlertDialogComponent;

@@ -3,9 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { DARK_ALERTS, AlertService, SharedService } from '../../../services';
 
 @Component({
-  selector: 'app-alert',
-  templateUrl: 'alert.component.html',
-  styleUrls: ['./alert.component.css']
+    selector: 'app-alert',
+    templateUrl: 'alert.component.html',
+    styleUrls: ['./alert.component.css'],
+    standalone: false
 })
 
 export class AlertComponent implements OnInit {

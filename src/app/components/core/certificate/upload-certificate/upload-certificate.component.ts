@@ -4,9 +4,10 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { AlertService, CertificateService, ProgressBarService } from '../../../../services';
 
 @Component({
-  selector: 'app-upload-cert',
-  templateUrl: './upload-certificate.component.html',
-  styleUrls: ['./upload-certificate.component.css']
+    selector: 'app-upload-cert',
+    templateUrl: './upload-certificate.component.html',
+    styleUrls: ['./upload-certificate.component.css'],
+    standalone: false
 })
 export class UploadCertificateComponent implements OnInit {
   form: UntypedFormGroup;

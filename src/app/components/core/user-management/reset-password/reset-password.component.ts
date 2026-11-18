@@ -5,9 +5,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService, UserService, ProgressBarService } from '../../../../services';
 
 @Component({
-  selector: 'app-reset-password',
-  templateUrl: './reset-password.component.html',
-  styleUrls: ['./reset-password.component.css']
+    selector: 'app-reset-password',
+    templateUrl: './reset-password.component.html',
+    styleUrls: ['./reset-password.component.css'],
+    standalone: false
 })
 export class ResetPasswordComponent implements OnInit {
   public userRecord: any = {};

@@ -1,9 +1,10 @@
 import { Component, Output, EventEmitter, Input, SimpleChanges } from '@angular/core';
 
 @Component({
-  selector: 'app-toolbar',
-  templateUrl: './toolbar.component.html',
-  styleUrls: ['./toolbar.component.css']
+    selector: 'app-toolbar',
+    templateUrl: './toolbar.component.html',
+    styleUrls: ['./toolbar.component.css'],
+    standalone: false
 })
 export class ToolbarComponent {
   @Input() isDeleteDisabled = new EventEmitter<boolean>();

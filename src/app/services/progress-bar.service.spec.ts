@@ -6,7 +6,7 @@ describe('ProgressBarService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: ProgressBarService = TestBed.get(ProgressBarService);
+    const service: ProgressBarService = TestBed.inject(ProgressBarService);
     expect(service).toBeTruthy();
   });
 });

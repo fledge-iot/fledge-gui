@@ -37,9 +37,10 @@ export interface Configuration {
 }
 
 @Component({
-  selector: 'app-file-import-modal',
-  templateUrl: './file-import-modal.component.html',
-  styleUrls: ['./file-import-modal.component.css']
+    selector: 'app-file-import-modal',
+    templateUrl: './file-import-modal.component.html',
+    styleUrls: ['./file-import-modal.component.css'],
+    standalone: false
 })
 export class FileImportModalComponent {
   private static readonly CODEMIRROR_HEIGHT = '300px';

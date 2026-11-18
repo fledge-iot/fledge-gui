@@ -13,9 +13,10 @@ import { DeveloperFeaturesService } from '../../../../services/developer-feature
 import { PopoverComponent } from '../../../common/popover/popover.component';
 
 @Component({
-  selector: 'app-assets',
-  templateUrl: './assets.component.html',
-  styleUrls: ['./assets.component.css']
+    selector: 'app-assets',
+    templateUrl: './assets.component.html',
+    styleUrls: ['./assets.component.css'],
+    standalone: false
 })
 export class AssetsComponent implements OnInit, OnDestroy {
   MAX_RANGE = MAX_INT_SIZE / 2;

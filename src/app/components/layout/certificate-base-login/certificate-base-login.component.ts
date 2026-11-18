@@ -5,9 +5,10 @@ import { Router } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-certificate-base-login',
-  templateUrl: './certificate-base-login.component.html',
-  styleUrls: ['./certificate-base-login.component.css']
+    selector: 'app-certificate-base-login',
+    templateUrl: './certificate-base-login.component.html',
+    styleUrls: ['./certificate-base-login.component.css'],
+    standalone: false
 })
 export class CertificateBaseLoginComponent implements OnInit {
   form: UntypedFormGroup;

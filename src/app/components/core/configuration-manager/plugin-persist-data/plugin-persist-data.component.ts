@@ -4,9 +4,10 @@ import { AlertService, ProgressBarService, RolesService } from '../../../../serv
 import { PluginPersistDataService } from './plugin-persist-data.service';
 
 @Component({
-  selector: 'app-plugin-persist-data',
-  templateUrl: './plugin-persist-data.component.html',
-  styleUrls: ['./plugin-persist-data.component.css']
+    selector: 'app-plugin-persist-data',
+    templateUrl: './plugin-persist-data.component.html',
+    styleUrls: ['./plugin-persist-data.component.css'],
+    standalone: false
 })
 export class PluginPersistDataComponent implements OnInit {
   @Input() serviceName;

@@ -3,9 +3,10 @@ import {
 } from '@angular/core';
 
 @Component({
-  selector: 'app-add-pipeline-filter-modal',
-  templateUrl: './add-pipeline-filter.component.html',
-  styleUrls: ['./add-pipeline-filter.component.css']
+    selector: 'app-add-pipeline-filter-modal',
+    templateUrl: './add-pipeline-filter.component.html',
+    styleUrls: ['./add-pipeline-filter.component.css'],
+    standalone: false
 })
 export class AddPipelineFilterComponent implements OnInit {
   @Input() pipelineName: any;

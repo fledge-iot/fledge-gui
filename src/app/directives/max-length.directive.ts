@@ -2,8 +2,9 @@ import { Directive, Input } from '@angular/core';
 import { NG_VALIDATORS, UntypedFormControl, Validator } from '@angular/forms';
 
 @Directive({
-  selector: '[maxLength][formControlName],[maxLength][formControl],[maxLength][ngModel]',
-  providers: [{ provide: NG_VALIDATORS, useExisting: MaxLengthDirective, multi: true }]
+    selector: '[maxLength][formControlName],[maxLength][formControl],[maxLength][ngModel]',
+    providers: [{ provide: NG_VALIDATORS, useExisting: MaxLengthDirective, multi: true }],
+    standalone: false
 })
 export class MaxLengthDirective implements Validator {
   @Input() maxLength: number;

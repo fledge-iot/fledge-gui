@@ -3,9 +3,10 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { PackagesLogService, ProgressBarService } from '../../../../../services';
 
 @Component({
-  selector: 'app-view-logs',
-  templateUrl: './view-logs.component.html',
-  styleUrls: ['./view-logs.component.css']
+    selector: 'app-view-logs',
+    templateUrl: './view-logs.component.html',
+    styleUrls: ['./view-logs.component.css'],
+    standalone: false
 })
 export class ViewLogsComponent implements OnInit {
   public logText: string;

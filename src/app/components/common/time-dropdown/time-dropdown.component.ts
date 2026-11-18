@@ -4,9 +4,10 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { DEBOUNCE_TIME } from '../../../utils';
 
 @Component({
-  selector: 'app-time-dropdown',
-  templateUrl: './time-dropdown.component.html',
-  styleUrls: ['./time-dropdown.component.css']
+    selector: 'app-time-dropdown',
+    templateUrl: './time-dropdown.component.html',
+    styleUrls: ['./time-dropdown.component.css'],
+    standalone: false
 })
 export class TimeDropdownComponent implements OnInit, OnDestroy {
   graphUnit = ['seconds', 'minutes', 'hours', 'days'];

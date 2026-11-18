@@ -5,9 +5,10 @@ import { AlertService, AuditService, PingService, ProgressBarService } from '../
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 
 @Component({
-  selector: 'app-audit-log',
-  templateUrl: './audit-log.component.html',
-  styleUrls: ['./audit-log.component.css']
+    selector: 'app-audit-log',
+    templateUrl: './audit-log.component.html',
+    styleUrls: ['./audit-log.component.css'],
+    standalone: false
 })
 export class AuditLogComponent implements OnInit, OnDestroy {
   public logSourceList = [];

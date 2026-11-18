@@ -4,7 +4,7 @@ import { curveBasis } from "d3-shape";
 import { isEmpty } from 'lodash';
 import { easeInOut } from "popmotion";
 import { ClassicPreset, GetSchemes, NodeEditor } from "rete";
-import { AngularArea2D, AngularPlugin, Presets } from "rete-angular-plugin/16";
+import { AngularArea2D, AngularPlugin, Presets } from "rete-angular-plugin/20";
 import { AreaExtensions, AreaPlugin } from "rete-area-plugin";
 import { ArrangeAppliers, Presets as ArrangePresets, AutoArrangePlugin } from "rete-auto-arrange-plugin";
 import { ConnectionPathPlugin } from 'rete-connection-path-plugin';

@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-filter-alert',
-  templateUrl: './filter-alert.component.html',
-  styleUrls: ['./filter-alert.component.css']
+    selector: 'app-filter-alert',
+    templateUrl: './filter-alert.component.html',
+    styleUrls: ['./filter-alert.component.css'],
+    standalone: false
 })
 export class FilterAlertComponent implements OnInit, OnChanges {
   @Input() filerDialogData: { id: Number, name: any, key: any, message: any, actionButtonValue: any, headerTextValue: any };

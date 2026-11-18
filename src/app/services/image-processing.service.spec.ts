@@ -103,9 +103,9 @@ describe('ImageProcessingService', () => {
 
       const result = service.processImageReadings(readings);
 
-      expect(result).toHaveLength(2);
-      expect(result[0]).toHaveProperty('image');
-      expect(result[1]).not.toHaveProperty('image');
+      expect(result.length).toBe(2);
+      expect('image' in result[0]).toBeTrue();
+      expect('image' in result[1]).toBeFalse();
     });
 
     it('should handle empty array', () => {
@@ -121,9 +121,9 @@ describe('ImageProcessingService', () => {
 
       const result = service.processImageReadings(readings);
 
-      expect(result).toHaveLength(2);
-      expect(result[0]).not.toHaveProperty('image');
-      expect(result[1]).not.toHaveProperty('image');
+      expect(result.length).toBe(2);
+      expect('image' in result[0]).toBeFalse();
+      expect('image' in result[1]).toBeFalse();
     });
   });
 }); 

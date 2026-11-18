@@ -5,9 +5,10 @@ import { AlertService, AuditService, PingService, ProgressBarService } from '../
 import { MAX_INT_SIZE, POLLING_INTERVAL } from '../../../../utils';
 
 @Component({
-  selector: 'app-notification-log',
-  templateUrl: './notification-log.component.html',
-  styleUrls: ['./notification-log.component.css']
+    selector: 'app-notification-log',
+    templateUrl: './notification-log.component.html',
+    styleUrls: ['./notification-log.component.css'],
+    standalone: false
 })
 export class NotificationLogComponent implements OnInit, OnDestroy {
   @Input() sourceName: string;

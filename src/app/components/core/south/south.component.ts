@@ -16,9 +16,10 @@ import { FlowEditorService } from '../../common/node-editor/flow-editor.service'
 
 
 @Component({
-  selector: 'app-south',
-  templateUrl: './south.component.html',
-  styleUrls: ['./south.component.css']
+    selector: 'app-south',
+    templateUrl: './south.component.html',
+    styleUrls: ['./south.component.css'],
+    standalone: false
 })
 export class SouthComponent implements OnInit, OnDestroy {
   public service: Service;

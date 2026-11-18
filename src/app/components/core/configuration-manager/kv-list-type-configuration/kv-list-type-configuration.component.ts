@@ -11,9 +11,10 @@ import { CsvJsonConverterService } from '../../../../services/csv-json-converter
 import { DelimiterStoreService } from '../../../../services/delimiter-store.service';
 
 @Component({
-  selector: 'app-kv-list-type-configuration',
-  templateUrl: './kv-list-type-configuration.component.html',
-  styleUrls: ['./kv-list-type-configuration.component.css']
+    selector: 'app-kv-list-type-configuration',
+    templateUrl: './kv-list-type-configuration.component.html',
+    styleUrls: ['./kv-list-type-configuration.component.css'],
+    standalone: false
 })
 export class KvListTypeConfigurationComponent implements OnInit, OnChanges, OnDestroy {
   @Input() configuration;

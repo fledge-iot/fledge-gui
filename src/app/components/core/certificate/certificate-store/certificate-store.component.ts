@@ -7,9 +7,10 @@ import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-cert-store',
-  templateUrl: './certificate-store.component.html',
-  styleUrls: ['./certificate-store.component.css']
+    selector: 'app-cert-store',
+    templateUrl: './certificate-store.component.html',
+    styleUrls: ['./certificate-store.component.css'],
+    standalone: false
 })
 export class CertificateStoreComponent implements OnInit, OnDestroy {
   public keys = [];

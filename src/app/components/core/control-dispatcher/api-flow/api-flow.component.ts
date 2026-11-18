@@ -18,9 +18,10 @@ import { Subject } from 'rxjs';
 import { APIFlow, User } from '../../../../../../src/app/models';
 
 @Component({
-  selector: 'app-api-flow',
-  templateUrl: './api-flow.component.html',
-  styleUrls: ['./api-flow.component.css']
+    selector: 'app-api-flow',
+    templateUrl: './api-flow.component.html',
+    styleUrls: ['./api-flow.component.css'],
+    standalone: false
 })
 
 export class APIFlowComponent implements OnInit, OnDestroy {

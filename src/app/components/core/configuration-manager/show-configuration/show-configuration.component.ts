@@ -5,9 +5,10 @@ import { filter, map, pairwise, startWith } from 'rxjs/operators';
 import { RolesService, ConfigurationControlService, ConfigurationBase } from '../../../../services';
 
 @Component({
-  selector: 'app-show-configuration',
-  templateUrl: './show-configuration.component.html',
-  styleUrls: ['./show-configuration.component.css']
+    selector: 'app-show-configuration',
+    templateUrl: './show-configuration.component.html',
+    styleUrls: ['./show-configuration.component.css'],
+    standalone: false
 })
 export class ShowConfigurationComponent implements OnInit {
   @Input() fullConfiguration: any;

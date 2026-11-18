@@ -9,9 +9,10 @@ import { Schedule } from '../schedule';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-update-schedule',
-  templateUrl: './update-schedule.component.html',
-  styleUrls: ['./update-schedule.component.css']
+    selector: 'app-update-schedule',
+    templateUrl: './update-schedule.component.html',
+    styleUrls: ['./update-schedule.component.css'],
+    standalone: false
 })
 export class UpdateScheduleComponent implements OnInit {
   public scheduleTypes = [];
@@ -203,7 +204,7 @@ export class UpdateScheduleComponent implements OnInit {
     let repeatTime = 0;
     // If schedule type is Interval
     if (['TIMED', 'INTERVAL'].includes(this.scheduleType())) {
-      repeatTime = this.form.get('repeat').value !== ('None' || undefined) ? Utils.convertTimeToSec(
+      repeatTime = this.form.get('repeat').value !== 'None' ? Utils.convertTimeToSec(
         this.form.get('repeat').value, this.form.get('repeatDay').value) : 0;
     }
     return repeatTime;

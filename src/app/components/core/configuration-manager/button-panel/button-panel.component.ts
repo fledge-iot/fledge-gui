@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-button-panel',
-  templateUrl: './button-panel.component.html',
-  styleUrls: ['./button-panel.component.css']
+    selector: 'app-button-panel',
+    templateUrl: './button-panel.component.html',
+    styleUrls: ['./button-panel.component.css'],
+    standalone: false
 })
 export class ButtonPanelComponent {
 

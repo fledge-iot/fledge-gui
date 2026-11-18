@@ -4,9 +4,10 @@ import { debounceTime } from 'rxjs/operators';
 import { RolesService, SharedService } from '../../../../../../services';
 
 @Component({
-  selector: 'app-add-step-value',
-  templateUrl: './add-step-value.component.html',
-  styleUrls: ['./add-step-value.component.css']
+    selector: 'app-add-step-value',
+    templateUrl: './add-step-value.component.html',
+    styleUrls: ['./add-step-value.component.css'],
+    standalone: false
 })
 export class AddStepValueComponent implements OnInit {
   values;

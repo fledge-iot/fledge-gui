@@ -2,9 +2,10 @@ import { Component, Input } from '@angular/core';
 import { FlowEditorService } from '../../flow-editor.service';
 
 @Component({
-  selector: 'readings-count',
-  templateUrl: './readings-count.component.html',
-  styleUrls: ['./readings-count.component.css'],
+    selector: 'readings-count',
+    templateUrl: './readings-count.component.html',
+    styleUrls: ['./readings-count.component.css'],
+    standalone: false
 })
 export class ReadingsCountComponent {
   @Input() readingCount: string;

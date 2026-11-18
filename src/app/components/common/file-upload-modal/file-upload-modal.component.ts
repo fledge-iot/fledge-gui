@@ -2,9 +2,10 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { AlertService, BackupRestoreService, ProgressBarService } from '../../../services';
 
 @Component({
-  selector: 'app-file-upload-modal',
-  templateUrl: './file-upload-modal.component.html',
-  styleUrls: ['./file-upload-modal.component.css']
+    selector: 'app-file-upload-modal',
+    templateUrl: './file-upload-modal.component.html',
+    styleUrls: ['./file-upload-modal.component.css'],
+    standalone: false
 })
 export class FileUploadModalComponent implements OnInit {
 

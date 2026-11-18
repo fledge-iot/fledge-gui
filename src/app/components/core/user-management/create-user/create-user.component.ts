@@ -7,9 +7,10 @@ import { User } from '../../../../models';
 import { AlertService, RolesService, UserService } from '../../../../services';
 
 @Component({
-  selector: 'app-create-user',
-  templateUrl: './create-user.component.html',
-  styleUrls: ['./create-user.component.css']
+    selector: 'app-create-user',
+    templateUrl: './create-user.component.html',
+    styleUrls: ['./create-user.component.css'],
+    standalone: false
 })
 export class CreateUserComponent implements OnInit, OnChanges {
   model: User;

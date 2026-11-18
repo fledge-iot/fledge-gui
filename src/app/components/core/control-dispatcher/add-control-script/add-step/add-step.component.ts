@@ -8,9 +8,10 @@ import { AlertService, ProgressBarService, RolesService } from '../../../../../s
 import { ControlDispatcherService } from '../../../../../services/control-dispatcher.service';
 
 @Component({
-  selector: 'app-add-step',
-  templateUrl: './add-step.component.html',
-  styleUrls: ['./add-step.component.css'],
+    selector: 'app-add-step',
+    templateUrl: './add-step.component.html',
+    styleUrls: ['./add-step.component.css'],
+    standalone: false
 })
 export class AddStepComponent implements OnInit {
   scriptSteps = ['configure', 'delay', 'operation', 'script', 'write'];

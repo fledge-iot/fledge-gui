@@ -6,9 +6,10 @@ import { DiscoveryService } from '../../../services';
 import { ConnectedServiceStatus } from '../../../services/connected-service-status.service';
 
 @Component({
-  selector: 'app-service-discovery',
-  templateUrl: './service-discovery.component.html',
-  styleUrls: ['./service-discovery.component.css']
+    selector: 'app-service-discovery',
+    templateUrl: './service-discovery.component.html',
+    styleUrls: ['./service-discovery.component.css'],
+    standalone: false
 })
 export class ServiceDiscoveryComponent implements OnInit {
   discoveredServices = [];

@@ -3,10 +3,11 @@ import { fromEvent } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-number-input-debounce',
-  template: '<input class="input is-small" autocomplete="off" min="0" appIntegerOnly [value]="val" [max]="max"' +
-    '[placeholder]="placeholder" name="limit" [(ngModel)]="inputValue">',
-  styleUrls: ['./number-input-debounce.component.css']
+    selector: 'app-number-input-debounce',
+    template: '<input class="input is-small" autocomplete="off" min="0" appIntegerOnly [value]="val" [max]="max"' +
+        '[placeholder]="placeholder" name="limit" [(ngModel)]="inputValue">',
+    styleUrls: ['./number-input-debounce.component.css'],
+    standalone: false
 })
 export class NumberInputDebounceComponent {
   @Input() placeholder: string;

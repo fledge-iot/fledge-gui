@@ -5,9 +5,10 @@ import { NotificationsService } from '../../../../services/notifications.service
 import { DocService } from '../../../../services/doc.service';
 
 @Component({
-  selector: 'app-service-warning',
-  templateUrl: './service-warning.component.html',
-  styleUrls: ['./service-warning.component.css']
+    selector: 'app-service-warning',
+    templateUrl: './service-warning.component.html',
+    styleUrls: ['./service-warning.component.css'],
+    standalone: false
 })
 export class ServiceWarningComponent implements OnInit {
   private viewPortSubscription: Subscription;

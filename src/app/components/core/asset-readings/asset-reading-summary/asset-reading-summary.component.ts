@@ -1,9 +1,10 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-asset-reading-summary',
-  templateUrl: './asset-reading-summary.component.html',
-  styleUrls: ['./asset-reading-summary.component.css']
+    selector: 'app-asset-reading-summary',
+    templateUrl: './asset-reading-summary.component.html',
+    styleUrls: ['./asset-reading-summary.component.css'],
+    standalone: false
 })
 export class AssetReadingSummaryComponent {
   @Input() buttonText;

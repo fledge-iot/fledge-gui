@@ -24,9 +24,10 @@ import { ShutdownModalComponent } from '../../common/shut-down/shutdown-modal.co
 import { SystemAlertComponent } from '../../core/system-alert/system-alert.component';
 
 @Component({
-  selector: 'app-navbar',
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css']
+    selector: 'app-navbar',
+    templateUrl: './navbar.component.html',
+    styleUrls: ['./navbar.component.css'],
+    standalone: false
 })
 export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() toggle = new EventEmitter<string>();

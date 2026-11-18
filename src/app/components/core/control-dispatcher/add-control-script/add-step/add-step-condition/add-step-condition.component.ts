@@ -3,9 +3,10 @@ import { UntypedFormControl, UntypedFormGroup, NgForm } from '@angular/forms';
 import { RolesService, SharedService } from '../../../../../../services';
 
 @Component({
-  selector: 'app-add-step-condition',
-  templateUrl: './add-step-condition.component.html',
-  styleUrls: ['./add-step-condition.component.css'],
+    selector: 'app-add-step-condition',
+    templateUrl: './add-step-condition.component.html',
+    styleUrls: ['./add-step-condition.component.css'],
+    standalone: false
 })
 export class AddStepConditionComponent implements OnInit {
 

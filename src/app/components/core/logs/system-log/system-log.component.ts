@@ -7,9 +7,10 @@ import { AlertService, SystemLogService, PingService, ProgressBarService, Schedu
 import { POLLING_INTERVAL, DEBOUNCE_TIME } from '../../../../utils';
 
 @Component({
-  selector: 'app-system-log',
-  templateUrl: './system-log.component.html',
-  styleUrls: ['./system-log.component.css']
+    selector: 'app-system-log',
+    templateUrl: './system-log.component.html',
+    styleUrls: ['./system-log.component.css'],
+    standalone: false
 })
 export class SystemLogComponent implements OnInit, OnDestroy {
   public logs: any;

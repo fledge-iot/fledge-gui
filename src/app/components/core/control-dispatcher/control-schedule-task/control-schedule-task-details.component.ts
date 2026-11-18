@@ -7,9 +7,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DialogService } from '../../../common/confirmation-dialog/dialog.service';
 
 @Component({
-  selector: 'app-control-schedule-task-details',
-  templateUrl: './control-schedule-task-details.component.html',
-  styleUrls: ['./control-schedule-task-details.component.css']
+    selector: 'app-control-schedule-task-details',
+    templateUrl: './control-schedule-task-details.component.html',
+    styleUrls: ['./control-schedule-task-details.component.css'],
+    standalone: false
 })
 export class ControlScheduleTaskDetailsComponent implements OnInit {
   scripts = [];

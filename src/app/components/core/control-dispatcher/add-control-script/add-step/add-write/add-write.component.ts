@@ -3,10 +3,11 @@ import { ControlContainer, UntypedFormGroup, NgForm } from '@angular/forms';
 import { ServicesApiService, AlertService, RolesService } from '../../../../../../services';
 
 @Component({
-  selector: 'app-add-write',
-  templateUrl: './add-write.component.html',
-  styleUrls: ['./add-write.component.css'],
-  viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
+    selector: 'app-add-write',
+    templateUrl: './add-write.component.html',
+    styleUrls: ['./add-write.component.css'],
+    viewProviders: [{ provide: ControlContainer, useExisting: NgForm }],
+    standalone: false
 })
 export class AddWriteComponent implements OnInit {
   services = []; // south services list

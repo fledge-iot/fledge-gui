@@ -10,9 +10,10 @@ import { CustomValidator } from '../../../../directives/custom-validator';
 import { SUPPORTED_SERVICE_TYPES, QUOTATION_VALIDATION_PATTERN } from '../../../../utils';
 
 @Component({
-  selector: 'app-add-control-acl',
-  templateUrl: './add-control-acl.component.html',
-  styleUrls: ['./add-control-acl.component.css']
+    selector: 'app-add-control-acl',
+    templateUrl: './add-control-acl.component.html',
+    styleUrls: ['./add-control-acl.component.css'],
+    standalone: false
 })
 export class AddControlAclComponent implements OnInit {
   services = [];
