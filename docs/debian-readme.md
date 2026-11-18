@@ -62,7 +62,7 @@ $ sudo cp packages/build/fledge-gui-x.y.z.deb /var/cache/apt/archives/.
 $ sudo apt install /var/cache/apt/archives/fledge-gui-x.y.z.deb
 ```
 
-> You may want to check debian package contents with `sudo dpkg -c fledge-gui-x.y.z.deb` or can install in dev env with `sudo dpkg -i fledge-gui-x.y.z.deb`. In case of local install via apt or dpkg, the `nginx-light` should be installed first i.e. `sudo apt install nginx-light`.
+> You may want to check debian package contents with `sudo dpkg -c fledge-gui-x.y.z.deb` or can install in dev env with `sudo dpkg -i fledge-gui-x.y.z.deb`. In case of local install via apt or dpkg, `nginx` should be installed first i.e. `sudo apt install nginx`.
 
 #### Uninstalling debian package
 

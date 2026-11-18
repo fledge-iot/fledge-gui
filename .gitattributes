@@ -1,0 +1,6 @@
+build text eol=lf
+git-version text eol=lf
+make_deb text eol=lf
+*.sh text eol=lf
+nginx/* text eol=lf
+packages/Debian/DEBIAN/* text eol=lf

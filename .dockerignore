@@ -1,0 +1,6 @@
+.git
+.angular
+node_modules
+dist
+packages/build
+*.tar.gz
