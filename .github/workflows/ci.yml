@@ -16,6 +16,7 @@ concurrency:
 env:
   NODE_VERSION: "22"
   GUI_IMAGE: fledge-gui:ci
+  FLEDGE_IMAGE: helindata/fledge:3.1.0@sha256:d5ce307b5cd8a75a3685b2d7658195bce36161a55e6c9722e4d55b09bd1784c6
 
 jobs:
   build:
@@ -141,18 +142,9 @@ jobs:
     needs: image
     runs-on: ubuntu-22.04
     timeout-minutes: 30
-
-    services:
-      fledge:
-        image: helindata/fledge:3.1.0@sha256:d5ce307b5cd8a75a3685b2d7658195bce36161a55e6c9722e4d55b09bd1784c6
-        ports:
-          - 8081:8081
-        options: >-
-          --health-cmd "curl --fail --silent http://localhost:8081/fledge/ping"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 24
-          --health-start-period 10s
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - name: Checkout
@@ -167,6 +159,16 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Docker Hub login (OIDC)
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f  # v4.6.0
+        env:
+          DOCKERHUB_OIDC_CONNECTIONID: ${{ vars.DOCKERHUB_OIDC_CONNECTION_ID }}
+        with:
+          username: ${{ vars.DOCKERHUB_ORG }}
+
+      - name: Start Fledge
+        run: docker run --detach --name fledge --publish 8081:8081 "${FLEDGE_IMAGE}"
+
       - name: Download image
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
@@ -179,12 +181,16 @@ jobs:
           docker load --input gui-image.tar.gz
           docker run --detach --name gui --publish 8080:8080 "${GUI_IMAGE}"
           curl --silent --show-error --fail --retry 20 --retry-delay 2 --retry-connrefused --retry-all-errors --output /dev/null http://localhost:8080/
-          curl --silent --show-error --fail --retry 20 --retry-delay 2 --retry-connrefused --retry-all-errors --output /dev/null http://localhost:8081/fledge/ping
+          curl --silent --show-error --fail --retry 60 --retry-delay 2 --retry-connrefused --retry-all-errors --output /dev/null http://localhost:8081/fledge/ping
 
       - name: Run Cypress
         env:
           CYPRESS_BASE_URL: http://localhost:8080
         run: yarn cypress run --browser chrome --spec e2e/specs/app.e2e-common.ts,e2e/specs/app.e2e-south.ts
+
+      - name: Fledge logs
+        if: failure()
+        run: docker logs fledge
 
       - name: Upload Cypress artifacts
         if: failure()
