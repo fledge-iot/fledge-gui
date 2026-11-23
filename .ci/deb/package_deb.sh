@@ -8,7 +8,7 @@ REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$REPO_ROOT"
 
 PKG_NAME=fledge-gui
-PKG_VERSION="$(sed -n 's/^[[:space:]]*"version":[[:space:]]*"\([^"]*\)".*/\1/p' package.json | head -1)"
+PKG_VERSION="${PKG_VERSION:-$(sed -n 's/^[[:space:]]*"version":[[:space:]]*"\([^"]*\)".*/\1/p' package.json | head -1)}"
 if [[ -z "$PKG_VERSION" ]]; then
     echo "ERROR: version not found in package.json" >&2
     exit 1

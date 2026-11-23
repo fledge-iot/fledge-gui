@@ -10,6 +10,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends dpkg-dev \
     && rm -rf /var/lib/apt/lists/*
 
+ARG PKG_VERSION=
+
 WORKDIR /pkg
 COPY packages/Debian packages/Debian
 COPY nginx nginx
@@ -17,7 +19,7 @@ COPY package.json package.json
 COPY .ci/deb/package_deb.sh .ci/deb/package_deb.sh
 COPY --from=builder /src/dist /dist
 
-RUN bash .ci/deb/package_deb.sh /dist /artifacts
+RUN PKG_VERSION="${PKG_VERSION}" bash .ci/deb/package_deb.sh /dist /artifacts
 
 FROM scratch AS artifact
 COPY --from=packager /artifacts/ /

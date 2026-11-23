@@ -11,6 +11,7 @@ mkdir -p "$OUT_DIR"
 docker buildx build \
     --file .ci/deb/Dockerfile \
     --target artifact \
+    --build-arg "PKG_VERSION=${PKG_VERSION:-}" \
     --output "type=local,dest=${OUT_DIR}" \
     .
 
